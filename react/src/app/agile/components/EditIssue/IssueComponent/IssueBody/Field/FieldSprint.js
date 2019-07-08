@@ -128,8 +128,7 @@ const { Text, Edit } = TextEditToggle;
             <Edit>
               <Select
                 label="活跃冲刺"
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                style={{ width: '150px' }}
+                getPopupContainer={triggerNode => triggerNode.parentNode}          
                 allowClear
                 loading={selectLoading}
                 onChange={(value) => {

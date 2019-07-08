@@ -154,7 +154,7 @@ class AddComponent extends Component {
                 <Input label="模块名称" maxLength={10} />,
               )}
             </FormItem>
-            <FormItem style={{ marginBottom: 5 }}>
+            <FormItem>
               {getFieldDecorator('description', {})(
                 <Input label="模块描述" maxLength={30} />,
               )}

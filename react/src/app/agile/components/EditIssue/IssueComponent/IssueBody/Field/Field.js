@@ -334,8 +334,7 @@ let sign = false;
         </div>
         <div className="c7n-value-wrapper" style={{ width: 'auto' }}>
           <TextEditToggle
-            disabled={disabled}
-            style={{ width: '100%', maxWidth: '200px' }}
+            disabled={disabled}            
             formKey={fieldCode}
             onSubmit={this.updateIssueField}
             originData={this.transform(fieldType, value)}

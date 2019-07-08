@@ -180,10 +180,9 @@ class AdvancedSearch extends Component {
         <div className="c7n-mySearch">
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Select
-              key="myFilterSelect"
-              className="myFilterSelect"
+              key="myFilterSelect"              
               allowClear
-              dropdownClassName="myFilterSelect-dropdown"
+              className="SelectTheme"  
               dropdownMatchSelectWidth={false}
               placeholder="我的筛选"
               labelInValue
@@ -204,10 +203,10 @@ class AdvancedSearch extends Component {
 
             <Select
               key="issueTypeSelect"
-              className="issueTypeSelect"
+              className="SelectTheme"  
               mode="multiple"
               allowClear
-              dropdownClassName="issueTypeSelect-dropdown"
+              
               dropdownMatchSelectWidth={false}
               placeholder="问题类型"
               labelInValue
@@ -231,10 +230,9 @@ class AdvancedSearch extends Component {
 
             <Select
               key="statusSelect"
-              className="statusSelect"
+              className="SelectTheme"  
               mode="multiple"
-              allowClear
-              dropdownClassName="statusSelect-dropdown"
+              allowClear              
               dropdownMatchSelectWidth={false}
               placeholder="状态"
               labelInValue
@@ -258,9 +256,8 @@ class AdvancedSearch extends Component {
 
             <Select
               key="prioritySelect"
-              className="prioritySelect"
-              mode="multiple"
-              dropdownClassName="prioritySelect-dropdown"
+              className="SelectTheme"  
+              mode="multiple"             
               dropdownMatchSelectWidth={false}
               allowClear
               placeholder="优先级"
@@ -287,10 +284,9 @@ class AdvancedSearch extends Component {
               type="user"
               loadWhenMount
               key="assigneeSelect"
-              className="assigneeSelect"
+              className="SelectTheme"  
               mode="multiple"
-              allowClear         
-              dropdownClassName="assigneeSelect-dropdown"
+              allowClear
               dropdownMatchSelectWidth={false}
               placeholder="经办人"              
               saveList={(users) => { this.users = unionBy(this.users, users, 'id'); }}
@@ -309,8 +305,8 @@ class AdvancedSearch extends Component {
             {
               (moment(createStartDate).format('YYYY-MM-DD') === moment(projectInfo.creationDate).format('YYYY-MM-DD') || createStartDate === '') && (moment(createEndDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') || createEndDate === '') ? (
                 <div className="c7n-createRange">
-                  <RangePicker
-                    format="YYYY-MM-DD hh:mm:ss"
+                  <RangePicker                   
+                    format="YYYY-MM-DD"
                     defaultPickerValue={[moment().subtract(1, 'months'), moment()]}
                     disabledDate={current => current && (current > moment().endOf('day') || current < moment(projectInfo.creationDate).startOf('day'))}
                     allowClear
@@ -321,9 +317,9 @@ class AdvancedSearch extends Component {
               ) : (
                 <Tooltip title={`创建问题时间范围为${moment(createStartDate).format('YYYY-MM-DD')} ~ ${moment(createEndDate).format('YYYY-MM-DD')}`}>
                   <div className="c7n-createRange">
-                    <RangePicker
+                    <RangePicker                    
                       value={[createStartDate && moment(createStartDate), createEndDate && moment(createEndDate)]}
-                      format="YYYY-MM-DD hh:mm:ss"
+                      format="YYYY-MM-DD"
                       disabledDate={current => current && (current > moment().endOf('day') || current < moment(projectInfo.creationDate).startOf('day'))}
                       allowClear
                       onChange={this.handleCreateDateRangeChange}

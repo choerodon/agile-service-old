@@ -194,11 +194,11 @@ class EditComponent extends Component {
                 <Input label="模块名称" maxLength={10} />,
               )}
             </FormItem>
-            <FormItem style={{ marginBottom: 5 }}>
+            <FormItem>
               {getFieldDecorator('description', {
                 initialValue: this.state.description,
               })(
-                <TextArea label="模块描述" autosize maxLength={30} />,
+                <Input label="模块描述" autosize maxLength={30} />,
               )}
             </FormItem>
             <FormItem>

@@ -146,8 +146,7 @@ const { Text, Edit } = TextEditToggle;
                   </Text>
                   <Edit>
                     <Select
-                      getPopupContainer={triggerNode => triggerNode.parentNode}
-                      style={{ width: '150px' }}
+                      getPopupContainer={triggerNode => triggerNode.parentNode}                  
                       allowClear
                       loading={selectLoading}
                       onChange={(value) => {
@@ -204,8 +203,7 @@ const { Text, Edit } = TextEditToggle;
               </Text>
               <Edit>
                 <Select
-                  getPopupContainer={triggerNode => triggerNode.parentNode}
-                  style={{ width: '150px' }}
+                  getPopupContainer={triggerNode => triggerNode.parentNode}               
                   allowClear
                   loading={selectLoading}
                   onChange={(value) => {

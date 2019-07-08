@@ -101,8 +101,7 @@ const { Text, Edit } = TextEditToggle;
             </Text>
             <Edit>
               <Select
-                dropdownStyle={{ minWidth: 185 }}
-                style={{ width: '150px' }}
+                dropdownStyle={{ minWidth: 185 }}              
                 loading={selectLoading}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 onChange={(value) => {

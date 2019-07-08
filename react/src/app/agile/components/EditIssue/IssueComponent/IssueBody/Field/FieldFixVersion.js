@@ -109,8 +109,7 @@ const { Text, Edit } = TextEditToggle;
         </div>
         <div className="c7n-value-wrapper">
           <TextEditToggle
-            disabled={disabled}
-            style={{ width: '100%', maxWidth: '200px' }}
+            disabled={disabled}            
             formKey="fixVersion"
             onSubmit={this.updateIssueFixVersion}
             originData={this.transToArr(fixVersions, 'name', 'array')}

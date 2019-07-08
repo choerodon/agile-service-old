@@ -1,14 +1,14 @@
-/* eslint-disable react/no-find-dom-node */
+/* eslint-disable react/no-find-dom-node, react/destructuring-assignment */
 import React, { Component } from 'react';
 import { Form, Icon } from 'choerodon-ui';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
-import { observer } from 'mobx-react';
+import DefaultOpenSelect from '../DefaultOpenSelect';
 import './TextEditToggle.scss';
 // 防止提交前变回原值
-const Text = props => (typeof (props.children) === 'function' ? props.children(props.newData || props.originData) : props.children);
+const Text = ({ children, newData, originData }) => (typeof (children) === 'function' ? children(newData || originData) : children);
 
-const Edit = props => props.children;
+const Edit = ({ children }) => children;
 const FormItem = Form.Item;
 function contains(root, n) {
   let node = n;
@@ -21,16 +21,17 @@ function contains(root, n) {
 
   return false;
 }
-@observer
+
 class TextEditToggle extends Component {
   static defaultProps = {
-
+    noButton: true,
   };
 
   static propTypes = {
     saveRef: PropTypes.func,
     className: PropTypes.string,
     disabled: PropTypes.bool,
+    noButton: PropTypes.bool,
     simpleMode: PropTypes.bool,
     formKey: PropTypes.string,
     onSubmit: PropTypes.func,
@@ -66,9 +67,13 @@ class TextEditToggle extends Component {
     return null;
   }
 
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleDocumentClick);
+  }
+
   handleDocumentClick = (event) => {
-    const target = event.target;
-    const root = findDOMNode(this); 
+    const { target } = event;
+    const root = findDOMNode(this);
     // 如果点击不在当前元素内，就调用submit提交数据
     if (!this.PortalMouseDown && !contains(root, target)) {
       // console.log(target);
@@ -89,10 +94,10 @@ class TextEditToggle extends Component {
 
   // 提交编辑
   handleSubmit = () => {
-    document.removeEventListener('mousedown', this.handleDocumentClick);
     try {
       this.props.form.validateFields((err, values) => {
         if (!err) {
+          document.removeEventListener('mousedown', this.handleDocumentClick);
           if (this.props.formKey) {
             const newData = values[this.props.formKey];
             if (this.props.onSubmit && newData !== this.props.originData) {
@@ -152,13 +157,33 @@ class TextEditToggle extends Component {
       : children.filter(child => child.type === Text);
   }
 
+  getEditChildrenType = () => {
+    const { children } = this.props;
+
+    const EditChildren = children.filter(child => child.type === Edit);
+    const childrenArray = React.Children.toArray(EditChildren);
+    const targetElement = React.Children.toArray(childrenArray[0].props.children)[0];
+    if (!targetElement) {
+      throw new Error('使用Form功能时，Edit的children必须是Component');
+    }   
+    // 替换成自动打开的Select
+    if (targetElement.type.name === 'Select') {
+      return 'Select';
+    }
+    return 'Input';
+  }
+
   renderFormItemChild(children) {
     // formItem只有一个组件起作用
     const childrenArray = React.Children.toArray(children);
-    const targetElement = childrenArray.filter(child => child.type
-      && child.type.prototype instanceof Component)[0];
+    const targetElement = childrenArray[0];
     if (!targetElement) {
       throw new Error('使用Form功能时，Edit的children必须是Component');
+    }
+    // console.log(targetElement.type.name === 'Select');
+    // 替换成自动打开的Select
+    if (targetElement.type.name === 'Select') {
+      return <DefaultOpenSelect {...targetElement.props} />;
     }
     return targetElement;
   }
@@ -169,7 +194,7 @@ class TextEditToggle extends Component {
     // console.log(childrenArray);
     return childrenArray.map((child) => {
       if (!child.props.getPopupContainer) {
-        return React.cloneElement(child, {        
+        return React.cloneElement(child, {
           getPopupContainer: () => findDOMNode(this),
         });
       } else {
@@ -188,14 +213,15 @@ class TextEditToggle extends Component {
   }
 
   renderChild = () => {
-    const { editing } = this.state;
+    const { editing, newData } = this.state;
+    const { disabled, simpleMode, noButton } = this.props;
     const {
-      originData, formKey, rules, fieldProps, editExtraContent,
-      disabled, simpleMode, noButton,
+      originData, formKey, rules, fieldProps,
     } = this.props;
     const { getFieldDecorator } = this.props.form;
     // 拿到不同模式下对应的子元素
     const children = this.getEditOrTextChildren();
+    const hoverType = this.getEditChildrenType();
     // 根据不同模式对子元素进行包装
     return editing ? (
       <div
@@ -203,12 +229,11 @@ class TextEditToggle extends Component {
         className="c7ntest-TextEditToggle-edit"
         onMouseDown={this.handlePortalMouseDown} // Portal的事件会冒泡回父组件
       >
-        {editExtraContent}
         { // 采用form模式就进行form包装,否则
           formKey ? (
             <Form layout="vertical">
               {children.map(child => (
-                <FormItem key={child.key}>
+                <FormItem>
                   {getFieldDecorator(formKey, {
                     rules,
                     initialValue: originData,
@@ -232,12 +257,12 @@ class TextEditToggle extends Component {
       </div>
     ) : (
       <div
-        className={simpleMode || disabled ? 'c7ntest-TextEditToggle-text' : 'c7ntest-TextEditToggle-text c7ntest-TextEditToggle-text-active'}
+        className={simpleMode || disabled ? 'c7ntest-TextEditToggle-text' : `c7ntest-TextEditToggle-text c7ntest-TextEditToggle-text-active ${hoverType}`}
         onClick={this.enterEditing}
         role="none"
       >
         {this.renderTextChild(children)}
-        {!simpleMode && <Icon type="mode_edit" className="c7ntest-TextEditToggle-text-icon" />}
+        {!simpleMode && <Icon type="arrow_drop_down" className="c7ntest-TextEditToggle-text-icon" />}
       </div>
     );
   }
@@ -245,7 +270,7 @@ class TextEditToggle extends Component {
   render() {
     const { style, className } = this.props;
     return (
-      <div style={style} className={className}>
+      <div style={style} className={`c7ntest-TextEditToggle ${className || ''}`}>
         {this.renderChild()}
       </div>
     );

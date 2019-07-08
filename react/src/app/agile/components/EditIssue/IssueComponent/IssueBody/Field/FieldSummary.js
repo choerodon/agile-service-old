@@ -98,7 +98,7 @@ const { TextArea } = Input;
                 autosize
                 autoFocus
                 maxLength="44"
-                size="small"
+                style={{ fontSize: '20px', fontWeight: 500 }}
                 onChange={(e) => {
                   this.setState({
                     newValue: e.target.value,

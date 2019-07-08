@@ -5,7 +5,6 @@ import {
 import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
 import { NumericInput } from '../../../../../components/CommonComponent';
-import './Filter.scss';
 
 const { Sidebar } = Modal;
 const { TextArea } = Input;
@@ -724,7 +723,7 @@ class AddComponent extends Component {
                       <div>
                         {
                           index !== 0 && (
-                            <FormItem style={{ width: 80, display: 'inline-block', marginRight: 10 }}>
+                            <FormItem style={{ width: 100, display: 'inline-block', marginRight: 10 }}>
                               {getFieldDecorator(`filter-${index}-ao`, {
                                 rules: [{
                                   required: true,
@@ -739,7 +738,7 @@ class AddComponent extends Component {
                             </FormItem>
                           )
                         }
-                        <FormItem style={{ width: 120, display: 'inline-block', marginRight: 10 }}>
+                        <FormItem style={{ width: index === 0 ? 230 : 120, display: 'inline-block', marginRight: 10 }}>
                           {getFieldDecorator(`filter-${index}-prop`, {
                             rules: [{
                               required: true,
@@ -773,7 +772,7 @@ class AddComponent extends Component {
                             this.renderOperation(form.getFieldValue(`filter-${index}-prop`), index),
                           )}
                         </FormItem>
-                        <FormItem style={{ width: 300, display: 'inline-block' }}>
+                        <FormItem style={{ width: 190, display: 'inline-block' }}>
                           {getFieldDecorator(`filter-${index}-value`, {
                             rules: [{
                               required: true,
@@ -783,11 +782,27 @@ class AddComponent extends Component {
                             this.renderValue(form.getFieldValue(`filter-${index}-prop`), form.getFieldValue(`filter-${index}-rule`)),
                           )}
                         </FormItem>
+                        <Button
+                          shape="circle"
+                          style={{ margin: 10 }}
+                          icon="add"
+                          onClick={() => {
+                            const arr = filters.slice();
+                            arr.push({
+                              prop: undefined,
+                              rule: undefined,
+                              value: undefined,
+                            });
+                            this.setState({
+                              filters: arr,
+                            });
+                          }}
+                        />
                         {
                           index ? (
                             <Button
-                              shape="circle"
-                              style={{ margin: 10 }}
+                              shape="circle"                              
+                              icon="delete"
                               onClick={() => {
                                 const arr = deleteItem.slice();
                                 arr.push(index);
@@ -795,39 +810,18 @@ class AddComponent extends Component {
                                   deleteItem: arr,
                                 });
                               }}
-                            >
-                              <Icon type="delete" />
-                            </Button>
+                            />
                           ) : null
                         }
                       </div>
                     )
                   }
-
                 </div>
               ))
-            }
-            <Button
-              type="primary"
-              funcType="flat"
-              onClick={() => {
-                const arr = filters.slice();
-                arr.push({
-                  prop: undefined,
-                  rule: undefined,
-                  value: undefined,
-                });
-                this.setState({
-                  filters: arr,
-                });
-              }}
-            >
-              <Icon type="add icon" />
-              <span>添加属性</span>
-            </Button>
+            }           
             <FormItem style={{ width: 520 }}>
               {getFieldDecorator('description', {})(
-                <TextArea label="描述" autosize maxLength={30} />,
+                <Input label="描述" autosize maxLength={30} />,
               )}
             </FormItem>
           </Form>

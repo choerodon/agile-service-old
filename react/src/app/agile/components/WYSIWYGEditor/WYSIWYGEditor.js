@@ -1,79 +1,8 @@
-import React, { Component } from 'react';
-import { Button } from 'choerodon-ui';
+import React, { Component, Fragment } from 'react';
+import { Modal } from 'choerodon-ui';
 import PropTypes from 'prop-types';
-import ReactQuill, { Quill } from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import LightBox from 'react-image-lightbox';
-import ImageDrop from './ImageDrop';
-import Link from './Link';
-// import mention from './mention';
-import './WYSIWYGEditor.scss';
-import cls from '../CommonComponent/ClickOutSide';
+import BaseEditor from './BaseEditor';
 
-const atValues = [
-  { id: 1, value: '汪汪哇' },
-  { id: 2, value: '王坤奇' },
-  { id: 10, value: '真的吗' },
-];
-const hashValues = [
-  { id: 3, value: '啊啊啊' },
-  { id: 4, value: '真的吗' },
-];
-Quill.register('modules/imageDrop', ImageDrop);
-Quill.register('formats/link', Link);
-// Quill.register('modules/mention', mention);
-const modules = {
-  toolbar: [
-    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [{ list: 'ordered' }, { list: 'bullet' }, 'image', 'link', { color: [] }],
-  ],
-  // mention: {
-  //   allowedChars: /^[A-Za-z\s\u4e00-\u9fa5]*$/,
-  //   mentionDenotationChars: ['@', '#'],
-  //   source(searchTerm, renderList, mentionChar) {
-  //     let values;
-
-  //     if (mentionChar === '@') {
-  //       values = atValues;
-  //     } else {
-  //       values = hashValues;
-  //     }
-
-  //     if (searchTerm.length === 0) {
-  //       renderList(values, searchTerm);
-  //     } else {
-  //       const matches = [];
-  //       for (let i = 0; i < values.length; i += 1) {
-  //         // eslint-disable-next-line no-bitwise
-  //         if (~values[i].value.toLowerCase().indexOf(searchTerm.toLowerCase())) {
-  //           matches.push(values[i]);
-  //         }
-  //       }
-  //       renderList(matches, searchTerm);
-  //     }
-  //   },
-  // },
-  imageDrop: true,
-};
-// "[{"insert":{"mention":{"index":"0","denotationChar":"@","id":"1","value":"Fredrik Sundqvist"}}},{"insert":" \n"}]"
-const formats = [
-  'bold',
-  'italic',
-  'underline',
-  'strike',
-  'blockquote',
-  'list',
-  'bullet',
-  'link',
-  'image',
-  'color',
-];
-
-const defaultStyle = {
-  width: 498,
-  height: 200,
-  borderRight: 'none',
-};
 const defaultProps = {
   mode: 'edit',
 };
@@ -102,44 +31,9 @@ class WYSIWYGEditor extends Component {
     super(props);
     this.state = {
       loading: false,
-      imgOpen: false,
-      src: '',
-      value: props.value || '',
+      isFullScreen: false,
     };
-  }
-
-  static getDerivedStateFromProps(nextProps) {
-    if ('value' in nextProps) {
-      return {
-        value: nextProps.value,
-      };
-    }
-    return null;
-  }
-
-  componentDidMount() {
-    const { autoFocus } = this.props;
-    if (autoFocus && this.editor) {
-      setTimeout(() => {
-        this.editor.focus();
-      });
-    }
-    document.addEventListener('click', this.handleOpenLightBox);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('click', this.handleOpenLightBox);
-  }
-  
-  handleOpenLightBox=(e) => {
-    e.stopPropagation();
-    if (e.target.nodeName === 'IMG') {
-      e.stopPropagation();
-      this.setState({
-        imgOpen: true,
-        src: e.target.src,
-      });
-    }
+    this.oldValue = null;// 全屏弹出之前的值，用来处理取消
   }
 
   saveRef = name => (ref) => {
@@ -150,116 +44,92 @@ class WYSIWYGEditor extends Component {
     }
   }
 
-  isHasImg = (delta) => {
-    let pass = false;
-    if (delta && delta.ops) {
-      delta.ops.forEach((item) => {
-        if (item.insert && item.insert.image) {
-          pass = true;
-        }
-      });
-    }
-    return pass;
-  };
+  handleFullScreenClick = () => {
+    this.oldValue = this.Editor.value;
+    this.setState({
+      isFullScreen: true,
+    });
+  }
 
-  handleChange = (content, delta, source, editor) => {
-    const { onChange } = this.props;
-    const value = editor.getContents();
-    if (onChange && value && value.ops) {
-      onChange(value.ops);
-    }
-  };
+  handleFullScreenCancel = () => {
+    this.Editor.setValue(this.oldValue);
+    this.setState({
+      isFullScreen: false,
+    });
+  }
 
-  empty = () => {
-    const { onChange } = this.props;
-    onChange(undefined);
-  };
-
-  handleClickOutside = () => {
-    const { handleClickOutSide } = this.props;
-    if (handleClickOutSide) {
-      handleClickOutSide();
+  handleCancel = () => {
+    const { handleDelete } = this.props;
+    if (handleDelete) {
+      handleDelete();
     }
-  };
+  }
+
+  handleSave = () => {
+    this.setState({
+      isFullScreen: false,
+      loading: true,
+    });
+    const { handleSave } = this.props;
+    if (handleSave) {
+      handleSave();
+    }
+  }
+
 
   render() {
     const {
-      placeholder,
       toolbarHeight,
-      style,
-      bottomBar,
       handleDelete,
       handleSave,
       mode,
+      ...restProps
     } = this.props;
     const readOnly = mode === 'read';
     const {
-      loading, value, imgOpen, src, 
+      loading, isFullScreen,
     } = this.state;
-    const newStyle = { ...defaultStyle, ...style };
-    const editHeight = newStyle.height === '100%' ? `calc(100% - ${toolbarHeight || '42px'})` : (newStyle.height - (toolbarHeight || 42));
     return (
-      <div style={{ width: '100%', height: '100%' }}>
-        <div style={newStyle} className={`react-quill-editor react-quill-editor-${mode}`}>
-          <ReactQuill
-            readOnly={readOnly}
-            ref={this.saveRef('editor')}
-            theme="snow"
-            modules={modules}
-            // formats={formats}
-            style={{ height: editHeight, width: '100%' }}
-            placeholder={placeholder || '描述'}
-            defaultValue={value}
-            onChange={this.handleChange}
-            bounds=".react-quill-editor"
-          />
-        </div>
+      <Fragment>
+        <BaseEditor
+          {...restProps}
+          ref={this.saveRef('Editor')}
+          mode={mode}
+          readOnly={readOnly}
+          onFullScreenClick={this.handleFullScreenClick}
+          onCancel={this.handleCancel}
+          onSave={this.handleSave}
+          loading={loading}          
+        />
         {
-          bottomBar && !readOnly && (
-            <div
+          isFullScreen && (
+            <Modal
+              title="描述"
+              maskClosable={false}
+              visible
+              width={1200}
+              wrapClassName="c7n-agile-editDescription"
               style={{
-                padding: '0 8px',
-                border: '1px solid #ccc',
-                borderTop: 'none',
-                display: 'flex',
-                justifyContent: 'flex-end',
+                height: '85%',
               }}
+              onCancel={this.handleFullScreenCancel}
+              onOk={this.handleSave}
             >
-              <Button
-                type="primary"
-                onClick={() => {
-                  this.empty();
-                  handleDelete();
-                }}
-              >
-                {'取消'}
-              </Button>
-              <Button
-                type="primary"
-                loading={loading}
-                onClick={() => {
-                  this.setState({ loading: true });
-                  handleSave();
-                }}
-              >
-                {'保存'}
-              </Button>
-            </div>
+              <BaseEditor
+                {...restProps}
+                mode={mode}
+                readOnly={readOnly}
+                bottomBar={false}
+                hideFullScreen
+                style={{ height: '100%', marginTop: 20, width: '100%' }}                
+              />
+            </Modal>
           )
         }
-        {
-          imgOpen && (
-            <LightBox
-              mainSrc={src}
-              onCloseRequest={() => this.setState({ imgOpen: false })}
-              imageTitle="images"
-            />
-          )
-        }
-      </div>
+      </Fragment>
     );
   }
 }
 WYSIWYGEditor.defaultProps = defaultProps;
 WYSIWYGEditor.propTypes = propTypes;
-export default cls(WYSIWYGEditor);
+export default WYSIWYGEditor;
