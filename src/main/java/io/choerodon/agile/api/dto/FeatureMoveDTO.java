@@ -29,33 +29,8 @@ public class FeatureMoveDTO {
     @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
-//    @ApiModelProperty(value = "true：表示放在某个问题之前；false：表示放在某个问题之后")
-//    private Boolean before;
-//
-//    @ApiModelProperty(value = "与before一起用，以该问题为参照物")
-//    private Long outsetIssueId;
-
-//    @ApiModelProperty(value = "排序字段")
-//    private Boolean rank;
-
     @ApiModelProperty(value = "true：表示移动的feature需要与pi关联；false反之")
     private Boolean piChange;
-
-//    public Boolean getRank() {
-//        return rank;
-//    }
-//
-//    public void setRank(Boolean rank) {
-//        this.rank = rank;
-//    }
-//
-//    public Boolean getBefore() {
-//        return before;
-//    }
-//
-//    public void setBefore(Boolean before) {
-//        this.before = before;
-//    }
 
     public void setPiId(Long piId) {
         this.piId = piId;
@@ -65,13 +40,6 @@ public class FeatureMoveDTO {
         return piId;
     }
 
-//    public Long getOutsetIssueId() {
-//        return outsetIssueId;
-//    }
-//
-//    public void setOutsetIssueId(Long outsetIssueId) {
-//        this.outsetIssueId = outsetIssueId;
-//    }
 
     public Long getIssueId() {
         return issueId;
