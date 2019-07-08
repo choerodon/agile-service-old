@@ -9,7 +9,7 @@ import javax.persistence.*;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_pi_objective")
-public class PiObjectiveDO extends BaseDTO {
+public class PiObjectiveDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.PiObjectiveMapper">
 
-    <select id="selectPiObjectiveList" resultType="io.choerodon.agile.infra.dataobject.PiObjectiveDO">
+    <select id="selectPiObjectiveList" resultType="io.choerodon.agile.infra.dataobject.PiObjectiveDTO">
         select
            apo.id,
            apo.name,
@@ -29,7 +29,7 @@
         order by apo.id desc
     </select>
 
-    <select id="selectPiObjectiveListByProject" resultType="io.choerodon.agile.infra.dataobject.PiObjectiveDO">
+    <select id="selectPiObjectiveListByProject" resultType="io.choerodon.agile.infra.dataobject.PiObjectiveDTO">
         select
            apo.id,
            apo.name,

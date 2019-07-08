@@ -1,8 +1,9 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.vo.PiObjectiveDTO;
+import io.choerodon.agile.api.vo.PiObjectiveVO;
 import io.choerodon.agile.app.service.PiObjectiveService;
+import io.choerodon.agile.infra.dataobject.PiObjectiveDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
@@ -45,7 +46,7 @@ public class PiObjectiveController {
     @PutMapping
     public ResponseEntity<PiObjectiveDTO> updatePiObjective(@ApiParam(value = "项目id", required = true)
                                                             @PathVariable(name = "project_id") Long projectId,
-                                                            @ApiParam(value = "pi objective vo", required = true)
+                                                           @ApiParam(value = "pi objective vo", required = true)
                                                             @RequestBody PiObjectiveDTO piObjectiveDTO) {
         return Optional.ofNullable(piObjectiveService.updatePiObjective(projectId, piObjectiveDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -57,7 +58,7 @@ public class PiObjectiveController {
     @DeleteMapping("/{id}")
     public ResponseEntity deletePiObjective(@ApiParam(value = "项目id", required = true)
                                             @PathVariable(name = "project_id") Long projectId,
-                                            @ApiParam(value = "pi objective vo", required = true)
+                                            @ApiParam(value = "pi objective id", required = true)
                                             @PathVariable Long id) {
         piObjectiveService.deletePiObjective(projectId, id);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -66,9 +67,9 @@ public class PiObjectiveController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询单个PI objective")
     @GetMapping
-    public ResponseEntity<PiObjectiveDTO> queryPiObjective(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PiObjectiveVO> queryPiObjective(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
-                                                           @ApiParam(value = "pi objective id", required = true)
+                                                          @ApiParam(value = "pi objective id", required = true)
                                                            @RequestParam Long id) {
         return Optional.ofNullable(piObjectiveService.queryPiObjective(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -90,9 +91,9 @@ public class PiObjectiveController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("项目层下查询PI objective列表")
     @GetMapping("/list_by_project")
-    public ResponseEntity<List<PiObjectiveDTO>> queryPiObjectiveListByProject(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<PiObjectiveVO>> queryPiObjectiveListByProject(@ApiParam(value = "项目id", required = true)
                                                                               @PathVariable(name = "project_id") Long projectId,
-                                                                              @ApiParam(value = "pi id", required = true)
+                                                                             @ApiParam(value = "pi id", required = true)
                                                                               @RequestParam Long piId) {
         return Optional.ofNullable(piObjectiveService.queryPiObjectiveListByProject(projectId, piId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

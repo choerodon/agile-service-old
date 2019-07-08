@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.PiObjectiveE;
 import io.choerodon.agile.infra.repository.PiObjectiveRepository;
-import io.choerodon.agile.infra.dataobject.PiObjectiveDO;
+import io.choerodon.agile.infra.dataobject.PiObjectiveDTO;
 import io.choerodon.agile.infra.mapper.PiObjectiveMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -17,29 +17,29 @@ public class PiObjectiveRepositoryImpl implements PiObjectiveRepository {
 
     @Override
     public PiObjectiveE create(PiObjectiveE piObjectiveE) {
-        PiObjectiveDO piObjectiveDO = ConvertHelper.convert(piObjectiveE, PiObjectiveDO.class);
-        if (piObjectiveMapper.insert(piObjectiveDO) != 1) {
+        PiObjectiveDTO piObjectiveDTO = ConvertHelper.convert(piObjectiveE, PiObjectiveDTO.class);
+        if (piObjectiveMapper.insert(piObjectiveDTO) != 1) {
             throw new CommonException("error.piObjective.insert");
         }
-        return ConvertHelper.convert(piObjectiveMapper.selectByPrimaryKey(piObjectiveDO.getId()), PiObjectiveE.class);
+        return ConvertHelper.convert(piObjectiveMapper.selectByPrimaryKey(piObjectiveDTO.getId()), PiObjectiveE.class);
     }
 
     @Override
     public PiObjectiveE updateBySelective(PiObjectiveE piObjectiveE) {
-        PiObjectiveDO piObjectiveDO = ConvertHelper.convert(piObjectiveE, PiObjectiveDO.class);
-        if (piObjectiveMapper.updateByPrimaryKeySelective(piObjectiveDO) != 1) {
+        PiObjectiveDTO piObjectiveDTO = ConvertHelper.convert(piObjectiveE, PiObjectiveDTO.class);
+        if (piObjectiveMapper.updateByPrimaryKeySelective(piObjectiveDTO) != 1) {
             throw new CommonException("error.piObjective.insert");
         }
-        return ConvertHelper.convert(piObjectiveMapper.selectByPrimaryKey(piObjectiveDO.getId()), PiObjectiveE.class);
+        return ConvertHelper.convert(piObjectiveMapper.selectByPrimaryKey(piObjectiveDTO.getId()), PiObjectiveE.class);
     }
 
     @Override
     public void delete(Long piObjectiveId) {
-        PiObjectiveDO piObjectiveDO = piObjectiveMapper.selectByPrimaryKey(piObjectiveId);
-        if (piObjectiveDO == null) {
+        PiObjectiveDTO piObjectiveDTO = piObjectiveMapper.selectByPrimaryKey(piObjectiveId);
+        if (piObjectiveDTO == null) {
             throw new CommonException("error.piObjective.exist");
         }
-        if (piObjectiveMapper.delete(piObjectiveDO) != 1) {
+        if (piObjectiveMapper.delete(piObjectiveDTO) != 1) {
             throw new CommonException("error.piObjective.delete");
         }
     }
