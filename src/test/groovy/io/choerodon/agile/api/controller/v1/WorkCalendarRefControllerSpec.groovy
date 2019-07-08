@@ -1,9 +1,9 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.SprintWorkCalendarDTO
-import io.choerodon.agile.api.dto.WorkCalendarRefCreateDTO
-import io.choerodon.agile.api.dto.WorkCalendarRefDTO
+import io.choerodon.agile.api.vo.SprintWorkCalendarDTO
+import io.choerodon.agile.api.vo.WorkCalendarRefCreateDTO
+import io.choerodon.agile.api.vo.WorkCalendarRefDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate

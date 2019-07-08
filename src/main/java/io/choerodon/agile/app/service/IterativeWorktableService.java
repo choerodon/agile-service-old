@@ -2,7 +2,7 @@ package io.choerodon.agile.app.service;
 
 import java.util.List;
 
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.

@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeDTO;
 import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.core.convertor.ConvertorI;

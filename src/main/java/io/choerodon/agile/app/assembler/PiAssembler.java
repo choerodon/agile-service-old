@@ -1,9 +1,9 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.PiWithFeatureDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
-import io.choerodon.agile.api.dto.SubFeatureDTO;
+import io.choerodon.agile.api.vo.IssueTypeDTO;
+import io.choerodon.agile.api.vo.PiWithFeatureDTO;
+import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.SubFeatureDTO;
 import io.choerodon.agile.infra.dataobject.PiWithFeatureDO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
 import org.springframework.beans.BeanUtils;

@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.IssueLabelDTO
+import io.choerodon.agile.api.vo.IssueLabelDTO
 import io.choerodon.agile.infra.dataobject.LabelIssueRelDO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.LabelIssueRelMapper

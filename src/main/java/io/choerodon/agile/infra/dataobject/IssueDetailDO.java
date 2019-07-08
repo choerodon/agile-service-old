@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.PriorityDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.vo.IssueTypeDTO;
+import io.choerodon.agile.api.vo.PriorityDTO;
+import io.choerodon.agile.api.vo.StatusMapDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 /**

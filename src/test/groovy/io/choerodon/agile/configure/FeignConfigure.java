@@ -1,6 +1,6 @@
 package io.choerodon.agile.configure;
 
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.impl.IssueServiceImpl;
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl;
 import io.choerodon.agile.infra.feign.*;

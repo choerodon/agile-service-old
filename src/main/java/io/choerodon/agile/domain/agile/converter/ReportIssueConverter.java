@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.ReportIssueDTO;
+import io.choerodon.agile.api.vo.ReportIssueDTO;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
 import io.choerodon.agile.infra.dataobject.ReportIssueDO;
 import io.choerodon.core.convertor.ConvertorI;

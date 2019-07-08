@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.SearchDTO;
-import io.choerodon.agile.api.dto.StoryMapDragDTO;
+import io.choerodon.agile.api.vo.SearchDTO;
+import io.choerodon.agile.api.vo.StoryMapDragDTO;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;

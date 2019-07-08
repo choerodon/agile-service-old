@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.WikiRelationDTO;
-import io.choerodon.agile.api.dto.WorkSpaceDTO;
+import io.choerodon.agile.api.vo.WikiRelationDTO;
+import io.choerodon.agile.api.vo.WorkSpaceDTO;
 import io.choerodon.agile.app.service.WikiRelationService;
 import io.choerodon.agile.domain.agile.entity.WikiRelationE;
 import io.choerodon.agile.infra.dataobject.WorkSpaceDO;

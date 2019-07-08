@@ -1,10 +1,10 @@
 package io.choerodon.agile.infra.repository;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.agile.api.dto.ProjectDTO;
-import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
-import io.choerodon.agile.api.dto.RoleDTO;
-import io.choerodon.agile.api.dto.UserDTO;
+import io.choerodon.agile.api.vo.ProjectDTO;
+import io.choerodon.agile.api.vo.RoleAssignmentSearchDTO;
+import io.choerodon.agile.api.vo.RoleDTO;
+import io.choerodon.agile.api.vo.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 

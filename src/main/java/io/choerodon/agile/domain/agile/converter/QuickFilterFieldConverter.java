@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.QuickFilterFieldDTO;
+import io.choerodon.agile.api.vo.QuickFilterFieldDTO;
 import io.choerodon.agile.domain.agile.entity.QuickFilterFieldE;
 import io.choerodon.agile.infra.dataobject.QuickFilterFieldDO;
 import io.choerodon.core.convertor.ConvertorI;

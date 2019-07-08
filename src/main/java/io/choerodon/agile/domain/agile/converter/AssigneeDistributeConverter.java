@@ -3,7 +3,7 @@ package io.choerodon.agile.domain.agile.converter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import io.choerodon.agile.api.dto.AssigneeDistributeDTO;
+import io.choerodon.agile.api.vo.AssigneeDistributeDTO;
 import io.choerodon.agile.infra.dataobject.AssigneeDistributeDO;
 import io.choerodon.core.convertor.ConvertorI;
 

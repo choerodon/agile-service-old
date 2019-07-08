@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.StatusCategoryDTO;
+import io.choerodon.agile.api.vo.StatusCategoryDTO;
 import io.choerodon.agile.infra.dataobject.StatusCategoryDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

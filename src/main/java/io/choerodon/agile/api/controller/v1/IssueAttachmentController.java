@@ -3,7 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.dto.IssueAttachmentDTO;
+import io.choerodon.agile.api.vo.IssueAttachmentDTO;
 import io.choerodon.agile.app.service.IssueAttachmentService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.swagger.annotations.ApiOperation;

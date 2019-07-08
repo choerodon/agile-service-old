@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.DataLogCreateDTO
-import io.choerodon.agile.api.dto.DataLogDTO
+import io.choerodon.agile.api.vo.DataLogCreateDTO
+import io.choerodon.agile.api.vo.DataLogDTO
 import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.DataLogMapper

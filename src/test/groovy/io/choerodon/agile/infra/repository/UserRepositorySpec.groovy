@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository
 //package io.choerodon.agile.domain.agile.repository
 //
 //import io.choerodon.agile.AgileTestConfiguration
-//import io.choerodon.agile.api.dto.ProjectDTO
+//import io.choerodon.agile.api.vo.ProjectDTO
 //import io.choerodon.agile.infra.dataobject.UserDO
 //import io.choerodon.agile.infra.dataobject.UserMessageDO
 //import io.choerodon.agile.infra.feign.UserFeignClient

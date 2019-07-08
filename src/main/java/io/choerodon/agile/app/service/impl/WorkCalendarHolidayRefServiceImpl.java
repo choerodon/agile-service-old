@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.WorkCalendarHolidayRefDTO;
+import io.choerodon.agile.api.vo.WorkCalendarHolidayRefDTO;
 import io.choerodon.agile.app.assembler.WorkCalendarHolidayRefAssembler;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.agile.app.service.WorkCalendarService;

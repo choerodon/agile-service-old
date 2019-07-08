@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.PiDTO;
+import io.choerodon.agile.api.vo.PiDTO;
 import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.infra.dataobject.PiDO;
 import io.choerodon.core.convertor.ConvertorI;

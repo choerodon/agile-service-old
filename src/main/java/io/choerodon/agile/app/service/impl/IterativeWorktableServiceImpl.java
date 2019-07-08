@@ -10,7 +10,7 @@ import io.choerodon.agile.infra.mapper.WorkCalendarRefMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IterativeWorktableValidator;
 import io.choerodon.agile.app.assembler.IterativeWorktableAssembler;
 import io.choerodon.agile.app.service.IterativeWorktableService;

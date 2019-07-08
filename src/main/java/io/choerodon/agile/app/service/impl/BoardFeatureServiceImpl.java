@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.BoardFeatureService;
 import io.choerodon.agile.app.service.BoardTeamService;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;

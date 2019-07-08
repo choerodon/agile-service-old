@@ -1,11 +1,11 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.IssueCreateDTO;
-import io.choerodon.agile.api.dto.IssueDTO;
-import io.choerodon.agile.api.dto.IssueSubCreateDTO;
-import io.choerodon.agile.api.dto.IssueSubDTO;
-import io.choerodon.agile.domain.agile.event.ProjectConfig;
-import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue;
+import io.choerodon.agile.api.vo.IssueCreateDTO;
+import io.choerodon.agile.api.vo.IssueDTO;
+import io.choerodon.agile.api.vo.IssueSubCreateDTO;
+import io.choerodon.agile.api.vo.IssueSubDTO;
+import io.choerodon.agile.api.vo.event.ProjectConfig;
+import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
 

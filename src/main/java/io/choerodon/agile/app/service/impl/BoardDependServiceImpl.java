@@ -1,8 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.BoardDependCreateDTO;
-import io.choerodon.agile.api.dto.BoardDependDTO;
-import io.choerodon.agile.api.dto.BoardDependUpdateDTO;
+import io.choerodon.agile.api.vo.BoardDependCreateDTO;
+import io.choerodon.agile.api.vo.BoardDependDTO;
 import io.choerodon.agile.app.service.BoardDependService;
 import io.choerodon.agile.infra.dataobject.BoardDependDO;
 import io.choerodon.agile.infra.mapper.BoardDependMapper;

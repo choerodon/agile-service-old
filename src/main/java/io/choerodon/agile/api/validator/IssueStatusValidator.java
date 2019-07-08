@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.dto.IssueStatusDTO;
+import io.choerodon.agile.api.vo.IssueStatusDTO;
 import io.choerodon.core.exception.CommonException;
 
 public class IssueStatusValidator {

@@ -1,11 +1,9 @@
 package io.choerodon.agile.infra.feign;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
-import com.github.pagehelper.PageInfo;
-import io.choerodon.base.domain.PageRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;

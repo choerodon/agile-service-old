@@ -1,9 +1,9 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.ComponentForListDTO
-import io.choerodon.agile.api.dto.IssueComponentDTO
-import io.choerodon.agile.api.dto.IssueDTO
+import io.choerodon.agile.api.vo.ComponentForListDTO
+import io.choerodon.agile.api.vo.IssueComponentDTO
+import io.choerodon.agile.api.vo.IssueDTO
 import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.IssueComponentDO
 import io.choerodon.agile.infra.dataobject.UserDO

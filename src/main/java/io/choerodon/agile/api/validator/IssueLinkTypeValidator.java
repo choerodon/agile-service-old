@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
-import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeCreateDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeDTO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.core.exception.CommonException;

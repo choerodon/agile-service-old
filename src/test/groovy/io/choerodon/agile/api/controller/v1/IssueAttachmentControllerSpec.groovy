@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.IssueAttachmentDTO
+import io.choerodon.agile.api.vo.IssueAttachmentDTO
 import io.choerodon.agile.app.service.IssueAttachmentService
 import io.choerodon.agile.infra.dataobject.IssueAttachmentDO
 import io.choerodon.agile.infra.feign.FileFeignClient

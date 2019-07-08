@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.RankDTO;
+import io.choerodon.agile.api.vo.RankDTO;
 import io.choerodon.agile.infra.dataobject.RankDO;
 
 public interface RankService {

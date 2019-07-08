@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.StoryMapWidthDTO;
+import io.choerodon.agile.api.vo.StoryMapWidthDTO;
 import io.choerodon.agile.app.service.StoryMapWidthService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;

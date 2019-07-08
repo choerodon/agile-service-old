@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.StoryMapWidthDTO;
+import io.choerodon.agile.api.vo.StoryMapWidthDTO;
 import io.choerodon.agile.domain.agile.entity.StoryMapWidthE;
 import io.choerodon.agile.infra.dataobject.StoryMapWidthDO;
 import io.choerodon.core.convertor.ConvertorI;

@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.dataobject.AssigneeIssueDO;
 import io.choerodon.agile.infra.dataobject.IssueSearchDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;

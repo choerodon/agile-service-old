@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.vo.IssueTypeDTO;
+import io.choerodon.agile.api.vo.StatusMapDTO;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/01/24.

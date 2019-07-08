@@ -18,7 +18,7 @@
         <id property="objectVersionNumber" column="object_version_number"/>
     </resultMap>
 
-    <resultMap id="boardFeatureInfo" type="io.choerodon.agile.api.dto.BoardFeatureInfoDTO">
+    <resultMap id="boardFeatureInfo" type="io.choerodon.agile.api.vo.BoardFeatureInfoDTO">
         <id property="id" column="id"/>
         <id property="featureId" column="feature_id"/>
         <id property="sprintId" column="sprint_id"/>

@@ -1,8 +1,8 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
-import io.choerodon.agile.api.dto.SearchDTO;
-import io.choerodon.agile.domain.agile.event.RemoveStatusWithProject;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.vo.SearchDTO;
+import io.choerodon.agile.api.vo.event.RemoveStatusWithProject;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;

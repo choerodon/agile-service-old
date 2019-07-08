@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.dto.StoryMapWidthDTO;
+import io.choerodon.agile.api.vo.StoryMapWidthDTO;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.stereotype.Component;
 

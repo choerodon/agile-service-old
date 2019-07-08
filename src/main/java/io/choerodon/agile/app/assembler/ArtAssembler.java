@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.ArtDTO;
-import io.choerodon.agile.api.dto.PiCalendarDTO;
-import io.choerodon.agile.api.dto.SprintCalendarDTO;
+import io.choerodon.agile.api.vo.ArtDTO;
+import io.choerodon.agile.api.vo.PiCalendarDTO;
+import io.choerodon.agile.api.vo.SprintCalendarDTO;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDO;

@@ -2,10 +2,10 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.AssigneeDistributeDTO
-import io.choerodon.agile.api.dto.IssueTypeDistributeDTO
-import io.choerodon.agile.api.dto.PriorityDistributeDTO
-import io.choerodon.agile.api.dto.SprintInfoDTO
+import io.choerodon.agile.api.vo.AssigneeDistributeDTO
+import io.choerodon.agile.api.vo.IssueTypeDistributeDTO
+import io.choerodon.agile.api.vo.PriorityDistributeDTO
+import io.choerodon.agile.api.vo.SprintInfoDTO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest

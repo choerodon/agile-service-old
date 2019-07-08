@@ -1,9 +1,9 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.DataLogCreateDTO;
-import io.choerodon.agile.api.dto.DataLogDTO;
-import io.choerodon.agile.api.dto.FieldDataLogDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.vo.DataLogCreateDTO;
+import io.choerodon.agile.api.vo.DataLogDTO;
+import io.choerodon.agile.api.vo.FieldDataLogDTO;
+import io.choerodon.agile.api.vo.StatusMapDTO;
 import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;

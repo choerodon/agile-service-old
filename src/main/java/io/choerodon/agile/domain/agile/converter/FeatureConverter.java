@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.FeatureDTO;
+import io.choerodon.agile.api.vo.FeatureDTO;
 import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.infra.dataobject.FeatureDO;
 import io.choerodon.core.convertor.ConvertorI;

@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
-import io.choerodon.agile.domain.agile.event.AddStatusWithProject;
+import io.choerodon.agile.api.vo.event.AddStatusWithProject;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;

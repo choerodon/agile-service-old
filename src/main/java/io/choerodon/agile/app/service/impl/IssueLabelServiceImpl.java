@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 
-import io.choerodon.agile.api.dto.IssueLabelDTO;
+import io.choerodon.agile.api.vo.IssueLabelDTO;
 import io.choerodon.agile.app.service.IssueLabelService;
 import io.choerodon.agile.infra.dataobject.IssueLabelDO;
 import io.choerodon.agile.infra.mapper.IssueLabelMapper;

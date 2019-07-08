@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.validator;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.domain.agile.entity.IssueE;

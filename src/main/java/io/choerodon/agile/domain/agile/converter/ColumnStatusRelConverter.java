@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 import io.choerodon.core.convertor.ConvertorI;
-import io.choerodon.agile.api.dto.ColumnStatusRelDTO;
+import io.choerodon.agile.api.vo.ColumnStatusRelDTO;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
 import org.springframework.beans.BeanUtils;

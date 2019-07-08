@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.DataLogCreateDTO;
-import io.choerodon.agile.api.dto.DataLogDTO;
+import io.choerodon.agile.api.vo.DataLogCreateDTO;
+import io.choerodon.agile.api.vo.DataLogDTO;
 
 import java.util.List;
 

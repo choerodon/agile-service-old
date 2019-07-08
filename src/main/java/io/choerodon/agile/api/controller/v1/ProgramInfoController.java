@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
+import io.choerodon.agile.api.vo.ProjectRelationshipDTO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;

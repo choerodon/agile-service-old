@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 
-import io.choerodon.agile.api.dto.IssueLabelDTO;
+import io.choerodon.agile.api.vo.IssueLabelDTO;
 
 import java.util.List;
 

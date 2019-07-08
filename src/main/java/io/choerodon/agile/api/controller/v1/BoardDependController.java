@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.BoardDependCreateDTO;
-import io.choerodon.agile.api.dto.BoardDependDTO;
+import io.choerodon.agile.api.vo.BoardDependCreateDTO;
+import io.choerodon.agile.api.vo.BoardDependDTO;
 import io.choerodon.agile.app.service.BoardDependService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;

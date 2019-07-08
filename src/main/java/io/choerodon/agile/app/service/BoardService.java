@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.*;
-import io.choerodon.agile.domain.agile.event.StatusPayload;
+import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.api.vo.event.StatusPayload;
 
 import java.util.List;
 

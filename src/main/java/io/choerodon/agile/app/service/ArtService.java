@@ -1,9 +1,9 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.ArtDTO;
-import io.choerodon.agile.api.dto.ArtStopDTO;
-import io.choerodon.agile.api.dto.PiCalendarDTO;
-import io.choerodon.agile.api.dto.PiCreateDTO;
+import io.choerodon.agile.api.vo.ArtDTO;
+import io.choerodon.agile.api.vo.ArtStopDTO;
+import io.choerodon.agile.api.vo.PiCalendarDTO;
+import io.choerodon.agile.api.vo.PiCreateDTO;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.domain.PageRequest;
 

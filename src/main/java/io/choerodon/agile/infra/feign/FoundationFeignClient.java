@@ -1,14 +1,12 @@
 package io.choerodon.agile.infra.feign;
 
-import io.choerodon.agile.api.dto.FieldDataLogDTO;
+import io.choerodon.agile.api.vo.FieldDataLogDTO;
 import io.choerodon.agile.infra.feign.fallback.FoundationFeignClientFallback;
-import io.choerodon.base.domain.PageRequest;
 
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 import java.util.Map;

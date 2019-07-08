@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.UndistributedIssueDTO;
+import io.choerodon.agile.api.vo.UndistributedIssueDTO;
 import io.choerodon.agile.infra.dataobject.UndistributedIssueDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

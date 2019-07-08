@@ -1,9 +1,9 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.ComponentForListDTO;
-import io.choerodon.agile.api.dto.IssueComponentDTO;
-import io.choerodon.agile.api.dto.IssueDTO;
-import io.choerodon.agile.api.dto.SearchDTO;
+import io.choerodon.agile.api.vo.ComponentForListDTO;
+import io.choerodon.agile.api.vo.IssueComponentDTO;
+import io.choerodon.agile.api.vo.IssueDTO;
+import io.choerodon.agile.api.vo.SearchDTO;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.domain.PageRequest;
 

@@ -2,7 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.dto.IssueAttachmentDTO;
+import io.choerodon.agile.api.vo.IssueAttachmentDTO;
 import io.choerodon.agile.app.service.IssueAttachmentService;
 import io.choerodon.agile.domain.agile.entity.IssueAttachmentE;
 import io.choerodon.agile.infra.repository.IssueAttachmentRepository;

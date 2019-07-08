@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.assembler.NoticeMessageAssembler;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.infra.repository.UserRepository;
@@ -9,7 +9,6 @@ import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.agile.infra.dataobject.MessageDetailDO;
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper;
 import io.choerodon.agile.infra.mapper.NoticeMapper;
-import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

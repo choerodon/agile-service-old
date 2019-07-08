@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.dto.BoardColumnDTO;
-import io.choerodon.agile.api.dto.ColumnSortDTO;
-import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.vo.BoardColumnDTO;
+import io.choerodon.agile.api.vo.ColumnSortDTO;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.core.exception.CommonException;
 

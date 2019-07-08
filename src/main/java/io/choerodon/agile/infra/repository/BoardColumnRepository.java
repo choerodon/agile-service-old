@@ -1,8 +1,8 @@
 package io.choerodon.agile.infra.repository;
 
-import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
-import io.choerodon.agile.domain.agile.event.RemoveStatusWithProject;
+import io.choerodon.agile.api.vo.event.RemoveStatusWithProject;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 
 import java.util.List;

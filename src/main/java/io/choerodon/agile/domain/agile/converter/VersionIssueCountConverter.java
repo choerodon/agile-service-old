@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 
-import io.choerodon.agile.api.dto.VersionIssueCountDTO;
+import io.choerodon.agile.api.vo.VersionIssueCountDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionStatisticsDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

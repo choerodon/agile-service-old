@@ -2,10 +2,10 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.BoardDTO
-import io.choerodon.agile.api.dto.IssueMoveDTO
-import io.choerodon.agile.api.dto.MessageDTO
-import io.choerodon.agile.api.dto.UserSettingDTO
+import io.choerodon.agile.api.vo.BoardDTO
+import io.choerodon.agile.api.vo.IssueMoveDTO
+import io.choerodon.agile.api.vo.MessageDTO
+import io.choerodon.agile.api.vo.UserSettingDTO
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.BoardService
 import io.choerodon.agile.app.service.NoticeService

@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.*
+import io.choerodon.agile.api.vo.*
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService

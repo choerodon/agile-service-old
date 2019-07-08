@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.IssueLinkCreateDTO;
-import io.choerodon.agile.api.dto.IssueLinkDTO;
+import io.choerodon.agile.api.vo.IssueLinkCreateDTO;
+import io.choerodon.agile.api.vo.IssueLinkDTO;
 
 import java.util.List;
 

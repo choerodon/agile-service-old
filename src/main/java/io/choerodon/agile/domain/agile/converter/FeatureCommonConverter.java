@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.FeatureCommonDTO;
+import io.choerodon.agile.api.vo.FeatureCommonDTO;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

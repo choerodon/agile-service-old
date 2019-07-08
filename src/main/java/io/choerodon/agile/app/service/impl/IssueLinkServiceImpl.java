@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.IssueLinkCreateDTO;
-import io.choerodon.agile.api.dto.IssueLinkDTO;
+import io.choerodon.agile.api.vo.IssueLinkCreateDTO;
+import io.choerodon.agile.api.vo.IssueLinkDTO;
 import io.choerodon.agile.api.validator.IssueLinkValidator;
 import io.choerodon.agile.app.assembler.IssueLinkAssembler;
 import io.choerodon.agile.app.service.IssueLinkService;

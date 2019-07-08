@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.dto.ProductVersionReleaseDTO;
+import io.choerodon.agile.api.vo.ProductVersionReleaseDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.core.exception.CommonException;

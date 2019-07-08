@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.dto.BoardDependInfoDTO;
+import io.choerodon.agile.api.vo.BoardDependInfoDTO;
 import io.choerodon.agile.infra.dataobject.BoardDependDO;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;

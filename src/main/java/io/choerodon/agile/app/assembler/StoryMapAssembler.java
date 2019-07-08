@@ -1,12 +1,11 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
-import io.choerodon.agile.api.dto.StoryMapStoryDTO;
-import io.choerodon.agile.api.dto.StoryMapVersionDTO;
+import io.choerodon.agile.api.vo.IssueTypeDTO;
+import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StoryMapStoryDTO;
+import io.choerodon.agile.api.vo.StoryMapVersionDTO;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.StoryMapStoryDO;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

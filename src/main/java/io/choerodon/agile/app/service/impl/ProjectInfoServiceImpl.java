@@ -1,20 +1,19 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.agile.api.dto.ProjectInfoDTO;
-import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
-import io.choerodon.agile.api.dto.RoleAssignmentSearchDTO;
-import io.choerodon.agile.api.dto.UserWithRoleDTO;
+import io.choerodon.agile.api.vo.ProjectInfoDTO;
+import io.choerodon.agile.api.vo.ProjectRelationshipDTO;
+import io.choerodon.agile.api.vo.RoleAssignmentSearchDTO;
+import io.choerodon.agile.api.vo.UserWithRoleDTO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
-import io.choerodon.agile.domain.agile.event.ProjectEvent;
+import io.choerodon.agile.api.vo.event.ProjectEvent;
 import io.choerodon.agile.infra.repository.ProjectInfoRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

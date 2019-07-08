@@ -234,7 +234,7 @@
             <!--abc.column_id = #{columnId}-->
     <!--</select>-->
 
-    <update id="updateMaxAndMinNum" parameterType="io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO">
+    <update id="updateMaxAndMinNum" parameterType="io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO">
         UPDATE agile_board_column
         SET max_num               = #{columnInfo.maxNum},
             min_num               = #{columnInfo.minNum},

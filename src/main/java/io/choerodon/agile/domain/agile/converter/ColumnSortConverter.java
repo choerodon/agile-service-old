@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.ColumnSortDTO;
+import io.choerodon.agile.api.vo.ColumnSortDTO;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

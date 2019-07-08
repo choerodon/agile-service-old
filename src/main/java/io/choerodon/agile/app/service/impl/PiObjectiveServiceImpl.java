@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.PiObjectiveDTO;
-import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
+import io.choerodon.agile.api.vo.PiObjectiveDTO;
+import io.choerodon.agile.api.vo.ProjectRelationshipDTO;
 import io.choerodon.agile.app.service.PiObjectiveService;
 import io.choerodon.agile.domain.agile.entity.PiObjectiveE;
 import io.choerodon.agile.infra.feign.UserFeignClient;

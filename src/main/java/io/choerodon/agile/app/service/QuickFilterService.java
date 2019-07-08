@@ -1,10 +1,8 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.QuickFilterDTO;
-import io.choerodon.agile.api.dto.QuickFilterSearchDTO;
-import io.choerodon.agile.api.dto.QuickFilterSequenceDTO;
-import com.github.pagehelper.PageInfo;
-import io.choerodon.base.domain.PageRequest;
+import io.choerodon.agile.api.vo.QuickFilterDTO;
+import io.choerodon.agile.api.vo.QuickFilterSearchDTO;
+import io.choerodon.agile.api.vo.QuickFilterSequenceDTO;
 
 import java.util.List;
 

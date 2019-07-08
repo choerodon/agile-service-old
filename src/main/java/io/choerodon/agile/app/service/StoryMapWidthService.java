@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.StoryMapWidthDTO;
+import io.choerodon.agile.api.vo.StoryMapWidthDTO;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/6/3.

@@ -1,13 +1,13 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.BoardColumnValidator;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
 import io.choerodon.agile.domain.agile.entity.BoardE;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
-import io.choerodon.agile.domain.agile.event.StatusPayload;
+import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.repository.BoardColumnRepository;
 import io.choerodon.agile.infra.repository.ColumnStatusRelRepository;
 import io.choerodon.agile.infra.repository.IssueStatusRepository;

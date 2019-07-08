@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.IssueAttachmentDTO;
+import io.choerodon.agile.api.vo.IssueAttachmentDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.ProjectDTO;
-import io.choerodon.agile.api.dto.RankDTO;
+import io.choerodon.agile.api.vo.ProjectDTO;
+import io.choerodon.agile.api.vo.RankDTO;
 import io.choerodon.agile.api.validator.RankValidator;
 import io.choerodon.agile.app.service.RankService;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;

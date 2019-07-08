@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository;
 
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
-import io.choerodon.agile.domain.agile.event.AddStatusWithProject;
+import io.choerodon.agile.api.vo.event.AddStatusWithProject;
 
 import java.util.List;
 

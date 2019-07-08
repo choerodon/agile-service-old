@@ -1,10 +1,9 @@
 package io.choerodon.agile.app.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.*;
-import io.choerodon.agile.domain.agile.event.DemoPayload;
-import io.choerodon.agile.domain.agile.event.OrganizationRegisterEventPayload;
+import io.choerodon.agile.api.vo.event.DemoPayload;
+import io.choerodon.agile.api.vo.event.OrganizationRegisterEventPayload;
 import io.choerodon.agile.infra.dataobject.BoardColumnDO;
 import io.choerodon.agile.infra.dataobject.BoardDO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
@@ -13,10 +12,8 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.asgard.saga.annotation.Saga;
-import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.iam.ResourceLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
