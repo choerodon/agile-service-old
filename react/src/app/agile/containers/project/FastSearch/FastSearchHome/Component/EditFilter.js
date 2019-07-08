@@ -854,7 +854,7 @@ class AddComponent extends Component {
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/setup/quick-search/"
         >
           <Form layout="vertical">
-            <FormItem style={{ width: 520 }}>
+            <FormItem style={{ width: 520, marginBottom: 20 }}>
               {getFieldDecorator('name', {
                 rules: [{
                   required: true,
@@ -879,7 +879,10 @@ class AddComponent extends Component {
                       <div>
                         {
                           index !== 0 && (
-                            <FormItem style={{ width: 100, display: 'inline-block', marginRight: 10 }}>
+                            <FormItem style={{
+                              width: 100, display: 'inline-block', marginRight: 10, marginBottom: 20, 
+                            }}
+                            >
                               {getFieldDecorator(`filter-${index}-ao`, {
                                 rules: [{
                                   required: true,
@@ -895,7 +898,10 @@ class AddComponent extends Component {
                             </FormItem>
                           )
                         }
-                        <FormItem style={{ width: index === 0 ? 230 : 120, display: 'inline-block', marginRight: 10 }}>
+                        <FormItem style={{
+                          width: index === 0 ? 230 : 120, display: 'inline-block', marginRight: 10, marginBottom: 20, 
+                        }}
+                        >
                           {getFieldDecorator(`filter-${index}-prop`, {
                             rules: [{
                               required: true,
@@ -920,7 +926,10 @@ class AddComponent extends Component {
                             </Select>,
                           )}
                         </FormItem>
-                        <FormItem style={{ width: 80, display: 'inline-block', marginRight: 10 }}>
+                        <FormItem style={{
+                          width: 80, display: 'inline-block', marginRight: 10, marginBottom: 20, 
+                        }}
+                        >
                           {getFieldDecorator(`filter-${index}-rule`, {
                             rules: [{
                               required: true,
@@ -931,7 +940,7 @@ class AddComponent extends Component {
                             this.renderOperation(form.getFieldValue(`filter-${index}-prop`), index),
                           )}
                         </FormItem>
-                        <FormItem style={{ width: 190, display: 'inline-block' }}>
+                        <FormItem style={{ width: 190, display: 'inline-block', marginBottom: 20 }}>
                           {getFieldDecorator(`filter-${index}-value`, {
                             rules: [{
                               required: true,
@@ -981,7 +990,7 @@ class AddComponent extends Component {
                 </div>
               ))
             }            
-            <FormItem style={{ width: 520 }}>
+            <FormItem style={{ width: 520, marginBottom: 20 }}>
               {getFieldDecorator('description', {
                 initialValue: origin.description,
               })(

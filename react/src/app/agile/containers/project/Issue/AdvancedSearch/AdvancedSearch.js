@@ -206,7 +206,7 @@ class AdvancedSearch extends Component {
               className="SelectTheme"  
               mode="multiple"
               allowClear
-              
+              style={{ width: 100 }}
               dropdownMatchSelectWidth={false}
               placeholder="问题类型"
               labelInValue
@@ -231,6 +231,7 @@ class AdvancedSearch extends Component {
             <Select
               key="statusSelect"
               className="SelectTheme"  
+              style={{ width: 100 }}
               mode="multiple"
               allowClear              
               dropdownMatchSelectWidth={false}
@@ -257,6 +258,7 @@ class AdvancedSearch extends Component {
             <Select
               key="prioritySelect"
               className="SelectTheme"  
+              style={{ width: 100 }}
               mode="multiple"             
               dropdownMatchSelectWidth={false}
               allowClear
@@ -285,6 +287,7 @@ class AdvancedSearch extends Component {
               loadWhenMount
               key="assigneeSelect"
               className="SelectTheme"  
+              style={{ width: 100 }}
               mode="multiple"
               allowClear
               dropdownMatchSelectWidth={false}

@@ -304,7 +304,7 @@ class ScrumBoardHome extends Component {
              </Tooltip>
            ) : (
              <Select
-               className="select-without-underline"
+               className="SelectTheme primary"
                value={ScrumBoardStore.getSelectedBoard}
                style={{
                  maxWidth: 100, color: '#3F51B5', margin: '0 30px', fontWeight: 500, lineHeight: '28px',

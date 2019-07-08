@@ -175,9 +175,9 @@ class QuickCreateIssue extends Component {
       >
         {checkCreateIssue ? (
           <div className="c7n-add" style={{ display: 'block', width: '100%', marginTop: 8 }}>
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               <Dropdown overlay={typeList} trigger={['click']}>
-                <div style={{ display: 'flex', alignItem: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                   <TypeTag
                     data={currentType}
                   />
@@ -190,23 +190,24 @@ class QuickCreateIssue extends Component {
               <div style={{ marginLeft: 8, flexGrow: 1 }}>
                 <Input
                   autoFocus
+                  className="noLabel"
                   ref={(e) => { this.inputvalue = e; }}
-                  placeholder="需要做什么？"
+                  placeholder="请输入问题概要"
                   maxLength={44}
                   onPressEnter={this.handleBlurCreateIssue.bind(this)}
                 />
-              </div>
-            </div>
-            <div
-              style={{
-                marginTop: 10,
-                display: 'flex',
-                marginLeft: 32,
-                justifyContent: !IssueStore.getExpand ? 'flex-start' : 'flex-end',
-              }}
-            >
+              </div>         
               <Button
                 type="primary"
+                funcType="raised"
+                style={{ margin: '0 10px' }}
+                loading={createLoading}
+                onClick={this.handleBlurCreateIssue.bind(this)}
+              >
+                {'确定'}
+              </Button>                  
+              <Button           
+                funcType="raised"                
                 onClick={() => {
                   this.setState({
                     checkCreateIssue: false,
@@ -214,14 +215,7 @@ class QuickCreateIssue extends Component {
                 }}
               >
                 {'取消'}
-              </Button>
-              <Button
-                type="primary"
-                loading={createLoading}
-                onClick={this.handleBlurCreateIssue.bind(this)}
-              >
-                {'确定'}
-              </Button>
+              </Button>              
             </div>
           </div>
         ) : (
