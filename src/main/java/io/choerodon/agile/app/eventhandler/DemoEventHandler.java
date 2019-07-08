@@ -1,4 +1,4 @@
-package io.choerodon.agile.api.eventhandler;
+package io.choerodon.agile.app.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.app.service.DemoService;

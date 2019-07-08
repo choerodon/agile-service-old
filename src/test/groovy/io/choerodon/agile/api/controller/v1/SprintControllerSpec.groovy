@@ -16,7 +16,7 @@ import io.choerodon.agile.api.vo.SprintSearchDTO
 import io.choerodon.agile.api.vo.SprintUpdateDTO
 import io.choerodon.agile.api.vo.WorkCalendarRefDTO
 import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDetailDTO
-import io.choerodon.agile.api.eventhandler.AgileEventHandler
+import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil

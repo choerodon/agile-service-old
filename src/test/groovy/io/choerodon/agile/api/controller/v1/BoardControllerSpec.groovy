@@ -6,7 +6,7 @@ import io.choerodon.agile.api.vo.BoardDTO
 import io.choerodon.agile.api.vo.IssueMoveDTO
 import io.choerodon.agile.api.vo.MessageDTO
 import io.choerodon.agile.api.vo.UserSettingDTO
-import io.choerodon.agile.api.eventhandler.AgileEventHandler
+import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.BoardService
 import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.infra.dataobject.BoardDO

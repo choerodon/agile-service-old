@@ -1,10 +1,11 @@
-package io.choerodon.agile.api.eventhandler;
+package io.choerodon.agile.app.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.ArtDTO;
+import io.choerodon.agile.api.vo.event.ProjectEvent;
 import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.api.vo.event.ProjectEvent;
+import io.choerodon.agile.api.vo.event.OrganizationRegisterPayload;
 import io.choerodon.agile.api.vo.event.ProjectRelationshipInsertPayload;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
