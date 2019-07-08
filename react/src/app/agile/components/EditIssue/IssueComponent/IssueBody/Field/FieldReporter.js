@@ -134,8 +134,7 @@ const { Text, Edit } = TextEditToggle;
               }
             </Text>
             <Edit>
-              <Select
-                style={{ width: 150 }}
+              <Select                
                 loading={selectLoading}
                 allowClear
                 filter

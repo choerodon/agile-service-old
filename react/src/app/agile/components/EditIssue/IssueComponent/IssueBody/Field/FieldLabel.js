@@ -138,8 +138,7 @@ const { Text, Edit } = TextEditToggle;
                 mode="tags"
                 loading={selectLoading}
                 tokenSeparators={[',']}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                style={{ width: '150px', marginTop: 0, paddingTop: 0 }}
+                getPopupContainer={triggerNode => triggerNode.parentNode}       
                 onChange={(value) => {
                   this.setState({
                     newLabelIssueRelDTOList: value.map(

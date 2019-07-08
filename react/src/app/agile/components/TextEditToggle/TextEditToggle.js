@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Form, Icon } from 'choerodon-ui';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
+import DefaultOpenSelect from '../DefaultOpenSelect';
 import './TextEditToggle.scss';
 // 防止提交前变回原值
 const Text = ({ children, newData, originData }) => (typeof (children) === 'function' ? children(newData || originData) : children);
@@ -156,13 +157,33 @@ class TextEditToggle extends Component {
       : children.filter(child => child.type === Text);
   }
 
+  getEditChildrenType = () => {
+    const { children } = this.props;
+
+    const EditChildren = children.filter(child => child.type === Edit);
+    const childrenArray = React.Children.toArray(EditChildren);
+    const targetElement = React.Children.toArray(childrenArray[0].props.children)[0];
+    if (!targetElement) {
+      throw new Error('使用Form功能时，Edit的children必须是Component');
+    }   
+    // 替换成自动打开的Select
+    if (targetElement.type.name === 'Select') {
+      return 'Select';
+    }
+    return 'Input';
+  }
+
   renderFormItemChild(children) {
     // formItem只有一个组件起作用
     const childrenArray = React.Children.toArray(children);
-    const targetElement = childrenArray.filter(child => child.type
-      && child.type.prototype instanceof Component)[0];
+    const targetElement = childrenArray[0];
     if (!targetElement) {
       throw new Error('使用Form功能时，Edit的children必须是Component');
+    }
+    // console.log(targetElement.type.name === 'Select');
+    // 替换成自动打开的Select
+    if (targetElement.type.name === 'Select') {
+      return <DefaultOpenSelect {...targetElement.props} />;
     }
     return targetElement;
   }
@@ -200,6 +221,7 @@ class TextEditToggle extends Component {
     const { getFieldDecorator } = this.props.form;
     // 拿到不同模式下对应的子元素
     const children = this.getEditOrTextChildren();
+    const hoverType = this.getEditChildrenType();
     // 根据不同模式对子元素进行包装
     return editing ? (
       <div
@@ -235,12 +257,12 @@ class TextEditToggle extends Component {
       </div>
     ) : (
       <div
-        className={simpleMode || disabled ? 'c7ntest-TextEditToggle-text' : 'c7ntest-TextEditToggle-text c7ntest-TextEditToggle-text-active'}
+        className={simpleMode || disabled ? 'c7ntest-TextEditToggle-text' : `c7ntest-TextEditToggle-text c7ntest-TextEditToggle-text-active ${hoverType}`}
         onClick={this.enterEditing}
         role="none"
       >
         {this.renderTextChild(children)}
-        {!simpleMode && <Icon type="mode_edit" className="c7ntest-TextEditToggle-text-icon" />}
+        {!simpleMode && <Icon type="arrow_drop_down" className="c7ntest-TextEditToggle-text-icon" />}
       </div>
     );
   }
@@ -248,7 +270,7 @@ class TextEditToggle extends Component {
   render() {
     const { style, className } = this.props;
     return (
-      <div style={style} className={`c7ntest-TextEditToggle ${className}`}>
+      <div style={style} className={`c7ntest-TextEditToggle ${className || ''}`}>
         {this.renderChild()}
       </div>
     );

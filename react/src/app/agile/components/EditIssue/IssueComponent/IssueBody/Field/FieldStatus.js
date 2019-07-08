@@ -85,7 +85,7 @@ const { Text, Edit } = TextEditToggle;
             disabled={disabled}
             formKey="status"
             onSubmit={this.updateIssueStatus}
-            originData={statusId}
+            originData={statusId}            
           >
             <Text>
               {
@@ -111,7 +111,7 @@ const { Text, Edit } = TextEditToggle;
             </Text>
             <Edit>
               <Select
-                style={{ width: 150 }}
+                // style={{ width: 150 }}
                 loading={selectLoading}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 onChange={(value, item) => {

@@ -65,6 +65,10 @@
     .c7n-value-wrapper {
       flex: 1;
     }
+    .c7ntest-TextEditToggle {
+      width: 100%;
+      max-width: 200px;
+    }
   }
 
   p {
@@ -455,7 +459,7 @@
   .line-start {
     display: flex;
     justify-content: flex-start;
-    align-items: flex-start;
+    align-items: center;
   }
 
   .two-to-one {
