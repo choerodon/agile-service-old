@@ -1,7 +1,8 @@
 package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.vo.PiObjectiveDTO;
+import io.choerodon.agile.api.vo.PiObjectiveVO;
+import io.choerodon.agile.infra.dataobject.PiObjectiveDTO;
 
 import java.util.List;
 
@@ -17,9 +18,9 @@ public interface PiObjectiveService {
 
     void deletePiObjective(Long programId, Long id);
 
-    PiObjectiveDTO queryPiObjective(Long programId, Long id);
+    PiObjectiveVO queryPiObjective(Long programId, Long id);
 
     JSONObject queryPiObjectiveList(Long programId, Long piId);
 
-    List<PiObjectiveDTO> queryPiObjectiveListByProject(Long projectId, Long piId);
+    List<PiObjectiveVO> queryPiObjectiveListByProject(Long projectId, Long piId);
 }
