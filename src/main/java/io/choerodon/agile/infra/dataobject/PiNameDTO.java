@@ -1,21 +1,18 @@
-package io.choerodon.agile.api.vo;
-
-import io.swagger.annotations.ApiModelProperty;
+package io.choerodon.agile.infra.dataobject;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2019/3/29.
+ * Created by HuangFuqiang@choerodon.io on 2019/4/2.
  * Email: fuqianghuang01@gmail.com
  */
-public class PiTodoDTO {
+public class PiNameDTO {
 
-    @ApiModelProperty(value = "pi主键id")
     private Long id;
 
-    @ApiModelProperty(value = "pi编码")
     private String code;
 
-    @ApiModelProperty(value = "pi名称")
     private String name;
+
+    private String statusCode;
 
     public Long getId() {
         return id;
@@ -39,5 +36,13 @@ public class PiTodoDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getStatusCode() {
+        return statusCode;
     }
 }

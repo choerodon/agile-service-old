@@ -14,6 +14,7 @@ import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -22,7 +23,6 @@ import io.choerodon.agile.infra.repository.ArtRepository;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.repository.PiRepository;
 import io.choerodon.agile.infra.repository.SprintRepository;
-import io.choerodon.core.convertor.ConvertHelper;
 
 import com.github.pagehelper.PageInfo;
 
@@ -35,10 +35,14 @@ import com.github.pagehelper.PageHelper;
 import io.choerodon.base.domain.PageRequest;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -118,6 +122,13 @@ public class PiServiceImpl implements PiService {
 
     @Autowired
     private SendMsgUtil sendMsgUtil;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     /**
      * 获取当前年分
@@ -220,10 +231,10 @@ public class PiServiceImpl implements PiService {
         artRepository.updateBySelective(artE);
     }
 
-    private Long getPiWorkDays(ArtDO artDO) {
-        Long ipWeeks = artDO.getIpWeeks();
-        Long interationCount = artDO.getInterationCount();
-        Long interationWeeks = artDO.getInterationWeeks();
+    private Long getPiWorkDays(ArtDTO artDTO) {
+        Long ipWeeks = artDTO.getIpWeeks();
+        Long interationCount = artDTO.getInterationCount();
+        Long interationWeeks = artDTO.getInterationWeeks();
         return interationCount * interationWeeks * 7 + ipWeeks * 7;
     }
 
@@ -234,10 +245,10 @@ public class PiServiceImpl implements PiService {
         piE.setEndDate(endDate);
     }
 
-    private void createSprintTemplate(Long programId, PiE piRes, ArtDO artDO, List<Long> sprintIds) {
+    private void createSprintTemplate(Long programId, PiE piRes, ArtDTO artDTO, List<Long> sprintIds) {
         Date startDate = piRes.getStartDate();
-        Long interationCount = artDO.getInterationCount();
-        Long interationWeeks = artDO.getInterationWeeks();
+        Long interationCount = artDTO.getInterationCount();
+        Long interationWeeks = artDTO.getInterationWeeks();
         Date endDate = getSpecifyTimeByOneTime(startDate, interationWeeks.intValue() * 7);
         for (int i = 0; i < interationCount; i++) {
             SprintE temp = sprintRepository.createSprint(new SprintE(programId, String.valueOf(System.currentTimeMillis()), startDate, endDate, "sprint_planning", piRes.getId()));
@@ -248,39 +259,42 @@ public class PiServiceImpl implements PiService {
     }
 
     @Override
-    public void createPi(Long programId, ArtDO artDO, Date startDate) {
-        Long piCodeNumber = artDO.getPiCodeNumber();
-        Long piWorkDays = getPiWorkDays(artDO);
+    public void createPi(Long programId, ArtDTO artDTO, Date startDate) {
+        Long piCodeNumber = artDTO.getPiCodeNumber();
+        Long piWorkDays = getPiWorkDays(artDTO);
         List<Long> sprintIds = new ArrayList<>();
-        for (int i = 0; i < artDO.getPiCount(); i++) {
+        for (int i = 0; i < artDTO.getPiCount(); i++) {
             PiE piE = new PiE();
-            piE.setCode(artDO.getPiCodePrefix());
+            piE.setCode(artDTO.getPiCodePrefix());
             piE.setName(piCodeNumber.toString());
             piCodeNumber++;
-            piE.setArtId(artDO.getId());
+            piE.setArtId(artDTO.getId());
             piE.setStatusCode(PI_TODO);
             piE.setProgramId(programId);
             setPiStartAndEndDate(piE, piWorkDays, startDate);
             PiE piRes = piRepository.create(piE);
             // create sprint template
-            createSprintTemplate(programId, piRes, artDO, sprintIds);
+            createSprintTemplate(programId, piRes, artDTO, sprintIds);
             startDate = piE.getEndDate();
         }
         sprintRepository.updateSprintNameByBatch(programId, sprintIds);
-        updateArtPiCodeNumber(programId, artDO.getId(), piCodeNumber, artDO.getObjectVersionNumber());
+        updateArtPiCodeNumber(programId, artDTO.getId(), piCodeNumber, artDTO.getObjectVersionNumber());
     }
 
     @Override
     public PiDTO updatePi(Long programId, PiDTO piDTO) {
-        return ConvertHelper.convert(piRepository.updateBySelective(ConvertHelper.convert(piDTO, PiE.class)), PiDTO.class);
+        if (piMapper.updateByPrimaryKeySelective(piDTO) != 1) {
+            throw new CommonException("error.pi.update");
+        }
+        return piMapper.selectByPrimaryKey(piDTO.getId());
     }
 
-    private ArtDO getActiveArt(Long programId) {
-        ArtDO artDO = artMapper.selectActiveArt(programId);
-        if (artDO == null) {
+    private ArtDTO getActiveArt(Long programId) {
+        ArtDTO artDTO = artMapper.selectActiveArt(programId);
+        if (artDTO == null) {
             return null;
         } else {
-            return artDO;
+            return artDTO;
         }
     }
 
@@ -301,24 +315,24 @@ public class PiServiceImpl implements PiService {
         setStatusIsCompleted(programId, statusMapDTOMap);
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         // query backlog with all feature
-        List<SubFeatureDO> backlogFeatures = piMapper.selectBacklogNoPiList(programId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
+        List<SubFeatureDTO> backlogFeatures = piMapper.selectBacklogNoPiList(programId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
         result.put("backlogAllFeatures", backlogFeatures != null && !backlogFeatures.isEmpty() ? piAssembler.subFeatureDOTODTO(backlogFeatures, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         // query active art with all pi
-        ArtDO activeArt = getActiveArt(programId);
+        ArtDTO activeArt = getActiveArt(programId);
         if (activeArt == null) {
             return result;
         }
-        List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectBacklogPiList(programId, activeArt.getId(), StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
-        result.put("allPiList", piWithFeatureDOList != null && !piWithFeatureDOList.isEmpty() ? piAssembler.piWithFeatureDOTODTO(piWithFeatureDOList, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
+        List<PiWithFeatureDTO> piWithFeatureDTOList = piMapper.selectBacklogPiList(programId, activeArt.getId(), StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
+        result.put("allPiList", piWithFeatureDTOList != null && !piWithFeatureDTOList.isEmpty() ? piAssembler.piWithFeatureDOTODTO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         return result;
     }
 
     @Override
     public PageInfo<PiDTO> queryArtAll(Long programId, Long artId, PageRequest pageRequest) {
-        PageInfo<PiDO> piDOPage = PageHelper.startPage(pageRequest.getPage(),
+        PageInfo<PiDTO> piDTOPage = PageHelper.startPage(pageRequest.getPage(),
                 pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> piMapper.selectPiListInArt(programId, artId));
-        if (piDOPage.getList() != null && !piDOPage.getList().isEmpty()) {
-            return PageUtil.buildPageInfoWithPageInfoList(piDOPage, ConvertHelper.convertList(piDOPage.getList(), PiDTO.class));
+        if (piDTOPage.getList() != null && !piDTOPage.getList().isEmpty()) {
+            return piDTOPage;
         } else {
             return new PageInfo<>(new ArrayList<>());
         }
@@ -339,32 +353,32 @@ public class PiServiceImpl implements PiService {
     }
 
     @Override
-    public PiDTO startPi(Long programId, PiDTO piDTO) {
-        piValidator.checkPiStart(piDTO);
+    public PiDTO startPi(Long programId, PiVO piVO) {
+        piValidator.checkPiStart(piVO);
         // create sprint in each project
-        createSprintWhenStartPi(programId, piDTO.getId());
+        createSprintWhenStartPi(programId, piVO.getId());
         // update pi status: doing
-        PiE piE = new PiE(programId, piDTO.getId(), PI_DOING, piDTO.getObjectVersionNumber());
-        piE.setActualStartDate(new Date());
-        PiE result = piRepository.updateBySelective(piE);
+        if (piMapper.updateByPrimaryKeySelective(new PiDTO(programId, piVO.getId(), PI_DOING, new Date(), piVO.getObjectVersionNumber())) != 1) {
+            throw new CommonException("error.pi.update");
+        }
         // update issue status
-        List<IssueDO> issueDOList = issueMapper.selectStatusChangeIssueByPiId(programId, piDTO.getId());
-        Long updateStatusId = piDTO.getUpdateStatusId();
+        List<IssueDO> issueDOList = issueMapper.selectStatusChangeIssueByPiId(programId, piVO.getId());
+        Long updateStatusId = piVO.getUpdateStatusId();
         if (updateStatusId != null) {
             if (issueDOList != null && !issueDOList.isEmpty()) {
                 CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
                 issueRepository.updateStatusIdBatch(programId, updateStatusId, issueDOList, customUserDetails.getUserId(), new Date());
             }
         }
-        return ConvertHelper.convert(result, PiDTO.class);
+        return piMapper.selectByPrimaryKey(piVO.getId());
     }
 
     @Override
-    public PiCompleteCountDTO beforeClosePi(Long programId, Long piId, Long artId) {
-        PiCompleteCountDTO result = new PiCompleteCountDTO();
+    public PiCompleteCountVO beforeClosePi(Long programId, Long piId, Long artId) {
+        PiCompleteCountVO result = new PiCompleteCountVO();
         result.setCompletedCount(piMapper.selectFeatureCount(programId, piId, true));
         result.setUnCompletedCount(piMapper.selectFeatureCount(programId, piId, false));
-        result.setPiTodoDTOList(ConvertHelper.convertList(piMapper.selectTodoPi(programId, artId), PiTodoDTO.class));
+        result.setPiTodoDTOList(piMapper.selectTodoPi(programId, artId));
         return result;
     }
 
@@ -451,7 +465,7 @@ public class PiServiceImpl implements PiService {
         if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
             return;
         }
-        ArtDO artDO = artMapper.selectByPrimaryKey(artId);
+        ArtDTO artDTO = artMapper.selectByPrimaryKey(artId);
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
             List<Long> sprintIds = sprintMapper.selectNotDoneByPiId(projectId, piId);
@@ -460,121 +474,122 @@ public class PiServiceImpl implements PiService {
                 SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
                 sprintCompleteDTO.setProjectId(projectId);
                 sprintCompleteDTO.setSprintId(sprintId);
-                sprintCompleteDTO.setIncompleteIssuesDestination(SPRINT_COMPLETE_SETTING_NEXT_SPRINT.equals(artDO.getSprintCompleteSetting()) ? newSprint.getSprintId() : 0L);
+                sprintCompleteDTO.setIncompleteIssuesDestination(SPRINT_COMPLETE_SETTING_NEXT_SPRINT.equals(artDTO.getSprintCompleteSetting()) ? newSprint.getSprintId() : 0L);
                 sprintService.completeSprint(projectId, sprintCompleteDTO);
             }
         }
     }
 
     private void autoCreatePi(Long programId, Long artId) {
-        List<PiDO> restPi = piMapper.selectUnDonePiDOList(programId, artId);
-        ArtDO artDO = artMapper.selectByPrimaryKey(artId);
+        List<PiDTO> restPi = piMapper.selectUnDonePiDOList(programId, artId);
+        ArtDTO artDTO = artMapper.selectByPrimaryKey(artId);
         int restPiCount = restPi.size();
-        int artPiCount = artDO.getPiCount().intValue();
-        PiDO lastPi = piMapper.selectLastPi(programId, artId);
+        int artPiCount = artDTO.getPiCount().intValue();
+        PiDTO lastPi = piMapper.selectLastPi(programId, artId);
         Date startDate = lastPi.getEndDate();
         if (restPiCount < artPiCount) {
-            Long piCodeNumber = artDO.getPiCodeNumber();
-            Long piWorkDays = getPiWorkDays(artDO);
+            Long piCodeNumber = artDTO.getPiCodeNumber();
+            Long piWorkDays = getPiWorkDays(artDTO);
             List<Long> sprintIds = new ArrayList<>();
             for (int i = 0; i < artPiCount - restPiCount; i++) {
                 PiE piE = new PiE();
-                piE.setCode(artDO.getPiCodePrefix());
+                piE.setCode(artDTO.getPiCodePrefix());
                 piE.setName(piCodeNumber.toString());
                 piCodeNumber++;
                 piE.setStatusCode(PI_TODO);
-                piE.setArtId(artDO.getId());
+                piE.setArtId(artDTO.getId());
                 piE.setProgramId(programId);
                 setPiStartAndEndDate(piE, piWorkDays, startDate);
                 PiE piRes = piRepository.create(piE);
                 // create sprint template
-                createSprintTemplate(programId, piRes, artDO, sprintIds);
+                createSprintTemplate(programId, piRes, artDTO, sprintIds);
                 startDate = piE.getEndDate();
             }
             sprintRepository.updateSprintNameByBatch(programId, sprintIds);
-            updateArtPiCodeNumber(programId, artDO.getId(), piCodeNumber, artDO.getObjectVersionNumber());
+            updateArtPiCodeNumber(programId, artDTO.getId(), piCodeNumber, artDTO.getObjectVersionNumber());
         }
     }
 
     @Override
-    public PiDTO closePi(Long programId, PiDTO piDTO) {
-        piValidator.checkPiClose(piDTO);
+    public PiDTO closePi(Long programId, PiVO piVO) {
+        piValidator.checkPiClose(piVO);
         // deal uncomplete feature to target pi
-        dealUnCompleteFeature(piDTO.getProgramId(), piDTO.getId(), piDTO.getTargetPiId());
+        dealUnCompleteFeature(piVO.getProgramId(), piVO.getId(), piVO.getTargetPiId());
         // update pi status: done
-        PiE update = new PiE(programId, piDTO.getId(), PI_DONE, piDTO.getObjectVersionNumber());
-        update.setActualEndDate(new Date());
-        PiE piE = piRepository.updateBySelective(update);
+        if (piMapper.updateByPrimaryKeySelective(new PiDTO(programId, piVO.getId(), PI_DONE, piVO.getObjectVersionNumber(), new Date())) != 1) {
+            throw new CommonException("error.pi.update");
+        }
         // auto start next PI
-        PiDO nextPi = piMapper.selectNextPi(programId, piDTO.getArtId(), piDTO.getId());
+        PiDTO nextPi = piMapper.selectNextPi(programId, piVO.getArtId(), piVO.getId());
         if (nextPi != null) {
-            PiDTO nextStartPi = new PiDTO();
+            PiVO nextStartPi = new PiVO();
             nextStartPi.setProgramId(programId);
-            nextStartPi.setArtId(piDTO.getArtId());
+            nextStartPi.setArtId(piVO.getArtId());
             nextStartPi.setId(nextPi.getId());
             nextStartPi.setObjectVersionNumber(nextPi.getObjectVersionNumber());
-            nextStartPi.setUpdateStatusId(piDTO.getUpdateStatusId());
+            nextStartPi.setUpdateStatusId(piVO.getUpdateStatusId());
             startPi(programId, nextStartPi);
         }
         // deal projects' sprints complete
-        completeSprintsWithSelect(programId, piDTO.getId(), nextPi.getId(), piDTO.getArtId());
-        autoCreatePi(programId, piDTO.getArtId());
-        sendMsgUtil.sendPmAndEmailAfterPiComplete(programId, piE);
-        return ConvertHelper.convert(piE, PiDTO.class);
+        completeSprintsWithSelect(programId, piVO.getId(), nextPi.getId(), piVO.getArtId());
+        autoCreatePi(programId, piVO.getArtId());
+        PiDTO piDTO = piMapper.selectByPrimaryKey(piVO.getId());
+        sendMsgUtil.sendPmAndEmailAfterPiComplete(programId, piDTO);
+        return piDTO;
     }
 
-    private void noOutsetBeforeRank(Long programId, Long piId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
+    private void noOutsetBeforeRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
         String minRank = piMapper.queryPiMinRank(programId, piId);
         if (minRank == null) {
             minRank = RankUtil.mid();
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
                 minRank = RankUtil.genPre(minRank);
             }
         } else {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 minRank = RankUtil.genPre(minRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
             }
         }
     }
 
-    private void outsetBeforeRank(Long programId, Long piId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
-        String rightRank = issueMapper.queryRankByProgram(programId, moveIssueDTO.getOutsetIssueId());
+    private void outsetBeforeRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+        String rightRank = issueMapper.queryRankByProgram(programId, moveIssueVO.getOutsetIssueId());
         String leftRank = issueMapper.queryLeftRankByProgram(programId, piId, rightRank);
         if (leftRank == null) {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 rightRank = RankUtil.genPre(rightRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
             }
         } else {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 rightRank = RankUtil.between(leftRank, rightRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
             }
         }
     }
 
-    private void beforeRank(Long programId, Long piId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
-        moveIssueDTO.setIssueIds(issueMapper.queryFeatureIdOrderByRankDesc(programId, moveIssueDTO.getIssueIds()));
-        if (moveIssueDTO.getOutsetIssueId() == null || Objects.equals(moveIssueDTO.getOutsetIssueId(), 0L)) {
-            noOutsetBeforeRank(programId, piId, moveIssueDTO, moveIssueDOS);
+    private void beforeRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+        moveIssueVO.setIssueIds(issueMapper.queryFeatureIdOrderByRankDesc(programId, moveIssueVO.getIssueIds()));
+        if (moveIssueVO.getOutsetIssueId() == null || Objects.equals(moveIssueVO.getOutsetIssueId(), 0L)) {
+            noOutsetBeforeRank(programId, piId, moveIssueVO, moveIssueDOS);
         } else {
-            outsetBeforeRank(programId, piId, moveIssueDTO, moveIssueDOS);
+            outsetBeforeRank(programId, piId, moveIssueVO, moveIssueDOS);
         }
     }
 
-    private void afterRank(Long programId, Long piId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
-        moveIssueDTO.setIssueIds(issueMapper.queryFeatureIdOrderByRankAsc(programId, moveIssueDTO.getIssueIds()));
-        String leftRank = issueMapper.queryRankByProgram(programId, moveIssueDTO.getOutsetIssueId());
+    private void afterRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+        moveIssueVO.setIssueIds(issueMapper.queryFeatureIdOrderByRankAsc(programId, moveIssueVO.getIssueIds()));
+        String leftRank = issueMapper.queryRankByProgram(programId, moveIssueVO.getOutsetIssueId());
         String rightRank = issueMapper.queryRightRankByProgram(programId, piId, leftRank);
         if (rightRank == null) {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 leftRank = RankUtil.genNext(leftRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
             }
         } else {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 leftRank = RankUtil.between(leftRank, rightRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
             }
@@ -590,36 +605,36 @@ public class PiServiceImpl implements PiService {
     }
 
     @Override
-    public List<SubFeatureDO> batchFeatureToPi(Long programId, Long piId, MoveIssueDTO moveIssueDTO) {
+    public List<SubFeatureDTO> batchFeatureToPi(Long programId, Long piId, MoveIssueVO moveIssueVO) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
-        if (moveIssueDTO.getBefore()) {
-            beforeRank(programId, piId, moveIssueDTO, moveIssueDOS);
+        if (moveIssueVO.getBefore()) {
+            beforeRank(programId, piId, moveIssueVO, moveIssueDOS);
         } else {
-            afterRank(programId, piId, moveIssueDTO, moveIssueDOS);
+            afterRank(programId, piId, moveIssueVO, moveIssueDOS);
         }
         issueRepository.batchUpdateFeatureRank(programId, moveIssueDOS);
-        List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
-        List<SubFeatureDO> featureDOList = piMapper.selectFeatureIdByFeatureIds(programId, moveIssueIds).stream().filter(subFeatureDO -> subFeatureDO.getPiId() == null ? piId != 0 : !subFeatureDO.getPiId().equals(piId)).collect(Collectors.toList());
-        if (featureDOList != null && !featureDOList.isEmpty()) {
-            List<Long> moveIssueIdsFilter = featureDOList.stream().map(SubFeatureDO::getIssueId).collect(Collectors.toList());
+        List<Long> moveIssueIds = moveIssueVO.getIssueIds();
+        List<SubFeatureDTO> featureDTOList = piMapper.selectFeatureIdByFeatureIds(programId, moveIssueIds).stream().filter(subFeatureDO -> subFeatureDO.getPiId() == null ? piId != 0 : !subFeatureDO.getPiId().equals(piId)).collect(Collectors.toList());
+        if (featureDTOList != null && !featureDTOList.isEmpty()) {
+            List<Long> moveIssueIdsFilter = featureDTOList.stream().map(SubFeatureDTO::getIssueId).collect(Collectors.toList());
             // batch update status
-            if (moveIssueDTO.getUpdateStatusId() != null) {
-                batchUpdateStatus(programId, piId, moveIssueIdsFilter, moveIssueDTO.getUpdateStatusId(), moveIssueDTO.getStatusCategoryCode(), customUserDetails.getUserId());
+            if (moveIssueVO.getUpdateStatusId() != null) {
+                batchUpdateStatus(programId, piId, moveIssueIdsFilter, moveIssueVO.getUpdateStatusId(), moveIssueVO.getStatusCategoryCode(), customUserDetails.getUserId());
             }
             BatchRemovePiE batchRemovePiE = new BatchRemovePiE(programId, piId, moveIssueIdsFilter);
             issueRepository.removeFeatureFromPiByIssueIds(batchRemovePiE);
             if (piId != null && !Objects.equals(piId, 0L)) {
                 issueRepository.batchFeatureToPi(programId, piId, moveIssueIdsFilter, new Date(), customUserDetails.getUserId());
             }
-            return featureDOList;
+            return featureDTOList;
         } else {
             return new ArrayList<>();
         }
     }
 
     @Override
-    public List<SubFeatureDO> batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds) {
+    public List<SubFeatureDTO> batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds) {
         issueRepository.batchFeatureToEpic(programId, epicId, featureIds);
         issueRepository.updateEpicIdOfStoryByFeatureList(featureIds, epicId);
         return piMapper.selectFeatureIdByFeatureIds(programId, featureIds);
@@ -627,40 +642,40 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public List<PiNameDTO> queryAllOfProgram(Long programId) {
-        List<PiNameDO> piNameDOList = piMapper.selectAllOfProgram(programId);
-        if (piNameDOList != null && !piNameDOList.isEmpty()) {
-            return ConvertHelper.convertList(piNameDOList, PiNameDTO.class);
+        List<PiNameDTO> piNameDTOList = piMapper.selectAllOfProgram(programId);
+        if (piNameDTOList != null && !piNameDTOList.isEmpty()) {
+            return piNameDTOList;
         } else {
             return new ArrayList<>();
         }
     }
 
     @Override
-    public List<PiNameDTO> queryUnfinishedOfProgram(Long programId) {
-        ArtDO activeArt = artMapper.selectActiveArt(programId);
+    public List<PiNameVO> queryUnfinishedOfProgram(Long programId) {
+        ArtDTO activeArt = artMapper.selectActiveArt(programId);
         if (activeArt == null) {
             return new ArrayList<>();
         }
-        List<PiDO> piDOList = piMapper.selectUnDonePiDOList(programId, activeArt.getId());
-        if (piDOList != null && !piDOList.isEmpty()) {
-            return ConvertHelper.convertList(piDOList, PiNameDTO.class);
+        List<PiDTO> piDTOList = piMapper.selectUnDonePiDOList(programId, activeArt.getId());
+        if (piDTOList != null && !piDTOList.isEmpty()) {
+            return modelMapper.map(piDTOList, new TypeToken<PiNameDTO>(){}.getType());
         } else {
             return new ArrayList<>();
         }
     }
 
     @Override
-    public List<PiWithFeatureDTO> queryRoadMapOfProgram(Long programId, Long organizationId) {
-        ArtDO activeArt = getActiveArt(programId);
+    public List<PiWithFeatureVO> queryRoadMapOfProgram(Long programId, Long organizationId) {
+        ArtDTO activeArt = getActiveArt(programId);
         if (activeArt == null) {
             return new ArrayList<>();
         }
-        List<PiWithFeatureDO> piWithFeatureDOList = piMapper.selectRoadMapPiList(programId, activeArt.getId());
-        if (piWithFeatureDOList != null && !piWithFeatureDOList.isEmpty()) {
+        List<PiWithFeatureDTO> piWithFeatureDTOList = piMapper.selectRoadMapPiList(programId, activeArt.getId());
+        if (piWithFeatureDTOList != null && !piWithFeatureDTOList.isEmpty()) {
             Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             setStatusIsCompleted(programId, statusMapDTOMap);
             Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-            return piAssembler.piWithFeatureDOTODTO(piWithFeatureDOList, statusMapDTOMap, issueTypeDTOMap);
+            return piAssembler.piWithFeatureDOTODTO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap);
         } else {
             return new ArrayList<>();
         }

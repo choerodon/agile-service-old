@@ -5,12 +5,9 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.PiE;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.dataobject.IssueDO;
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
-import io.choerodon.agile.infra.dataobject.SprintDO;
-import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
@@ -223,7 +220,7 @@ public class SendMsgUtil {
     }
 
     @Async
-    public void sendPmAndEmailAfterPiComplete(Long programId, PiE piE) {
+    public void sendPmAndEmailAfterPiComplete(Long programId, PiDTO piDTO) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         List<Long> projectIds = (projectRelationshipDTOList != null && !projectRelationshipDTOList.isEmpty() ? projectRelationshipDTOList.stream().map(ProjectRelationshipDTO::getProjectId).collect(Collectors.toList()) : null);
@@ -236,10 +233,10 @@ public class SendMsgUtil {
         }
         List<Long> result = new ArrayList<>();
         getProjectOwnerByProjects(projectIds, result);
-        List<SprintDO> sprintDOList = sprintMapper.selectListByPiId(programId, piE.getId());
+        List<SprintDO> sprintDOList = sprintMapper.selectListByPiId(programId, piDTO.getId());
         Map<String, Object> params = new HashMap<>();
         params.put("programName", projectDTO.getName());
-        params.put("piName", piE.getCode() + "-" + piE.getName());
+        params.put("piName", piDTO.getCode() + "-" + piDTO.getName());
         params.put("sprintNameList", sprintDOList != null && !sprintDOList.isEmpty() ? sprintDOList.stream().map(SprintDO::getSprintName).collect(Collectors.joining(",")) : "");
         siteMsgUtil.piComplete(result, customUserDetails.getUserId(), programId, params);
     }

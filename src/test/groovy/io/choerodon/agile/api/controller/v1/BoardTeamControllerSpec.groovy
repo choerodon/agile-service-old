@@ -6,8 +6,8 @@ import io.choerodon.agile.api.vo.BoardTeamUpdateDTO
 import io.choerodon.agile.api.vo.ProgramBoardFilterDTO
 import io.choerodon.agile.api.vo.ProgramBoardInfoDTO
 import io.choerodon.agile.app.service.BoardFeatureService
-import io.choerodon.agile.infra.dataobject.ArtDO
-import io.choerodon.agile.infra.dataobject.PiDO
+import io.choerodon.agile.infra.dataobject.ArtDTO
+import io.choerodon.agile.infra.dataobject.PiDTO
 import io.choerodon.agile.infra.dataobject.SprintDO
 import io.choerodon.agile.infra.mapper.ArtMapper
 import io.choerodon.agile.infra.mapper.PiMapper
@@ -57,14 +57,14 @@ class BoardTeamControllerSpec extends Specification {
     def url = '/v1/projects/{project_id}/board_team'
 
     def initProgram(){
-        ArtDO art = new ArtDO()
+        ArtDTO art = new ArtDTO()
         art.enabled = true
         art.name = '火车1'
         art.code = 'huoche1'
         art.statusCode = 'doing'
         art.programId = programId
         artMapper.insert(art)
-        PiDO pi = new PiDO()
+        PiDTO pi = new PiDTO()
         pi.programId = programId
         pi.code = 'pi'
         pi.name = 'pi'

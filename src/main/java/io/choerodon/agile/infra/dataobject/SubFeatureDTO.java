@@ -7,7 +7,7 @@ import java.math.BigDecimal;
  * Created by HuangFuqiang@choerodon.io on 2019/3/12.
  * Email: fuqianghuang01@gmail.com
  */
-public class SubFeatureDO {
+public class SubFeatureDTO {
 
     private Long issueId;
 

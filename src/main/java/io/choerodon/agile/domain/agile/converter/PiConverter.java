@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.PiDTO;
+import io.choerodon.agile.api.vo.PiVO;
 import io.choerodon.agile.domain.agile.entity.PiE;
-import io.choerodon.agile.infra.dataobject.PiDO;
+import io.choerodon.agile.infra.dataobject.PiDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,47 +12,47 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class PiConverter implements ConvertorI<PiE, PiDTO, PiDO> {
+public class PiConverter implements ConvertorI<PiE, PiVO, PiDTO> {
 
     @Override
-    public PiE dtoToEntity(PiDO piDO) {
-        PiE piE = new PiE();
-        BeanUtils.copyProperties(piDO, piE);
-        return piE;
-    }
-
-    @Override
-    public PiDO entityToDto(PiE piE) {
-        PiDO piDO = new PiDO();
-        BeanUtils.copyProperties(piE, piDO);
-        return piDO;
-    }
-
-    @Override
-    public PiE doToEntity(PiDTO piDTO) {
+    public PiE dtoToEntity(PiDTO piDTO) {
         PiE piE = new PiE();
         BeanUtils.copyProperties(piDTO, piE);
         return piE;
     }
 
     @Override
-    public PiDTO entityToDo(PiE piE) {
+    public PiDTO entityToDto(PiE piE) {
         PiDTO piDTO = new PiDTO();
         BeanUtils.copyProperties(piE, piDTO);
         return piDTO;
     }
 
     @Override
-    public PiDO doToDto(PiDTO piDTO) {
-        PiDO piDO = new PiDO();
-        BeanUtils.copyProperties(piDTO, piDO);
-        return piDO;
+    public PiE doToEntity(PiVO piVO) {
+        PiE piE = new PiE();
+        BeanUtils.copyProperties(piVO, piE);
+        return piE;
     }
 
     @Override
-    public PiDTO dtoToDo(PiDO piDO) {
+    public PiVO entityToDo(PiE piE) {
+        PiVO piVO = new PiVO();
+        BeanUtils.copyProperties(piE, piVO);
+        return piVO;
+    }
+
+    @Override
+    public PiDTO doToDto(PiVO piVO) {
         PiDTO piDTO = new PiDTO();
-        BeanUtils.copyProperties(piDO, piDTO);
+        BeanUtils.copyProperties(piVO, piDTO);
         return piDTO;
+    }
+
+    @Override
+    public PiVO dtoToDo(PiDTO piDTO) {
+        PiVO piVO = new PiVO();
+        BeanUtils.copyProperties(piDTO, piVO);
+        return piVO;
     }
 }

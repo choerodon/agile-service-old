@@ -599,9 +599,9 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     public void addSprintsWhenJoinProgram(Long programId, Long projectId) {
-        ArtDO activeArtDO = artMapper.selectActiveArt(programId);
-        if (activeArtDO != null) {
-            PiDO res = piMapper.selectActivePi(programId, activeArtDO.getId());
+        ArtDTO activeArtDTO = artMapper.selectActiveArt(programId);
+        if (activeArtDTO != null) {
+            PiDTO res = piMapper.selectActivePi(programId, activeArtDTO.getId());
             if (res != null) {
                 List<SprintDO> existList = sprintMapper.selectListByPiId(projectId, res.getId());
                 if (existList == null || existList.isEmpty()) {
@@ -626,9 +626,9 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     public void completeSprintsByActivePi(Long programId, Long projectId) {
-        ArtDO activeArtDO = artMapper.selectActiveArt(programId);
-        if (activeArtDO != null) {
-            PiDO res = piMapper.selectActivePi(programId, activeArtDO.getId());
+        ArtDTO activeArtDTO = artMapper.selectActiveArt(programId);
+        if (activeArtDTO != null) {
+            PiDTO res = piMapper.selectActivePi(programId, activeArtDTO.getId());
             if (res != null) {
                 List<Long> sprintList = sprintMapper.selectNotDoneByPiId(projectId, res.getId());
                 if (sprintList != null && !sprintList.isEmpty()) {

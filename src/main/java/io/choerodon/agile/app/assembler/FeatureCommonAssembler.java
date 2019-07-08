@@ -2,7 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.FeatureCommonDTO;
 import io.choerodon.agile.api.vo.IssueTypeDTO;
-import io.choerodon.agile.api.vo.PiNameDTO;
+import io.choerodon.agile.api.vo.PiNameVO;
 import io.choerodon.agile.api.vo.StatusMapDTO;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
@@ -35,7 +35,7 @@ public class FeatureCommonAssembler {
                 reporterIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
         featureCommonDOList.forEach(featureCommonDO -> {
             FeatureCommonDTO featureCommonDTO = ConvertHelper.convert(featureCommonDO, FeatureCommonDTO.class);
-            featureCommonDTO.setPiNameDTOList(ConvertHelper.convertList(featureCommonDO.getPiNameDOList(), PiNameDTO.class));
+            featureCommonDTO.setPiNameVOList(ConvertHelper.convertList(featureCommonDO.getPiNameDTOList(), PiNameVO.class));
             featureCommonDTO.setStatusMapDTO(statusMapDTOMap.get(featureCommonDO.getStatusId()));
             featureCommonDTO.setIssueTypeDTO(issueTypeDTOMap.get(featureCommonDO.getIssueTypeId()));
             UserMessageDO userMessageDO = userMessageDOMap.get(featureCommonDO.getReporterId());

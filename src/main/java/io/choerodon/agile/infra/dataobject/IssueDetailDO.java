@@ -56,9 +56,9 @@ public class IssueDetailDO {
 
     private List<SprintNameDO> closeSprint;
 
-    private PiNameDO activePi;
+    private PiNameDTO activePi;
 
-    private List<PiNameDO> closePi;
+    private List<PiNameDTO> closePi;
 
     private List<IssueCommentDO> issueCommentDOList;
 
@@ -454,19 +454,19 @@ public class IssueDetailDO {
         this.featureName = featureName;
     }
 
-    public void setActivePi(PiNameDO activePi) {
+    public void setActivePi(PiNameDTO activePi) {
         this.activePi = activePi;
     }
 
-    public PiNameDO getActivePi() {
+    public PiNameDTO getActivePi() {
         return activePi;
     }
 
-    public void setClosePi(List<PiNameDO> closePi) {
+    public void setClosePi(List<PiNameDTO> closePi) {
         this.closePi = closePi;
     }
 
-    public List<PiNameDO> getClosePi() {
+    public List<PiNameDTO> getClosePi() {
         return closePi;
     }
 

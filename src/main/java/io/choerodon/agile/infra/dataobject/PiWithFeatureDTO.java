@@ -7,7 +7,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2019/3/12.
  * Email: fuqianghuang01@gmail.com
  */
-public class PiWithFeatureDO {
+public class PiWithFeatureDTO {
 
     private Long id;
 
@@ -23,7 +23,7 @@ public class PiWithFeatureDO {
 
     private Long objectVersionNumber;
 
-    private List<SubFeatureDO> subFeatureDOList;
+    private List<SubFeatureDTO> subFeatureDTOList;
 
     public Long getId() {
         return id;
@@ -81,11 +81,11 @@ public class PiWithFeatureDO {
         return objectVersionNumber;
     }
 
-    public List<SubFeatureDO> getSubFeatureDOList() {
-        return subFeatureDOList;
+    public List<SubFeatureDTO> getSubFeatureDTOList() {
+        return subFeatureDTOList;
     }
 
-    public void setSubFeatureDOList(List<SubFeatureDO> subFeatureDOList) {
-        this.subFeatureDOList = subFeatureDOList;
+    public void setSubFeatureDTOList(List<SubFeatureDTO> subFeatureDTOList) {
+        this.subFeatureDTOList = subFeatureDTOList;
     }
 }

@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by HuangFuqiang@choerodon.io on 2019/3/14.
  * Email: fuqianghuang01@gmail.com
  */
-public class SprintCalendarDO {
+public class SprintCalendarDTO {
 
     private Long sprintId;
 

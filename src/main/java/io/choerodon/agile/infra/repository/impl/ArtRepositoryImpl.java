@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.infra.repository.ArtRepository;
-import io.choerodon.agile.infra.dataobject.ArtDO;
+import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -21,20 +21,20 @@ public class ArtRepositoryImpl implements ArtRepository {
 
     @Override
     public ArtE create(ArtE artE) {
-        ArtDO artDO = ConvertHelper.convert(artE, ArtDO.class);
-        if (artMapper.insert(artDO) != 1) {
+        ArtDTO artDTO = ConvertHelper.convert(artE, ArtDTO.class);
+        if (artMapper.insert(artDTO) != 1) {
             throw new CommonException("error.art.insert");
         }
-        return ConvertHelper.convert(artMapper.selectByPrimaryKey(artDO.getId()), ArtE.class);
+        return ConvertHelper.convert(artMapper.selectByPrimaryKey(artDTO.getId()), ArtE.class);
     }
 
     @Override
     public ArtE updateBySelective(ArtE artE) {
-        ArtDO artDO = ConvertHelper.convert(artE, ArtDO.class);
-        if (artMapper.updateByPrimaryKeySelective(artDO) != 1) {
+        ArtDTO artDTO = ConvertHelper.convert(artE, ArtDTO.class);
+        if (artMapper.updateByPrimaryKeySelective(artDTO) != 1) {
             throw new CommonException("error.art.update");
         }
-        return ConvertHelper.convert(artMapper.selectByPrimaryKey(artDO.getId()), ArtE.class);
+        return ConvertHelper.convert(artMapper.selectByPrimaryKey(artDTO.getId()), ArtE.class);
     }
 
 }

@@ -42,7 +42,7 @@ public class FeatureCommonDO {
 
     private String acceptanceCritera;
 
-    private List<PiNameDO> piNameDOList;
+    private List<PiNameDTO> piNameDTOList;
 
     private Long programId;
 
@@ -130,12 +130,12 @@ public class FeatureCommonDO {
         this.acceptanceCritera = acceptanceCritera;
     }
 
-    public List<PiNameDO> getPiNameDOList() {
-        return piNameDOList;
+    public List<PiNameDTO> getPiNameDTOList() {
+        return piNameDTOList;
     }
 
-    public void setPiNameDOList(List<PiNameDO> piNameDOList) {
-        this.piNameDOList = piNameDOList;
+    public void setPiNameDTOList(List<PiNameDTO> piNameDTOList) {
+        this.piNameDTOList = piNameDTOList;
     }
 
     public Long getEpicId() {

@@ -10,7 +10,16 @@ import java.util.Date;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_art")
-public class ArtDO extends BaseDTO {
+public class ArtDTO extends BaseDTO {
+
+    public ArtDTO() {}
+
+    public ArtDTO(Long programId, Long artId, String statusCode, Long objectVersionNumber) {
+        this.programId = programId;
+        this.id = artId;
+        this.statusCode = statusCode;
+        this.objectVersionNumber = objectVersionNumber;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +59,8 @@ public class ArtDO extends BaseDTO {
     private String statusCode;
 
     private String sprintCompleteSetting;
+
+    private Long objectVersionNumber;
 
     public Long getId() {
         return id;
@@ -195,4 +206,13 @@ public class ArtDO extends BaseDTO {
         return sprintCompleteSetting;
     }
 
+    @Override
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    @Override
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
 }

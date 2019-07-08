@@ -50,7 +50,7 @@ public class FeatureCommonDTO {
 
     private IssueTypeDTO issueTypeDTO;
 
-    private List<PiNameDTO> piNameDTOList;
+    private List<PiNameVO> piNameVOList;
 
     public Long getIssueId() {
         return issueId;
@@ -124,12 +124,12 @@ public class FeatureCommonDTO {
         this.acceptanceCritera = acceptanceCritera;
     }
 
-    public void setPiNameDTOList(List<PiNameDTO> piNameDTOList) {
-        this.piNameDTOList = piNameDTOList;
+    public void setPiNameVOList(List<PiNameVO> piNameVOList) {
+        this.piNameVOList = piNameVOList;
     }
 
-    public List<PiNameDTO> getPiNameDTOList() {
-        return piNameDTOList;
+    public List<PiNameVO> getPiNameVOList() {
+        return piNameVOList;
     }
 
     public void setStatusMapDTO(StatusMapDTO statusMapDTO) {

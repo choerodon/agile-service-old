@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.ArtMapper">
 
-    <select id="selectArtList" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
+    <select id="selectArtList" resultType="io.choerodon.agile.infra.dataobject.ArtDTO">
         select
           aa.id,
           api.project_code as code,
@@ -18,7 +18,7 @@
         where aa.program_id = #{programId} and api.project_id = #{programId}
     </select>
 
-    <select id="selectActiveArt" resultType="io.choerodon.agile.infra.dataobject.ArtDO">
+    <select id="selectActiveArt" resultType="io.choerodon.agile.infra.dataobject.ArtDTO">
         select
          aa.id,
          aa.code,
@@ -31,7 +31,7 @@
         and aa.program_id = #{programId}
     </select>
 
-    <resultMap id="artCalendarMap" type="io.choerodon.agile.infra.dataobject.PiCalendarDO">
+    <resultMap id="artCalendarMap" type="io.choerodon.agile.infra.dataobject.PiCalendarDTO">
         <id property="id" column="pi_id"/>
         <id property="code" column="pi_code"/>
         <id property="name" column="pi_name"/>
@@ -40,8 +40,8 @@
         <id property="endDate" column="pi_end_date"/>
         <id property="artId" column="pi_art_id"/>
         <id property="programId" column="pi_program_id"/>
-        <collection property="sprintCalendarDOList" autoMapping="true" columnPrefix="asp_"
-                    ofType="io.choerodon.agile.infra.dataobject.SprintCalendarDO"/>
+        <collection property="sprintCalendarDTOList" autoMapping="true" columnPrefix="asp_"
+                    ofType="io.choerodon.agile.infra.dataobject.SprintCalendarDTO"/>
     </resultMap>
 
     <select id="selectArtCalendar" resultMap="artCalendarMap">

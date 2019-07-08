@@ -68,10 +68,10 @@ public class IssueDTO {
     private List<SprintNameDTO> closeSprint;
 
     @ApiModelProperty(value = "活跃pi")
-    private PiNameDTO activePi;
+    private PiNameVO activePi;
 
     @ApiModelProperty(value = "已关闭的pi列表")
-    private List<PiNameDTO> closePi;
+    private List<PiNameVO> closePi;
 
     @ApiModelProperty(value = "关联的标签列表")
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
@@ -563,19 +563,19 @@ public class IssueDTO {
         this.featureName = featureName;
     }
 
-    public void setActivePi(PiNameDTO activePi) {
+    public void setActivePi(PiNameVO activePi) {
         this.activePi = activePi;
     }
 
-    public PiNameDTO getActivePi() {
+    public PiNameVO getActivePi() {
         return activePi;
     }
 
-    public void setClosePi(List<PiNameDTO> closePi) {
+    public void setClosePi(List<PiNameVO> closePi) {
         this.closePi = closePi;
     }
 
-    public List<PiNameDTO> getClosePi() {
+    public List<PiNameVO> getClosePi() {
         return closePi;
     }
 

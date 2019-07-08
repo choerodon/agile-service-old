@@ -1,10 +1,11 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.ArtDTO;
-import io.choerodon.agile.api.vo.ArtStopDTO;
-import io.choerodon.agile.api.vo.PiCalendarDTO;
+import io.choerodon.agile.api.vo.ArtVO;
+import io.choerodon.agile.api.vo.ArtStopVO;
 import io.choerodon.agile.api.vo.PiCreateDTO;
 import io.choerodon.agile.app.service.ArtService;
+import io.choerodon.agile.infra.dataobject.ArtDTO;
+import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import com.github.pagehelper.PageInfo;
@@ -39,9 +40,9 @@ public class ArtController {
     @ApiOperation("创建art")
     @PostMapping
     public ResponseEntity<ArtDTO> createArt(@ApiParam(value = "项目id", required = true)
-                                            @PathVariable(name = "project_id") Long projectId,
-                                            @ApiParam(value = "art vo", required = true)
-                                            @RequestBody ArtDTO artDTO) {
+                                           @PathVariable(name = "project_id") Long projectId,
+                                            @ApiParam(value = "art dto", required = true)
+                                           @RequestBody ArtDTO artDTO) {
         return Optional.ofNullable(artService.createArt(projectId, artDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.art.create"));
@@ -51,10 +52,10 @@ public class ArtController {
     @ApiOperation("开始art")
     @PostMapping("/start")
     public ResponseEntity<ArtDTO> startArt(@ApiParam(value = "项目id", required = true)
-                                            @PathVariable(name = "project_id") Long projectId,
-                                            @ApiParam(value = "art vo", required = true)
-                                            @RequestBody ArtDTO artDTO) {
-        return Optional.ofNullable(artService.startArt(projectId, artDTO))
+                                           @PathVariable(name = "project_id") Long projectId,
+                                           @ApiParam(value = "art vo", required = true)
+                                           @RequestBody ArtVO artVO) {
+        return Optional.ofNullable(artService.startArt(projectId, artVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.art.start"));
     }
@@ -64,9 +65,9 @@ public class ArtController {
     @PostMapping("/stop")
     public ResponseEntity<ArtDTO> stopArt(@ApiParam(value = "项目id", required = true)
                                            @PathVariable(name = "project_id") Long projectId,
-                                           @ApiParam(value = "art vo", required = true)
-                                           @RequestBody ArtDTO artDTO) {
-        return Optional.ofNullable(artService.stopArt(projectId, artDTO, true))
+                                         @ApiParam(value = "art vo", required = true)
+                                           @RequestBody ArtVO artVO) {
+        return Optional.ofNullable(artService.stopArt(projectId, artVO, true))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.art.stop"));
     }
@@ -76,9 +77,9 @@ public class ArtController {
     @PutMapping
     public ResponseEntity<ArtDTO> updateArt(@ApiParam(value = "项目id", required = true)
                                             @PathVariable(name = "project_id") Long projectId,
-                                            @ApiParam(value = "art vo", required = true)
-                                            @RequestBody ArtDTO artDTO) {
-        return Optional.ofNullable(artService.updateArt(projectId, artDTO))
+                                           @ApiParam(value = "art vo", required = true)
+                                            @RequestBody ArtVO artVO) {
+        return Optional.ofNullable(artService.updateArt(projectId, artVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.art.update"));
     }
@@ -89,7 +90,7 @@ public class ArtController {
     @GetMapping("/list")
     public ResponseEntity<PageInfo<ArtDTO>> queryArtList(@ApiParam(value = "项目id", required = true)
                                                      @PathVariable(name = "project_id") Long projectId,
-                                                     @ApiParam(value = "分页信息", required = true)
+                                                        @ApiParam(value = "分页信息", required = true)
                                                      @SortDefault(value = "id", direction = Sort.Direction.DESC)
                                                      @ApiIgnore PageRequest pageRequest) {
         return Optional.ofNullable(artService.queryArtList(projectId, pageRequest))
@@ -100,9 +101,9 @@ public class ArtController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询单个art")
     @GetMapping
-    public ResponseEntity<ArtDTO> queryArt(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ArtVO> queryArt(@ApiParam(value = "项目id", required = true)
                                            @PathVariable(name = "project_id") Long projectId,
-                                           @ApiParam(value = "art id")
+                                          @ApiParam(value = "art id")
                                            @RequestParam Long id) {
         return Optional.ofNullable(artService.queryArt(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -135,9 +136,9 @@ public class ArtController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("stop art之前调用")
     @GetMapping("/before_stop")
-    public ResponseEntity<ArtStopDTO> beforeStop(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ArtStopVO> beforeStop(@ApiParam(value = "项目id", required = true)
                                                  @PathVariable(name = "project_id") Long projectId,
-                                                 @ApiParam(value = "art id")
+                                                @ApiParam(value = "art id")
                                                  @RequestParam Long id) {
         return Optional.ofNullable(artService.beforeStop(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -159,7 +160,7 @@ public class ArtController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询art列表,不分页")
     @GetMapping("/all")
-    public ResponseEntity<List<ArtDTO>> queryAllArtList(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<ArtVO>> queryAllArtList(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(artService.queryAllArtList(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -169,7 +170,7 @@ public class ArtController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询当前活跃art")
     @GetMapping("/active")
-    public ResponseEntity<ArtDTO> queryActiveArt(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ArtVO> queryActiveArt(@ApiParam(value = "项目id", required = true)
                                                  @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(artService.queryActiveArt(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

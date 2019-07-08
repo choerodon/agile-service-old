@@ -1,11 +1,10 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IssueTypeDTO;
-import io.choerodon.agile.api.vo.PiWithFeatureDTO;
+import io.choerodon.agile.api.vo.PiWithFeatureVO;
 import io.choerodon.agile.api.vo.StatusMapDTO;
-import io.choerodon.agile.api.vo.SubFeatureDTO;
-import io.choerodon.agile.infra.dataobject.PiWithFeatureDO;
-import io.choerodon.agile.infra.dataobject.SubFeatureDO;
+import io.choerodon.agile.infra.dataobject.PiWithFeatureDTO;
+import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -20,12 +19,12 @@ import java.util.Map;
 @Component
 public class PiAssembler {
 
-    public List<SubFeatureDTO> subFeatureDOTODTO(List<SubFeatureDO> subFeatureDOList,
-                                                 Map<Long, StatusMapDTO> statusMapDTOMap,
-                                                 Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        List<SubFeatureDTO> subFeatureDTOList = new ArrayList<>();
+    public List<io.choerodon.agile.api.vo.SubFeatureDTO> subFeatureDOTODTO(List<SubFeatureDTO> subFeatureDOList,
+                                                                           Map<Long, StatusMapDTO> statusMapDTOMap,
+                                                                           Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+        List<io.choerodon.agile.api.vo.SubFeatureDTO> subFeatureDTOList = new ArrayList<>();
         subFeatureDOList.forEach(subFeatureDO -> {
-            SubFeatureDTO subFeatureDTO = new SubFeatureDTO();
+            io.choerodon.agile.api.vo.SubFeatureDTO subFeatureDTO = new io.choerodon.agile.api.vo.SubFeatureDTO();
             BeanUtils.copyProperties(subFeatureDO, subFeatureDTO);
             subFeatureDTO.setStatusMapDTO(statusMapDTOMap.get(subFeatureDO.getStatusId()));
             subFeatureDTO.setIssueTypeDTO(issueTypeDTOMap.get(subFeatureDO.getIssueTypeId()));
@@ -34,22 +33,22 @@ public class PiAssembler {
         return subFeatureDTOList;
     }
 
-    public List<PiWithFeatureDTO> piWithFeatureDOTODTO(List<PiWithFeatureDO> piWithFeatureDOList,
-                                                       Map<Long, StatusMapDTO> statusMapDTOMap,
-                                                       Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        List<PiWithFeatureDTO> piWithFeatureDTOList = new ArrayList<>();
-        piWithFeatureDOList.forEach(piWithFeatureDO -> {
-            PiWithFeatureDTO piWithFeatureDTO = new PiWithFeatureDTO();
-            BeanUtils.copyProperties(piWithFeatureDO, piWithFeatureDTO);
-            if (piWithFeatureDO.getSubFeatureDOList() != null && !piWithFeatureDO.getSubFeatureDOList().isEmpty()) {
-                List<SubFeatureDO> subFeatureDOList = piWithFeatureDO.getSubFeatureDOList();
-                piWithFeatureDTO.setSubFeatureDTOList(subFeatureDOTODTO(subFeatureDOList, statusMapDTOMap, issueTypeDTOMap));
+    public List<PiWithFeatureVO> piWithFeatureDOTODTO(List<PiWithFeatureDTO> piWithFeatureDTOList,
+                                                      Map<Long, StatusMapDTO> statusMapDTOMap,
+                                                      Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+        List<PiWithFeatureVO> piWithFeatureVOList = new ArrayList<>();
+        piWithFeatureDTOList.forEach(piWithFeatureDTO -> {
+            PiWithFeatureVO piWithFeatureVO = new PiWithFeatureVO();
+            BeanUtils.copyProperties(piWithFeatureDTO, piWithFeatureVO);
+            if (piWithFeatureDTO.getSubFeatureDTOList() != null && !piWithFeatureDTO.getSubFeatureDTOList().isEmpty()) {
+                List<SubFeatureDTO> subFeatureDTOList = piWithFeatureDTO.getSubFeatureDTOList();
+                piWithFeatureVO.setSubFeatureDTOList(subFeatureDOTODTO(subFeatureDTOList, statusMapDTOMap, issueTypeDTOMap));
             } else {
-                piWithFeatureDTO.setSubFeatureDTOList(new ArrayList<>());
+                piWithFeatureVO.setSubFeatureDTOList(new ArrayList<>());
             }
-            piWithFeatureDTOList.add(piWithFeatureDTO);
+            piWithFeatureVOList.add(piWithFeatureVO);
         });
-        return piWithFeatureDTOList;
+        return piWithFeatureVOList;
     }
 
 }

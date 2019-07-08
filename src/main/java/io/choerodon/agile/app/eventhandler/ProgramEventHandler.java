@@ -1,13 +1,12 @@
 package io.choerodon.agile.app.eventhandler;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.vo.ArtDTO;
+import io.choerodon.agile.api.vo.ArtVO;
 import io.choerodon.agile.api.vo.event.ProjectEvent;
 import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.api.vo.event.OrganizationRegisterPayload;
 import io.choerodon.agile.api.vo.event.ProjectRelationshipInsertPayload;
-import io.choerodon.agile.infra.dataobject.ArtDO;
+import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
 import org.slf4j.Logger;
@@ -88,9 +87,9 @@ public class ProgramEventHandler {
         ProjectEvent projectEvent = JSONObject.parseObject(message, ProjectEvent.class);
         if (PROJECT_CATEGORY_PROGRAM.equals(projectEvent.getProjectCategory())) {
             Long programId = projectEvent.getProjectId();
-            ArtDO activeArt = artMapper.selectActiveArt(programId);
+            ArtDTO activeArt = artMapper.selectActiveArt(programId);
             if (programId != null && activeArt != null) {
-                artService.stopArt(programId, new ArtDTO(programId, activeArt.getId(), activeArt.getObjectVersionNumber()), false);
+                artService.stopArt(programId, new ArtVO(programId, activeArt.getId(), activeArt.getObjectVersionNumber()), false);
             }
         } else if (PROJECT_CATEGORY_AGILE.equals(projectEvent.getProjectCategory())) {
             Long projectId= projectEvent.getProjectId();

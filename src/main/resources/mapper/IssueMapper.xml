@@ -171,7 +171,7 @@
         WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code = 'closed'
     </select>
 
-    <select id="queryClosePiNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
+    <select id="queryClosePiNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDTO">
         SELECT
             ap.id,
             ap.code,
@@ -234,7 +234,7 @@
         </foreach>
     </select>
 
-    <select id="queryActivePiNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
+    <select id="queryActivePiNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDTO">
         SELECT
             ap.id,
             ap.code,
@@ -3377,7 +3377,7 @@
         <id property="featureType" column="ai_feature_type"/>
         <id property="benfitHypothesis" column="ai_benfit_hypothesis"/>
         <id property="acceptanceCritera" column="ai_acceptance_critera"/>
-        <collection property="piNameDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.PiNameDO">
+        <collection property="piNameDTOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.PiNameDTO">
             <id property="id" column="ap_pi_id"/>
             <id property="code" column="ap_pi_code"/>
             <id property="name" column="ap_pi_name"/>

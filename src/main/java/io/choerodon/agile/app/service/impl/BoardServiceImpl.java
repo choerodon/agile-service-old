@@ -644,14 +644,14 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId, SearchDTO searchDTO) {
         JSONObject result = new JSONObject(true);
-        ArtDO activeArtDO = artMapper.selectActiveArt(projectId);
-        PiDO piDO = null;
-        if (activeArtDO != null) {
-            piDO = piMapper.selectActivePi(projectId, activeArtDO.getId());
+        ArtDTO activeArtDTO = artMapper.selectActiveArt(projectId);
+        PiDTO piDTO = null;
+        if (activeArtDTO != null) {
+            piDTO = piMapper.selectActivePi(projectId, activeArtDTO.getId());
         }
         Long activePiId = null;
-        if (piDO != null) {
-            activePiId = piDO.getId();
+        if (piDTO != null) {
+            activePiId = piDTO.getId();
         }
         List<Long> epicIds = new ArrayList<>();
         List<ColumnAndIssueDO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId, searchDTO);
@@ -671,7 +671,7 @@ public class BoardServiceImpl implements BoardService {
         setColumnDeatil(columns, statusMap, issueTypeDTOMap);
         columns.sort(Comparator.comparing(ColumnAndIssueDO::getSequence));
         result.put("columnsData", columns);
-        result.put("activePi", piDO);
+        result.put("activePi", piDTO);
         result.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
         handleUserSetting(boardId, projectId);
         return result;
