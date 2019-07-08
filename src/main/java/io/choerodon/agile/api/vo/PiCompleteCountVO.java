@@ -1,5 +1,6 @@
 package io.choerodon.agile.api.vo;
 
+import io.choerodon.agile.infra.dataobject.PiTodoDTO;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2019/3/29.
  * Email: fuqianghuang01@gmail.com
  */
-public class PiCompleteCountDTO {
+public class PiCompleteCountVO {
 
     @ApiModelProperty(value = "已完成的问题计数")
     private Long completedCount;

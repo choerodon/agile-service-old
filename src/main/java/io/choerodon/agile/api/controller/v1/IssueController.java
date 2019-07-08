@@ -349,8 +349,8 @@ public class IssueController {
                                                                    @ApiParam(value = "sprintId", required = true)
                                                                    @PathVariable Long sprintId,
                                                                    @ApiParam(value = "移卡信息", required = true)
-                                                                   @RequestBody MoveIssueDTO moveIssueDTO) {
-        return Optional.ofNullable(issueService.batchIssueToSprint(projectId, sprintId, moveIssueDTO))
+                                                                   @RequestBody MoveIssueVO moveIssueVO) {
+        return Optional.ofNullable(issueService.batchIssueToSprint(projectId, sprintId, moveIssueVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.batchToSprint"));
     }

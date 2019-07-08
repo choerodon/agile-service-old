@@ -115,7 +115,7 @@ public interface IssueService {
 
     List<IssueSearchDTO> batchIssueToEpicInStoryMap(Long projectId, Long epicId, StoryMapMoveDTO storyMapMoveDTO);
 
-    List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO);
+    List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueVO moveIssueVO);
 
     List<IssueSearchDTO> batchIssueToSprintInStoryMap(Long projectId, Long sprintId, StoryMapMoveDTO storyMapMoveDTO);
 

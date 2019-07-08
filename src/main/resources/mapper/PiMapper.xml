@@ -65,7 +65,7 @@
         </choose>
     </select>
 
-    <resultMap id="programPiMap" type="io.choerodon.agile.infra.dataobject.PiWithFeatureDO">
+    <resultMap id="programPiMap" type="io.choerodon.agile.infra.dataobject.PiWithFeatureDTO">
         <id property="id" column="pi_id"/>
         <id property="name" column="pi_name"/>
         <id property="statusCode" column="pi_status_code"/>
@@ -73,8 +73,8 @@
         <id property="endDate" column="pi_end_date"/>
         <id property="artId" column="pi_art_id"/>
         <id property="objectVersionNumber" column="pi_object_version_number"/>
-        <collection property="subFeatureDOList" autoMapping="true" columnPrefix="ai_"
-                    ofType="io.choerodon.agile.infra.dataobject.SubFeatureDO"/>
+        <collection property="subFeatureDTOList" autoMapping="true" columnPrefix="ai_"
+                    ofType="io.choerodon.agile.infra.dataobject.SubFeatureDTO"/>
     </resultMap>
 
     <select id="selectBacklogPiList" resultMap="programPiMap">
@@ -121,7 +121,7 @@
             order by ap.id, ai.rank
     </select>
 
-    <select id="selectBacklogNoPiList" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">
+    <select id="selectBacklogNoPiList" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDTO">
         SELECT
             ai.issue_id,
             IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS issue_num,
@@ -159,7 +159,7 @@
         ORDER BY ai.rank
     </select>
 
-    <select id="selectFeatureIdByFeatureIds" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDO">
+    <select id="selectFeatureIdByFeatureIds" resultType="io.choerodon.agile.infra.dataobject.SubFeatureDTO">
         SELECT
             ai.issue_id,
             ai.issue_num,
@@ -276,7 +276,7 @@
         and status_code != 'done'
     </select>
 
-    <select id="selectTodoPi" resultType="io.choerodon.agile.infra.dataobject.PiTodoDO">
+    <select id="selectTodoPi" resultType="io.choerodon.agile.infra.dataobject.PiTodoDTO">
         select id, code, name
         from agile_pi
         where program_id = #{programId}
@@ -349,7 +349,7 @@
         where program_id = #{programId} and art_id = #{artId} and id >= #{piId}
     </select>
 
-    <select id="selectAllOfProgram" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
+    <select id="selectAllOfProgram" resultType="io.choerodon.agile.infra.dataobject.PiNameDTO">
         select
            ap.id,
            ap.code,
@@ -359,14 +359,14 @@
         order by ap.id desc
     </select>
 
-    <select id="selectclosePiListByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
+    <select id="selectclosePiListByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDTO">
         select ap.id, ap.code, ap.name
         from agile_pi ap, agile_pi_feature apf
         where apf.program_id = #{programId} and apf.issue_id = #{issueId} and apf.pi_id = ap.id and ap.status_code = 'done'
         order by ap.id
     </select>
 
-    <select id="selectCurrentPiListByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDO">
+    <select id="selectCurrentPiListByIssueId" resultType="io.choerodon.agile.infra.dataobject.PiNameDTO">
         select ap.id, ap.code, ap.name
         from agile_pi ap, agile_pi_feature apf
         where apf.program_id = #{programId} and apf.issue_id = #{issueId} and apf.pi_id = ap.id and ap.status_code != 'done'

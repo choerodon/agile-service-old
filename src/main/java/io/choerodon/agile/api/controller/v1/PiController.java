@@ -3,7 +3,9 @@ package io.choerodon.agile.api.controller.v1;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.PiService;
-import io.choerodon.agile.infra.dataobject.SubFeatureDO;
+import io.choerodon.agile.infra.dataobject.PiDTO;
+import io.choerodon.agile.infra.dataobject.PiNameDTO;
+import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.domain.Sort;
 import io.choerodon.base.enums.ResourceType;
@@ -38,11 +40,11 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("修改pi")
     @PutMapping
-    public ResponseEntity<PiVO> updatePi(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PiDTO> updatePi(@ApiParam(value = "项目id", required = true)
                                           @PathVariable(name = "project_id") Long projectId,
-                                         @ApiParam(value = "pi vo", required = true)
-                                          @RequestBody PiVO piVO) {
-        return Optional.ofNullable(piService.updatePi(projectId, piVO))
+                                          @ApiParam(value = "pi vo", required = true)
+                                          @RequestBody PiDTO piDTO) {
+        return Optional.ofNullable(piService.updatePi(projectId, piDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.pi.update"));
     }
@@ -64,7 +66,7 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("pi页面查询art下所有pi简要列表")
     @GetMapping("/list")
-    public ResponseEntity<PageInfo<PiVO>> queryArtAll(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<PiDTO>> queryArtAll(@ApiParam(value = "项目id", required = true)
                                                 @PathVariable(name = "project_id") Long projectId,
                                                       @ApiParam(value = "art id", required = true)
                                                 @RequestParam Long artId,
@@ -79,7 +81,7 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("开启pi")
     @PostMapping("/start")
-    public ResponseEntity<PiVO> startPi(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PiDTO> startPi(@ApiParam(value = "项目id", required = true)
                                          @PathVariable(name = "project_id") Long projectId,
                                         @ApiParam(value = "pi vo", required = true)
                                          @RequestBody PiVO piVO) {
@@ -91,11 +93,11 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("关闭pi之前统计数量")
     @GetMapping("/before_close")
-    public ResponseEntity<PiCompleteCountDTO> beforeClosePi(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PiCompleteCountVO> beforeClosePi(@ApiParam(value = "项目id", required = true)
                                                             @PathVariable(name = "project_id") Long projectId,
-                                                            @ApiParam(value = "pi id", required = true)
+                                                           @ApiParam(value = "pi id", required = true)
                                                             @RequestParam Long piId,
-                                                            @ApiParam(value = "art id", required = true)
+                                                           @ApiParam(value = "art id", required = true)
                                                             @RequestParam Long artId) {
         return Optional.ofNullable(piService.beforeClosePi(projectId, piId, artId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -105,7 +107,7 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("关闭pi")
     @PostMapping("/close")
-    public ResponseEntity<PiVO> closePi(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PiDTO> closePi(@ApiParam(value = "项目id", required = true)
                                          @PathVariable(name = "project_id") Long projectId,
                                         @ApiParam(value = "pi vo", required = true)
                                          @RequestBody PiVO piVO) {
@@ -117,13 +119,13 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("feature批量拖动到pi")
     @PostMapping(value = "/to_pi/{piId}")
-    public ResponseEntity<List<SubFeatureDO>> batchFeatureToPi(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<SubFeatureDTO>> batchFeatureToPi(@ApiParam(value = "项目id", required = true)
                                                                @PathVariable(name = "project_id") Long projectId,
-                                                               @ApiParam(value = "pi id", required = true)
+                                                                @ApiParam(value = "pi id", required = true)
                                                                @PathVariable Long piId,
-                                                               @ApiParam(value = "移卡信息", required = true)
-                                                               @RequestBody MoveIssueDTO moveIssueDTO) {
-        return Optional.ofNullable(piService.batchFeatureToPi(projectId, piId, moveIssueDTO))
+                                                                @ApiParam(value = "移卡信息", required = true)
+                                                               @RequestBody MoveIssueVO moveIssueVO) {
+        return Optional.ofNullable(piService.batchFeatureToPi(projectId, piId, moveIssueVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.feaature.batchToPi"));
     }
@@ -131,11 +133,11 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("feature批量拖动到epic")
     @PostMapping(value = "/to_epic/{epicId}")
-    public ResponseEntity<List<SubFeatureDO>> batchFeatureToEpic(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<SubFeatureDTO>> batchFeatureToEpic(@ApiParam(value = "项目id", required = true)
                                                                  @PathVariable(name = "project_id") Long projectId,
-                                                                 @ApiParam(value = "epic id", required = true)
+                                                                  @ApiParam(value = "epic id", required = true)
                                                                  @PathVariable Long epicId,
-                                                                 @ApiParam(value = "移卡信息", required = true)
+                                                                  @ApiParam(value = "移卡信息", required = true)
                                                                  @RequestBody List<Long> featureIds) {
         return Optional.ofNullable(piService.batchFeatureToEpic(projectId, epicId, featureIds))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -155,7 +157,7 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询ART下的非完成的PI列表")
     @GetMapping(value = "/unfinished")
-    public ResponseEntity<List<PiNameDTO>> queryUnfinishedOfProgram(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<PiNameVO>> queryUnfinishedOfProgram(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(piService.queryUnfinishedOfProgram(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -165,9 +167,9 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("查询PI路线图")
     @GetMapping(value = "/road_map")
-    public ResponseEntity<List<PiWithFeatureDTO>> queryRoadMapOfProgram(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<PiWithFeatureVO>> queryRoadMapOfProgram(@ApiParam(value = "项目id", required = true)
                                                                         @PathVariable(name = "project_id") Long projectId,
-                                                                        @ApiParam(value = "组织id", required = true)
+                                                                       @ApiParam(value = "组织id", required = true)
                                                                         @RequestParam Long organizationId) {
         return Optional.ofNullable(piService.queryRoadMapOfProgram(projectId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

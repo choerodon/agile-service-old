@@ -19,9 +19,9 @@ public interface PiMapper extends Mapper<PiDTO> {
 
     String queryPiMinRank(@Param("programId") Long programId, @Param("piId") Long piId);
 
-    List<PiWithFeatureDO> selectBacklogPiList(@Param("programId") Long programId, @Param("artId") Long artId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
+    List<PiWithFeatureDTO> selectBacklogPiList(@Param("programId") Long programId, @Param("artId") Long artId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
 
-    List<SubFeatureDO> selectBacklogNoPiList(@Param("programId") Long programId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
+    List<SubFeatureDTO> selectBacklogNoPiList(@Param("programId") Long programId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
 
     PiDTO selectLastPi(@Param("programId") Long programId, @Param("artId") Long artId);
 
@@ -31,7 +31,7 @@ public interface PiMapper extends Mapper<PiDTO> {
 
     List<Long> queryFeatureIds(@Param("programId") Long programId, @Param("piId") Long piId);
 
-    List<SubFeatureDO> selectFeatureIdByFeatureIds(@Param("programId") Long programId, @Param("featureIds") List<Long> featureIds);
+    List<SubFeatureDTO> selectFeatureIdByFeatureIds(@Param("programId") Long programId, @Param("featureIds") List<Long> featureIds);
 
     PiDTO selectActivePi(@Param("programId") Long programId, @Param("artId") Long artId);
 
@@ -41,7 +41,7 @@ public interface PiMapper extends Mapper<PiDTO> {
 
     Long selectFeatureCount(@Param("programId") Long programId, @Param("piId") Long piId, @Param("isCompleted") Boolean isCompleted);
 
-    List<PiTodoDO> selectTodoPi(@Param("programId") Long programId, @Param("artId") Long artId);
+    List<PiTodoDTO> selectTodoPi(@Param("programId") Long programId, @Param("artId") Long artId);
 
     Long selectPiCountByOptions(@Param("programId") Long programId, @Param("artId") Long artId, @Param("statusCode") String statusCode);
 
@@ -53,11 +53,11 @@ public interface PiMapper extends Mapper<PiDTO> {
 
     List<Long> selectNextListPi(@Param("programId") Long programId, @Param("artId") Long artId, @Param("piId") Long piId);
 
-    List<PiNameDO> selectAllOfProgram(@Param("programId") Long programId);
+    List<PiNameDTO> selectAllOfProgram(@Param("programId") Long programId);
 
-    List<PiNameDO> selectclosePiListByIssueId(@Param("programId") Long programId, @Param("issueId") Long issueId);
+    List<PiNameDTO> selectclosePiListByIssueId(@Param("programId") Long programId, @Param("issueId") Long issueId);
 
-    PiNameDO selectCurrentPiListByIssueId(@Param("programId") Long programId, @Param("issueId") Long issueId);
+    PiNameDTO selectCurrentPiListByIssueId(@Param("programId") Long programId, @Param("issueId") Long issueId);
 
-    List<PiWithFeatureDO> selectRoadMapPiList(@Param("programId") Long programId, @Param("artId") Long artId);
+    List<PiWithFeatureDTO> selectRoadMapPiList(@Param("programId") Long programId, @Param("artId") Long artId);
 }

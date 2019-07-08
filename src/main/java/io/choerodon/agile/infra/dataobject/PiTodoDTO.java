@@ -1,18 +1,16 @@
 package io.choerodon.agile.infra.dataobject;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2019/4/2.
+ * Created by HuangFuqiang@choerodon.io on 2019/3/29.
  * Email: fuqianghuang01@gmail.com
  */
-public class PiNameDO {
+public class PiTodoDTO {
 
     private Long id;
 
     private String code;
 
     private String name;
-
-    private String statusCode;
 
     public Long getId() {
         return id;
@@ -36,13 +34,5 @@ public class PiNameDO {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
     }
 }

@@ -989,8 +989,8 @@ public class IssueServiceImpl implements IssueService {
         return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
-    private void dataLogRank(Long projectId, MoveIssueDTO moveIssueDTO, String rankStr, Long sprintId) {
-        for (Long issueId : moveIssueDTO.getIssueIds()) {
+    private void dataLogRank(Long projectId, MoveIssueVO moveIssueVO, String rankStr, Long sprintId) {
+        for (Long issueId : moveIssueVO.getIssueIds()) {
             SprintNameDTO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId), SprintNameDTO.class);
             Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()));
@@ -1006,23 +1006,23 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO) {
+    public List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueVO moveIssueVO) {
         sprintValidator.judgeExist(projectId, sprintId);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
-        if (moveIssueDTO.getBefore()) {
-            beforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+        if (moveIssueVO.getBefore()) {
+            beforeRank(projectId, sprintId, moveIssueVO, moveIssueDOS);
         } else {
-            afterRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+            afterRank(projectId, sprintId, moveIssueVO, moveIssueDOS);
         }
         //处理评级日志
-        if (moveIssueDTO.getRankIndex() != null && !moveIssueDTO.getRankIndex()) {
-            dataLogRank(projectId, moveIssueDTO, RANK_LOWER, sprintId);
-        } else if (moveIssueDTO.getRankIndex() != null && moveIssueDTO.getRankIndex()) {
-            dataLogRank(projectId, moveIssueDTO, RANK_HIGHER, sprintId);
+        if (moveIssueVO.getRankIndex() != null && !moveIssueVO.getRankIndex()) {
+            dataLogRank(projectId, moveIssueVO, RANK_LOWER, sprintId);
+        } else if (moveIssueVO.getRankIndex() != null && moveIssueVO.getRankIndex()) {
+            dataLogRank(projectId, moveIssueVO, RANK_HIGHER, sprintId);
         }
         issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
-        List<Long> moveIssueIds = moveIssueDTO.getIssueIds();
+        List<Long> moveIssueIds = moveIssueVO.getIssueIds();
         //处理子任务与子缺陷
         List<Long> subTaskIds = issueMapper.querySubIssueIds(projectId, moveIssueIds);
         List<Long> subBugIds = issueMapper.querySubBugIds(projectId, moveIssueIds);
@@ -1033,7 +1033,7 @@ public class IssueServiceImpl implements IssueService {
             moveIssueIds.addAll(subBugIds);
         }
         //把与现在冲刺与要移动的冲刺相同的issue排除掉
-        List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueDTO.getIssueIds()).stream()
+        List<IssueSearchDO> issueSearchDOList = issueMapper.queryIssueByIssueIds(projectId, moveIssueVO.getIssueIds()).stream()
                 .filter(issueDO -> issueDO.getSprintId() == null ? sprintId != 0 : !issueDO.getSprintId().equals(sprintId)).collect(Collectors.toList());
         if (issueSearchDOList != null && !issueSearchDOList.isEmpty()) {
             List<Long> moveIssueIdsFilter = issueSearchDOList.stream().map(IssueSearchDO::getIssueId).collect(Collectors.toList());
@@ -1221,58 +1221,58 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void beforeRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
-        moveIssueDTO.setIssueIds(issueMapper.queryIssueIdOrderByRankDesc(projectId, moveIssueDTO.getIssueIds()));
-        if (moveIssueDTO.getOutsetIssueId() == null || Objects.equals(moveIssueDTO.getOutsetIssueId(), 0L)) {
-            noOutsetBeforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+    private void beforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+        moveIssueVO.setIssueIds(issueMapper.queryIssueIdOrderByRankDesc(projectId, moveIssueVO.getIssueIds()));
+        if (moveIssueVO.getOutsetIssueId() == null || Objects.equals(moveIssueVO.getOutsetIssueId(), 0L)) {
+            noOutsetBeforeRank(projectId, sprintId, moveIssueVO, moveIssueDOS);
         } else {
-            outsetBeforeRank(projectId, sprintId, moveIssueDTO, moveIssueDOS);
+            outsetBeforeRank(projectId, sprintId, moveIssueVO, moveIssueDOS);
         }
     }
 
-    private void outsetBeforeRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
-        String rightRank = issueMapper.queryRank(projectId, moveIssueDTO.getOutsetIssueId());
+    private void outsetBeforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+        String rightRank = issueMapper.queryRank(projectId, moveIssueVO.getOutsetIssueId());
         String leftRank = issueMapper.queryLeftRank(projectId, sprintId, rightRank);
         if (leftRank == null) {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 rightRank = RankUtil.genPre(rightRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
             }
         } else {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 rightRank = RankUtil.between(leftRank, rightRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
             }
         }
     }
 
-    private void noOutsetBeforeRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
+    private void noOutsetBeforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
         String minRank = sprintMapper.queryMinRank(projectId, sprintId);
         if (minRank == null) {
             minRank = RankUtil.mid();
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
                 minRank = RankUtil.genPre(minRank);
             }
         } else {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 minRank = RankUtil.genPre(minRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
             }
         }
     }
 
-    private void afterRank(Long projectId, Long sprintId, MoveIssueDTO moveIssueDTO, List<MoveIssueDO> moveIssueDOS) {
-        moveIssueDTO.setIssueIds(issueMapper.queryIssueIdOrderByRankAsc(projectId, moveIssueDTO.getIssueIds()));
-        String leftRank = issueMapper.queryRank(projectId, moveIssueDTO.getOutsetIssueId());
+    private void afterRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+        moveIssueVO.setIssueIds(issueMapper.queryIssueIdOrderByRankAsc(projectId, moveIssueVO.getIssueIds()));
+        String leftRank = issueMapper.queryRank(projectId, moveIssueVO.getOutsetIssueId());
         String rightRank = issueMapper.queryRightRank(projectId, sprintId, leftRank);
         if (rightRank == null) {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 leftRank = RankUtil.genNext(leftRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
             }
         } else {
-            for (Long issueId : moveIssueDTO.getIssueIds()) {
+            for (Long issueId : moveIssueVO.getIssueIds()) {
                 leftRank = RankUtil.between(leftRank, rightRank);
                 moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
             }

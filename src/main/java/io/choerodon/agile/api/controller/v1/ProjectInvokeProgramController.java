@@ -48,11 +48,11 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("项目层下查询查询PI路线图")
     @GetMapping(value = "/road_map")
-    public ResponseEntity<List<PiWithFeatureDTO>> queryRoadMapOfProgram(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<PiWithFeatureVO>> queryRoadMapOfProgram(@ApiParam(value = "项目id", required = true)
                                                                         @PathVariable(name = "project_id") Long projectId,
-                                                                        @ApiParam(value = "项目群id", required = true)
+                                                                       @ApiParam(value = "项目群id", required = true)
                                                                         @RequestParam Long programId,
-                                                                        @ApiParam(value = "组织id", required = true)
+                                                                       @ApiParam(value = "组织id", required = true)
                                                                         @RequestParam Long organizationId) {
         return Optional.ofNullable(piService.queryRoadMapOfProgram(programId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -162,9 +162,9 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("项目层下查询ART下的非完成的PI列表")
     @GetMapping(value = "/pi_objective/unfinished")
-    public ResponseEntity<List<PiNameDTO>> queryUnfinishedOfProgram(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<PiNameVO>> queryUnfinishedOfProgram(@ApiParam(value = "项目id", required = true)
                                                                     @PathVariable(name = "project_id") Long projectId,
-                                                                    @ApiParam(value = "项目群id", required = true)
+                                                                   @ApiParam(value = "项目群id", required = true)
                                                                     @RequestParam Long programId) {
         return Optional.ofNullable(piService.queryUnfinishedOfProgram(programId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

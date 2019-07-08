@@ -40,8 +40,8 @@ public class IssueAssembler extends AbstractAssembler {
         issueDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
         issueDTO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDO.getActiveSprint(), SprintNameDTO.class));
         issueDTO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDO.getCloseSprint(), SprintNameDTO.class));
-        issueDTO.setActivePi(sprintNameAssembler.toTarget(issueDetailDO.getActivePi(), PiNameDTO.class));
-        issueDTO.setClosePi(sprintNameAssembler.toTargetList(issueDetailDO.getClosePi(), PiNameDTO.class));
+        issueDTO.setActivePi(sprintNameAssembler.toTarget(issueDetailDO.getActivePi(), PiNameVO.class));
+        issueDTO.setClosePi(sprintNameAssembler.toTargetList(issueDetailDO.getClosePi(), PiNameVO.class));
         issueDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));

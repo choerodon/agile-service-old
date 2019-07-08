@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2019/4/2.
  * Email: fuqianghuang01@gmail.com
  */
-public class PiNameDTO {
+public class PiNameVO {
 
     @ApiModelProperty(value = "pi主键id")
     private Long id;

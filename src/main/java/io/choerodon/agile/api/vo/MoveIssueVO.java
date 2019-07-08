@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by jian_zhang02@163.com on 2018/5/28.
  */
-public class MoveIssueDTO {
+public class MoveIssueVO {
 
     @ApiModelProperty(value = "移动的问题集合")
     private List<Long> issueIds;

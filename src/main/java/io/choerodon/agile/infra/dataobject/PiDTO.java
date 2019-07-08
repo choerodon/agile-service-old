@@ -15,6 +15,24 @@ import java.util.Date;
 @Table(name = "agile_pi")
 public class PiDTO extends BaseDTO {
 
+    public PiDTO() {}
+
+    public PiDTO(Long programId, Long id, String statusCode, Date actualStartDate, Long objectVersionNumber) {
+        this.programId = programId;
+        this.id = id;
+        this.statusCode = statusCode;
+        this.actualStartDate = actualStartDate;
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public PiDTO(Long programId, Long id, String statusCode, Long objectVersionNumber, Date actualEndDate) {
+        this.programId = programId;
+        this.id = id;
+        this.statusCode = statusCode;
+        this.objectVersionNumber = objectVersionNumber;
+        this.actualEndDate = actualEndDate;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,6 +56,8 @@ public class PiDTO extends BaseDTO {
     private Long artId;
 
     private Long programId;
+
+    private Long objectVersionNumber;
 
     public Long getId() {
         return id;
@@ -125,5 +145,15 @@ public class PiDTO extends BaseDTO {
 
     public Date getActualEndDate() {
         return actualEndDate;
+    }
+
+    @Override
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    @Override
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 }

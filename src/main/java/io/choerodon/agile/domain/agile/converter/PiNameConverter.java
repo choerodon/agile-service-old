@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.PiNameDTO;
-import io.choerodon.agile.infra.dataobject.PiNameDO;
+import io.choerodon.agile.api.vo.PiNameVO;
+import io.choerodon.agile.infra.dataobject.PiNameDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class PiNameConverter implements ConvertorI<Object, PiNameDO, PiNameDTO> {
+public class PiNameConverter implements ConvertorI<Object, PiNameDTO, PiNameVO> {
 
     @Override
-    public PiNameDTO doToDto(PiNameDO piNameDO) {
-        PiNameDTO piNameDTO = new PiNameDTO();
-        BeanUtils.copyProperties(piNameDO, piNameDTO);
-        return piNameDTO;
+    public PiNameVO doToDto(PiNameDTO piNameDTO) {
+        PiNameVO piNameVO = new PiNameVO();
+        BeanUtils.copyProperties(piNameDTO, piNameVO);
+        return piNameVO;
     }
 }

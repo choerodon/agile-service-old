@@ -443,24 +443,24 @@ public class DataLogAspect {
         List<Long> issueIds = (List<Long>) args[2];
         if (programId != null && piId != null && issueIds != null && !issueIds.isEmpty()) {
             for (Long issueId : issueIds) {
-                List<PiNameDO> piNameDOList = piMapper.selectclosePiListByIssueId(programId, issueId);
-                PiNameDO currentPiNameDO = piMapper.selectCurrentPiListByIssueId(programId, issueId);
+                List<PiNameDTO> piNameDTOList = piMapper.selectclosePiListByIssueId(programId, issueId);
+                PiNameDTO currentPiNameDTO = piMapper.selectCurrentPiListByIssueId(programId, issueId);
                 PiDTO targetPi = piMapper.selectByPrimaryKey(piId);
                 String oldString = "";
                 String oldvalue = "";
                 String newString = "";
                 String newValue = "";
-                if (piNameDOList != null && !piNameDOList.isEmpty()) {
-                    oldString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
-                    oldvalue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
-                    newString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
-                    newValue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                if (piNameDTOList != null && !piNameDTOList.isEmpty()) {
+                    oldString += piNameDTOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                    oldvalue += piNameDTOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                    newString += piNameDTOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                    newValue += piNameDTOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
                 }
-                if (currentPiNameDO != null) {
-                    oldString = oldString + ("".equals(oldString) ? currentPiNameDO.getCode() + "-" + currentPiNameDO.getName() : "," + currentPiNameDO.getCode() + "-" + currentPiNameDO.getName());
-                    oldvalue = oldvalue + ("".equals(oldvalue) ? currentPiNameDO.getId().toString() : "," + currentPiNameDO.getId().toString());
-                    newString = newString + ("".equals(newString) ? currentPiNameDO.getCode() + "-" + currentPiNameDO.getName() : "," + currentPiNameDO.getCode() + "-" + currentPiNameDO.getName());
-                    newValue = newValue + ("".equals(newValue) ? currentPiNameDO.getId().toString() : "," + currentPiNameDO.getId().toString());
+                if (currentPiNameDTO != null) {
+                    oldString = oldString + ("".equals(oldString) ? currentPiNameDTO.getCode() + "-" + currentPiNameDTO.getName() : "," + currentPiNameDTO.getCode() + "-" + currentPiNameDTO.getName());
+                    oldvalue = oldvalue + ("".equals(oldvalue) ? currentPiNameDTO.getId().toString() : "," + currentPiNameDTO.getId().toString());
+                    newString = newString + ("".equals(newString) ? currentPiNameDTO.getCode() + "-" + currentPiNameDTO.getName() : "," + currentPiNameDTO.getCode() + "-" + currentPiNameDTO.getName());
+                    newValue = newValue + ("".equals(newValue) ? currentPiNameDTO.getId().toString() : "," + currentPiNameDTO.getId().toString());
                 }
                 if (targetPi != null) {
                     newString = newString + ("".equals(newString) ? targetPi.getCode() + "-" + targetPi.getName() : "," + targetPi.getCode() + "-" + targetPi.getName());
@@ -844,22 +844,22 @@ public class DataLogAspect {
             Long programId = batchRemovePiE.getProgramId();
             Long piId = batchRemovePiE.getPiId();
             for (Long issueId : batchRemovePiE.getIssueIds()) {
-                List<PiNameDO> piNameDOList = piMapper.selectclosePiListByIssueId(programId, issueId);
-                PiNameDO currentPiNameDO = piMapper.selectCurrentPiListByIssueId(programId, issueId);
+                List<PiNameDTO> piNameDTOList = piMapper.selectclosePiListByIssueId(programId, issueId);
+                PiNameDTO currentPiNameDTO = piMapper.selectCurrentPiListByIssueId(programId, issueId);
                 PiDTO targetPi = piMapper.selectByPrimaryKey(piId);
                 String oldString = "";
                 String oldvalue = "";
                 String newString = "";
                 String newValue = "";
-                if (piNameDOList != null && !piNameDOList.isEmpty()) {
-                    oldString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
-                    oldvalue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
-                    newString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
-                    newValue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                if (piNameDTOList != null && !piNameDTOList.isEmpty()) {
+                    oldString += piNameDTOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                    oldvalue += piNameDTOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                    newString += piNameDTOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                    newValue += piNameDTOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
                 }
-                if (currentPiNameDO != null) {
-                    oldString = oldString + ("".equals(oldString) ? currentPiNameDO.getCode() + "-" + currentPiNameDO.getName() : "," + currentPiNameDO.getCode() + "-" + currentPiNameDO.getName());
-                    oldvalue = oldvalue + ("".equals(oldvalue) ? currentPiNameDO.getId().toString() : "," + currentPiNameDO.getId().toString());
+                if (currentPiNameDTO != null) {
+                    oldString = oldString + ("".equals(oldString) ? currentPiNameDTO.getCode() + "-" + currentPiNameDTO.getName() : "," + currentPiNameDTO.getCode() + "-" + currentPiNameDTO.getName());
+                    oldvalue = oldvalue + ("".equals(oldvalue) ? currentPiNameDTO.getId().toString() : "," + currentPiNameDTO.getId().toString());
                 }
                 if (targetPi != null) {
                     newString = newString + ("".equals(newString) ? targetPi.getCode() + "-" + targetPi.getName() : "," + targetPi.getCode() + "-" + targetPi.getName());
@@ -1198,22 +1198,22 @@ public class DataLogAspect {
             }
         }
         if (piFeatureE != null) {
-            List<PiNameDO> piNameDOList = piMapper.selectclosePiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
-            PiNameDO currentPiNameDO = piMapper.selectCurrentPiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
+            List<PiNameDTO> piNameDTOList = piMapper.selectclosePiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
+            PiNameDTO currentPiNameDTO = piMapper.selectCurrentPiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
             PiDTO targetPi = piMapper.selectByPrimaryKey(piFeatureE.getPiId());
             String oldString = "";
             String oldvalue = "";
             String newString = "";
             String newValue = "";
-            if (piNameDOList != null && !piNameDOList.isEmpty()) {
-                oldString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
-                oldvalue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
-                newString += piNameDOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
-                newValue += piNameDOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+            if (piNameDTOList != null && !piNameDTOList.isEmpty()) {
+                oldString += piNameDTOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                oldvalue += piNameDTOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
+                newString += piNameDTOList.stream().map(piNameDO -> piNameDO.getCode() + "-" + piNameDO.getName()).collect(Collectors.joining(","));
+                newValue += piNameDTOList.stream().map(piNameDO -> piNameDO.getId().toString()).collect(Collectors.joining(","));
             }
-            if (currentPiNameDO != null) {
-                oldString = oldString + ("".equals(oldString) ? currentPiNameDO.getCode() + "-" + currentPiNameDO.getName() : "," + currentPiNameDO.getCode() + "-" + currentPiNameDO.getName());
-                oldvalue = oldvalue + ("".equals(oldvalue) ? currentPiNameDO.getId().toString() : "," + currentPiNameDO.getId().toString());
+            if (currentPiNameDTO != null) {
+                oldString = oldString + ("".equals(oldString) ? currentPiNameDTO.getCode() + "-" + currentPiNameDTO.getName() : "," + currentPiNameDTO.getCode() + "-" + currentPiNameDTO.getName());
+                oldvalue = oldvalue + ("".equals(oldvalue) ? currentPiNameDTO.getId().toString() : "," + currentPiNameDTO.getId().toString());
             }
             if (targetPi != null) {
                 newString = newString + ("".equals(newString) ? targetPi.getCode() + "-" + targetPi.getName() : "," + targetPi.getCode() + "-" + targetPi.getName());

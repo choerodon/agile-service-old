@@ -515,7 +515,7 @@ class IssueControllerSpec extends Specification {
 
     def "batchIssueToSprint"() {
         given: '移动issue的对象'
-        MoveIssueDTO moveIssueDTO = new MoveIssueDTO()
+        MoveIssueVO moveIssueDTO = new MoveIssueVO()
         moveIssueDTO.before = true
         moveIssueDTO.issueIds = issueIds
         moveIssueDTO.rankIndex = true

@@ -9,7 +9,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2019/3/18.
  * Email: fuqianghuang01@gmail.com
  */
-public class PiWithFeatureDTO {
+public class PiWithFeatureVO {
 
     @ApiModelProperty(value = "pi主键id")
     private Long id;
