@@ -445,7 +445,7 @@ public class DataLogAspect {
             for (Long issueId : issueIds) {
                 List<PiNameDO> piNameDOList = piMapper.selectclosePiListByIssueId(programId, issueId);
                 PiNameDO currentPiNameDO = piMapper.selectCurrentPiListByIssueId(programId, issueId);
-                PiDO targetPi = piMapper.selectByPrimaryKey(piId);
+                PiDTO targetPi = piMapper.selectByPrimaryKey(piId);
                 String oldString = "";
                 String oldvalue = "";
                 String newString = "";
@@ -846,7 +846,7 @@ public class DataLogAspect {
             for (Long issueId : batchRemovePiE.getIssueIds()) {
                 List<PiNameDO> piNameDOList = piMapper.selectclosePiListByIssueId(programId, issueId);
                 PiNameDO currentPiNameDO = piMapper.selectCurrentPiListByIssueId(programId, issueId);
-                PiDO targetPi = piMapper.selectByPrimaryKey(piId);
+                PiDTO targetPi = piMapper.selectByPrimaryKey(piId);
                 String oldString = "";
                 String oldvalue = "";
                 String newString = "";
@@ -1200,7 +1200,7 @@ public class DataLogAspect {
         if (piFeatureE != null) {
             List<PiNameDO> piNameDOList = piMapper.selectclosePiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
             PiNameDO currentPiNameDO = piMapper.selectCurrentPiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
-            PiDO targetPi = piMapper.selectByPrimaryKey(piFeatureE.getPiId());
+            PiDTO targetPi = piMapper.selectByPrimaryKey(piFeatureE.getPiId());
             String oldString = "";
             String oldvalue = "";
             String newString = "";

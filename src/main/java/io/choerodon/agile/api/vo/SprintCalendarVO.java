@@ -8,7 +8,7 @@ import java.util.Date;
  * Created by HuangFuqiang@choerodon.io on 2019/4/25.
  * Email: fuqianghuang01@gmail.com
  */
-public class SprintCalendarDTO {
+public class SprintCalendarVO {
 
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;

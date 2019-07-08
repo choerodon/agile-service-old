@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.ArtDTO;
+import io.choerodon.agile.api.vo.ArtVO;
 import io.choerodon.agile.domain.agile.entity.ArtE;
-import io.choerodon.agile.infra.dataobject.ArtDO;
+import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,47 +12,47 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class ArtConverter implements ConvertorI<ArtE, ArtDTO, ArtDO> {
+public class ArtConverter implements ConvertorI<ArtE, ArtVO, ArtDTO> {
 
     @Override
-    public ArtE dtoToEntity(ArtDO artDO) {
-        ArtE artE = new ArtE();
-        BeanUtils.copyProperties(artDO, artE);
-        return artE;
-    }
-
-    @Override
-    public ArtDO entityToDto(ArtE artE) {
-        ArtDO artDO = new ArtDO();
-        BeanUtils.copyProperties(artE, artDO);
-        return artDO;
-    }
-
-    @Override
-    public ArtE doToEntity(ArtDTO artDTO) {
+    public ArtE dtoToEntity(ArtDTO artDTO) {
         ArtE artE = new ArtE();
         BeanUtils.copyProperties(artDTO, artE);
         return artE;
     }
 
     @Override
-    public ArtDTO entityToDo(ArtE artE) {
+    public ArtDTO entityToDto(ArtE artE) {
         ArtDTO artDTO = new ArtDTO();
         BeanUtils.copyProperties(artE, artDTO);
         return artDTO;
     }
 
     @Override
-    public ArtDO doToDto(ArtDTO artDTO) {
-        ArtDO artDO = new ArtDO();
-        BeanUtils.copyProperties(artDTO, artDO);
-        return artDO;
+    public ArtE doToEntity(ArtVO artVO) {
+        ArtE artE = new ArtE();
+        BeanUtils.copyProperties(artVO, artE);
+        return artE;
     }
 
     @Override
-    public ArtDTO dtoToDo(ArtDO artDO) {
+    public ArtVO entityToDo(ArtE artE) {
+        ArtVO artVO = new ArtVO();
+        BeanUtils.copyProperties(artE, artVO);
+        return artVO;
+    }
+
+    @Override
+    public ArtDTO doToDto(ArtVO artVO) {
         ArtDTO artDTO = new ArtDTO();
-        BeanUtils.copyProperties(artDO, artDTO);
+        BeanUtils.copyProperties(artVO, artDTO);
         return artDTO;
+    }
+
+    @Override
+    public ArtVO dtoToDo(ArtDTO artDTO) {
+        ArtVO artVO = new ArtVO();
+        BeanUtils.copyProperties(artDTO, artVO);
+        return artVO;
     }
 }

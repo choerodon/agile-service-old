@@ -38,11 +38,11 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("修改pi")
     @PutMapping
-    public ResponseEntity<PiDTO> updatePi(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PiVO> updatePi(@ApiParam(value = "项目id", required = true)
                                           @PathVariable(name = "project_id") Long projectId,
-                                          @ApiParam(value = "pi vo", required = true)
-                                          @RequestBody PiDTO piDTO) {
-        return Optional.ofNullable(piService.updatePi(projectId, piDTO))
+                                         @ApiParam(value = "pi vo", required = true)
+                                          @RequestBody PiVO piVO) {
+        return Optional.ofNullable(piService.updatePi(projectId, piVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.pi.update"));
     }
@@ -64,11 +64,11 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("pi页面查询art下所有pi简要列表")
     @GetMapping("/list")
-    public ResponseEntity<PageInfo<PiDTO>> queryArtAll(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<PiVO>> queryArtAll(@ApiParam(value = "项目id", required = true)
                                                 @PathVariable(name = "project_id") Long projectId,
-                                                @ApiParam(value = "art id", required = true)
+                                                      @ApiParam(value = "art id", required = true)
                                                 @RequestParam Long artId,
-                                                @ApiParam(value = "分页信息", required = true)
+                                                      @ApiParam(value = "分页信息", required = true)
                                                 @SortDefault(value = "id", direction = Sort.Direction.ASC)
                                                 @ApiIgnore PageRequest pageRequest) {
         return Optional.ofNullable(piService.queryArtAll(projectId, artId, pageRequest))
@@ -79,11 +79,11 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("开启pi")
     @PostMapping("/start")
-    public ResponseEntity<PiDTO> startPi(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PiVO> startPi(@ApiParam(value = "项目id", required = true)
                                          @PathVariable(name = "project_id") Long projectId,
-                                         @ApiParam(value = "pi vo", required = true)
-                                         @RequestBody PiDTO piDTO) {
-        return Optional.ofNullable(piService.startPi(projectId, piDTO))
+                                        @ApiParam(value = "pi vo", required = true)
+                                         @RequestBody PiVO piVO) {
+        return Optional.ofNullable(piService.startPi(projectId, piVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.pi.start"));
     }
@@ -105,11 +105,11 @@ public class PiController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("关闭pi")
     @PostMapping("/close")
-    public ResponseEntity<PiDTO> closePi(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PiVO> closePi(@ApiParam(value = "项目id", required = true)
                                          @PathVariable(name = "project_id") Long projectId,
-                                         @ApiParam(value = "pi vo", required = true)
-                                         @RequestBody PiDTO piDTO) {
-        return Optional.ofNullable(piService.closePi(projectId, piDTO))
+                                        @ApiParam(value = "pi vo", required = true)
+                                         @RequestBody PiVO piVO) {
+        return Optional.ofNullable(piService.closePi(projectId, piVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.pi.close"));
     }

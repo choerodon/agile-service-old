@@ -1,10 +1,11 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.ArtDTO;
-import io.choerodon.agile.api.vo.ArtStopDTO;
-import io.choerodon.agile.api.vo.PiCalendarDTO;
+import io.choerodon.agile.api.vo.ArtVO;
+import io.choerodon.agile.api.vo.ArtStopVO;
 import io.choerodon.agile.api.vo.PiCreateDTO;
 import com.github.pagehelper.PageInfo;
+import io.choerodon.agile.infra.dataobject.ArtDTO;
+import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
 import io.choerodon.base.domain.PageRequest;
 
 import java.util.List;
@@ -17,25 +18,25 @@ public interface ArtService {
 
     ArtDTO createArt(Long programId, ArtDTO artDTO);
 
-    ArtDTO startArt(Long programId, ArtDTO artDTO);
+    ArtDTO startArt(Long programId, ArtVO artVO);
 
-    ArtDTO stopArt(Long programId, ArtDTO artDTO, Boolean onlySelectEnable);
+    ArtDTO stopArt(Long programId, ArtVO artVO, Boolean onlySelectEnable);
 
-    ArtDTO updateArt(Long programId, ArtDTO artDTO);
+    ArtDTO updateArt(Long programId, ArtVO artVO);
 
     PageInfo<ArtDTO> queryArtList(Long programId, PageRequest pageRequest);
 
-    ArtDTO queryArt(Long programId, Long id);
+    ArtVO queryArt(Long programId, Long id);
 
     void createOtherPi(Long programId, PiCreateDTO piCreateDTO);
 
     List<PiCalendarDTO> queryArtCalendar(Long programId, Long artId);
 
-    ArtStopDTO beforeStop(Long programId, Long id);
+    ArtStopVO beforeStop(Long programId, Long id);
 
     Boolean checkName(Long programId, String artName);
 
-    List<ArtDTO> queryAllArtList(Long programId);
+    List<ArtVO> queryAllArtList(Long programId);
 
-    ArtDTO queryActiveArt(Long programId);
+    ArtVO queryActiveArt(Long programId);
 }

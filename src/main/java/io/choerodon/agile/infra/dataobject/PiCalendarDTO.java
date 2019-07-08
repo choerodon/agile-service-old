@@ -1,29 +1,19 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.mybatis.entity.BaseDTO;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.util.Date;
+import java.util.List;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2019/3/11.
+ * Created by HuangFuqiang@choerodon.io on 2019/3/14.
  * Email: fuqianghuang01@gmail.com
  */
-@Table(name = "agile_pi")
-public class PiDO extends BaseDTO {
+public class PiCalendarDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String code;
 
     private String name;
-
-    private String seqNumber;
 
     private String statusCode;
 
@@ -31,13 +21,11 @@ public class PiDO extends BaseDTO {
 
     private Date endDate;
 
-    private Date actualStartDate;
-
-    private Date actualEndDate;
-
     private Long artId;
 
     private Long programId;
+
+    List<SprintCalendarDTO> sprintCalendarDTOList;
 
     public Long getId() {
         return id;
@@ -61,14 +49,6 @@ public class PiDO extends BaseDTO {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getSeqNumber() {
-        return seqNumber;
-    }
-
-    public void setSeqNumber(String seqNumber) {
-        this.seqNumber = seqNumber;
     }
 
     public String getStatusCode() {
@@ -111,19 +91,11 @@ public class PiDO extends BaseDTO {
         this.programId = programId;
     }
 
-    public void setActualStartDate(Date actualStartDate) {
-        this.actualStartDate = actualStartDate;
+    public List<SprintCalendarDTO> getSprintCalendarDTOList() {
+        return sprintCalendarDTOList;
     }
 
-    public Date getActualStartDate() {
-        return actualStartDate;
-    }
-
-    public void setActualEndDate(Date actualEndDate) {
-        this.actualEndDate = actualEndDate;
-    }
-
-    public Date getActualEndDate() {
-        return actualEndDate;
+    public void setSprintCalendarDTOList(List<SprintCalendarDTO> sprintCalendarDTOList) {
+        this.sprintCalendarDTOList = sprintCalendarDTOList;
     }
 }

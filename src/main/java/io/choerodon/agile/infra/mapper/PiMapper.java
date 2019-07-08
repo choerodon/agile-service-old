@@ -11,7 +11,7 @@ import java.util.Map;
  * Created by HuangFuqiang@choerodon.io on 2019/3/11.
  * Email: fuqianghuang01@gmail.com
  */
-public interface PiMapper extends Mapper<PiDO> {
+public interface PiMapper extends Mapper<PiDTO> {
 
     Boolean hasPiIssue(@Param("programId") Long programId, @Param("piId") Long piId);
 
@@ -23,9 +23,9 @@ public interface PiMapper extends Mapper<PiDO> {
 
     List<SubFeatureDO> selectBacklogNoPiList(@Param("programId") Long programId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs);
 
-    PiDO selectLastPi(@Param("programId") Long programId, @Param("artId") Long artId);
+    PiDTO selectLastPi(@Param("programId") Long programId, @Param("artId") Long artId);
 
-    List<PiDO> selectPiListInArt(@Param("programId") Long programId, @Param("artId") Long artId);
+    List<PiDTO> selectPiListInArt(@Param("programId") Long programId, @Param("artId") Long artId);
 
     List<Long> queryFeatureIdOrderByRankDesc(@Param("programId") Long programId, @Param("piId") Long piId);
 
@@ -33,11 +33,11 @@ public interface PiMapper extends Mapper<PiDO> {
 
     List<SubFeatureDO> selectFeatureIdByFeatureIds(@Param("programId") Long programId, @Param("featureIds") List<Long> featureIds);
 
-    PiDO selectActivePi(@Param("programId") Long programId, @Param("artId") Long artId);
+    PiDTO selectActivePi(@Param("programId") Long programId, @Param("artId") Long artId);
 
-    List<PiDO> selectTodoPiDOList(@Param("programId") Long programId, @Param("artId") Long artId);
+    List<PiDTO> selectTodoPiDOList(@Param("programId") Long programId, @Param("artId") Long artId);
 
-    List<PiDO> selectUnDonePiDOList(@Param("programId") Long programId, @Param("artId") Long artId);
+    List<PiDTO> selectUnDonePiDOList(@Param("programId") Long programId, @Param("artId") Long artId);
 
     Long selectFeatureCount(@Param("programId") Long programId, @Param("piId") Long piId, @Param("isCompleted") Boolean isCompleted);
 
@@ -47,9 +47,9 @@ public interface PiMapper extends Mapper<PiDO> {
 
     Long selectRelatedFeatureCount(@Param("programId") Long programId, @Param("artId") Long artId);
 
-    PiDO selectArtFirstPi(@Param("programId") Long programId, @Param("artId") Long artId);
+    PiDTO selectArtFirstPi(@Param("programId") Long programId, @Param("artId") Long artId);
 
-    PiDO selectNextPi(@Param("programId") Long programId, @Param("artId") Long artId, @Param("piId") Long piId);
+    PiDTO selectNextPi(@Param("programId") Long programId, @Param("artId") Long artId, @Param("piId") Long piId);
 
     List<Long> selectNextListPi(@Param("programId") Long programId, @Param("artId") Long artId, @Param("piId") Long piId);
 

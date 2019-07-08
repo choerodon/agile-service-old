@@ -1,11 +1,11 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.vo.ArtDTO;
-import io.choerodon.agile.api.vo.PiCalendarDTO;
-import io.choerodon.agile.api.vo.SprintCalendarDTO;
+import io.choerodon.agile.api.vo.ArtVO;
+import io.choerodon.agile.api.vo.PiCalendarVO;
+import io.choerodon.agile.api.vo.SprintCalendarVO;
 import io.choerodon.agile.infra.repository.UserRepository;
-import io.choerodon.agile.infra.dataobject.ArtDO;
-import io.choerodon.agile.infra.dataobject.PiCalendarDO;
+import io.choerodon.agile.infra.dataobject.ArtDTO;
+import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.core.convertor.ConvertHelper;
 import org.springframework.beans.BeanUtils;
@@ -28,32 +28,32 @@ public class ArtAssembler {
     @Autowired
     private UserRepository userRepository;
 
-    public ArtDTO artDOTODTO(ArtDO artDO) {
-        ArtDTO artDTO = ConvertHelper.convert(artDO, ArtDTO.class);
+    public ArtVO artDOTODTO(ArtDTO artDTO) {
+        ArtVO artVO = ConvertHelper.convert(artDTO, ArtVO.class);
         List<Long> rteIds = new ArrayList<>();
-        if (artDO.getRteId() != null) {
-            rteIds.add(artDO.getRteId());
+        if (artDTO.getRteId() != null) {
+            rteIds.add(artDTO.getRteId());
         }
         if (rteIds.isEmpty()) {
-            return artDTO;
+            return artVO;
         }
         Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
                 rteIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
-        UserMessageDO userMessageDO = userMessageDOMap.get(artDO.getRteId());
+        UserMessageDO userMessageDO = userMessageDOMap.get(artDTO.getRteId());
         String rteName = userMessageDO != null ? userMessageDO.getLoginName() + userMessageDO.getName() : null;
-        artDTO.setRteName(rteName);
-        return artDTO;
+        artVO.setRteName(rteName);
+        return artVO;
     }
 
-    public List<PiCalendarDTO> piCalendarDOToDTO(List<PiCalendarDO> piCalendarDOList) {
-        List<PiCalendarDTO> result = new ArrayList<>();
-        piCalendarDOList.forEach(piCalendarDO -> {
-            PiCalendarDTO piCalendarDTO = new PiCalendarDTO();
-            BeanUtils.copyProperties(piCalendarDO, piCalendarDTO);
-            if (piCalendarDO.getSprintCalendarDOList() != null && !piCalendarDO.getSprintCalendarDOList().isEmpty()) {
-                piCalendarDTO.setSprintCalendarDTOList(ConvertHelper.convertList(piCalendarDO.getSprintCalendarDOList(), SprintCalendarDTO.class));
+    public List<PiCalendarVO> piCalendarDOToDTO(List<PiCalendarDTO> piCalendarDTOList) {
+        List<PiCalendarVO> result = new ArrayList<>();
+        piCalendarDTOList.forEach(piCalendarDTO -> {
+            PiCalendarVO piCalendarVO = new PiCalendarVO();
+            BeanUtils.copyProperties(piCalendarDTO, piCalendarVO);
+            if (piCalendarDTO.getSprintCalendarDTOList() != null && !piCalendarDTO.getSprintCalendarDTOList().isEmpty()) {
+                piCalendarVO.setSprintCalendarVOList(ConvertHelper.convertList(piCalendarDTO.getSprintCalendarDTOList(), SprintCalendarVO.class));
             }
-            result.add(piCalendarDTO);
+            result.add(piCalendarVO);
         });
         return result;
     }

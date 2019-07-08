@@ -1,42 +1,43 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.choerodon.mybatis.entity.BaseDTO;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import java.util.List;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2019/4/25.
+ * Created by HuangFuqiang@choerodon.io on 2019/3/11.
  * Email: fuqianghuang01@gmail.com
  */
-public class PiCalendarDTO {
+@Table(name = "agile_pi")
+public class PiDTO extends BaseDTO {
 
-    @ApiModelProperty(value = "PI id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ApiModelProperty(value = "PI编码")
     private String code;
 
-    @ApiModelProperty(value = "PI名称")
     private String name;
 
-    @ApiModelProperty(value = "PI状态")
+    private String seqNumber;
+
     private String statusCode;
 
-    @ApiModelProperty(value = "PI开始时间")
     private Date startDate;
 
-    @ApiModelProperty(value = "PI结束时间")
     private Date endDate;
 
-    @ApiModelProperty(value = "PI所属的ART id")
+    private Date actualStartDate;
+
+    private Date actualEndDate;
+
     private Long artId;
 
-    @ApiModelProperty(value = "项目群id")
     private Long programId;
-
-    @ApiModelProperty(value = "PI下的冲刺信息")
-    List<SprintCalendarDTO> sprintCalendarDTOList;
 
     public Long getId() {
         return id;
@@ -60,6 +61,14 @@ public class PiCalendarDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getSeqNumber() {
+        return seqNumber;
+    }
+
+    public void setSeqNumber(String seqNumber) {
+        this.seqNumber = seqNumber;
     }
 
     public String getStatusCode() {
@@ -102,11 +111,19 @@ public class PiCalendarDTO {
         this.programId = programId;
     }
 
-    public List<SprintCalendarDTO> getSprintCalendarDTOList() {
-        return sprintCalendarDTOList;
+    public void setActualStartDate(Date actualStartDate) {
+        this.actualStartDate = actualStartDate;
     }
 
-    public void setSprintCalendarDTOList(List<SprintCalendarDTO> sprintCalendarDTOList) {
-        this.sprintCalendarDTOList = sprintCalendarDTOList;
+    public Date getActualStartDate() {
+        return actualStartDate;
+    }
+
+    public void setActualEndDate(Date actualEndDate) {
+        this.actualEndDate = actualEndDate;
+    }
+
+    public Date getActualEndDate() {
+        return actualEndDate;
     }
 }

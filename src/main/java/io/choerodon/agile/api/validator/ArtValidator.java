@@ -1,6 +1,7 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.vo.ArtDTO;
+import io.choerodon.agile.api.vo.ArtVO;
+import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,35 +34,35 @@ public class ArtValidator {
         }
     }
 
-    public void checkArtStart(ArtDTO artDTO) {
-        if (artDTO.getProgramId() == null) {
+    public void checkArtStart(ArtVO artVO) {
+        if (artVO.getProgramId() == null) {
             throw new CommonException("error.programId.null");
         }
-        if (artDTO.getId() == null) {
+        if (artVO.getId() == null) {
             throw new CommonException("error.artId.null");
         }
-        if (artDTO.getObjectVersionNumber() == null) {
+        if (artVO.getObjectVersionNumber() == null) {
             throw new CommonException("error.artObjectVersionNumber.null");
         }
     }
 
-    public void checkArtStop(ArtDTO artDTO) {
-        if (artDTO.getProgramId() == null) {
+    public void checkArtStop(ArtVO artVO) {
+        if (artVO.getProgramId() == null) {
             throw new CommonException("error.programId.null");
         }
-        if (artDTO.getId() == null) {
+        if (artVO.getId() == null) {
             throw new CommonException("error.artId.null");
         }
-        if (artDTO.getObjectVersionNumber() == null) {
+        if (artVO.getObjectVersionNumber() == null) {
             throw new CommonException("error.artObjectVersionNumber.null");
         }
     }
 
-    public void checkArtUpdate(ArtDTO artDTO) {
-        if (artDTO.getId() == null) {
+    public void checkArtUpdate(ArtVO artVO) {
+        if (artVO.getId() == null) {
             throw new CommonException("error.artId.null");
         }
-        if (artDTO.getObjectVersionNumber() == null) {
+        if (artVO.getObjectVersionNumber() == null) {
             throw new CommonException("error.objectVersionNumber.null");
         }
     }

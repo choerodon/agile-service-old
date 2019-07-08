@@ -6,10 +6,10 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2019/3/29.
  * Email: fuqianghuang01@gmail.com
  */
-public class ArtStopDTO {
+public class ArtStopVO {
 
     @ApiModelProperty(value = "活跃pi")
-    private PiDTO activePiDTO;
+    private PiVO activePiVO;
 
     @ApiModelProperty(value = "完成的pi数量")
     private Long completedPiCount;
@@ -20,12 +20,12 @@ public class ArtStopDTO {
     @ApiModelProperty(value = "所有pi关联的feature数量")
     private Long relatedFeatureCount;
 
-    public PiDTO getActivePiDTO() {
-        return activePiDTO;
+    public PiVO getActivePiVO() {
+        return activePiVO;
     }
 
-    public void setActivePiDTO(PiDTO activePiDTO) {
-        this.activePiDTO = activePiDTO;
+    public void setActivePiVO(PiVO activePiVO) {
+        this.activePiVO = activePiVO;
     }
 
     public Long getCompletedPiCount() {

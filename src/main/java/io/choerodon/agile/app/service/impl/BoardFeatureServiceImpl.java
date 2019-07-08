@@ -171,12 +171,12 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         ProgramBoardInfoDTO programBoardInfo = new ProgramBoardInfoDTO();
         Long organizationId = ConvertUtil.getOrganizationId(programId);
         //获取当前活跃的art
-        ArtDO activeArt = artMapper.selectActiveArt(programId);
+        ArtDTO activeArt = artMapper.selectActiveArt(programId);
         if (activeArt == null) {
             return programBoardInfo;
         }
         //获取当前活跃的pi
-        PiDO activePi = piMapper.selectActivePi(programId, activeArt.getId());
+        PiDTO activePi = piMapper.selectActivePi(programId, activeArt.getId());
         if (activePi == null) {
             return programBoardInfo;
         }

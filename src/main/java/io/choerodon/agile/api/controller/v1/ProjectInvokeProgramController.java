@@ -3,6 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.*;
+import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
@@ -135,9 +136,9 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("项目层下查询查询当前活跃art")
     @GetMapping("/art/active")
-    public ResponseEntity<ArtDTO> queryActiveArt(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ArtVO> queryActiveArt(@ApiParam(value = "项目id", required = true)
                                                  @PathVariable(name = "project_id") Long projectId,
-                                                 @ApiParam(value = "项目群id", required = true)
+                                                @ApiParam(value = "项目群id", required = true)
                                                  @RequestParam Long programId) {
         return Optional.ofNullable(artService.queryActiveArt(programId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

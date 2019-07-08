@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.SprintCalendarDTO;
-import io.choerodon.agile.infra.dataobject.SprintCalendarDO;
+import io.choerodon.agile.api.vo.SprintCalendarVO;
+import io.choerodon.agile.infra.dataobject.SprintCalendarDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class SprintCalendarConverter implements ConvertorI<Object, SprintCalendarDO, SprintCalendarDTO> {
+public class SprintCalendarConverter implements ConvertorI<Object, SprintCalendarDTO, SprintCalendarVO> {
 
     @Override
-    public SprintCalendarDTO doToDto(SprintCalendarDO sprintCalendarDO) {
-        SprintCalendarDTO sprintCalendarDTO = new SprintCalendarDTO();
-        BeanUtils.copyProperties(sprintCalendarDO, sprintCalendarDTO);
-        return sprintCalendarDTO;
+    public SprintCalendarVO doToDto(SprintCalendarDTO sprintCalendarDTO) {
+        SprintCalendarVO sprintCalendarVO = new SprintCalendarVO();
+        BeanUtils.copyProperties(sprintCalendarDTO, sprintCalendarVO);
+        return sprintCalendarVO;
     }
 }

@@ -9,11 +9,11 @@ import java.util.Date;
  * Created by HuangFuqiang@choerodon.io on 2019/3/11.
  * Email: fuqianghuang01@gmail.com
  */
-public class ArtDTO {
+public class ArtVO {
 
-    public ArtDTO () {}
+    public ArtVO() {}
 
-    public ArtDTO (Long programId, Long id, Long objectVersionNumber) {
+    public ArtVO(Long programId, Long id, Long objectVersionNumber) {
         this.programId = programId;
         this.id = id;
         this.objectVersionNumber = objectVersionNumber;

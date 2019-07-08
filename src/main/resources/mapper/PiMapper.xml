@@ -188,7 +188,7 @@
         </foreach>
     </select>
 
-    <select id="selectLastPi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+    <select id="selectLastPi" resultType="io.choerodon.agile.infra.dataobject.PiDTO">
         select *
         from agile_pi
         where program_id = #{programId}
@@ -197,7 +197,7 @@
         limit 1
     </select>
 
-    <select id="selectPiListInArt" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+    <select id="selectPiListInArt" resultType="io.choerodon.agile.infra.dataobject.PiDTO">
         select *
         from agile_pi
         where program_id = #{programId} and art_id = #{artId}
@@ -251,7 +251,7 @@
         </choose>
     </select>
 
-    <select id="selectActivePi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+    <select id="selectActivePi" resultType="io.choerodon.agile.infra.dataobject.PiDTO">
         select *
         from agile_pi
         where
@@ -260,7 +260,7 @@
         and status_code = 'doing'
     </select>
 
-    <select id="selectTodoPiDOList" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+    <select id="selectTodoPiDOList" resultType="io.choerodon.agile.infra.dataobject.PiDTO">
         select *
         from agile_pi
         where program_id = #{programId}
@@ -268,7 +268,7 @@
         and status_code = 'todo'
     </select>
 
-    <select id="selectUnDonePiDOList" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+    <select id="selectUnDonePiDOList" resultType="io.choerodon.agile.infra.dataobject.PiDTO">
         select *
         from agile_pi
         where program_id = #{programId}
@@ -330,14 +330,14 @@
          )
     </select>
 
-    <select id="selectArtFirstPi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+    <select id="selectArtFirstPi" resultType="io.choerodon.agile.infra.dataobject.PiDTO">
         select * from agile_pi
         where program_id = #{programId} and art_id = #{artId}
         order by id
         limit 1
     </select>
 
-    <select id="selectNextPi" resultType="io.choerodon.agile.infra.dataobject.PiDO">
+    <select id="selectNextPi" resultType="io.choerodon.agile.infra.dataobject.PiDTO">
         select * from agile_pi
         where program_id = #{programId} and art_id = #{artId} and id > #{piId}
         order by id
