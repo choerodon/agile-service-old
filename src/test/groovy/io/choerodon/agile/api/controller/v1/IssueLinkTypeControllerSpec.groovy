@@ -1,9 +1,9 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO
-import io.choerodon.agile.api.dto.IssueLinkTypeDTO
-import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO
+import io.choerodon.agile.api.vo.IssueLinkTypeCreateDTO
+import io.choerodon.agile.api.vo.IssueLinkTypeDTO
+import io.choerodon.agile.api.vo.IssueLinkTypeSearchDTO
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper
 import com.github.pagehelper.PageInfo

@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.PiObjectiveDTO;
+import io.choerodon.agile.api.vo.PiObjectiveDTO;
 
 import java.util.List;
 

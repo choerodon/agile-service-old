@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.SprintCalendarDTO;
+import io.choerodon.agile.api.vo.SprintCalendarDTO;
 import io.choerodon.agile.infra.dataobject.SprintCalendarDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.ProjectInfoDTO;
-import io.choerodon.agile.api.dto.ProjectRelationshipDTO;
-import io.choerodon.agile.domain.agile.event.ProjectEvent;
+import io.choerodon.agile.api.vo.ProjectInfoDTO;
+import io.choerodon.agile.api.vo.ProjectRelationshipDTO;
+import io.choerodon.agile.api.vo.event.ProjectEvent;
 
 import java.util.List;
 

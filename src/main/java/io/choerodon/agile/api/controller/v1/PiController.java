@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.infra.dataobject.SubFeatureDO;
 import io.choerodon.base.annotation.Permission;
@@ -40,7 +40,7 @@ public class PiController {
     @PutMapping
     public ResponseEntity<PiDTO> updatePi(@ApiParam(value = "项目id", required = true)
                                           @PathVariable(name = "project_id") Long projectId,
-                                          @ApiParam(value = "pi dto", required = true)
+                                          @ApiParam(value = "pi vo", required = true)
                                           @RequestBody PiDTO piDTO) {
         return Optional.ofNullable(piService.updatePi(projectId, piDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -81,7 +81,7 @@ public class PiController {
     @PostMapping("/start")
     public ResponseEntity<PiDTO> startPi(@ApiParam(value = "项目id", required = true)
                                          @PathVariable(name = "project_id") Long projectId,
-                                         @ApiParam(value = "pi dto", required = true)
+                                         @ApiParam(value = "pi vo", required = true)
                                          @RequestBody PiDTO piDTO) {
         return Optional.ofNullable(piService.startPi(projectId, piDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -107,7 +107,7 @@ public class PiController {
     @PostMapping("/close")
     public ResponseEntity<PiDTO> closePi(@ApiParam(value = "项目id", required = true)
                                          @PathVariable(name = "project_id") Long projectId,
-                                         @ApiParam(value = "pi dto", required = true)
+                                         @ApiParam(value = "pi vo", required = true)
                                          @RequestBody PiDTO piDTO) {
         return Optional.ofNullable(piService.closePi(projectId, piDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))

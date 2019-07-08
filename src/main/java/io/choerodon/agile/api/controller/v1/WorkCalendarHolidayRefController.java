@@ -1,13 +1,12 @@
 package io.choerodon.agile.api.controller.v1;
 
 
-import io.choerodon.agile.api.dto.WorkCalendarHolidayRefDTO;
+import io.choerodon.agile.api.vo.WorkCalendarHolidayRefDTO;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.core.iam.ResourceLevel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;

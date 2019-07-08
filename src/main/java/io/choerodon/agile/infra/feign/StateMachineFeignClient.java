@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.feign;
 
-import io.choerodon.agile.api.dto.Status;
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.vo.Status;
+import io.choerodon.agile.api.vo.StatusMapDTO;
 import io.choerodon.agile.infra.feign.fallback.StateMachineFeignClientFallback;
 import io.choerodon.statemachine.dto.StateMachineTransformDTO;
 import io.swagger.annotations.ApiParam;

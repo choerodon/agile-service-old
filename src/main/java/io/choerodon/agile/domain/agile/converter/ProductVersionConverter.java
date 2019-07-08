@@ -1,6 +1,5 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.ProductVersionDTO;
 import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 

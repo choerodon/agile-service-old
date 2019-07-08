@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.IssueLinkCreateDTO
-import io.choerodon.agile.api.dto.IssueLinkDTO
+import io.choerodon.agile.api.vo.IssueLinkCreateDTO
+import io.choerodon.agile.api.vo.IssueLinkDTO
 import io.choerodon.agile.infra.mapper.IssueLinkMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest

@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.IssueLinkCreateDTO;
-import io.choerodon.agile.api.dto.IssueLinkDTO;
+import io.choerodon.agile.api.vo.IssueLinkCreateDTO;
+import io.choerodon.agile.api.vo.IssueLinkDTO;
 import io.choerodon.agile.app.service.IssueLinkService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;

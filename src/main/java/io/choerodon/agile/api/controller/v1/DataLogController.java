@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.DataLogCreateDTO;
-import io.choerodon.agile.api.dto.DataLogDTO;
+import io.choerodon.agile.api.vo.DataLogCreateDTO;
+import io.choerodon.agile.api.vo.DataLogDTO;
 import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;

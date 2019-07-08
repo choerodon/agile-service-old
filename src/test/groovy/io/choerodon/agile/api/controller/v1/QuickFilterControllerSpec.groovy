@@ -1,15 +1,14 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.QuickFilterDTO
-import io.choerodon.agile.api.dto.QuickFilterFieldDTO
-import io.choerodon.agile.api.dto.QuickFilterSearchDTO
-import io.choerodon.agile.api.dto.QuickFilterSequenceDTO
-import io.choerodon.agile.api.dto.QuickFilterValueDTO
+import io.choerodon.agile.api.vo.QuickFilterDTO
+import io.choerodon.agile.api.vo.QuickFilterFieldDTO
+import io.choerodon.agile.api.vo.QuickFilterSearchDTO
+import io.choerodon.agile.api.vo.QuickFilterSequenceDTO
+import io.choerodon.agile.api.vo.QuickFilterValueDTO
 import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper
 import io.choerodon.agile.infra.mapper.QuickFilterMapper
 import io.choerodon.core.convertor.ConvertHelper
-import com.github.pagehelper.PageInfo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate

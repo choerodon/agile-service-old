@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.common.aspect;
 
-import io.choerodon.agile.api.dto.PriorityDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.vo.PriorityDTO;
+import io.choerodon.agile.api.vo.StatusMapDTO;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.infra.repository.UserRepository;

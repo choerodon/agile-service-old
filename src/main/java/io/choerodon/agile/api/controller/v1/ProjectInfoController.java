@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.ProjectInfoDTO;
+import io.choerodon.agile.api.vo.ProjectInfoDTO;
 import io.choerodon.agile.api.validator.ProjectInfoValidator;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.base.annotation.Permission;

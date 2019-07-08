@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 
-import io.choerodon.agile.api.dto.PriorityDTO;
+import io.choerodon.agile.api.vo.PriorityDTO;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.

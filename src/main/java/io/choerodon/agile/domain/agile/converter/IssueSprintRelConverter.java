@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.IssueSprintRelDTO;
+import io.choerodon.agile.api.vo.IssueSprintRelDTO;
 import io.choerodon.agile.domain.agile.entity.IssueSprintRelE;
 import io.choerodon.agile.infra.dataobject.IssueSprintRelDO;
 import io.choerodon.core.convertor.ConvertorI;

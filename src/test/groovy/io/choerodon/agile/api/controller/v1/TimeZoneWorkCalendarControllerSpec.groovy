@@ -1,13 +1,11 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.EpicSequenceDTO
-
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarDTO
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefCreateDTO
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefDTO
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarRefDetailDTO
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarUpdateDTO
+import io.choerodon.agile.api.vo.TimeZoneWorkCalendarDTO
+import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefCreateDTO
+import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDTO
+import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDetailDTO
+import io.choerodon.agile.api.vo.TimeZoneWorkCalendarUpdateDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate

@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapDTO;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
 import io.choerodon.agile.infra.dataobject.IssueDO;

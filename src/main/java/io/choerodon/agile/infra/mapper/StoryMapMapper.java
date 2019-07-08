@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.dto.SearchDTO;
+import io.choerodon.agile.api.vo.SearchDTO;
 import io.choerodon.agile.infra.dataobject.EpicWithFeatureDO;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
 import io.choerodon.agile.infra.dataobject.StoryMapStoryDO;

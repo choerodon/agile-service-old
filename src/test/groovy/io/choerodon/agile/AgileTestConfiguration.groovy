@@ -7,10 +7,10 @@ import io.choerodon.agile.app.service.IssueAttachmentService
 import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl
-import io.choerodon.agile.domain.agile.event.OrganizationCreateEventPayload
-import io.choerodon.agile.domain.agile.event.ProjectCreateAgilePayload
-import io.choerodon.agile.domain.agile.event.ProjectEvent
-import io.choerodon.agile.domain.agile.event.StatusPayload
+import io.choerodon.agile.api.vo.event.OrganizationCreateEventPayload
+import io.choerodon.agile.api.vo.event.ProjectCreateAgilePayload
+import io.choerodon.agile.api.vo.event.ProjectEvent
+import io.choerodon.agile.api.vo.event.StatusPayload
 import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*

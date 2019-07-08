@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.PiObjectiveDTO;
+import io.choerodon.agile.api.vo.PiObjectiveDTO;
 import io.choerodon.agile.app.service.PiObjectiveService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -33,7 +33,7 @@ public class PiObjectiveController {
     @PostMapping
     public ResponseEntity<PiObjectiveDTO> createPiObjective(@ApiParam(value = "项目id", required = true)
                                                             @PathVariable(name = "project_id") Long projectId,
-                                                            @ApiParam(value = "pi objective dto", required = true)
+                                                            @ApiParam(value = "pi objective vo", required = true)
                                                             @RequestBody PiObjectiveDTO piObjectiveDTO) {
         return Optional.ofNullable(piObjectiveService.createPiObjective(projectId, piObjectiveDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -45,7 +45,7 @@ public class PiObjectiveController {
     @PutMapping
     public ResponseEntity<PiObjectiveDTO> updatePiObjective(@ApiParam(value = "项目id", required = true)
                                                             @PathVariable(name = "project_id") Long projectId,
-                                                            @ApiParam(value = "pi objective dto", required = true)
+                                                            @ApiParam(value = "pi objective vo", required = true)
                                                             @RequestBody PiObjectiveDTO piObjectiveDTO) {
         return Optional.ofNullable(piObjectiveService.updatePiObjective(projectId, piObjectiveDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -57,7 +57,7 @@ public class PiObjectiveController {
     @DeleteMapping("/{id}")
     public ResponseEntity deletePiObjective(@ApiParam(value = "项目id", required = true)
                                             @PathVariable(name = "project_id") Long projectId,
-                                            @ApiParam(value = "pi objective dto", required = true)
+                                            @ApiParam(value = "pi objective vo", required = true)
                                             @PathVariable Long id) {
         piObjectiveService.deletePiObjective(projectId, id);
         return new ResponseEntity<>(HttpStatus.CREATED);

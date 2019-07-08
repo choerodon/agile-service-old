@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapDTO;
 
 import java.math.BigDecimal;
 

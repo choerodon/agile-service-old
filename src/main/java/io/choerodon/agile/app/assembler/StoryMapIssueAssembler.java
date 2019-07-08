@@ -1,9 +1,9 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.dto.IssueTypeDTO;
-import io.choerodon.agile.api.dto.PriorityDTO;
-import io.choerodon.agile.api.dto.StatusMapDTO;
-import io.choerodon.agile.api.dto.StoryMapIssueDTO;
+import io.choerodon.agile.api.vo.IssueTypeDTO;
+import io.choerodon.agile.api.vo.PriorityDTO;
+import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StoryMapIssueDTO;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
 import io.choerodon.agile.infra.dataobject.LookupValueDO;

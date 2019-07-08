@@ -1,9 +1,9 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.ArtDTO;
-import io.choerodon.agile.api.dto.ArtStopDTO;
-import io.choerodon.agile.api.dto.PiCalendarDTO;
-import io.choerodon.agile.api.dto.PiCreateDTO;
+import io.choerodon.agile.api.vo.ArtDTO;
+import io.choerodon.agile.api.vo.ArtStopDTO;
+import io.choerodon.agile.api.vo.PiCalendarDTO;
+import io.choerodon.agile.api.vo.PiCreateDTO;
 import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -40,7 +40,7 @@ public class ArtController {
     @PostMapping
     public ResponseEntity<ArtDTO> createArt(@ApiParam(value = "项目id", required = true)
                                             @PathVariable(name = "project_id") Long projectId,
-                                            @ApiParam(value = "art dto", required = true)
+                                            @ApiParam(value = "art vo", required = true)
                                             @RequestBody ArtDTO artDTO) {
         return Optional.ofNullable(artService.createArt(projectId, artDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -52,7 +52,7 @@ public class ArtController {
     @PostMapping("/start")
     public ResponseEntity<ArtDTO> startArt(@ApiParam(value = "项目id", required = true)
                                             @PathVariable(name = "project_id") Long projectId,
-                                            @ApiParam(value = "art dto", required = true)
+                                            @ApiParam(value = "art vo", required = true)
                                             @RequestBody ArtDTO artDTO) {
         return Optional.ofNullable(artService.startArt(projectId, artDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -64,7 +64,7 @@ public class ArtController {
     @PostMapping("/stop")
     public ResponseEntity<ArtDTO> stopArt(@ApiParam(value = "项目id", required = true)
                                            @PathVariable(name = "project_id") Long projectId,
-                                           @ApiParam(value = "art dto", required = true)
+                                           @ApiParam(value = "art vo", required = true)
                                            @RequestBody ArtDTO artDTO) {
         return Optional.ofNullable(artService.stopArt(projectId, artDTO, true))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -76,7 +76,7 @@ public class ArtController {
     @PutMapping
     public ResponseEntity<ArtDTO> updateArt(@ApiParam(value = "项目id", required = true)
                                             @PathVariable(name = "project_id") Long projectId,
-                                            @ApiParam(value = "art dto", required = true)
+                                            @ApiParam(value = "art vo", required = true)
                                             @RequestBody ArtDTO artDTO) {
         return Optional.ofNullable(artService.updateArt(projectId, artDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -114,7 +114,7 @@ public class ArtController {
     @PostMapping("/create_other_pi")
     public ResponseEntity createOtherPi(@ApiParam(value = "项目id", required = true)
                                         @PathVariable(name = "project_id") Long projectId,
-                                        @ApiParam(value = "pi create dto", required = true)
+                                        @ApiParam(value = "pi create vo", required = true)
                                         @RequestBody PiCreateDTO piCreateDTO) {
         artService.createOtherPi(projectId, piCreateDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);

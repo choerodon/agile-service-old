@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.ProjectInfoDTO;
+import io.choerodon.agile.api.vo.ProjectInfoDTO;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.core.convertor.ConvertorI;

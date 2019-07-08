@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.VelocitySprintDTO;
+import io.choerodon.agile.api.vo.VelocitySprintDTO;
 import io.choerodon.agile.infra.dataobject.VelocitySprintDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.dto.BoardDTO;
+import io.choerodon.agile.api.vo.BoardDTO;
 import io.choerodon.core.exception.CommonException;
 
 /**

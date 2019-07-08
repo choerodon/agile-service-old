@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.feign.fallback;
 
-import io.choerodon.agile.api.dto.Status;
-import io.choerodon.agile.api.dto.StatusMapDTO;
+import io.choerodon.agile.api.vo.Status;
+import io.choerodon.agile.api.vo.StatusMapDTO;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.statemachine.dto.StateMachineTransformDTO;

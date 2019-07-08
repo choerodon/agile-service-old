@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.ArtDTO;
+import io.choerodon.agile.api.vo.ArtDTO;
 import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.core.convertor.ConvertorI;

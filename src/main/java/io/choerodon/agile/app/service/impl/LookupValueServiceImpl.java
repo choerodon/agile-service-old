@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service.impl;
 
 
-import io.choerodon.agile.api.dto.LookupTypeWithValuesDTO;
-import io.choerodon.agile.api.dto.LookupValueDTO;
+import io.choerodon.agile.api.vo.LookupTypeWithValuesDTO;
+import io.choerodon.agile.api.vo.LookupValueDTO;
 import io.choerodon.agile.app.service.LookupValueService;
 import io.choerodon.agile.infra.dataobject.LookupTypeWithValuesDO;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;

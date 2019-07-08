@@ -4,7 +4,7 @@ package io.choerodon.agile.domain.agile.converter;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.BeanUtils;
-import io.choerodon.agile.api.dto.IssueLabelDTO;
+import io.choerodon.agile.api.vo.IssueLabelDTO;
 import io.choerodon.agile.infra.dataobject.IssueLabelDO;
 import io.choerodon.agile.domain.agile.entity.IssueLabelE;
 

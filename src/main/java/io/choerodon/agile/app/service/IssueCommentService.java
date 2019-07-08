@@ -1,9 +1,9 @@
 package io.choerodon.agile.app.service;
 
 
-import io.choerodon.agile.api.dto.IssueCommentCreateDTO;
-import io.choerodon.agile.api.dto.IssueCommentDTO;
-import io.choerodon.agile.api.dto.IssueCommentUpdateDTO;
+import io.choerodon.agile.api.vo.IssueCommentCreateDTO;
+import io.choerodon.agile.api.vo.IssueCommentDTO;
+import io.choerodon.agile.api.vo.IssueCommentUpdateDTO;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.PersonalFilterDTO;
+import io.choerodon.agile.api.vo.PersonalFilterDTO;
 
 import java.util.List;
 

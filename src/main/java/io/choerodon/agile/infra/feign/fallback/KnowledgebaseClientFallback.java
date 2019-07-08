@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.feign.fallback;
 
-import io.choerodon.agile.api.dto.WorkSpaceDTO;
+import io.choerodon.agile.api.vo.WorkSpaceDTO;
 import io.choerodon.agile.infra.dataobject.WorkSpaceDO;
 import io.choerodon.agile.infra.feign.KnowledgebaseClient;
 import io.choerodon.core.exception.CommonException;

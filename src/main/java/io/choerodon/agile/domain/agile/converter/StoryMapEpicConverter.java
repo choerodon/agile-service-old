@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.StoryMapEpicDTO;
+import io.choerodon.agile.api.vo.StoryMapEpicDTO;
 import io.choerodon.agile.infra.dataobject.StoryMapEpicDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

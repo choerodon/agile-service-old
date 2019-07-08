@@ -2,12 +2,12 @@ package io.choerodon.agile.api.controller.v1
 
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.IssueCreateDTO
-import io.choerodon.agile.api.dto.IssueDTO
-import io.choerodon.agile.api.dto.ProjectDTO
+import io.choerodon.agile.api.vo.IssueCreateDTO
+import io.choerodon.agile.api.vo.IssueDTO
+import io.choerodon.agile.api.vo.ProjectDTO
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.domain.agile.event.ProjectConfig
-import io.choerodon.agile.domain.agile.event.StateMachineSchemeDeployCheckIssue
+import io.choerodon.agile.api.vo.event.ProjectConfig
+import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue
 import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.mapper.*

@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import java.util.Optional;
 
-import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeSearchDTO;
 import io.choerodon.agile.api.validator.IssueLinkTypeValidator;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -17,8 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
-import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeCreateDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeDTO;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;

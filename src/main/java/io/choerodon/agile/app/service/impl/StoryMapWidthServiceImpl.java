@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.StoryMapWidthDTO;
+import io.choerodon.agile.api.vo.StoryMapWidthDTO;
 import io.choerodon.agile.api.validator.StoryMapWidthValidator;
 import io.choerodon.agile.app.service.StoryMapWidthService;
 import io.choerodon.agile.domain.agile.entity.StoryMapWidthE;

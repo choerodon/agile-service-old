@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.agile.api.dto.PriorityDTO;
+import io.choerodon.agile.api.vo.PriorityDTO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 /**

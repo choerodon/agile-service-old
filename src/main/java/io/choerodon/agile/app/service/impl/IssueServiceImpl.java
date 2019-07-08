@@ -8,7 +8,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
 
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueLinkValidator;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.api.validator.ProductVersionValidator;
@@ -16,7 +16,7 @@ import io.choerodon.agile.api.validator.SprintValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
-import io.choerodon.agile.domain.agile.event.IssuePayload;
+import io.choerodon.agile.api.vo.event.IssuePayload;
 import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;

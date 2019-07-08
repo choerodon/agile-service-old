@@ -1,11 +1,9 @@
 package io.choerodon.agile.infra.feign.fallback;
 
-import io.choerodon.agile.api.dto.FieldDataLogDTO;
+import io.choerodon.agile.api.vo.FieldDataLogDTO;
 import io.choerodon.agile.infra.feign.FoundationFeignClient;
-import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
 
-import com.github.pagehelper.PageInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 

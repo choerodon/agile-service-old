@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
@@ -631,7 +631,7 @@ public class IssueController {
     @PostMapping(value = "/storymap/move")
     public ResponseEntity storymapMove(@ApiParam(value = "项目id", required = true)
                                        @PathVariable(name = "project_id") Long projectId,
-                                       @ApiParam(value = "story map move dto", required = true)
+                                       @ApiParam(value = "story map move vo", required = true)
                                        @RequestBody StoryMapMoveDTO storyMapMoveDTO) {
         issueService.storymapMove(projectId, storyMapMoveDTO);
         return new ResponseEntity(HttpStatus.CREATED);
@@ -642,7 +642,7 @@ public class IssueController {
     @PostMapping(value = "/update_parent")
     public ResponseEntity<IssueDTO> updateIssueParentId(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "issue parent id update dto", required = true)
+                                                        @ApiParam(value = "issue parent id update vo", required = true)
                                                         @RequestBody IssueUpdateParentIdDTO issueUpdateParentIdDTO) {
         return Optional.ofNullable(issueService.issueParentIdUpdate(projectId, issueUpdateParentIdDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

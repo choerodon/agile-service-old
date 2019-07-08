@@ -1,10 +1,10 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.BoardColumnDTO;
-import io.choerodon.agile.api.dto.ColumnSortDTO;
-import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.vo.BoardColumnDTO;
+import io.choerodon.agile.api.vo.ColumnSortDTO;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO;
 import io.choerodon.agile.domain.agile.entity.BoardE;
-import io.choerodon.agile.domain.agile.event.StatusPayload;
+import io.choerodon.agile.api.vo.event.StatusPayload;
 
 import java.util.List;
 

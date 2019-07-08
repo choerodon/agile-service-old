@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 
-import io.choerodon.agile.api.dto.LookupTypeDTO;
+import io.choerodon.agile.api.vo.LookupTypeDTO;
 
 import java.util.List;
 

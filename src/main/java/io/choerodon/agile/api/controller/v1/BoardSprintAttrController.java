@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.BoardSprintAttrDTO;
+import io.choerodon.agile.api.vo.BoardSprintAttrDTO;
 import io.choerodon.agile.app.service.BoardSprintAttrService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;

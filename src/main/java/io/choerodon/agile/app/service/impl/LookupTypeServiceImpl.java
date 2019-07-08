@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.LookupTypeDTO;
+import io.choerodon.agile.api.vo.LookupTypeDTO;
 import io.choerodon.agile.app.service.LookupTypeService;
 import io.choerodon.agile.infra.mapper.LookupTypeMapper;
 import io.choerodon.core.convertor.ConvertHelper;

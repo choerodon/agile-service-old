@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.dto.SprintUpdateDTO;
+import io.choerodon.agile.api.vo.SprintUpdateDTO;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.agile.infra.mapper.SprintMapper;

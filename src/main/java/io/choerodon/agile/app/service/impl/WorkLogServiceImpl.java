@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.WorkLogDTO;
+import io.choerodon.agile.api.vo.WorkLogDTO;
 import io.choerodon.agile.api.validator.WorkLogValidator;
 import io.choerodon.agile.app.service.WorkLogService;
 import io.choerodon.agile.domain.agile.entity.IssueE;

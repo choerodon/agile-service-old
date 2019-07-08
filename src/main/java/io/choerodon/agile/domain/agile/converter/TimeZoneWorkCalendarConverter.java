@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.TimeZoneWorkCalendarDTO;
+import io.choerodon.agile.api.vo.TimeZoneWorkCalendarDTO;
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
 import io.choerodon.core.convertor.ConvertorI;

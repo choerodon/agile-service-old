@@ -1,11 +1,11 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.ColumnSortDTO;
-import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.vo.ColumnSortDTO;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.dto.BoardColumnDTO;
+import io.choerodon.agile.api.vo.BoardColumnDTO;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.swagger.annotations.ApiOperation;

@@ -3,7 +3,7 @@ package io.choerodon.agile.domain.agile.converter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import io.choerodon.agile.api.dto.IssueTypeDistributeDTO;
+import io.choerodon.agile.api.vo.IssueTypeDistributeDTO;
 import io.choerodon.agile.infra.dataobject.IssueTypeDistributeDO;
 import io.choerodon.core.convertor.ConvertorI;
 

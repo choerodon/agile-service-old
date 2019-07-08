@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.BoardTeamDTO;
-import io.choerodon.agile.api.dto.BoardTeamUpdateDTO;
+import io.choerodon.agile.api.vo.BoardTeamDTO;
+import io.choerodon.agile.api.vo.BoardTeamUpdateDTO;
 import io.choerodon.agile.app.service.BoardTeamService;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.BoardTeamDO;

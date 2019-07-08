@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
-import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
-import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeCreateDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeSearchDTO;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.domain.PageRequest;
 

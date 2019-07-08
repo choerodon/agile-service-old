@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.LookupTypeWithValuesDTO;
+import io.choerodon.agile.api.vo.LookupTypeWithValuesDTO;
 import io.choerodon.agile.infra.dataobject.LookupTypeWithValuesDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

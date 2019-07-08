@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.MessageDTO;
+import io.choerodon.agile.api.vo.MessageDTO;
 import io.choerodon.agile.infra.dataobject.MessageDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

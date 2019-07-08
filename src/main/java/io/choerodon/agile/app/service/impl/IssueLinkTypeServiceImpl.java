@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.IssueLinkTypeSearchDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeSearchDTO;
 
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.PageHelper;
@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.choerodon.agile.api.dto.IssueLinkTypeCreateDTO;
-import io.choerodon.agile.api.dto.IssueLinkTypeDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeCreateDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeDTO;
 import io.choerodon.agile.app.assembler.IssueLinkTypeAssembler;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;

@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.ProjectInfoDTO
+import io.choerodon.agile.api.vo.ProjectInfoDTO
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper
 import org.springframework.beans.factory.annotation.Autowired

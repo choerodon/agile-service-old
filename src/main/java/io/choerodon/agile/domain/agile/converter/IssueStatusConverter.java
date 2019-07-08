@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 import io.choerodon.core.convertor.ConvertorI;
-import io.choerodon.agile.api.dto.IssueStatusDTO;
+import io.choerodon.agile.api.vo.IssueStatusDTO;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.infra.dataobject.IssueStatusDO;
 import org.springframework.beans.BeanUtils;

@@ -3,7 +3,7 @@ package io.choerodon.agile.domain.agile.converter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import io.choerodon.agile.api.dto.UnfinishedIssueDTO;
+import io.choerodon.agile.api.vo.UnfinishedIssueDTO;
 import io.choerodon.agile.infra.dataobject.UnfinishedIssueDO;
 import io.choerodon.core.convertor.ConvertorI;
 

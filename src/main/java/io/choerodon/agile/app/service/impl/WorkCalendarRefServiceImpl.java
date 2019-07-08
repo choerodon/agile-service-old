@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.SprintWorkCalendarDTO;
-import io.choerodon.agile.api.dto.WorkCalendarRefCreateDTO;
-import io.choerodon.agile.api.dto.WorkCalendarRefDTO;
+import io.choerodon.agile.api.vo.SprintWorkCalendarDTO;
+import io.choerodon.agile.api.vo.WorkCalendarRefCreateDTO;
+import io.choerodon.agile.api.vo.WorkCalendarRefDTO;
 import io.choerodon.agile.api.validator.WorkCalendarValidator;
 import io.choerodon.agile.app.assembler.SprintCreateAssembler;
 import io.choerodon.agile.app.assembler.SprintSearchAssembler;

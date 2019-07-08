@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.BoardSprintAttrDTO;
+import io.choerodon.agile.api.vo.BoardSprintAttrDTO;
 
 /**
  * @author shinan.chen

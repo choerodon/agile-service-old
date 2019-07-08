@@ -1,9 +1,8 @@
 package io.choerodon.agile.app.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.PersonalFilterDTO;
-import io.choerodon.agile.api.dto.PersonalFilterSearchDTO;
+import io.choerodon.agile.api.vo.PersonalFilterDTO;
+import io.choerodon.agile.api.vo.PersonalFilterSearchDTO;
 import io.choerodon.agile.app.service.PersonalFilterService;
 import io.choerodon.agile.infra.dataobject.PersonalFilterDO;
 import io.choerodon.agile.infra.mapper.PersonalFilterMapper;

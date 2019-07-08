@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.feign.fallback;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.core.exception.CommonException;

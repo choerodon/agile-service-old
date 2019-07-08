@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.*
+import io.choerodon.agile.api.vo.*
 import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.infra.dataobject.ProductVersionDO
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
@@ -11,7 +11,6 @@ import io.choerodon.agile.infra.mapper.ProductVersionMapper
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
 import com.github.pagehelper.PageInfo
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.annotation.Import

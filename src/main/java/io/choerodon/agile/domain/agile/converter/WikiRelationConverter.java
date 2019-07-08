@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.WikiRelationDTO;
+import io.choerodon.agile.api.vo.WikiRelationDTO;
 import io.choerodon.agile.domain.agile.entity.WikiRelationE;
 import io.choerodon.agile.infra.dataobject.WikiRelationDO;
 import io.choerodon.core.convertor.ConvertorI;

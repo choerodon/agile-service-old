@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.*
+import io.choerodon.agile.api.vo.*
 import io.choerodon.agile.api.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
@@ -12,7 +12,6 @@ import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
-import io.choerodon.asgard.saga.feign.SagaClient
 import com.github.pagehelper.PageInfo
 import io.choerodon.base.domain.PageRequest
 import org.mockito.Matchers

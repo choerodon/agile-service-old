@@ -1,9 +1,9 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.IssueStatusDTO;
-import io.choerodon.agile.api.dto.StatusAndIssuesDTO;
-import io.choerodon.agile.api.dto.StatusMoveDTO;
-import io.choerodon.agile.domain.agile.event.StatusPayload;
+import io.choerodon.agile.api.vo.IssueStatusDTO;
+import io.choerodon.agile.api.vo.StatusAndIssuesDTO;
+import io.choerodon.agile.api.vo.StatusMoveDTO;
+import io.choerodon.agile.api.vo.event.StatusPayload;
 
 import java.util.List;
 

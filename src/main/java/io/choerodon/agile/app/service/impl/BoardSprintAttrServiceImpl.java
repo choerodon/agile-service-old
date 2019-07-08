@@ -1,9 +1,8 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.dto.BoardSprintAttrDTO;
+import io.choerodon.agile.api.vo.BoardSprintAttrDTO;
 import io.choerodon.agile.app.service.BoardSprintAttrService;
 import io.choerodon.agile.infra.dataobject.BoardSprintAttrDO;
-import io.choerodon.agile.infra.mapper.BoardSprintAttrMapper;
 import io.choerodon.agile.infra.repository.BoardSprintAttrRepository;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;

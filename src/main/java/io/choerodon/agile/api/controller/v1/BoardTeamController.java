@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.BoardTeamDTO;
-import io.choerodon.agile.api.dto.BoardTeamUpdateDTO;
+import io.choerodon.agile.api.vo.BoardTeamDTO;
+import io.choerodon.agile.api.vo.BoardTeamUpdateDTO;
 import io.choerodon.agile.app.service.BoardTeamService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;

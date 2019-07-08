@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 
 import java.util.List;
 

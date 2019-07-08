@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.UserSettingDTO;
+import io.choerodon.agile.api.vo.UserSettingDTO;
 import io.choerodon.agile.domain.agile.entity.UserSettingE;
 import io.choerodon.agile.infra.dataobject.UserSettingDO;
 import io.choerodon.core.convertor.ConvertorI;

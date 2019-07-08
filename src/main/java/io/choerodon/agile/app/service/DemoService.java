@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.domain.agile.event.OrganizationRegisterEventPayload;
+import io.choerodon.agile.api.vo.event.OrganizationRegisterEventPayload;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/01/07.

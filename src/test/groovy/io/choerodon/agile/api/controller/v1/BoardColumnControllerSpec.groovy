@@ -2,9 +2,9 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.BoardColumnDTO
-import io.choerodon.agile.api.dto.ColumnSortDTO
-import io.choerodon.agile.api.dto.ColumnWithMaxMinNumDTO
+import io.choerodon.agile.api.vo.BoardColumnDTO
+import io.choerodon.agile.api.vo.ColumnSortDTO
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO
 import io.choerodon.agile.app.service.BoardColumnService
 import io.choerodon.agile.infra.dataobject.BoardColumnDO
 import io.choerodon.agile.infra.dataobject.IssueStatusDO

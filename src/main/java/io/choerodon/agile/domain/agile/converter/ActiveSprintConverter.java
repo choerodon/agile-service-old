@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 
-import io.choerodon.agile.api.dto.ActiveSprintDTO;
+import io.choerodon.agile.api.vo.ActiveSprintDTO;
 import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;

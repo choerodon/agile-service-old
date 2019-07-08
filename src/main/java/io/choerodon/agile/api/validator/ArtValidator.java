@@ -1,13 +1,10 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.dto.ArtDTO;
-import io.choerodon.agile.infra.dataobject.ArtDO;
+import io.choerodon.agile.api.vo.ArtDTO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/12.

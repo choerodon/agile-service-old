@@ -1,9 +1,9 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.dto.IssueStatusDTO
-import io.choerodon.agile.api.dto.StatusInfoDTO
-import io.choerodon.agile.api.dto.StatusMoveDTO
+import io.choerodon.agile.api.vo.IssueStatusDTO
+import io.choerodon.agile.api.vo.StatusInfoDTO
+import io.choerodon.agile.api.vo.StatusMoveDTO
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO
 import io.choerodon.agile.infra.dataobject.IssueStatusDO
 import io.choerodon.agile.infra.feign.IssueFeignClient

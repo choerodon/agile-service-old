@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.dto.DataLogDTO;
+import io.choerodon.agile.api.vo.DataLogDTO;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
 import io.choerodon.core.convertor.ConvertorI;

@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.SprintWorkCalendarDTO;
-import io.choerodon.agile.api.dto.WorkCalendarRefCreateDTO;
-import io.choerodon.agile.api.dto.WorkCalendarRefDTO;
+import io.choerodon.agile.api.vo.SprintWorkCalendarDTO;
+import io.choerodon.agile.api.vo.WorkCalendarRefCreateDTO;
+import io.choerodon.agile.api.vo.WorkCalendarRefDTO;
 import io.choerodon.agile.app.service.WorkCalendarRefService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;

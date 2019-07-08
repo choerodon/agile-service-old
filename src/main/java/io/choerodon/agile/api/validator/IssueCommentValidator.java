@@ -2,7 +2,7 @@ package io.choerodon.agile.api.validator;
 
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.dto.IssueCommentCreateDTO;
+import io.choerodon.agile.api.vo.IssueCommentCreateDTO;
 import io.choerodon.agile.infra.dataobject.IssueCommentDO;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
 import io.choerodon.agile.infra.mapper.IssueMapper;

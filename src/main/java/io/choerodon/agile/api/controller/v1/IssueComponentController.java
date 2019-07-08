@@ -1,13 +1,13 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.dto.ComponentForListDTO;
-import io.choerodon.agile.api.dto.IssueDTO;
-import io.choerodon.agile.api.dto.SearchDTO;
+import io.choerodon.agile.api.vo.ComponentForListDTO;
+import io.choerodon.agile.api.vo.IssueDTO;
+import io.choerodon.agile.api.vo.SearchDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.dto.IssueComponentDTO;
+import io.choerodon.agile.api.vo.IssueComponentDTO;
 import io.choerodon.agile.app.service.IssueComponentService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.mybatis.annotation.SortDefault;

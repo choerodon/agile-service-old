@@ -1185,7 +1185,7 @@
         </if>
     </select>
 
-    <select id="querySprintAllIssueIdsByCondition" resultType="io.choerodon.agile.api.dto.IssueIdSprintIdDTO">
+    <select id="querySprintAllIssueIdsByCondition" resultType="io.choerodon.agile.api.vo.IssueIdSprintIdDTO">
         SELECT
         ai.issue_id,
         aisr.sprint_id

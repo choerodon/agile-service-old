@@ -3,7 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Ordering;
-import io.choerodon.agile.api.dto.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.SprintValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.SprintService;

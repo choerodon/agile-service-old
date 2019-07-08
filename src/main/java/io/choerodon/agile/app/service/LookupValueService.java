@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.dto.LookupTypeWithValuesDTO;
+import io.choerodon.agile.api.vo.LookupTypeWithValuesDTO;
 
 /**
  * 敏捷开发code键值

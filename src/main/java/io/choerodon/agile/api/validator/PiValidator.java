@@ -1,18 +1,14 @@
 package io.choerodon.agile.api.validator;
 
 
-import io.choerodon.agile.api.dto.PiDTO;
-import io.choerodon.agile.domain.agile.entity.PiE;
+import io.choerodon.agile.api.vo.PiDTO;
 import io.choerodon.agile.infra.dataobject.ArtDO;
 import io.choerodon.agile.infra.dataobject.PiDO;
 import io.choerodon.agile.infra.mapper.ArtMapper;
 import io.choerodon.agile.infra.mapper.PiMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/3/12.
