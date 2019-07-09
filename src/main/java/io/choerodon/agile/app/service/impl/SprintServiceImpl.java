@@ -218,7 +218,7 @@ public class SprintServiceImpl implements SprintService {
                 StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)), filterSql, assigneeFilterIds);
         List<SprintSearchDTO> sprintSearches = new ArrayList<>();
         BackLogIssueDTO backLogIssueDTO = new BackLogIssueDTO();
-        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         setStatusIsCompleted(projectId, statusMapDTOMap);
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
@@ -258,7 +258,7 @@ public class SprintServiceImpl implements SprintService {
         }
     }
 
-    private void handleSprintIssueData(List<IssueIdSprintIdDTO> issueIdSprintIdDTOs, List<Long> issueIds, List<SprintSearchDTO> sprintSearches, BackLogIssueDTO backLogIssueDTO, Long projectId, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    private void handleSprintIssueData(List<IssueIdSprintIdDTO> issueIdSprintIdDTOs, List<Long> issueIds, List<SprintSearchDTO> sprintSearches, BackLogIssueDTO backLogIssueDTO, Long projectId, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<Long> allIssueIds = issueIdSprintIdDTOs.stream().map(IssueIdSprintIdDTO::getIssueId).collect(Collectors.toList());
         //查询出所有经办人用户id
         Set<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(projectId, allIssueIds);
@@ -475,7 +475,7 @@ public class SprintServiceImpl implements SprintService {
             updateReportIssue(reportIssue, reportIssueStoryPointsMap, reportIssueBeforeStatusMap, reportIssueAfterStatusMap, issueIdAddList);
             return reportIssue;
         }).collect(Collectors.toList());
-        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         return PageUtil.buildPageInfoWithPageInfoList(reportIssuePage, issueAssembler.issueDoToIssueListDto(reportIssues, priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }

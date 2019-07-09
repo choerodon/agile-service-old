@@ -2,7 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IssueLinkDTO;
 import io.choerodon.agile.api.vo.IssueTypeVO;
-import io.choerodon.agile.api.vo.PriorityDTO;
+import io.choerodon.agile.api.vo.PriorityVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -39,7 +39,7 @@ public class IssueLinkAssembler extends AbstractAssembler {
             Map<Long, IssueTypeVO> testIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
             Map<Long, IssueTypeVO> agileIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-            Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+            Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             List<Long> assigneeIds = issueLinkDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueLinkDO::getAssigneeId).distinct().collect(Collectors.toList());
             Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
             issueLinkDOList.forEach(issueLinkDO -> {
@@ -53,7 +53,7 @@ public class IssueLinkAssembler extends AbstractAssembler {
                     issueLinkDTO.setIssueTypeVO(agileIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
                 }
                 issueLinkDTO.setStatusMapVO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
-                issueLinkDTO.setPriorityDTO(priorityDTOMap.get(issueLinkDO.getPriorityId()));
+                issueLinkDTO.setPriorityVO(priorityDTOMap.get(issueLinkDO.getPriorityId()));
                 issueLinkDTO.setAssigneeName(assigneeName);
                 issueLinkDTO.setImageUrl(imageUrl);
                 issueLinkDTOList.add(issueLinkDTO);

@@ -257,7 +257,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         //处理用户搜索
         Boolean condition = issueService.handleSearchUser(searchVO, projectId);
         if (condition) {
-            Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+            Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
             Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             List<Long> filterStatusIds = new ArrayList<>();

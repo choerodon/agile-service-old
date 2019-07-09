@@ -57,7 +57,7 @@ public class IssueLinkDTO {
     private StatusMapVO statusMapVO;
 
     @ApiModelProperty(value = "优先级DTO")
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     @ApiModelProperty(value = "关联issue的应用类型")
     private String applyType;
@@ -150,12 +150,12 @@ public class IssueLinkDTO {
         this.statusMapVO = statusMapVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
     public Long getLinkId() {

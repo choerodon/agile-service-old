@@ -25,7 +25,7 @@ public class PieChartVO implements Serializable {
 
     private JSONObject jsonObject;
 
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     public String getName() {
         return name;
@@ -67,12 +67,12 @@ public class PieChartVO implements Serializable {
         this.jsonObject = jsonObject;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
     public String getLoginName() {

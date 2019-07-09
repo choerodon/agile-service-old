@@ -98,7 +98,7 @@ public class IssueSubVO {
     private String reporterImageUrl;
 
     @ApiModelProperty(value = "优先级DTO")
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeVO issueTypeVO;
@@ -167,12 +167,12 @@ public class IssueSubVO {
         this.applyType = applyType;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
     public IssueTypeVO getIssueTypeVO() {

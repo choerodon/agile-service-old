@@ -22,7 +22,7 @@ public class UndistributedIssueVO {
     private String summary;
 
     @ApiModelProperty(value = "优先级DTO")
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeVO issueTypeVO;
@@ -62,12 +62,12 @@ public class UndistributedIssueVO {
         this.summary = summary;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
     public IssueTypeVO getIssueTypeVO() {

@@ -69,7 +69,7 @@ class IterativeWorktableControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
         List<PriorityDistributeVO> result = entity.body
         result.size() == 1
-        result.get(0).priorityDTO.name.equals("高")
+        result.get(0).priorityVO.name.equals("高")
     }
 
     def 'queryPriorityDistribute fail'() {

@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.agile.api.vo.PriorityDTO;
+import io.choerodon.agile.api.vo.PriorityVO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 import java.math.BigDecimal;
@@ -50,7 +50,7 @@ public class IssueBurnDownReportDO {
         this.issueTypeId = issueTypeId;
     }
 
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     public Long getIssueId() {
         return issueId;
@@ -164,12 +164,12 @@ public class IssueBurnDownReportDO {
         return priorityId;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
     @Override

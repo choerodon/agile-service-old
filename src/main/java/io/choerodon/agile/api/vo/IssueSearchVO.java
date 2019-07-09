@@ -83,7 +83,7 @@ public class IssueSearchVO {
     private Long objectVersionNumber;
 
     @ApiModelProperty(value = "优先级DTO")
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     @ApiModelProperty(value = "状态DTO")
     private StatusMapVO statusMapVO;
@@ -292,12 +292,12 @@ public class IssueSearchVO {
         this.objectVersionNumber = objectVersionNumber;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
     public void setPriorityId(Long priorityId) {

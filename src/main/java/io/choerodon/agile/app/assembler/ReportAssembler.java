@@ -45,13 +45,13 @@ public class ReportAssembler extends AbstractAssembler {
     }
 
     public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS, Map<Long, IssueTypeVO> issueTypeDTOMap,
-                                                                   Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
+                                                                   Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         List<IssueBurnDownReportDTO> issueBurnDownReportDTOS = new ArrayList<>(issueBurnDownReportDOS.size());
         if (!issueBurnDownReportDOS.isEmpty()) {
             issueBurnDownReportDOS.forEach(issueBurnDownReportDO -> {
                 IssueBurnDownReportDTO issueBurnDownReportDTO = new IssueBurnDownReportDTO();
                 BeanUtils.copyProperties(issueBurnDownReportDO, issueBurnDownReportDTO);
-                issueBurnDownReportDTO.setPriorityDTO(priorityDTOMap.get(issueBurnDownReportDO.getPriorityId()));
+                issueBurnDownReportDTO.setPriorityVO(priorityDTOMap.get(issueBurnDownReportDO.getPriorityId()));
                 issueBurnDownReportDTO.setStatusMapVO(statusMapDTOMap.get(issueBurnDownReportDO.getStatusId()));
                 issueBurnDownReportDTO.setIssueTypeVO(issueTypeDTOMap.get(issueBurnDownReportDO.getIssueTypeId()));
                 issueBurnDownReportDTOS.add(issueBurnDownReportDTO);
@@ -86,12 +86,12 @@ public class ReportAssembler extends AbstractAssembler {
     }
 
     public List<IssuePriorityDistributionChartDTO> toIssuePriorityDistributionChartDTO(Long projectId, List<IssuePriorityDistributionChartDO> issuePriorityDistributionChartDOS) {
-        Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+        Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         List<IssuePriorityDistributionChartDTO> issuePriorityDistributionChartDTOS = new ArrayList<>(issuePriorityDistributionChartDOS.size());
         issuePriorityDistributionChartDOS.forEach(issuePriorityDistributionChartDO -> {
             IssuePriorityDistributionChartDTO issueTypeDistributionChartDTO = toTarget(issuePriorityDistributionChartDO, IssuePriorityDistributionChartDTO.class);
             issueTypeDistributionChartDTO.setName(priorityDTOMap.get(issuePriorityDistributionChartDO.getPriorityId()).getName());
-            issueTypeDistributionChartDTO.setPriorityDTO(priorityDTOMap.get(issuePriorityDistributionChartDO.getPriorityId()));
+            issueTypeDistributionChartDTO.setPriorityVO(priorityDTOMap.get(issuePriorityDistributionChartDO.getPriorityId()));
             issuePriorityDistributionChartDTOS.add(issueTypeDistributionChartDTO);
         });
         return issuePriorityDistributionChartDTOS;

@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.agile.api.vo.PriorityDTO;
+import io.choerodon.agile.api.vo.PriorityVO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 /**
@@ -15,7 +15,7 @@ public class IssuePriorityDistributionChartDO {
 
     private Integer doneCount;
 
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     public void setPriorityId(Long priorityId) {
         this.priorityId = priorityId;
@@ -25,12 +25,12 @@ public class IssuePriorityDistributionChartDO {
         return priorityId;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
     public Integer getTotalCount() {

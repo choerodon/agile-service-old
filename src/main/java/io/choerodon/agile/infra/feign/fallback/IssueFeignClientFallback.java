@@ -18,12 +18,12 @@ import java.util.Map;
 public class IssueFeignClientFallback implements IssueFeignClient {
 
     @Override
-    public ResponseEntity<PriorityDTO> queryById(Long organizationId, Long id) {
+    public ResponseEntity<PriorityVO> queryById(Long organizationId, Long id) {
         throw new CommonException("error.priority.get");
     }
 
     @Override
-    public ResponseEntity<Map<Long, PriorityDTO>> queryByOrganizationId(Long organizationId) {
+    public ResponseEntity<Map<Long, PriorityVO>> queryByOrganizationId(Long organizationId) {
         throw new CommonException("error.priorityList.get");
     }
 
@@ -73,7 +73,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<PriorityDTO> queryDefaultByOrganizationId(Long organizationId) {
+    public ResponseEntity<PriorityVO> queryDefaultByOrganizationId(Long organizationId) {
         throw new CommonException("error.defaultPriority.get");
     }
 
@@ -83,7 +83,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<List<PriorityDTO>> queryByOrganizationIdList(Long organizationId) {
+    public ResponseEntity<List<PriorityVO>> queryByOrganizationIdList(Long organizationId) {
         throw new CommonException("error.priorityList.get");
     }
 

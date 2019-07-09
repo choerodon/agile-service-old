@@ -49,7 +49,7 @@ public class IssueSubListDTO {
     private Long priorityId;
 
     @ApiModelProperty(value = "优先级DTO")
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeVO issueTypeVO;
@@ -150,12 +150,12 @@ public class IssueSubListDTO {
         this.priorityId = priorityId;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
     public IssueTypeVO getIssueTypeVO() {

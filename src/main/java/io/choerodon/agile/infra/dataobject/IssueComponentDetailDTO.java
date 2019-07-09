@@ -58,7 +58,7 @@ public class IssueComponentDetailDTO {
 
     private StatusMapVO statusMapVO;
 
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
@@ -236,12 +236,12 @@ public class IssueComponentDetailDTO {
         this.statusMapVO = statusMapVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
     public void setDescription(String description) {

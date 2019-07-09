@@ -18,13 +18,13 @@ import java.util.Map;
 public interface IssueFeignClient {
 
     @GetMapping("/v1/organizations/{organization_id}/priority/{id}")
-    ResponseEntity<PriorityDTO> queryById(@ApiParam(value = "组织id", required = true)
+    ResponseEntity<PriorityVO> queryById(@ApiParam(value = "组织id", required = true)
                                           @PathVariable("organization_id") Long organizationId,
-                                          @ApiParam(value = "id", required = true)
+                                         @ApiParam(value = "id", required = true)
                                           @PathVariable("id") Long id);
 
     @GetMapping("/v1/organizations/{organization_id}/priority/list")
-    ResponseEntity<Map<Long, PriorityDTO>> queryByOrganizationId(@ApiParam(value = "组织id", required = true)
+    ResponseEntity<Map<Long, PriorityVO>> queryByOrganizationId(@ApiParam(value = "组织id", required = true)
                                                                  @PathVariable("organization_id") Long organizationId);
 
 
@@ -66,7 +66,7 @@ public interface IssueFeignClient {
                                                  @RequestParam("deployProgress") Integer deployProgress);
 
     @GetMapping("/v1/organizations/{organization_id}/priority/default")
-    ResponseEntity<PriorityDTO> queryDefaultByOrganizationId(@ApiParam(value = "组织id", required = true)
+    ResponseEntity<PriorityVO> queryDefaultByOrganizationId(@ApiParam(value = "组织id", required = true)
                                                              @PathVariable("organization_id") Long organizationId);
 
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_transforms")
@@ -77,7 +77,7 @@ public interface IssueFeignClient {
                                                                   @RequestParam("apply_type") String applyType);
 
     @GetMapping("/v1/organizations/{organization_id}/priority/list_by_org")
-    ResponseEntity<List<PriorityDTO>> queryByOrganizationIdList(@ApiParam(value = "组织id", required = true)
+    ResponseEntity<List<PriorityVO>> queryByOrganizationIdList(@ApiParam(value = "组织id", required = true)
                                                                 @PathVariable("organization_id") Long organizationId);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/types")

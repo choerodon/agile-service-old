@@ -101,15 +101,15 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
-        List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+        List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
         List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
         List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
         List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
         List<SprintDTO> sprintDTOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> priorityList = new ArrayList<>();
-        for (PriorityDTO priorityDTO : priorityDTOList) {
-            if (priorityDTO.getEnable()){
-                priorityList.add(priorityDTO.getName());
+        for (PriorityVO priorityVO : priorityVOList) {
+            if (priorityVO.getEnable()){
+                priorityList.add(priorityVO.getName());
             }
         }
         List<String> issueTypeList = new ArrayList<>();
@@ -267,12 +267,12 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     private void setIssueTypeAndPriorityMap(Long organizationId, Long projectId, Map<String, IssueTypeVO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
-        List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+        List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
         List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
-        for (PriorityDTO priorityDTO : priorityDTOList) {
-            if (priorityDTO.getEnable()) {
-                priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
-                priorityList.add(priorityDTO.getName());
+        for (PriorityVO priorityVO : priorityVOList) {
+            if (priorityVO.getEnable()) {
+                priorityMap.put(priorityVO.getName(), priorityVO.getId());
+                priorityList.add(priorityVO.getName());
             }
         }
         for (IssueTypeVO issueTypeVO : issueTypeVOList) {

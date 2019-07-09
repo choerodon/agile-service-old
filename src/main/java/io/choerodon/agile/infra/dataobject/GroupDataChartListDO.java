@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.api.vo.IssueTypeVO;
-import io.choerodon.agile.api.vo.PriorityDTO;
+import io.choerodon.agile.api.vo.PriorityVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
 
 import java.math.BigDecimal;
@@ -36,7 +36,7 @@ public class GroupDataChartListDO {
 
     private Long issueTypeId;
 
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     private IssueTypeVO issueTypeVO;
 
@@ -132,12 +132,12 @@ public class GroupDataChartListDO {
         return priorityId;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
     public void setStatusMapVO(StatusMapVO statusMapVO) {

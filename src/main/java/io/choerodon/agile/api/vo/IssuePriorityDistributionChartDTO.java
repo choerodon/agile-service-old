@@ -19,7 +19,7 @@ public class IssuePriorityDistributionChartDTO {
     private Integer doneCount;
 
     @ApiModelProperty(value = "优先级DTO")
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     public String getName() {
         return name;
@@ -29,12 +29,12 @@ public class IssuePriorityDistributionChartDTO {
         this.name = name;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
     public Integer getTotalCount() {

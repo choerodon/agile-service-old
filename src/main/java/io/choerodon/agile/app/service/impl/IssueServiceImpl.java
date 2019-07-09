@@ -358,14 +358,14 @@ public class IssueServiceImpl implements IssueService {
         }
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-        Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+        Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueVO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueCreate(projectId, result);
         return result;
     }
 
-    private PriorityDTO getPriorityById(Long organizationId, Long priorityId) {
-        ResponseEntity<PriorityDTO> priorityDTOResponseEntity = issueFeignClient.queryById(organizationId, priorityId);
+    private PriorityVO getPriorityById(Long organizationId, Long priorityId) {
+        ResponseEntity<PriorityVO> priorityDTOResponseEntity = issueFeignClient.queryById(organizationId, priorityId);
         if (priorityDTOResponseEntity == null) {
             throw new CommonException("error.priority.get");
         }
@@ -410,7 +410,7 @@ public class IssueServiceImpl implements IssueService {
         }
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-        Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+        Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         return issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
     }
 
@@ -427,7 +427,7 @@ public class IssueServiceImpl implements IssueService {
         }
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-        Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+        Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueVO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueAssignee(projectId, fieldList, result);
         // return feature extends table info
@@ -492,7 +492,7 @@ public class IssueServiceImpl implements IssueService {
             PageInfo<IssueListFieldKVVO> issueListDTOPage;
             if (issueIdPage.getList() != null && !issueIdPage.getList().isEmpty()) {
                 List<IssueDTO> issueDTOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getList());
-                Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+                Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
                 Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
                 Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
                 Map<Long, Map<String, String>> foundationCodeValue = foundationFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIdPage.getList()).getBody();
@@ -1340,7 +1340,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueSubVO queryIssueSub(Long projectId, Long organizationId, Long issueId) {
         IssueDetailDTO issue = issueMapper.queryIssueDetail(projectId, issueId);
-        issue.setPriorityDTO(getPriorityById(organizationId, issue.getPriorityId()));
+        issue.setPriorityVO(getPriorityById(organizationId, issue.getPriorityId()));
         issue.setIssueTypeVO(getIssueTypeById(organizationId, issue.getIssueTypeId()));
         issue.setStatusMapVO(getStatusById(organizationId, issue.getStatusId()));
         if (issue.getIssueAttachmentDTOList() != null && !issue.getIssueAttachmentDTOList().isEmpty()) {
@@ -2133,7 +2133,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private PageInfo<IssueListTestVO> handleIssueListTestDoToDto(PageInfo<IssueDTO> issueDOPage, Long organizationId, Long projectId) {
-        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
         return PageUtil.buildPageInfoWithPageInfoList(issueDOPage, issueAssembler.issueDoToIssueTestListDto(issueDOPage.getList(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
@@ -2327,7 +2327,7 @@ public class IssueServiceImpl implements IssueService {
 //        }
 //        //保存用户选择的泳道
 //        handleSaveUserSetting(projectId, type, pageType);
-//        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+//        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
 //        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
 //        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
 //        List<Long> doneIds = new ArrayList<>();

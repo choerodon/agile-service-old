@@ -21,7 +21,6 @@ import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 
 import javax.annotation.PostConstruct;
 
@@ -70,15 +69,15 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
         IterativeWorktableValidator.checkSprintExist(sprintDTO);
         List<PriorityDistributeDTO> priorityDistributeDTOList = iterativeWorktableMapper.queryPriorityDistribute(projectId, sprintId);
-        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         for (PriorityDistributeDTO priorityDistributeDTO : priorityDistributeDTOList) {
-            priorityDistributeDTO.setPriorityDTO(priorityMap.get(priorityDistributeDTO.getPriorityId()));
+            priorityDistributeDTO.setPriorityVO(priorityMap.get(priorityDistributeDTO.getPriorityId()));
             priorityDistributeDTO.setCategoryCode(statusMapDTOMap.get(priorityDistributeDTO.getStatusId()).getType());
         }
         Map<Long, PriorityDistributeVO> result = new HashMap<>();
         for (PriorityDistributeDTO priorityDistributeDTO : priorityDistributeDTOList) {
-            Long priorityId = priorityDistributeDTO.getPriorityDTO().getId();
+            Long priorityId = priorityDistributeDTO.getPriorityVO().getId();
             if (result.get(priorityId) == null) {
                 PriorityDistributeVO priorityDistributeVO = new PriorityDistributeVO();
                 priorityDistributeVO.setTotalNum(1);
@@ -87,7 +86,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
                 } else {
                     priorityDistributeVO.setCompletedNum(0);
                 }
-                priorityDistributeVO.setPriorityDTO(priorityDistributeDTO.getPriorityDTO());
+                priorityDistributeVO.setPriorityVO(priorityDistributeDTO.getPriorityVO());
                 result.put(priorityId, priorityDistributeVO);
             } else {
                 PriorityDistributeVO priorityDistributeVO = result.get(priorityId);

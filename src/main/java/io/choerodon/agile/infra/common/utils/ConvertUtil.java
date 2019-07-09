@@ -52,7 +52,7 @@ public class ConvertUtil {
      * @param projectId projectId
      * @return PriorityDTOMap
      */
-    public static Map<Long, PriorityDTO> getIssuePriorityMap(Long projectId) {
+    public static Map<Long, PriorityVO> getIssuePriorityMap(Long projectId) {
         Long organizationId = getOrganizationId(projectId);
         return SpringBeanUtil.getBean(IssueFeignClient.class).queryByOrganizationId(organizationId).getBody();
     }

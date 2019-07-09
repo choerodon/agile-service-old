@@ -68,7 +68,7 @@
 //    private String mapRank;
 //
 //    @ApiModelProperty(value = "优先级DTO")
-//    private PriorityDTO priorityDTO;
+//    private PriorityVO priorityDTO;
 //
 //    @ApiModelProperty(value = "问题类型DTO")
 //    private IssueTypeVO issueTypeDTO;
@@ -231,11 +231,11 @@
 //        return mapRank;
 //    }
 //
-//    public void setPriorityDTO(PriorityDTO priorityDTO) {
+//    public void setPriorityVO(PriorityVO priorityDTO) {
 //        this.priorityDTO = priorityDTO;
 //    }
 //
-//    public PriorityDTO getPriorityDTO() {
+//    public PriorityVO getPriorityVO() {
 //        return priorityDTO;
 //    }
 //

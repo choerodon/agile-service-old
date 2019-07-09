@@ -236,7 +236,7 @@ public class BoardServiceImpl implements BoardService {
         return columnsData;
     }
 
-    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Map<Long, PriorityDTO> priorityMap, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, List<Long>> parentWithSubs) {
+    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Map<Long, PriorityVO> priorityMap, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, List<Long>> parentWithSubs) {
         if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
             parentIds.add(issue.getParentIssueId());
         } else if (issue.getRelateIssueId() != null && issue.getRelateIssueId() != 0 && !parentIds.contains(issue.getRelateIssueId())) {
@@ -267,7 +267,7 @@ public class BoardServiceImpl implements BoardService {
             subBugIds.add(issue.getIssueId());
             parentWithSubs.put(issue.getRelateIssueId(), subBugIds);
         }
-        issue.setPriorityDTO(priorityMap.get(issue.getPriorityId()));
+        issue.setPriorityVO(priorityMap.get(issue.getPriorityId()));
         issue.setIssueTypeVO(issueTypeDTOMap.get(issue.getIssueTypeId()));
         if (issue.getStayDate() != null) {
             issue.setStayDay(DateUtil.differentDaysByMillisecond(issue.getStayDate(), new Date()));
@@ -277,7 +277,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId, Map<Long, List<Long>> parentWithSubs, Map<Long, IssueTypeVO> issueTypeDTOMap) {
-        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap, issueTypeDTOMap, parentWithSubs)));
     }
 

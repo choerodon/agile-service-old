@@ -95,7 +95,7 @@ public class DemoServiceImpl implements DemoService {
         }
     }
 
-    private IssueVO createEpic(Long projectId, String epicName, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long reporterId) {
+    private IssueVO createEpic(Long projectId, String epicName, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long reporterId) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setEpicName(epicName);
@@ -108,7 +108,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
-    private IssueVO createStory(Long projectId, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, BigDecimal storyPoint, Long epicId, Long reporterId) {
+    private IssueVO createStory(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, BigDecimal storyPoint, Long epicId, Long reporterId) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setSummary(summary);
@@ -123,7 +123,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
-    private IssueVO createTask(Long projectId, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, Long reporterId) {
+    private IssueVO createTask(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, Long reporterId) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setSummary(summary);
@@ -136,7 +136,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
-    private IssueVO createBug(Long projectId, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, Long reporterId) {
+    private IssueVO createBug(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, Long reporterId) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setSummary(summary);
@@ -149,7 +149,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
-    private IssueVO createTest(Long projectId, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> testIssueTypeMap) {
+    private IssueVO createTest(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> testIssueTypeMap) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setSummary(summary);
@@ -160,7 +160,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, TEST_APPLYTYPE);
     }
 
-    private IssueSubVO createSubTask(Long projectId, String summary, PriorityDTO defaultPriority, Long sprintId, Long parentIssueId, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long reporterId) {
+    private IssueSubVO createSubTask(Long projectId, String summary, PriorityVO defaultPriority, Long sprintId, Long parentIssueId, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long reporterId) {
         IssueSubCreateVO issueSubCreateVO = new IssueSubCreateVO();
         issueSubCreateVO.setProjectId(projectId);
         issueSubCreateVO.setSummary(summary);
@@ -285,9 +285,9 @@ public class DemoServiceImpl implements DemoService {
         boardService.move(projectId, issueId, transformId, issueMoveVO, true);
     }
 
-    private void setPriorityMap(List<PriorityDTO> priorityDTOList, Map<String, Long> priorityMap) {
-        for (PriorityDTO priorityDTO : priorityDTOList) {
-            priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
+    private void setPriorityMap(List<PriorityVO> priorityVOList, Map<String, Long> priorityMap) {
+        for (PriorityVO priorityVO : priorityVOList) {
+            priorityMap.put(priorityVO.getName(), priorityVO.getId());
         }
     }
 
@@ -487,7 +487,7 @@ public class DemoServiceImpl implements DemoService {
         setIssueTypeMap(testIssueTypeMap, testIssueTypes);
 
         // 查询优先级列表
-        PriorityDTO defaultPriority = issueFeignClient.queryDefaultByOrganizationId(organizationId).getBody();
+        PriorityVO defaultPriority = issueFeignClient.queryDefaultByOrganizationId(organizationId).getBody();
 
 
         // 创建史诗
@@ -559,9 +559,9 @@ public class DemoServiceImpl implements DemoService {
         IssueVO test4 = createTest(projectId, "通过商品详情快速下单", defaultPriority, testIssueTypeMap);
 
         // 更新优先级
-        List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+        List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
         Map<String, Long> priorityMap = new HashMap<>();
-        setPriorityMap(priorityDTOList, priorityMap);
+        setPriorityMap(priorityVOList, priorityMap);
         updatePriority(projectId, task3.getIssueId(), priorityMap.get("高"), 1L);
         updatePriority(projectId, task1.getIssueId(), priorityMap.get("高"), 1L);
         updatePriority(projectId, story1.getIssueId(), priorityMap.get("高"), 1L);

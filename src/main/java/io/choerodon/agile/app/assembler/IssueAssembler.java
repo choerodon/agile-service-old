@@ -33,7 +33,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @param issueDetailDTO issueDetailDTO
      * @return IssueVO
      */
-    public IssueVO issueDetailDoToDto(IssueDetailDTO issueDetailDTO, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
+    public IssueVO issueDetailDoToDto(IssueDetailDTO issueDetailDTO, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         IssueVO issueVO = new IssueVO();
         BeanUtils.copyProperties(issueDetailDTO, issueVO);
         issueVO.setFeatureVO(ConvertHelper.convert(issueDetailDTO.getFeatureDO(), FeatureVO.class));
@@ -48,7 +48,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueVO.setIssueCommentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueCommentDTOList(), IssueCommentVO.class));
         issueVO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDTO.getSubIssueDTOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
         issueVO.setSubBugDTOList(issueDoToSubIssueDto(issueDetailDTO.getSubBugDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
-        issueVO.setPriorityDTO(priorityDTOMap.get(issueVO.getPriorityId()));
+        issueVO.setPriorityVO(priorityDTOMap.get(issueVO.getPriorityId()));
         issueVO.setIssueTypeVO(issueTypeDTOMap.get(issueVO.getIssueTypeId()));
         issueVO.setStatusMapVO(statusMapDTOMap.get(issueVO.getStatusId()));
         List<Long> assigneeIdList = new ArrayList<>();
@@ -97,7 +97,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @return IssueListFieldKVVO
      */
 
-    public List<IssueListFieldKVVO> issueDoToIssueListFieldKVDTO(List<IssueDTO> issueDTOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, Map<String, String>> foundationCodeValue) {
+    public List<IssueListFieldKVVO> issueDoToIssueListFieldKVDTO(List<IssueDTO> issueDTOList, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, Map<String, String>> foundationCodeValue) {
         List<IssueListFieldKVVO> issueListFieldKVDTOList = new ArrayList<>(issueDTOList.size());
         Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
         userIds.addAll(issueDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDTO::getReporterId).collect(Collectors.toSet()));
@@ -120,7 +120,7 @@ public class IssueAssembler extends AbstractAssembler {
             issueListFieldKVVO.setReporterName(reporterName);
             issueListFieldKVVO.setReporterLoginName(reporterLoginName);
             issueListFieldKVVO.setReporterRealName(reporterRealName);
-            issueListFieldKVVO.setPriorityDTO(priorityMap.get(issueDO.getPriorityId()));
+            issueListFieldKVVO.setPriorityVO(priorityMap.get(issueDO.getPriorityId()));
             issueListFieldKVVO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
             issueListFieldKVVO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
             issueListFieldKVVO.setAssigneeImageUrl(assigneeImageUrl);
@@ -142,7 +142,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @param issueDTOList issueDetailDO
      * @return IssueListDTO
      */
-    public List<IssueListDTO> issueDoToIssueListDto(List<IssueDTO> issueDTOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    public List<IssueListDTO> issueDoToIssueListDto(List<IssueDTO> issueDTOList, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<IssueListDTO> issueListDTOList = new ArrayList<>(issueDTOList.size());
         Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
         userIds.addAll(issueDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDTO::getReporterId).collect(Collectors.toSet()));
@@ -165,7 +165,7 @@ public class IssueAssembler extends AbstractAssembler {
             issueListDTO.setReporterName(reporterName);
             issueListDTO.setReporterLoginName(reporterLoginName);
             issueListDTO.setReporterRealName(reporterRealName);
-            issueListDTO.setPriorityDTO(priorityMap.get(issueDO.getPriorityId()));
+            issueListDTO.setPriorityVO(priorityMap.get(issueDO.getPriorityId()));
             issueListDTO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
             issueListDTO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
             issueListDTO.setAssigneeImageUrl(assigneeImageUrl);
@@ -185,7 +185,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @param issueDTOList issueDTOList
      * @return SubIssueDTO
      */
-    private List<IssueSubListDTO> issueDoToSubIssueDto(List<IssueDTO> issueDTOList, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
+    private List<IssueSubListDTO> issueDoToSubIssueDto(List<IssueDTO> issueDTOList, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         List<IssueSubListDTO> subIssueDTOList = new ArrayList<>(issueDTOList.size());
         List<Long> assigneeIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
@@ -201,7 +201,7 @@ public class IssueAssembler extends AbstractAssembler {
             subIssueDTO.setImageUrl(imageUrl);
             subIssueDTO.setLoginName(loginName);
             subIssueDTO.setRealName(realName);
-            subIssueDTO.setPriorityDTO(priorityDTOMap.get(issueDO.getPriorityId()));
+            subIssueDTO.setPriorityVO(priorityDTOMap.get(issueDO.getPriorityId()));
             subIssueDTO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
             subIssueDTO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
             subIssueDTOList.add(subIssueDTO);
@@ -261,7 +261,7 @@ public class IssueAssembler extends AbstractAssembler {
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(new ArrayList<>(userIds), true);
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-        Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+        Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         exportIssues.forEach(issueDO -> {
             String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
             String assigneeRealName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getRealName() : null;
@@ -365,7 +365,7 @@ public class IssueAssembler extends AbstractAssembler {
             Map<Long, IssueTypeVO> issueTypeDTOMapAgile = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             issueTypeDTOMap.putAll(issueTypeDTOMapAgile);
             Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-            Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+            Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             issueComponentDetailDOS.parallelStream().forEachOrdered(issueDO -> {
                 String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
                 String assigneeLoginName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getLoginName() : null;
@@ -387,7 +387,7 @@ public class IssueAssembler extends AbstractAssembler {
                 issueComponentDetailDTO.setReporterImageUrl(reporterImageUrl);
                 issueComponentDetailDTO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
                 issueComponentDetailDTO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
-                issueComponentDetailDTO.setPriorityDTO(priorityDTOMap.get(issueDO.getPriorityId()));
+                issueComponentDetailDTO.setPriorityVO(priorityDTOMap.get(issueDO.getPriorityId()));
                 issueComponentDetailDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
                 issueComponentDetailDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
                 issueComponentDetailDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
@@ -397,7 +397,7 @@ public class IssueAssembler extends AbstractAssembler {
         return issueComponentDetailDTOS;
     }
 
-    public List<IssueListTestVO> issueDoToIssueTestListDto(List<IssueDTO> issueDTOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    public List<IssueListTestVO> issueDoToIssueTestListDto(List<IssueDTO> issueDTOList, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<IssueListTestVO> issueListTestVOS = new ArrayList<>(issueDTOList.size());
         Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(Lists.newArrayList(userIds), true);
@@ -406,7 +406,7 @@ public class IssueAssembler extends AbstractAssembler {
             String assigneeImageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
             IssueListTestVO issueListTestVO = toTarget(issueDO, IssueListTestVO.class);
             issueListTestVO.setAssigneeName(assigneeName);
-            issueListTestVO.setPriorityDTO(priorityMap.get(issueDO.getPriorityId()));
+            issueListTestVO.setPriorityVO(priorityMap.get(issueDO.getPriorityId()));
             issueListTestVO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
             issueListTestVO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
             issueListTestVO.setAssigneeImageUrl(assigneeImageUrl);
@@ -434,12 +434,12 @@ public class IssueAssembler extends AbstractAssembler {
         if (!unfinishedIssueDOS.isEmpty()) {
             Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-            Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+            Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             unfinishedIssueDOS.forEach(unfinishedIssueDO -> {
                 UnfinishedIssueDTO unfinishedIssueDTO = toTarget(unfinishedIssueDO, UnfinishedIssueDTO.class);
                 unfinishedIssueDTO.setIssueTypeVO(issueTypeDTOMap.get(unfinishedIssueDO.getIssueTypeId()));
                 unfinishedIssueDTO.setStatusMapVO(statusMapDTOMap.get(unfinishedIssueDO.getStatusId()));
-                unfinishedIssueDTO.setPriorityDTO(priorityDTOMap.get(unfinishedIssueDO.getPriorityId()));
+                unfinishedIssueDTO.setPriorityVO(priorityDTOMap.get(unfinishedIssueDO.getPriorityId()));
                 unfinishedIssueDTOS.add(unfinishedIssueDTO);
             });
 
@@ -452,12 +452,12 @@ public class IssueAssembler extends AbstractAssembler {
         if (!undistributedIssueDTOS.isEmpty()) {
             Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-            Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+            Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             undistributedIssueDTOS.forEach(undistributedIssueDTO -> {
                 UndistributedIssueVO undistributedIssueVO = toTarget(undistributedIssueDTO, UndistributedIssueVO.class);
                 undistributedIssueVO.setIssueTypeVO(issueTypeDTOMap.get(undistributedIssueDTO.getIssueTypeId()));
                 undistributedIssueVO.setStatusMapVO(statusMapDTOMap.get(undistributedIssueDTO.getStatusId()));
-                undistributedIssueVO.setPriorityDTO(priorityDTOMap.get(undistributedIssueDTO.getPriorityId()));
+                undistributedIssueVO.setPriorityVO(priorityDTOMap.get(undistributedIssueDTO.getPriorityId()));
                 undistributedIssueVOS.add(undistributedIssueVO);
             });
 

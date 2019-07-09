@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.common.aspect;
 
-import io.choerodon.agile.api.vo.PriorityDTO;
+import io.choerodon.agile.api.vo.PriorityVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.infra.repository.DataLogRepository;
@@ -396,8 +396,8 @@ public class DataLogAspect {
         Long userId = (Long) args[3];
         List<Long> projectIds = (List) args[4];
         if (priorityId != null && Objects.nonNull(changePriorityId) && projectIds != null && !projectIds.isEmpty()) {
-            List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-            Map<Long, PriorityDTO> priorityMap = priorityDTOList.stream().collect(Collectors.toMap(PriorityDTO::getId, Function.identity()));
+            List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+            Map<Long, PriorityVO> priorityMap = priorityVOList.stream().collect(Collectors.toMap(PriorityVO::getId, Function.identity()));
             List<IssueDTO> issueDTOS = issueMapper.queryIssuesByPriorityId(priorityId, projectIds);
             if (issueDTOS != null && !issueDTOS.isEmpty()) {
                 dataLogMapper.batchCreateChangePriorityLogByIssueDOs(issueDTOS, userId, priorityMap.get(priorityId).getName(), priorityMap.get(changePriorityId).getName());
@@ -1392,11 +1392,11 @@ public class DataLogAspect {
 
     private void handlePriority(List<String> field, IssueDTO originIssueDTO, IssueConvertDTO issueConvertDTO) {
         if (field.contains(PRIORITY_CODE_FIELD) && !Objects.equals(originIssueDTO.getPriorityId(), issueConvertDTO.getPriorityId())) {
-            PriorityDTO originPriorityDTO = issueFeignClient.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getPriorityId()).getBody();
-            PriorityDTO currentPriorityDTO = issueFeignClient.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getPriorityId()).getBody();
+            PriorityVO originPriorityVO = issueFeignClient.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getPriorityId()).getBody();
+            PriorityVO currentPriorityVO = issueFeignClient.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getPriorityId()).getBody();
             createDataLog(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(),
-                    FIELD_PRIORITY, originPriorityDTO.getName()
-                    , currentPriorityDTO.getName(), originIssueDTO.getProjectId().toString(), issueConvertDTO.getPriorityId().toString());
+                    FIELD_PRIORITY, originPriorityVO.getName()
+                    , currentPriorityVO.getName(), originIssueDTO.getProjectId().toString(), issueConvertDTO.getPriorityId().toString());
             redisUtil.deleteRedisCache(new String[]{PIECHART + originIssueDTO.getProjectId() + ':' + FIELD_PRIORITY + "*"});
         }
     }
