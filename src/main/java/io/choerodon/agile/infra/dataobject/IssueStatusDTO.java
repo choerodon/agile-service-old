@@ -1,41 +1,33 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.choerodon.mybatis.entity.BaseDTO;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
  */
-public class IssueStatusDTO {
+@Table(name = "agile_issue_status")
+public class IssueStatusDTO extends BaseDTO {
 
-    @ApiModelProperty(value = "主键id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ApiModelProperty(value = "状态名称")
-    @NotNull(message = "状态名称不能为空")
-    private String name;
-
-    @ApiModelProperty(value = "项目id")
-    @NotNull(message = "项目id不能为空")
     private Long projectId;
 
-    @ApiModelProperty(value = "暂时没用")
+    private String name;
+
+    @Column(name = "is_enable")
     private Boolean enable;
 
-    @ApiModelProperty(value = "状态类别")
-    @NotNull(message = "类别code不能为空")
     private String categoryCode;
 
-    @ApiModelProperty(value = "是否已完成")
+    @Column(name = "is_completed")
     private Boolean completed;
 
-    @ApiModelProperty(value = "状态真实id")
     private Long statusId;
-
-    @ApiModelProperty(value = "版本号")
-    private Long objectVersionNumber;
 
     public void setId(Long id) {
         this.id = id;
@@ -45,20 +37,20 @@ public class IssueStatusDTO {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
     public Long getProjectId() {
         return projectId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setEnable(Boolean enable) {
@@ -83,14 +75,6 @@ public class IssueStatusDTO {
 
     public Boolean getCompleted() {
         return completed;
-    }
-
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
-    }
-
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
     }
 
     public void setStatusId(Long statusId) {

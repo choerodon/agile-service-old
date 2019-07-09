@@ -657,10 +657,10 @@ public class DemoServiceImpl implements DemoService {
         issueLinkService.createIssueLinkList(issueLinkCreateDTOList, story4.getIssueId(), projectId);
 
         // 完成冲刺1所有的issue
-        List<IssueStatusDTO> issueStatusDTOS = issueStatusService.queryIssueStatusList(projectId);
+        List<IssueStatusVO> issueStatusVOS = issueStatusService.queryIssueStatusList(projectId);
         Map<String, Long> statusMap = new HashMap<>();
-        for (IssueStatusDTO issueStatusDTO : issueStatusDTOS) {
-            statusMap.put(issueStatusDTO.getCategoryCode(), issueStatusDTO.getStatusId());
+        for (IssueStatusVO issueStatusVO : issueStatusVOS) {
+            statusMap.put(issueStatusVO.getCategoryCode(), issueStatusVO.getStatusId());
         }
         Long currentStatusId1 = story1.getStatusId();
         List<TransformDTO> transformDTOList1 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId1, story1.getIssueId(), story1.getIssueTypeId(), "agile").getBody();

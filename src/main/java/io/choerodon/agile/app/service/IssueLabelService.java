@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 
-import io.choerodon.agile.api.vo.IssueLabelDTO;
+import io.choerodon.agile.api.vo.IssueLabelVO;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public interface IssueLabelService {
      * 根据项目id查询issueLabel
      *
      * @param projectId projectId
-     * @return IssueLabelDTO
+     * @return IssueLabelVO
      */
-    List<IssueLabelDTO> listIssueLabel(Long projectId);
+    List<IssueLabelVO> listIssueLabel(Long projectId);
 }

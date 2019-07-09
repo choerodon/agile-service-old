@@ -376,8 +376,8 @@ public class DataLogAspect {
         if (projectId != null && Objects.nonNull(applyType) && issueTypeId != null && oldStatusId != null && newStatusId != null && !oldStatusId.equals(newStatusId)) {
             StatusMapDTO oldStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), oldStatusId).getBody();
             StatusMapDTO newStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), newStatusId).getBody();
-            IssueStatusDO oldStatusDO = issueStatusMapper.selectByStatusId(projectId, oldStatusId);
-            IssueStatusDO newStatusDO = issueStatusMapper.selectByStatusId(projectId, newStatusId);
+            IssueStatusDTO oldStatusDO = issueStatusMapper.selectByStatusId(projectId, oldStatusId);
+            IssueStatusDTO newStatusDO = issueStatusMapper.selectByStatusId(projectId, newStatusId);
             List<IssueDTO> issueDTOS = issueMapper.queryIssueWithCompleteInfoByStatusId(projectId, applyType, issueTypeId, oldStatusId);
             if (issueDTOS != null && !issueDTOS.isEmpty()) {
                 dataLogMapper.batchCreateChangeStatusLogByIssueDOS(projectId, issueDTOS, userId, oldStatus, newStatus);
@@ -765,11 +765,11 @@ public class DataLogAspect {
     }
 
     private Object createLabelDataLog(Long issueId, Long projectId, ProceedingJoinPoint pjp) {
-        List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
+        List<IssueLabelDTO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
         Object result = null;
         try {
             result = pjp.proceed();
-            List<IssueLabelDO> curLabels = issueMapper.selectLabelNameByIssueId(issueId);
+            List<IssueLabelDTO> curLabels = issueMapper.selectLabelNameByIssueId(issueId);
             createDataLog(projectId, issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     getOriginLabelNames(curLabels), null, null);
         } catch (Throwable e) {
@@ -802,16 +802,16 @@ public class DataLogAspect {
         }
         if (issueId != null) {
             IssueDTO issueDTO = issueMapper.selectByPrimaryKey(issueId);
-            List<IssueLabelDO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
+            List<IssueLabelDTO> originLabels = issueMapper.selectLabelNameByIssueId(issueId);
             createDataLog(issueDTO.getProjectId(), issueId, FIELD_LABELS, getOriginLabelNames(originLabels),
                     null, null, null);
         }
     }
 
-    private String getOriginLabelNames(List<IssueLabelDO> originLabels) {
+    private String getOriginLabelNames(List<IssueLabelDTO> originLabels) {
         StringBuilder originLabelNames = new StringBuilder();
         int originIdx = 0;
-        for (IssueLabelDO label : originLabels) {
+        for (IssueLabelDTO label : originLabels) {
             if (originIdx == originLabels.size() - 1) {
                 originLabelNames.append(label.getLabelName());
             } else {
@@ -1140,12 +1140,12 @@ public class DataLogAspect {
             IssueE issueE = (IssueE) result;
             if (issueE != null) {
                 //若创建issue的初始状态为已完成，生成日志
-                IssueStatusDO issueStatusDO = issueStatusMapper.selectByStatusId(issueE.getProjectId(), issueE.getStatusId());
-                Boolean condition = (issueStatusDO.getCompleted() != null && issueStatusDO.getCompleted());
+                IssueStatusDTO issueStatusDTO = issueStatusMapper.selectByStatusId(issueE.getProjectId(), issueE.getStatusId());
+                Boolean condition = (issueStatusDTO.getCompleted() != null && issueStatusDTO.getCompleted());
                 if (condition) {
                     StatusMapDTO statusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(issueE.getProjectId()), issueE.getStatusId()).getBody();
                     createDataLog(issueE.getProjectId(), issueE.getIssueId(), FIELD_RESOLUTION, null,
-                            statusMapDTO.getName(), null, issueStatusDO.getStatusId().toString());
+                            statusMapDTO.getName(), null, issueStatusDTO.getStatusId().toString());
                 }
                 if (issueE.getEpicId() != null && !issueE.getEpicId().equals(0L)) {
                     //选择EPIC要生成日志
@@ -1280,8 +1280,8 @@ public class DataLogAspect {
         if (field.contains(STATUS_ID) && !Objects.equals(originIssueDTO.getStatusId(), issueE.getStatusId())) {
             StatusMapDTO originStatusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getStatusId()).getBody();
             StatusMapDTO currentStatusMapDTO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueE.getStatusId()).getBody();
-            IssueStatusDO originStatus = issueStatusMapper.selectByStatusId(originIssueDTO.getProjectId(), originIssueDTO.getStatusId());
-            IssueStatusDO currentStatus = issueStatusMapper.selectByStatusId(originIssueDTO.getProjectId(), issueE.getStatusId());
+            IssueStatusDTO originStatus = issueStatusMapper.selectByStatusId(originIssueDTO.getProjectId(), originIssueDTO.getStatusId());
+            IssueStatusDTO currentStatus = issueStatusMapper.selectByStatusId(originIssueDTO.getProjectId(), issueE.getStatusId());
             createDataLog(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), FIELD_STATUS, originStatusMapDTO.getName(),
                     currentStatusMapDTO.getName(), originIssueDTO.getStatusId().toString(), issueE.getStatusId().toString());
             Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
@@ -1447,7 +1447,7 @@ public class DataLogAspect {
         }
     }
 
-    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDO originStatus, IssueStatusDO currentStatus, StatusMapDTO originStatusMapDTO, StatusMapDTO currentStatusMapDTO) {
+    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDTO originStatus, IssueStatusDTO currentStatus, StatusMapDTO originStatusMapDTO, StatusMapDTO currentStatusMapDTO) {
         Boolean condition = (originStatus.getCompleted() == null || !originStatus.getCompleted()) || (currentStatus.getCompleted() == null || !currentStatus.getCompleted());
         if (condition) {
             String oldValue = null;

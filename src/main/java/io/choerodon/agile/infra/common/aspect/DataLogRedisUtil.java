@@ -5,6 +5,7 @@ import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
+import io.choerodon.agile.infra.dataobject.IssueStatusDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -253,13 +254,13 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByUpdateIssueStatus(IssueStatusE issueStatusE) {
-        redisUtil.deleteRedisCache(new String[]{BURN_DOWN_COORDINATE + issueStatusE.getProjectId() + COLON + POINTER,
-                CUMULATIVE_FLOW_DIAGRAM + issueStatusE.getProjectId() + COLON + POINTER,
-                VELOCITY_CHART + issueStatusE.getProjectId() + COLON + POINTER,
-                EPIC_CHART + issueStatusE.getProjectId() + COLON + POINTER
-                , PIE_CHART + issueStatusE.getProjectId() + COLON + FIELD_STATUS + POINTER,
-                PIE_CHART + issueStatusE.getProjectId() + COLON + FIELD_RESOLUTION + POINTER
+    public void deleteByUpdateIssueStatus(IssueStatusDTO issueStatusDTO) {
+        redisUtil.deleteRedisCache(new String[]{BURN_DOWN_COORDINATE + issueStatusDTO.getProjectId() + COLON + POINTER,
+                CUMULATIVE_FLOW_DIAGRAM + issueStatusDTO.getProjectId() + COLON + POINTER,
+                VELOCITY_CHART + issueStatusDTO.getProjectId() + COLON + POINTER,
+                EPIC_CHART + issueStatusDTO.getProjectId() + COLON + POINTER
+                , PIE_CHART + issueStatusDTO.getProjectId() + COLON + FIELD_STATUS + POINTER,
+                PIE_CHART + issueStatusDTO.getProjectId() + COLON + FIELD_RESOLUTION + POINTER
         });
     }
 

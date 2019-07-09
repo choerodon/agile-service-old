@@ -7,7 +7,7 @@ import io.choerodon.agile.api.vo.ColumnSortVO
 import io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO
 import io.choerodon.agile.app.service.BoardColumnService
 import io.choerodon.agile.infra.dataobject.BoardColumnDTO
-import io.choerodon.agile.infra.dataobject.IssueStatusDO
+import io.choerodon.agile.infra.dataobject.IssueStatusDTO
 import io.choerodon.agile.infra.mapper.BoardColumnMapper
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
@@ -254,7 +254,7 @@ class BoardColumnControllerSpec extends Specification {
 
     def 'deleteData'() {
         given:
-        IssueStatusDO issueStatusDO = new IssueStatusDO()
+        IssueStatusDTO issueStatusDO = new IssueStatusDTO()
         issueStatusDO.setProjectId(projectId)
         issueStatusDO.setName("column-create")
         issueStatusMapper.delete(issueStatusDO)

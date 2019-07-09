@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.IssueLabelDTO;
+import io.choerodon.agile.api.vo.IssueLabelVO;
 import io.choerodon.agile.app.service.IssueLabelService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -32,7 +32,7 @@ public class IssueLabelController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询issue标签列表")
     @GetMapping
-    public ResponseEntity<List<IssueLabelDTO>> listIssueLabel(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<IssueLabelVO>> listIssueLabel(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(issueLabelService.listIssueLabel(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

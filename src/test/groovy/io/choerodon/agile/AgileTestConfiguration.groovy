@@ -221,7 +221,7 @@ class AgileTestConfiguration {
     }
 
     private void initLabel() {
-        IssueLabelDO issueLabelDO = new IssueLabelDO()
+        IssueLabelDTO issueLabelDO = new IssueLabelDTO()
         issueLabelDO.projectId = 1L
         issueLabelDO.labelName = "测试标签"
         issueLabelMapper.insert(issueLabelDO)

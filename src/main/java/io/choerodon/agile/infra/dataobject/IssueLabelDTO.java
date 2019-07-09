@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
  * @since 2018-05-14 21:04:00
  */
 @Table(name = "agile_issue_label")
-public class IssueLabelDO extends BaseDTO {
+public class IssueLabelDTO extends BaseDTO {
 
     /***/
     @Id

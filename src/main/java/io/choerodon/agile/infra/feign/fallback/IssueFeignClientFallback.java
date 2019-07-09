@@ -48,7 +48,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<StatusInfoDTO> createStatusForAgile(Long projectId, String applyType, StatusInfoDTO statusInfoDTO) {
+    public ResponseEntity<StatusInfoVO> createStatusForAgile(Long projectId, String applyType, StatusInfoVO statusInfoVO) {
         throw new CommonException("error.status.create");
     }
 

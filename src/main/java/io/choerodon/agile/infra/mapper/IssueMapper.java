@@ -120,7 +120,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<IssueCountDO> queryProgramTotalEstimateByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
 
-    List<IssueLabelDO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
+    List<IssueLabelDTO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
     List<Long> querySubTaskIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 

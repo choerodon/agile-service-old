@@ -44,7 +44,7 @@
                 ) = 0
     </select>
 
-    <select id="selectStatusIdIsNotNull" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDO">
+    <select id="selectStatusIdIsNotNull" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDTO">
         select * from agile_issue_status ais where ais.status_id is not null
     </select>
 
@@ -69,7 +69,7 @@
         update agile_data_log adl set adl.new_value = IFNULL((select ais.status_id from agile_issue_status ais where adl.new_value = ais.id ),0) where adl.field = 'resolution' and adl.new_value is not null;
     </update>
 
-    <select id="selectByStatusId" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDO">
+    <select id="selectByStatusId" resultType="io.choerodon.agile.infra.dataobject.IssueStatusDTO">
         SELECT
         ais.*,
         ais.is_enable enable,

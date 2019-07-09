@@ -49,6 +49,7 @@ public class AgileEventHandler {
     @Autowired
     private IssueFeignClient issueFeignClient;
 
+
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
     private static final String AGILE_INIT_TIMEZONE = "agile-init-timezone";
@@ -156,7 +157,7 @@ public class AgileEventHandler {
         }
         //增加项目下的状态
         if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
-            issueStatusRepository.batchCreateStatusByProjectIds(addStatusWithProjects, deployStateMachinePayload.getUserId());
+            issueStatusService.batchCreateStatusByProjectIds(addStatusWithProjects, deployStateMachinePayload.getUserId());
         }
     }
 
@@ -173,7 +174,7 @@ public class AgileEventHandler {
         List<AddStatusWithProject> addStatusWithProjects = deployUpdateIssue.getAddStatusWithProjects();
         //增加项目下的状态
         if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
-            issueStatusRepository.batchCreateStatusByProjectIds(addStatusWithProjects, deployUpdateIssue.getUserId());
+            issueStatusService.batchCreateStatusByProjectIds(addStatusWithProjects, deployUpdateIssue.getUserId());
         }
         //批量更新项目对应的issue状态
         projectConfigs.forEach(projectConfig -> {

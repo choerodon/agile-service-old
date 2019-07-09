@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Param;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:04:00
  */
-public interface IssueLabelMapper extends Mapper<IssueLabelDO> {
+public interface IssueLabelMapper extends Mapper<IssueLabelDTO> {
 
     /**
      * 回收没有再用的issue标签

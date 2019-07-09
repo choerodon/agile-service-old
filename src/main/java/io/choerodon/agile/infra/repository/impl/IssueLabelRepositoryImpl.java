@@ -5,7 +5,7 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueLabelE;
 import io.choerodon.agile.infra.repository.IssueLabelRepository;
-import io.choerodon.agile.infra.dataobject.IssueLabelDO;
+import io.choerodon.agile.infra.dataobject.IssueLabelDTO;
 import io.choerodon.agile.infra.mapper.IssueLabelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,12 +32,12 @@ public class IssueLabelRepositoryImpl implements IssueLabelRepository {
 
     @Override
     public IssueLabelE create(IssueLabelE issueLabelE) {
-        IssueLabelDO issueLabelDO = ConvertHelper.convert(issueLabelE, IssueLabelDO.class);
-        if (issueLabelMapper.insert(issueLabelDO) != 1) {
+        IssueLabelDTO issueLabelDTO = ConvertHelper.convert(issueLabelE, IssueLabelDTO.class);
+        if (issueLabelMapper.insert(issueLabelDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
         redisUtil.deleteRedisCache(new String[]{PIE_CHART + issueLabelE.getProjectId() + ':' + LABEL + "*"});
-        return ConvertHelper.convert(issueLabelMapper.selectByPrimaryKey(issueLabelDO.getLabelId()), IssueLabelE.class);
+        return ConvertHelper.convert(issueLabelMapper.selectByPrimaryKey(issueLabelDTO.getLabelId()), IssueLabelE.class);
     }
 
     @Override

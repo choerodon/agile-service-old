@@ -1,9 +1,12 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.IssueStatusDTO;
+import io.choerodon.agile.api.vo.IssueStatusVO;
 import io.choerodon.agile.api.vo.StatusAndIssuesDTO;
 import io.choerodon.agile.api.vo.StatusMoveDTO;
+import io.choerodon.agile.api.vo.event.AddStatusWithProject;
 import io.choerodon.agile.api.vo.event.StatusPayload;
+import io.choerodon.agile.domain.agile.entity.IssueStatusE;
+import io.choerodon.agile.infra.dataobject.IssueStatusDTO;
 
 import java.util.List;
 
@@ -13,15 +16,15 @@ import java.util.List;
  */
 public interface IssueStatusService {
 
-    IssueStatusDTO create(Long projectId, String applyType, IssueStatusDTO issueStatusDTO);
+    IssueStatusVO create(Long projectId, String applyType, IssueStatusVO issueStatusVO);
 
-    IssueStatusDTO createStatusByStateMachine(Long projectId, IssueStatusDTO issueStatusDTO);
+    IssueStatusVO createStatusByStateMachine(Long projectId, IssueStatusVO issueStatusVO);
 
-    IssueStatusDTO moveStatusToColumn(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
+    IssueStatusVO moveStatusToColumn(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
 
     List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType);
 
-    IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
+    IssueStatusVO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
 
     void deleteStatus(Long projectId, Long statusId, String applyType);
 
@@ -31,9 +34,17 @@ public interface IssueStatusService {
      * 查询issueStatus列表
      *
      * @param projectId projectId
-     * @return IssueStatusDTO
+     * @return IssueStatusVO
      */
-    List<IssueStatusDTO> queryIssueStatusList(Long projectId);
+    List<IssueStatusVO> queryIssueStatusList(Long projectId);
 
-    IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO);
+    IssueStatusVO updateStatus(Long projectId, IssueStatusVO issueStatusVO);
+
+    IssueStatusDTO insertIssueStatus(IssueStatusDTO issueStatusDTO);
+
+    IssueStatusDTO update(IssueStatusDTO issueStatusDTO);
+
+    void delete(IssueStatusDTO issueStatusDTO);
+
+    void batchCreateStatusByProjectIds(List<AddStatusWithProject> addStatusWithProjects, Long userId);
 }

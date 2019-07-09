@@ -1770,7 +1770,7 @@
         AND ai.issue_id = #{outsetIssueId}
     </select>
 
-    <select id="selectLabelNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLabelDO">
+    <select id="selectLabelNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLabelDTO">
         SELECT ail.*
         FROM
             agile_label_issue_rel alir,

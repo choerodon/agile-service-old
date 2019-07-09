@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/10/26.
  * Email: fuqianghuang01@gmail.com
  */
-public class StatusInfoDTO {
+public class StatusInfoVO {
 
     @ApiModelProperty(value = "状态主键id")
     private Long id;

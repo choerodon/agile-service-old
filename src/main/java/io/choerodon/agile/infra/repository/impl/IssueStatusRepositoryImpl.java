@@ -8,7 +8,7 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.infra.repository.IssueStatusRepository;
-import io.choerodon.agile.infra.dataobject.IssueStatusDO;
+import io.choerodon.agile.infra.dataobject.IssueStatusDTO;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,32 +43,32 @@ public class IssueStatusRepositoryImpl implements IssueStatusRepository {
 
     @Override
     public IssueStatusE create(IssueStatusE issueStatusE) {
-        IssueStatusDO issueStatusDO = ConvertHelper.convert(issueStatusE, IssueStatusDO.class);
-        if (issueStatusMapper.insert(issueStatusDO) != 1) {
+        IssueStatusDTO issueStatusDTO = ConvertHelper.convert(issueStatusE, IssueStatusDTO.class);
+        if (issueStatusMapper.insert(issueStatusDTO) != 1) {
             throw new CommonException("error.IssueStatus.insert");
         }
         redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusE.getProjectId() + ':' + STATUS + "*"});
-        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDO.getProjectId(), issueStatusDO.getStatusId()), IssueStatusE.class);
+        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDTO.getProjectId(), issueStatusDTO.getStatusId()), IssueStatusE.class);
     }
 
     @Override
     @DataLog(type = "batchUpdateIssueStatus", single = false)
     public IssueStatusE update(IssueStatusE issueStatusE) {
-        IssueStatusDO issueStatusDO = ConvertHelper.convert(issueStatusE, IssueStatusDO.class);
-        if (issueStatusMapper.updateByPrimaryKeySelective(issueStatusDO) != 1) {
+        IssueStatusDTO issueStatusDTO = ConvertHelper.convert(issueStatusE, IssueStatusDTO.class);
+        if (issueStatusMapper.updateByPrimaryKeySelective(issueStatusDTO) != 1) {
             throw new CommonException("error.status.update");
         }
-        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusE);
-        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDO.getProjectId(), issueStatusDO.getStatusId()), IssueStatusE.class);
+        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusDTO);
+        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(issueStatusDTO.getProjectId(), issueStatusDTO.getStatusId()), IssueStatusE.class);
     }
 
     @Override
     public void delete(IssueStatusE issueStatusE) {
-        IssueStatusDO issueStatusDO = ConvertHelper.convert(issueStatusE, IssueStatusDO.class);
-        if (issueStatusMapper.delete(issueStatusDO) != 1) {
+        IssueStatusDTO issueStatusDTO = ConvertHelper.convert(issueStatusE, IssueStatusDTO.class);
+        if (issueStatusMapper.delete(issueStatusDTO) != 1) {
             throw new CommonException("error.status.delete");
         }
-        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusE);
+        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusDTO);
     }
 
     @Override
