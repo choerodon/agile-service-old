@@ -1,40 +1,57 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.choerodon.mybatis.entity.BaseDTO;
+
+import javax.persistence.*;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/2/25.
  * Email: fuqianghuang01@gmail.com
  */
+@Table(name = "agile_file_operation_history")
+public class FileOperationHistoryDTO extends BaseDTO {
 
-public class FileOperationHistoryDTO {
+    public FileOperationHistoryDTO() {}
 
-    @ApiModelProperty(value = "主键id")
+    public FileOperationHistoryDTO(Long projectId, Long userId, String action, Long successCount, Long failCount, String status) {
+        this.projectId = projectId;
+        this.userId = userId;
+        this.action = action;
+        this.successCount = successCount;
+        this.failCount = failCount;
+        this.status = status;
+    }
+
+    public FileOperationHistoryDTO(Long projectId, Long id, String action, String status, Long objectVersionNumber) {
+        this.projectId = projectId;
+        this.id = id;
+        this.action = action;
+        this.status = status;
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ApiModelProperty(value = "项目id")
     private Long projectId;
 
-    @ApiModelProperty(value = "用户id")
     private Long userId;
 
-    @ApiModelProperty(value = "导入动作：upload_file")
     private String action;
 
-    @ApiModelProperty(value = "导入成功数量")
     private Long successCount;
 
-    @ApiModelProperty(value = "导入失败数量")
     private Long failCount;
 
-    @ApiModelProperty(value = "状态")
     private String status;
 
-    @ApiModelProperty(value = "导入失败后，上传错误文件url")
     private String fileUrl;
 
-    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
+
+    @Transient
+    private Double process;
 
     public Long getId() {
         return id;
@@ -84,14 +101,6 @@ public class FileOperationHistoryDTO {
         return status;
     }
 
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
-    }
-
-    public String getFileUrl() {
-        return fileUrl;
-    }
-
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -100,11 +109,29 @@ public class FileOperationHistoryDTO {
         return userId;
     }
 
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    @Override
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
     }
 
+    @Override
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public void setProcess(Double process) {
+        this.process = process;
+    }
+
+    public Double getProcess() {
+        return process;
     }
 }

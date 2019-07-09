@@ -588,15 +588,15 @@ public class DataLogAspect {
             try {
                 result = pjp.proceed();
                 workLogE = (WorkLogE) result;
-                DataLogDO dataLogDO = dataLogMapper.selectLastWorkLogById(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_TIMESPENT);
+                DataLogDTO dataLogDTO = dataLogMapper.selectLastWorkLogById(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_TIMESPENT);
                 String oldString = null;
                 String newString;
                 String oldValue = null;
                 String newValue;
-                if (dataLogDO != null) {
-                    oldValue = dataLogDO.getNewValue();
-                    oldString = dataLogDO.getNewString();
-                    BigDecimal newTime = new BigDecimal(dataLogDO.getNewValue());
+                if (dataLogDTO != null) {
+                    oldValue = dataLogDTO.getNewValue();
+                    oldString = dataLogDTO.getNewString();
+                    BigDecimal newTime = new BigDecimal(dataLogDTO.getNewValue());
                     newValue = newTime.add(workLogE.getWorkTime()).toString();
                     newString = newTime.add(workLogE.getWorkTime()).toString();
                 } else {

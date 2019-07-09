@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.infra.repository.DataLogRepository;
-import io.choerodon.agile.infra.dataobject.DataLogDO;
+import io.choerodon.agile.infra.dataobject.DataLogDTO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -26,17 +26,17 @@ public class DataLogRepositoryImpl implements DataLogRepository {
 
     @Override
     public DataLogE create(DataLogE dataLogE) {
-        DataLogDO dataLogDO = ConvertHelper.convert(dataLogE, DataLogDO.class);
-        if (dataLogMapper.insert(dataLogDO) != 1) {
+        DataLogDTO dataLogDTO = ConvertHelper.convert(dataLogE, DataLogDTO.class);
+        if (dataLogMapper.insert(dataLogDTO) != 1) {
             throw new CommonException("error.dataLog.insert");
         }
-        return ConvertHelper.convert(dataLogMapper.selectByPrimaryKey(dataLogDO.getLogId()), DataLogE.class);
+        return ConvertHelper.convert(dataLogMapper.selectByPrimaryKey(dataLogDTO.getLogId()), DataLogE.class);
     }
 
     @Override
     public void delete(DataLogE dataLogE) {
-        DataLogDO dataLogDO = ConvertHelper.convert(dataLogE, DataLogDO.class);
-        dataLogMapper.delete(dataLogDO);
+        DataLogDTO dataLogDTO = ConvertHelper.convert(dataLogE, DataLogDTO.class);
+        dataLogMapper.delete(dataLogDTO);
     }
 
     @Override

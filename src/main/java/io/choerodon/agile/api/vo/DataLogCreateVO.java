@@ -1,59 +1,31 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
 
-import io.choerodon.mybatis.entity.BaseDTO;
-
-import javax.persistence.*;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2018/6/14.
- * Email: fuqianghuang01@gmail.com
+ * @author shinan.chen
+ * @since 2019/6/11
  */
-@Table(name = "agile_data_log")
-public class DataLogDO extends BaseDTO {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long logId;
-
-    private Long projectId;
-
+public class DataLogCreateVO {
+    @ApiModelProperty(value = "问题主键id")
+    private Long issueId;
+    @ApiModelProperty(value = "问题字段")
     private String field;
-
+    @ApiModelProperty(value = "旧值")
     private String oldValue;
-
+    @ApiModelProperty(value = "旧值str")
     private String oldString;
-
+    @ApiModelProperty(value = "新值")
     private String newValue;
-
+    @ApiModelProperty(value = "新值str")
     private String newString;
 
-    private Long issueId;
-
-    @Transient
-    private String categoryCode;
-
-    public Long getLogId() {
-        return logId;
-    }
-
-    public void setLogId(Long logId) {
-        this.logId = logId;
-    }
-
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public String getField() {
+        return field;
     }
 
     public void setField(String field) {
         this.field = field;
-    }
-
-    public String getField() {
-        return field;
     }
 
     public String getOldValue() {
@@ -94,13 +66,5 @@ public class DataLogDO extends BaseDTO {
 
     public void setIssueId(Long issueId) {
         this.issueId = issueId;
-    }
-
-    public void setCategoryCode(String categoryCode) {
-        this.categoryCode = categoryCode;
-    }
-
-    public String getCategoryCode() {
-        return categoryCode;
     }
 }

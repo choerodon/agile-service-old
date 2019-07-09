@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.DataLogCreateDTO;
-import io.choerodon.agile.api.vo.DataLogDTO;
+import io.choerodon.agile.api.vo.DataLogCreateVO;
+import io.choerodon.agile.api.vo.DataLogVO;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import java.util.List;
  */
 public interface DataLogService {
 
-    DataLogDTO create(Long projectId, DataLogCreateDTO createDTO);
+    DataLogVO create(Long projectId, DataLogCreateVO createDTO);
 
-    List<DataLogDTO> listByIssueId(Long projectId, Long issueId);
+    List<DataLogVO> listByIssueId(Long projectId, Long issueId);
 
 }

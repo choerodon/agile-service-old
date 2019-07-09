@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.vo.StatusMapDTO;
-import io.choerodon.agile.infra.dataobject.DataLogDO;
+import io.choerodon.agile.infra.dataobject.DataLogDTO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
@@ -17,14 +17,14 @@ import java.util.Set;
  * Email: fuqianghuang01@gmail.com
  */
 
-public interface DataLogMapper extends Mapper<DataLogDO> {
+public interface DataLogMapper extends Mapper<DataLogDTO> {
 
     List selectByIssueId(@Param("projectId") Long projectId,
                          @Param("issueId") Long issueId);
 
-    DataLogDO selectLastWorkLogById(@Param("projectId") Long projectId,
-                                    @Param("issueId") Long issueId,
-                                    @Param("field") String field);
+    DataLogDTO selectLastWorkLogById(@Param("projectId") Long projectId,
+                                     @Param("issueId") Long issueId,
+                                     @Param("field") String field);
 
     /**
      * 批量生成issue是否解决日志

@@ -619,7 +619,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public List<BoardVO> queryByProjectId(Long projectId) {
         Long userId = DetailsHelper.getUserDetails().getUserId();
-        return modelMapper.map(boardMapper.queryByProjectIdWithUser(userId, projectId), new TypeToken<BoardVO>(){}.getType());
+        return modelMapper.map(boardMapper.queryByProjectIdWithUser(userId, projectId), new TypeToken<List<BoardVO>>(){}.getType());
     }
 
     @Override

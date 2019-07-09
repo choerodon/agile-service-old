@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.DataLogCreateDTO
-import io.choerodon.agile.api.vo.DataLogDTO
+import io.choerodon.agile.api.vo.DataLogCreateVO
+import io.choerodon.agile.api.vo.DataLogVO
 import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.DataLogMapper
@@ -49,18 +49,18 @@ class DataLogControllerSpec extends Specification {
 
     def 'createDataLog'() {
         given:
-        DataLogCreateDTO createDTO = new DataLogCreateDTO()
+        DataLogCreateVO createDTO = new DataLogCreateVO()
         createDTO.field = field
         createDTO.newValue = 1L
         createDTO.newString = "待处理"
         createDTO.issueId = issueId
 
         when:
-        HttpEntity<DataLogCreateDTO> dataLogDTOHttpEntity = new HttpEntity<>(createDTO)
+        HttpEntity<DataLogCreateVO> dataLogDTOHttpEntity = new HttpEntity<>(createDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/data_log",
                 HttpMethod.POST,
                 dataLogDTOHttpEntity,
-                DataLogDTO.class,
+                DataLogVO.class,
                 projectId)
 
         then:

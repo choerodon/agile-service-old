@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.DataLogDTO;
+import io.choerodon.agile.api.vo.DataLogVO;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
-import io.choerodon.agile.infra.dataobject.DataLogDO;
+import io.choerodon.agile.infra.dataobject.DataLogDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,47 +12,47 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class DataLogConverter implements ConvertorI<DataLogE, DataLogDO, DataLogDTO> {
+public class DataLogConverter implements ConvertorI<DataLogE, DataLogDTO, DataLogVO> {
 
     @Override
-    public DataLogE dtoToEntity(DataLogDTO dataLogDTO) {
+    public DataLogE dtoToEntity(DataLogVO dataLogVO) {
+        DataLogE dataLogE = new DataLogE();
+        BeanUtils.copyProperties(dataLogVO, dataLogE);
+        return dataLogE;
+    }
+
+    @Override
+    public DataLogVO entityToDto(DataLogE dataLogE) {
+        DataLogVO dataLogVO = new DataLogVO();
+        BeanUtils.copyProperties(dataLogE, dataLogVO);
+        return dataLogVO;
+    }
+
+    @Override
+    public DataLogE doToEntity(DataLogDTO dataLogDTO) {
         DataLogE dataLogE = new DataLogE();
         BeanUtils.copyProperties(dataLogDTO, dataLogE);
         return dataLogE;
     }
 
     @Override
-    public DataLogDTO entityToDto(DataLogE dataLogE) {
+    public DataLogDTO entityToDo(DataLogE dataLogE) {
         DataLogDTO dataLogDTO = new DataLogDTO();
         BeanUtils.copyProperties(dataLogE, dataLogDTO);
         return dataLogDTO;
     }
 
     @Override
-    public DataLogE doToEntity(DataLogDO dataLogDO) {
-        DataLogE dataLogE = new DataLogE();
-        BeanUtils.copyProperties(dataLogDO, dataLogE);
-        return dataLogE;
+    public DataLogVO doToDto(DataLogDTO dataLogDTO) {
+        DataLogVO dataLogVO = new DataLogVO();
+        BeanUtils.copyProperties(dataLogDTO, dataLogVO);
+        return dataLogVO;
     }
 
     @Override
-    public DataLogDO entityToDo(DataLogE dataLogE) {
-        DataLogDO dataLogDO = new DataLogDO();
-        BeanUtils.copyProperties(dataLogE, dataLogDO);
-        return dataLogDO;
-    }
-
-    @Override
-    public DataLogDTO doToDto(DataLogDO dataLogDO) {
+    public DataLogDTO dtoToDo(DataLogVO dataLogVO) {
         DataLogDTO dataLogDTO = new DataLogDTO();
-        BeanUtils.copyProperties(dataLogDO, dataLogDTO);
+        BeanUtils.copyProperties(dataLogVO, dataLogDTO);
         return dataLogDTO;
-    }
-
-    @Override
-    public DataLogDO dtoToDo(DataLogDTO dataLogDTO) {
-        DataLogDO dataLogDO = new DataLogDO();
-        BeanUtils.copyProperties(dataLogDTO, dataLogDO);
-        return dataLogDO;
     }
 }

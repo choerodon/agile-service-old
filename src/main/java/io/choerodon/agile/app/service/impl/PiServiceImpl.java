@@ -658,7 +658,7 @@ public class PiServiceImpl implements PiService {
         }
         List<PiDTO> piDTOList = piMapper.selectUnDonePiDOList(programId, activeArt.getId());
         if (piDTOList != null && !piDTOList.isEmpty()) {
-            return modelMapper.map(piDTOList, new TypeToken<PiNameVO>(){}.getType());
+            return modelMapper.map(piDTOList, new TypeToken<List<PiNameVO>>(){}.getType());
         } else {
             return new ArrayList<>();
         }

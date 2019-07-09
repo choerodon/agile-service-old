@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.FileOperationHistoryDTO;
+import io.choerodon.agile.api.vo.FileOperationHistoryVO;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,5 +18,5 @@ public interface ExcelService {
 
     void cancelImport(Long projectId, Long id, Long objectVersionNumber);
 
-    FileOperationHistoryDTO queryLatestRecode(Long projectId);
+    FileOperationHistoryVO queryLatestRecode(Long projectId);
 }

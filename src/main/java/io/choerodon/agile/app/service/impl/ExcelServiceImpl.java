@@ -251,15 +251,19 @@ public class ExcelServiceImpl implements ExcelService {
         return true;
     }
 
-    private void updateFinalRecode(FileOperationHistoryE fileOperationHistoryE, Long successcount, Long failCount, String status) {
-        FileOperationHistoryE update = new FileOperationHistoryE();
-        update.setId(fileOperationHistoryE.getId());
+    private void updateFinalRecode(FileOperationHistoryDTO fileOperationHistoryDTO, Long successcount, Long failCount, String status) {
+        FileOperationHistoryDTO update = new FileOperationHistoryDTO();
+        update.setId(fileOperationHistoryDTO.getId());
         update.setSuccessCount(successcount);
         update.setFailCount(failCount);
         update.setStatus(status);
-        update.setFileUrl(fileOperationHistoryE.getFileUrl());
-        update.setObjectVersionNumber(fileOperationHistoryE.getObjectVersionNumber());
-        FileOperationHistoryE result = fileOperationHistoryRepository.updateBySeletive(update);
+        update.setFileUrl(fileOperationHistoryDTO.getFileUrl());
+        update.setObjectVersionNumber(fileOperationHistoryDTO.getObjectVersionNumber());
+//        FileOperationHistoryE result = fileOperationHistoryRepository.updateBySeletive(update);
+        if (fileOperationHistoryMapper.updateByPrimaryKeySelective(update) != 1) {
+            throw new CommonException("error.FileOperationHistoryDTO.update");
+        }
+        FileOperationHistoryDTO result = fileOperationHistoryMapper.selectByPrimaryKey(update.getId());
         sendProcess(result, result.getUserId(), 1.0);
     }
 
@@ -280,9 +284,9 @@ public class ExcelServiceImpl implements ExcelService {
         }
     }
 
-    private void sendProcess(FileOperationHistoryE fileOperationHistoryE, Long userId, Double process) {
-        fileOperationHistoryE.setProcess(process);
-        notifyFeignClient.postWebSocket(WEBSOCKET_IMPORT_CODE, userId.toString(), JSON.toJSONString(fileOperationHistoryE));
+    private void sendProcess(FileOperationHistoryDTO fileOperationHistoryDTO, Long userId, Double process) {
+        fileOperationHistoryDTO.setProcess(process);
+        notifyFeignClient.postWebSocket(WEBSOCKET_IMPORT_CODE, userId.toString(), JSON.toJSONString(fileOperationHistoryDTO));
     }
 
     private String uploadErrorExcel(Workbook errorWorkbook) {
@@ -397,7 +401,7 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     private Boolean checkCanceled(Long projectId, Long fileOperationHistoryId, List<Long> importedIssueIds) {
-        FileOperationHistoryDO checkCanceledDO = fileOperationHistoryMapper.selectByPrimaryKey(fileOperationHistoryId);
+        FileOperationHistoryDTO checkCanceledDO = fileOperationHistoryMapper.selectByPrimaryKey(fileOperationHistoryId);
         if (UPLOAD_FILE.equals(checkCanceledDO.getAction()) && CANCELED.equals(checkCanceledDO.getStatus())) {
             if (!importedIssueIds.isEmpty()) {
                 LOGGER.info(importedIssueIds.toString());
@@ -433,13 +437,22 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook) {
         String status = DOING;
-        FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
-        sendProcess(fileOperationHistoryE, userId, 0.0);
+//        FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
+        FileOperationHistoryDTO fileOperationHistoryDTO = new FileOperationHistoryDTO(projectId, userId, UPLOAD_FILE, 0L, 0L, status);
+        if (fileOperationHistoryMapper.insert(fileOperationHistoryDTO) != 1) {
+            throw new CommonException("error.FileOperationHistoryDTO.insert");
+        }
+        FileOperationHistoryDTO res = fileOperationHistoryMapper.selectByPrimaryKey(fileOperationHistoryDTO.getId());
+        sendProcess(res, userId, 0.0);
         if (workbook.getActiveSheetIndex() < 1
                 || workbook.getSheetAt(1) == null
                 || workbook.getSheetAt(1).getSheetName() == null
                 || !IMPORT_TEMPLATE_NAME.equals(workbook.getSheetAt(1).getSheetName())) {
-            FileOperationHistoryE errorImport = fileOperationHistoryRepository.updateBySeletive(new FileOperationHistoryE(projectId, fileOperationHistoryE.getId(), UPLOAD_FILE, "template_error", fileOperationHistoryE.getObjectVersionNumber()));
+//            FileOperationHistoryE errorImport = fileOperationHistoryRepository.updateBySeletive(new FileOperationHistoryE(projectId, fileOperationHistoryE.getId(), UPLOAD_FILE, "template_error", fileOperationHistoryE.getObjectVersionNumber()));
+            if (fileOperationHistoryMapper.updateByPrimaryKeySelective(new FileOperationHistoryDTO(projectId, res.getId(), UPLOAD_FILE, "template_error", res.getObjectVersionNumber())) != 1) {
+                throw new CommonException("error.FileOperationHistoryDTO.update");
+            }
+            FileOperationHistoryDTO errorImport = fileOperationHistoryMapper.selectByPrimaryKey(res.getId());
             sendProcess(errorImport, userId, 0.0);
             throw new CommonException("error.sheet.import");
         }
@@ -482,7 +495,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
         List<Long> importedIssueIds = new ArrayList<>();
         for (int r = 1; r <= allRowCount; r++) {
-            if (checkCanceled(projectId, fileOperationHistoryE.getId(), importedIssueIds)) {
+            if (checkCanceled(projectId, res.getId(), importedIssueIds)) {
                 return;
             }
             Row row = sheet.getRow(r);
@@ -525,9 +538,9 @@ public class ExcelServiceImpl implements ExcelService {
                     errorMapList.put(r, cList);
                 }
                 errorRows.add(row.getRowNum());
-                fileOperationHistoryE.setFailCount(failCount);
+                res.setFailCount(failCount);
                 processNum++;
-                sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
+                sendProcess(res, userId, processNum * 1.0 / allRowCount);
                 continue;
             }
             IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
@@ -545,38 +558,41 @@ public class ExcelServiceImpl implements ExcelService {
                 successcount++;
             }
             processNum++;
-            fileOperationHistoryE.setFailCount(failCount);
-            fileOperationHistoryE.setSuccessCount(successcount);
-            sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
+            res.setFailCount(failCount);
+            res.setSuccessCount(successcount);
+            sendProcess(res, userId, processNum * 1.0 / allRowCount);
         }
         if (!errorRows.isEmpty()) {
             LOGGER.info("导入数据有误");
             Workbook result = ExcelUtil.generateExcelAwesome(workbook, errorRows, errorMapList, FIELDS_NAME, priorityList, issueTypeList, versionList, IMPORT_TEMPLATE_NAME, componentList, sprintList);
             String errorWorkBookUrl = uploadErrorExcel(result);
-            fileOperationHistoryE.setFileUrl(errorWorkBookUrl);
+            res.setFileUrl(errorWorkBookUrl);
             status = FAILED;
         } else {
             status = SUCCESS;
         }
-        updateFinalRecode(fileOperationHistoryE, successcount, failCount, status);
+        updateFinalRecode(res, successcount, failCount, status);
     }
 
 
     @Override
     public void cancelImport(Long projectId, Long id, Long objectVersionNumber) {
-        FileOperationHistoryE fileOperationHistoryE = new FileOperationHistoryE();
-        fileOperationHistoryE.setId(id);
-        fileOperationHistoryE.setStatus(CANCELED);
-        fileOperationHistoryE.setObjectVersionNumber(objectVersionNumber);
-        fileOperationHistoryRepository.updateBySeletive(fileOperationHistoryE);
+        FileOperationHistoryDTO fileOperationHistoryDTO = new FileOperationHistoryDTO();
+        fileOperationHistoryDTO.setId(id);
+        fileOperationHistoryDTO.setStatus(CANCELED);
+        fileOperationHistoryDTO.setObjectVersionNumber(objectVersionNumber);
+//        fileOperationHistoryRepository.updateBySeletive(fileOperationHistoryE);
+        if (fileOperationHistoryMapper.updateByPrimaryKeySelective(fileOperationHistoryDTO) != 1) {
+            throw new CommonException("error.FileOperationHistoryDTO.update");
+        }
     }
 
 
     @Override
-    public FileOperationHistoryDTO queryLatestRecode(Long projectId) {
+    public FileOperationHistoryVO queryLatestRecode(Long projectId) {
         Long userId = DetailsHelper.getUserDetails().getUserId();
-        FileOperationHistoryDO result = fileOperationHistoryMapper.queryLatestRecode(projectId, userId);
-        return result == null ? new FileOperationHistoryDTO() : ConvertHelper.convert(result, FileOperationHistoryDTO.class);
+        FileOperationHistoryDTO result = fileOperationHistoryMapper.queryLatestRecode(projectId, userId);
+        return result == null ? new FileOperationHistoryVO() : ConvertHelper.convert(result, FileOperationHistoryVO.class);
     }
 
 

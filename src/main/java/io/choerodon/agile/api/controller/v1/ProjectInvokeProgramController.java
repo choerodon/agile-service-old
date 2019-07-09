@@ -78,11 +78,11 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("项目层下查询查询DataLog列表")
     @GetMapping(value = "/datalog")
-    public ResponseEntity<List<DataLogDTO>> listByIssueId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<DataLogVO>> listByIssueId(@ApiParam(value = "项目id", required = true)
                                                           @PathVariable(name = "project_id") Long projectId,
-                                                          @ApiParam(value = "项目群id", required = true)
+                                                         @ApiParam(value = "项目群id", required = true)
                                                           @RequestParam Long programId,
-                                                          @ApiParam(value = "issue id", required = true)
+                                                         @ApiParam(value = "issue id", required = true)
                                                           @RequestParam Long issueId) {
         return Optional.ofNullable(dataLogService.listByIssueId(programId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

@@ -1,19 +1,21 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.DataLogCreateDTO;
-import io.choerodon.agile.api.vo.DataLogDTO;
+import io.choerodon.agile.api.vo.DataLogCreateVO;
+import io.choerodon.agile.api.vo.DataLogVO;
 import io.choerodon.agile.api.vo.FieldDataLogDTO;
 import io.choerodon.agile.api.vo.StatusMapDTO;
 import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.dataobject.DataLogDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
@@ -53,39 +55,42 @@ public class DataLogServiceImpl implements DataLogService {
     }
 
     @Override
-    public DataLogDTO create(Long projectId, DataLogCreateDTO createDTO) {
-        DataLogE dataLogE = modelMapper.map(createDTO, DataLogE.class);
-        dataLogE.setProjectId(projectId);
-        return ConvertHelper.convert(dataLogRepository.create(dataLogE), DataLogDTO.class);
+    public DataLogVO create(Long projectId, DataLogCreateVO createDTO) {
+        DataLogDTO dataLogDTO = modelMapper.map(createDTO, DataLogDTO.class);
+        dataLogDTO.setProjectId(projectId);
+        if (dataLogMapper.insert(dataLogDTO) != 1) {
+            throw new CommonException("error.dataLog.insert");
+        }
+        return modelMapper.map(dataLogMapper.selectByPrimaryKey(dataLogDTO.getLogId()), DataLogVO.class);
     }
 
     @Override
-    public List<DataLogDTO> listByIssueId(Long projectId, Long issueId) {
-        List<DataLogDTO> dataLogDTOS = modelMapper.map(dataLogMapper.selectByIssueId(projectId, issueId), new TypeToken<List<DataLogDTO>>() {
+    public List<DataLogVO> listByIssueId(Long projectId, Long issueId) {
+        List<DataLogVO> dataLogVOS = modelMapper.map(dataLogMapper.selectByIssueId(projectId, issueId), new TypeToken<List<DataLogVO>>() {
         }.getType());
         List<FieldDataLogDTO> fieldDataLogDTOs = foundationFeignClient.queryDataLogByInstanceId(projectId, issueId, ObjectSchemeCode.AGILE_ISSUE).getBody();
         for (FieldDataLogDTO fieldDataLogDTO : fieldDataLogDTOs) {
-            DataLogDTO dataLogDTO = modelMapper.map(fieldDataLogDTO, DataLogDTO.class);
-            dataLogDTO.setField(fieldDataLogDTO.getFieldCode());
-            dataLogDTO.setIssueId(fieldDataLogDTO.getInstanceId());
-            dataLogDTO.setIsCusLog(true);
-            dataLogDTOS.add(dataLogDTO);
+            DataLogVO dataLogVO = modelMapper.map(fieldDataLogDTO, DataLogVO.class);
+            dataLogVO.setField(fieldDataLogDTO.getFieldCode());
+            dataLogVO.setIssueId(fieldDataLogDTO.getInstanceId());
+            dataLogVO.setIsCusLog(true);
+            dataLogVOS.add(dataLogVO);
         }
-        fillUserAndStatus(projectId, dataLogDTOS);
-        return dataLogDTOS.stream().sorted(Comparator.comparing(DataLogDTO::getCreationDate).reversed()).collect(Collectors.toList());
+        fillUserAndStatus(projectId, dataLogVOS);
+        return dataLogVOS.stream().sorted(Comparator.comparing(DataLogVO::getCreationDate).reversed()).collect(Collectors.toList());
     }
 
     /**
      * 填充用户信息
      *
      * @param projectId
-     * @param dataLogDTOS
+     * @param dataLogVOS
      */
-    private void fillUserAndStatus(Long projectId, List<DataLogDTO> dataLogDTOS) {
+    private void fillUserAndStatus(Long projectId, List<DataLogVO> dataLogVOS) {
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-        List<Long> createByIds = dataLogDTOS.stream().filter(dataLogDTO -> dataLogDTO.getCreatedBy() != null && !Objects.equals(dataLogDTO.getCreatedBy(), 0L)).map(DataLogDTO::getCreatedBy).distinct().collect(Collectors.toList());
+        List<Long> createByIds = dataLogVOS.stream().filter(dataLogDTO -> dataLogDTO.getCreatedBy() != null && !Objects.equals(dataLogDTO.getCreatedBy(), 0L)).map(DataLogVO::getCreatedBy).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(createByIds, true);
-        for (DataLogDTO dto : dataLogDTOS) {
+        for (DataLogVO dto : dataLogVOS) {
             UserMessageDO userMessageDO = usersMap.get(dto.getCreatedBy());
             String name = userMessageDO != null ? userMessageDO.getName() : null;
             String loginName = userMessageDO != null ? userMessageDO.getLoginName() : null;

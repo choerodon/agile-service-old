@@ -9,7 +9,7 @@ import java.util.Date;
  * Email: fuqianghuang01@gmail.com
  */
 
-public class DataLogDTO {
+public class DataLogVO {
     @ApiModelProperty(value = "日志主键id")
     private Long logId;
     @ApiModelProperty(value = "项目id")
