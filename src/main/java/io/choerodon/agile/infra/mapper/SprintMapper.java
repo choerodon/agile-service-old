@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * Created by jian_zhang02@163.com on 2018/5/15.
  */
-public interface SprintMapper extends Mapper<SprintDO> {
+public interface SprintMapper extends Mapper<SprintDTO> {
     List<SprintNameDO> queryNameByOptions(@Param("projectId") Long projectId, @Param("sprintStatusCodes") List<String> sprintStatusCodes);
 
     /**
@@ -20,15 +20,15 @@ public interface SprintMapper extends Mapper<SprintDO> {
      *
      * @param projectId projectId
      * @param sprintId  sprintId
-     * @return SprintDO
+     * @return SprintDTO
      */
-    SprintDO queryByProjectIdAndSprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+    SprintDTO queryByProjectIdAndSprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     Boolean hasIssue(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     String queryMaxRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    SprintDO getActiveSprint(@Param("projectId") Long projectId);
+    SprintDTO getActiveSprint(@Param("projectId") Long projectId);
 
     int selectCountByStartedSprint(@Param("projectId") Long projectId);
 
@@ -40,7 +40,7 @@ public interface SprintMapper extends Mapper<SprintDO> {
 
     BigDecimal queryStoryPoint(@Param("statusIds") List<Long> statusIds, @Param("issueIds") List<Long> issueIds, @Param("projectId") Long projectId);
 
-    SprintDO queryLastSprint(@Param("projectId") Long projectId);
+    SprintDTO queryLastSprint(@Param("projectId") Long projectId);
 
     List<SprintNameDO> queryPlanSprintName(@Param("projectId") Long projectId);
 
@@ -64,7 +64,7 @@ public interface SprintMapper extends Mapper<SprintDO> {
 
     List<SprintSearchDO> queryPlanSprintNoIssueIds(@Param("projectId") Long projectId);
 
-    List<SprintDO> queryUnClosedSprint(Long projectId);
+    List<SprintDTO> queryUnClosedSprint(Long projectId);
 
     /**
      * 查询issueId没有关闭的所属冲刺id
@@ -79,9 +79,9 @@ public interface SprintMapper extends Mapper<SprintDO> {
      * 查询不在计划中的冲刺
      *
      * @param projectId projectId
-     * @return SprintDO
+     * @return SprintDTO
      */
-    List<SprintDO> queryNotPlanSprintByProjectId(@Param("projectId") Long projectId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+    List<SprintDTO> queryNotPlanSprintByProjectId(@Param("projectId") Long projectId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     Integer queryIssueCountInActiveBoard(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
@@ -94,9 +94,9 @@ public interface SprintMapper extends Mapper<SprintDO> {
      *
      * @param projectId projectId
      * @param sprintId  sprintId
-     * @return AssigneeIssueDO
+     * @return AssigneeIssueDTO
      */
-    List<AssigneeIssueDO> queryAssigneeIssueByActiveSprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+    List<AssigneeIssueDTO> queryAssigneeIssueByActiveSprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     /**
      * 查询活跃冲刺的issue列表
@@ -119,11 +119,11 @@ public interface SprintMapper extends Mapper<SprintDO> {
 
     void updateSprintNameByBatch(@Param("projectId") Long projectId, @Param("sprintIds") List<Long> sprintIds);
 
-    List<SprintDO> selectListByPiId(@Param("projectId") Long projectId, @Param("piId") Long PiId);
+    List<SprintDTO> selectListByPiId(@Param("projectId") Long projectId, @Param("piId") Long PiId);
 
-    SprintDO selectFirstSprintByPiId(@Param("projectId") Long projectId, @Param("piId") Long PiId);
+    SprintDTO selectFirstSprintByPiId(@Param("projectId") Long projectId, @Param("piId") Long PiId);
 
-    List<SprintDO> getSprintByProjectId(@Param("projectId") Long projectId);
+    List<SprintDTO> getSprintByProjectId(@Param("projectId") Long projectId);
 
-    List<SprintDO> selectNotDoneByProjectId(@Param("projectId") Long projectId);
+    List<SprintDTO> selectNotDoneByProjectId(@Param("projectId") Long projectId);
 }

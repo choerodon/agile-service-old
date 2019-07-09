@@ -46,7 +46,7 @@ public class FeatureCommonDTO {
 
     private String acceptanceCritera;
 
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     private IssueTypeDTO issueTypeDTO;
 
@@ -132,12 +132,12 @@ public class FeatureCommonDTO {
         return piNameVOList;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
     public Long getEpicId() {

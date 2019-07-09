@@ -19,7 +19,7 @@ public class SprintSearchDTO {
     private BigDecimal doingStoryPoint;
     private BigDecimal doneStoryPoint;
     private List<IssueSearchDTO> issueSearchDTOList;
-    private List<AssigneeIssueDTO> assigneeIssues;
+    private List<AssigneeIssueVO> assigneeIssues;
     private String objectVersionNumber;
     private Long piId;
 
@@ -87,11 +87,11 @@ public class SprintSearchDTO {
         this.issueSearchDTOList = issueSearchDTOList;
     }
 
-    public List<AssigneeIssueDTO> getAssigneeIssues() {
+    public List<AssigneeIssueVO> getAssigneeIssues() {
         return assigneeIssues;
     }
 
-    public void setAssigneeIssues(List<AssigneeIssueDTO> assigneeIssues) {
+    public void setAssigneeIssues(List<AssigneeIssueVO> assigneeIssues) {
         this.assigneeIssues = assigneeIssues;
     }
 

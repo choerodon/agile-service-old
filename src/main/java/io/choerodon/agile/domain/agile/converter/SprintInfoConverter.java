@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
 
-import io.choerodon.agile.api.vo.SprintInfoDTO;
-import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.api.vo.SprintInfoVO;
+import io.choerodon.agile.infra.dataobject.SprintDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class SprintInfoConverter implements ConvertorI<Object, SprintDO, SprintInfoDTO> {
+public class SprintInfoConverter implements ConvertorI<Object, SprintDTO, SprintInfoVO> {
 
     @Override
-    public SprintInfoDTO doToDto(SprintDO sprintDO) {
-        SprintInfoDTO sprintInfoDTO = new SprintInfoDTO();
-        BeanUtils.copyProperties(sprintDO, sprintInfoDTO);
-        return sprintInfoDTO;
+    public SprintInfoVO doToDto(SprintDTO sprintDTO) {
+        SprintInfoVO sprintInfoVO = new SprintInfoVO();
+        BeanUtils.copyProperties(sprintDTO, sprintInfoVO);
+        return sprintInfoVO;
     }
 }

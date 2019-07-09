@@ -7,6 +7,9 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.WorkCalendarRefMapper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,8 @@ import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+
+import javax.annotation.PostConstruct;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
@@ -53,68 +58,75 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     @Override
-    public List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId, Long organizationId) {
-        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
-        IterativeWorktableValidator.checkSprintExist(sprintDO);
-        List<PriorityDistributeDO> priorityDistributeDTOList = iterativeWorktableMapper.queryPriorityDistribute(projectId, sprintId);
+    public List<PriorityDistributeVO> queryPriorityDistribute(Long projectId, Long sprintId, Long organizationId) {
+        SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
+        IterativeWorktableValidator.checkSprintExist(sprintDTO);
+        List<PriorityDistributeDTO> priorityDistributeDTOList = iterativeWorktableMapper.queryPriorityDistribute(projectId, sprintId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        for (PriorityDistributeDO priorityDistributeDO : priorityDistributeDTOList) {
-            priorityDistributeDO.setPriorityDTO(priorityMap.get(priorityDistributeDO.getPriorityId()));
-            priorityDistributeDO.setCategoryCode(statusMapDTOMap.get(priorityDistributeDO.getStatusId()).getType());
+        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        for (PriorityDistributeDTO priorityDistributeDTO : priorityDistributeDTOList) {
+            priorityDistributeDTO.setPriorityDTO(priorityMap.get(priorityDistributeDTO.getPriorityId()));
+            priorityDistributeDTO.setCategoryCode(statusMapDTOMap.get(priorityDistributeDTO.getStatusId()).getType());
         }
-        Map<Long, PriorityDistributeDTO> result = new HashMap<>();
-        for (PriorityDistributeDO priorityDistributeDO : priorityDistributeDTOList) {
-            Long priorityId = priorityDistributeDO.getPriorityDTO().getId();
+        Map<Long, PriorityDistributeVO> result = new HashMap<>();
+        for (PriorityDistributeDTO priorityDistributeDTO : priorityDistributeDTOList) {
+            Long priorityId = priorityDistributeDTO.getPriorityDTO().getId();
             if (result.get(priorityId) == null) {
-                PriorityDistributeDTO priorityDistributeDTO = new PriorityDistributeDTO();
-                priorityDistributeDTO.setTotalNum(1);
-                if (CATEGORY_DONE.equals(priorityDistributeDO.getCategoryCode())) {
-                    priorityDistributeDTO.setCompletedNum(1);
+                PriorityDistributeVO priorityDistributeVO = new PriorityDistributeVO();
+                priorityDistributeVO.setTotalNum(1);
+                if (CATEGORY_DONE.equals(priorityDistributeDTO.getCategoryCode())) {
+                    priorityDistributeVO.setCompletedNum(1);
                 } else {
-                    priorityDistributeDTO.setCompletedNum(0);
+                    priorityDistributeVO.setCompletedNum(0);
                 }
-                priorityDistributeDTO.setPriorityDTO(priorityDistributeDO.getPriorityDTO());
-                result.put(priorityId, priorityDistributeDTO);
+                priorityDistributeVO.setPriorityDTO(priorityDistributeDTO.getPriorityDTO());
+                result.put(priorityId, priorityDistributeVO);
             } else {
-                PriorityDistributeDTO priorityDistributeDTO = result.get(priorityId);
-                priorityDistributeDTO.setTotalNum(priorityDistributeDTO.getTotalNum() + 1);
-                if (CATEGORY_DONE.equals(priorityDistributeDO.getCategoryCode())) {
-                    priorityDistributeDTO.setCompletedNum(priorityDistributeDTO.getCompletedNum() + 1);
+                PriorityDistributeVO priorityDistributeVO = result.get(priorityId);
+                priorityDistributeVO.setTotalNum(priorityDistributeVO.getTotalNum() + 1);
+                if (CATEGORY_DONE.equals(priorityDistributeDTO.getCategoryCode())) {
+                    priorityDistributeVO.setCompletedNum(priorityDistributeVO.getCompletedNum() + 1);
                 }
-                result.put(priorityId, priorityDistributeDTO);
+                result.put(priorityId, priorityDistributeVO);
             }
         }
-        List<PriorityDistributeDTO> res = new ArrayList<>();
+        List<PriorityDistributeVO> res = new ArrayList<>();
         for (Long key : result.keySet()) {
             res.add(result.get(key));
         }
-        Collections.sort(res, Comparator.comparing(PriorityDistributeDTO::getTotalNum));
+        Collections.sort(res, Comparator.comparing(PriorityDistributeVO::getTotalNum));
         Collections.reverse(res);
         return res;
     }
 
     @Override
-    public List<StatusCategoryDTO> queryStatusCategoryDistribute(Long projectId, Long sprintId, Long organizationId) {
-        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
-        IterativeWorktableValidator.checkSprintExist(sprintDO);
-        List<StatusCategoryDO> statusCategoryDOList = iterativeWorktableMapper.queryStatusCategoryDistribute(projectId, sprintId);
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        for (StatusCategoryDO statusCategoryDO : statusCategoryDOList) {
-            statusCategoryDO.setCategoryCode(statusMapDTOMap.get(statusCategoryDO.getStatusId()).getType());
+    public List<StatusCategoryVO> queryStatusCategoryDistribute(Long projectId, Long sprintId, Long organizationId) {
+        SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
+        IterativeWorktableValidator.checkSprintExist(sprintDTO);
+        List<StatusCategoryDTO> statusCategoryDTOList = iterativeWorktableMapper.queryStatusCategoryDistribute(projectId, sprintId);
+        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        for (StatusCategoryDTO statusCategoryDTO : statusCategoryDTOList) {
+            statusCategoryDTO.setCategoryCode(statusMapDTOMap.get(statusCategoryDTO.getStatusId()).getType());
         }
-        return ConvertHelper.convertList(statusCategoryDOList, StatusCategoryDTO.class);
+        return modelMapper.map(statusCategoryDTOList, new TypeToken<List<StatusCategoryVO>>(){}.getType());
     }
 
     @Override
-    public SprintInfoDTO querySprintInfo(Long projectId, Long sprintId, Long organizationId) {
-        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
-        IterativeWorktableValidator.checkSprintExist(sprintDO);
-        Date actualEndDate = sprintDO.getActualEndDate();
-        SprintInfoDTO result = ConvertHelper.convert(sprintDO, SprintInfoDTO.class);
-        List<AssigneeIssueDO> assigneeIssueDOList = iterativeWorktableMapper.queryAssigneeInfoBySprintId(projectId, sprintId);
-        result.setAssigneeIssueDTOList(iterativeWorktableAssembler.assigneeIssueDOToDTO(assigneeIssueDOList));
+    public SprintInfoVO querySprintInfo(Long projectId, Long sprintId, Long organizationId) {
+        SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
+        IterativeWorktableValidator.checkSprintExist(sprintDTO);
+        Date actualEndDate = sprintDTO.getActualEndDate();
+        SprintInfoVO result = modelMapper.map(sprintDTO, SprintInfoVO.class);
+        List<AssigneeIssueDTO> assigneeIssueDTOList = iterativeWorktableMapper.queryAssigneeInfoBySprintId(projectId, sprintId);
+        result.setAssigneeIssueVOList(iterativeWorktableAssembler.assigneeIssueDOToDTO(assigneeIssueDTOList));
         if (actualEndDate == null && result.getEndDate() != null) {
             Date startDate = new Date();
             if (result.getStartDate().after(startDate)) {
@@ -136,34 +148,34 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     }
 
     @Override
-    public List<AssigneeDistributeDTO> queryAssigneeDistribute(Long projectId, Long sprintId) {
+    public List<AssigneeDistributeVO> queryAssigneeDistribute(Long projectId, Long sprintId) {
         Integer total = iterativeWorktableMapper.queryAssigneeAll(projectId, sprintId);
-        List<AssigneeDistributeDTO> assigneeDistributeDTOList = ConvertHelper.convertList(iterativeWorktableMapper.queryAssigneeDistribute(projectId, sprintId, total), AssigneeDistributeDTO.class);
-        if (assigneeDistributeDTOList != null && !assigneeDistributeDTOList.isEmpty()) {
-            List<Long> userIds = assigneeDistributeDTOList.stream().filter(assigneeDistributeDTO ->
-                    assigneeDistributeDTO.getAssigneeId() != null).map(assigneeDistributeDTO -> (assigneeDistributeDTO.getAssigneeId())).collect(Collectors.toList());
+        List<AssigneeDistributeVO> assigneeDistributeVOList = modelMapper.map(iterativeWorktableMapper.queryAssigneeDistribute(projectId, sprintId, total), new TypeToken<AssigneeDistributeVO>(){}.getType());
+        if (assigneeDistributeVOList != null && !assigneeDistributeVOList.isEmpty()) {
+            List<Long> userIds = assigneeDistributeVOList.stream().filter(assigneeDistributeVO ->
+                    assigneeDistributeVO.getAssigneeId() != null).map(assigneeDistributeVO -> (assigneeDistributeVO.getAssigneeId())).collect(Collectors.toList());
             Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
-            assigneeDistributeDTOList.parallelStream().forEach(assigneeDistributeDTO -> {
-                if (assigneeDistributeDTO.getAssigneeId() != null && usersMap.get(assigneeDistributeDTO.getAssigneeId()) != null) {
-                    assigneeDistributeDTO.setAssigneeName(usersMap.get(assigneeDistributeDTO.getAssigneeId()).getName());
+            assigneeDistributeVOList.parallelStream().forEach(assigneeDistributeVO -> {
+                if (assigneeDistributeVO.getAssigneeId() != null && usersMap.get(assigneeDistributeVO.getAssigneeId()) != null) {
+                    assigneeDistributeVO.setAssigneeName(usersMap.get(assigneeDistributeVO.getAssigneeId()).getName());
                 } else {
-                    assigneeDistributeDTO.setAssigneeName("未分配");
+                    assigneeDistributeVO.setAssigneeName("未分配");
                 }
             });
         }
-        return assigneeDistributeDTOList;
+        return assigneeDistributeVOList;
     }
 
     @Override
-    public List<IssueTypeDistributeDTO> queryIssueTypeDistribute(Long projectId, Long sprintId, Long organizationId) {
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        List<IssueTypeDistributeDO> issueTypeDistributeDOList = iterativeWorktableMapper.queryIssueTypeDistribute(projectId, sprintId);
-        for (IssueTypeDistributeDO issueTypeDistributeDO : issueTypeDistributeDOList) {
-            List<IssueStatus> issueStatuses = issueTypeDistributeDO.getIssueStatus();
+    public List<IssueTypeDistributeVO> queryIssueTypeDistribute(Long projectId, Long sprintId, Long organizationId) {
+        Map<Long, StatusMapVO> statusMapVOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        List<IssueTypeDistributeDTO> issueTypeDistributeDTOList = iterativeWorktableMapper.queryIssueTypeDistribute(projectId, sprintId);
+        for (IssueTypeDistributeDTO issueTypeDistributeDTO : issueTypeDistributeDTOList) {
+            List<IssueStatus> issueStatuses = issueTypeDistributeDTO.getIssueStatus();
             for (IssueStatus issueStatus : issueStatuses) {
-                issueStatus.setCategoryCode(statusMapDTOMap.get(issueStatus.getStatusId()).getType());
+                issueStatus.setCategoryCode(statusMapVOMap.get(issueStatus.getStatusId()).getType());
             }
         }
-        return ConvertHelper.convertList(issueTypeDistributeDOList, IssueTypeDistributeDTO.class);
+        return modelMapper.map(issueTypeDistributeDTOList, new TypeToken<IssueTypeDistributeVO>(){}.getType());
     }
 }

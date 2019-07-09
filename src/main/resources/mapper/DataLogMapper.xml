@@ -35,13 +35,13 @@
         <choose>
             <when test="completed !=null and completed">
                 <foreach collection="issueDTOS" item="issueDTO" index="index" separator=",">
-                    (#{projectId} , 'resolution' ,null ,null,#{statusMapDTO.id} ,
-                    #{statusMapDTO.name} ,#{issueDTO.issueId},#{userId})
+                    (#{projectId} , 'resolution' ,null ,null,#{statusMapVO.id} ,
+                    #{statusMapVO.name} ,#{issueDTO.issueId},#{userId})
                 </foreach>
             </when>
             <otherwise>
                 <foreach collection="issueDTOS" item="issueDTO" index="index" separator=",">
-                    (#{projectId} , 'resolution' ,#{statusMapDTO.id} , #{statusMapDTO.name},
+                    (#{projectId} , 'resolution' ,#{statusMapVO.id} , #{statusMapVO.name},
                     null ,null ,#{issueDTO.issueId},#{userId})
                 </foreach>
             </otherwise>

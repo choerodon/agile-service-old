@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.dataobject.SprintDTO;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.domain.PageRequest;
 
@@ -29,7 +29,7 @@ public interface SprintService {
 
     SprintCompleteMessageDTO queryCompleteMessageBySprintId(Long projectId, Long sprintId);
 
-    SprintDO getActiveSprint(Long projectId);
+    SprintDTO getActiveSprint(Long projectId);
 
     SprintDetailDTO querySprintById(Long projectId, Long sprintId);
 

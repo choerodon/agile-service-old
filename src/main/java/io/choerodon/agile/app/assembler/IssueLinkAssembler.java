@@ -3,7 +3,7 @@ package io.choerodon.agile.app.assembler;
 import io.choerodon.agile.api.vo.IssueLinkDTO;
 import io.choerodon.agile.api.vo.IssueTypeDTO;
 import io.choerodon.agile.api.vo.PriorityDTO;
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -38,7 +38,7 @@ public class IssueLinkAssembler extends AbstractAssembler {
         if (!issueLinkDOList.isEmpty()) {
             Map<Long, IssueTypeDTO> testIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
             Map<Long, IssueTypeDTO> agileIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
-            Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+            Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
             Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             List<Long> assigneeIds = issueLinkDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueLinkDO::getAssigneeId).distinct().collect(Collectors.toList());
             Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
@@ -52,7 +52,7 @@ public class IssueLinkAssembler extends AbstractAssembler {
                 } else {
                     issueLinkDTO.setIssueTypeDTO(agileIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
                 }
-                issueLinkDTO.setStatusMapDTO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
+                issueLinkDTO.setStatusMapVO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
                 issueLinkDTO.setPriorityDTO(priorityDTOMap.get(issueLinkDO.getPriorityId()));
                 issueLinkDTO.setAssigneeName(assigneeName);
                 issueLinkDTO.setImageUrl(imageUrl);

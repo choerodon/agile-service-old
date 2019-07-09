@@ -55,7 +55,7 @@ public class IssueSubListDTO {
     private IssueTypeDTO issueTypeDTO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     @ApiModelProperty(value = "是否已完成")
     private Boolean completed;
@@ -166,12 +166,12 @@ public class IssueSubListDTO {
         this.issueTypeDTO = issueTypeDTO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
     public void setLoginName(String loginName) {

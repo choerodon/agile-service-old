@@ -13,7 +13,7 @@ public class SprintSearchDO {
     private Date startDate;
     private Date endDate;
     private String statusCode;
-    private List<AssigneeIssueDO> assigneeIssueDOList;
+    private List<AssigneeIssueDTO> assigneeIssueDTOList;
     private String objectVersionNumber;
     private Long piId;
     private List<IssueSearchDO> issueSearchDOList;
@@ -26,12 +26,12 @@ public class SprintSearchDO {
         this.issueSearchDOList = issueSearchDOList;
     }
 
-    public List<AssigneeIssueDO> getAssigneeIssueDOList() {
-        return assigneeIssueDOList;
+    public List<AssigneeIssueDTO> getAssigneeIssueDTOList() {
+        return assigneeIssueDTOList;
     }
 
-    public void setAssigneeIssueDOList(List<AssigneeIssueDO> assigneeIssueDOList) {
-        this.assigneeIssueDOList = assigneeIssueDOList;
+    public void setAssigneeIssueDTOList(List<AssigneeIssueDTO> assigneeIssueDTOList) {
+        this.assigneeIssueDTOList = assigneeIssueDTOList;
     }
 
     public Long getSprintId() {

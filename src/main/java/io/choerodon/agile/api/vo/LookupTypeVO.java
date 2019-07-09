@@ -5,20 +5,17 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 敏捷开发code键值
+ * 敏捷开发code键值类型
  *
  * @author dinghuang123@gmail.com
- * @since 2018-05-15 09:40:27
+ * @since 2018-05-15 10:13:37
  */
-public class LookupValueDTO {
+public class LookupTypeVO {
 
-    @ApiModelProperty(value = "快码值")
-    private String valueCode;
-
-    @ApiModelProperty(value = "快码类型")
+    @ApiModelProperty(value = "快码类型code")
     private String typeCode;
 
-    @ApiModelProperty(value = "快码名称")
+    @ApiModelProperty(value = "快码类型名称")
     private String name;
 
     @ApiModelProperty(value = "描述")
@@ -26,14 +23,6 @@ public class LookupValueDTO {
 
     @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
-
-    public String getValueCode() {
-        return valueCode;
-    }
-
-    public void setValueCode(String valueCode) {
-        this.valueCode = valueCode;
-    }
 
     public String getTypeCode() {
         return typeCode;

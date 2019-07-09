@@ -1,4 +1,6 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
+
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
@@ -6,17 +8,22 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/5/19.
  * Email: fuqianghuang01@gmail.com
  */
-public class LookupTypeWithValuesDO {
+public class LookupTypeWithValuesVO {
 
+    @ApiModelProperty(value = "快码类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "快码类型名称")
     private String name;
 
+    @ApiModelProperty(value = "描述")
     private String description;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
-    private List<LookupValueDO> lookupValues;
+    @ApiModelProperty(value = "快码类型下的快码数据列表")
+    private List<LookupValueVO> lookupValues;
 
     public String getTypeCode() {
         return typeCode;
@@ -50,11 +57,11 @@ public class LookupTypeWithValuesDO {
         this.objectVersionNumber = objectVersionNumber;
     }
 
-    public List<LookupValueDO> getLookupValues() {
-        return lookupValues;
+    public void setLookupValues(List<LookupValueVO> lookupValues) {
+        this.lookupValues = lookupValues;
     }
 
-    public void setLookupValues(List<LookupValueDO> lookupValues) {
-        this.lookupValues = lookupValues;
+    public List<LookupValueVO> getLookupValues() {
+        return lookupValues;
     }
 }

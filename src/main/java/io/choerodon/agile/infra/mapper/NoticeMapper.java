@@ -1,24 +1,24 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.infra.dataobject.MessageDO;
+import io.choerodon.agile.infra.dataobject.MessageDTO;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 
-public interface NoticeMapper extends Mapper<MessageDO> {
+public interface NoticeMapper extends Mapper<MessageDTO> {
 
-    List<MessageDO> selectChangeMessageByProjectId(Long projectId);
+    List<MessageDTO> selectChangeMessageByProjectId(Long projectId);
 
-    MessageDO selectChangeMessageByDetail(@Param("projectId") Long projectId,
-                                          @Param("event") String event,
-                                          @Param("noticeType") String noticeType);
+    MessageDTO selectChangeMessageByDetail(@Param("projectId") Long projectId,
+                                           @Param("event") String event,
+                                           @Param("noticeType") String noticeType);
 
-    List<MessageDO> selectByEvent(String event);
+    List<MessageDTO> selectByEvent(String event);
 
-    List<MessageDO> selectByProjectIdAndEvent(@Param("projectId") Long projectId,
-                                              @Param("event") String event);
+    List<MessageDTO> selectByProjectIdAndEvent(@Param("projectId") Long projectId,
+                                               @Param("event") String event);
 
 
 }

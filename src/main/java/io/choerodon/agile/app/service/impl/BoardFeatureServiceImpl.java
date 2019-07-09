@@ -185,8 +185,8 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         programBoardInfo.setPiCode(activePi.getCode() + "-" + activePi.getName());
         //获取冲刺信息
         Map<Long, Integer> columnWidthMap = boardSprintAttrMapper.queryByProgramId(programId).stream().collect(Collectors.toMap(BoardSprintAttrDO::getSprintId, BoardSprintAttrDO::getColumnWidth));
-        List<SprintDO> sprints = sprintMapper.selectListByPiId(programId, piId);
-        programBoardInfo.setFilterSprintList(modelMapper.map(sprints, new TypeToken<List<SprintDTO>>() {
+        List<SprintDTO> sprints = sprintMapper.selectListByPiId(programId, piId);
+        programBoardInfo.setFilterSprintList(modelMapper.map(sprints, new TypeToken<List<SprintVO>>() {
         }.getType()));
         //获取团队信息
         List<ProjectRelationshipDTO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
@@ -205,11 +205,11 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
 
         Map<String, Object> result = handleBoardFilter(boardFilter, boardDependInfos, boardFeatureInfos, sprints, projectRelationships);
         boardFeatureInfos = (List<BoardFeatureInfoDTO>) result.get(BOARDFEATURES);
-        sprints = (List<SprintDO>) result.get(SPRINTS);
+        sprints = (List<SprintDTO>) result.get(SPRINTS);
         projectRelationships = (List<ProjectRelationshipDTO>) result.get(PROJECTRELATIONSHIPS);
 
         List<ProgramBoardSprintInfoDTO> sprintInfos = new ArrayList<>(sprints.size());
-        for (SprintDO sprint : sprints) {
+        for (SprintDTO sprint : sprints) {
             ProgramBoardSprintInfoDTO sprintInfo = new ProgramBoardSprintInfoDTO();
             sprintInfo.setSprintId(sprint.getSprintId());
             sprintInfo.setSprintName(sprint.getSprintName());
@@ -241,7 +241,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
      * @param projectRelationships
      * @return
      */
-    private Map<String, Object> handleBoardFilter(ProgramBoardFilterDTO boardFilter, List<BoardDependInfoDTO> boardDependInfos, List<BoardFeatureInfoDTO> boardFeatureInfos, List<SprintDO> sprints, List<ProjectRelationshipDTO> projectRelationships) {
+    private Map<String, Object> handleBoardFilter(ProgramBoardFilterDTO boardFilter, List<BoardDependInfoDTO> boardDependInfos, List<BoardFeatureInfoDTO> boardFeatureInfos, List<SprintDTO> sprints, List<ProjectRelationshipDTO> projectRelationships) {
         Map<String, Object> result = new HashMap<>(3);
         //只显示有依赖关系的公告板特性
         if (boardFilter.getOnlyDependFeature()) {
@@ -256,12 +256,12 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         result.put(BOARDFEATURES, boardFeatureInfos);
         //只筛选某些冲刺的公告板特性
         if (!CollectionUtils.isEmpty(boardFilter.getSprintIds())) {
-            Map<Long, SprintDO> map = sprints.stream().collect(Collectors.toMap(SprintDO::getSprintId, x -> x));
+            Map<Long, SprintDTO> map = sprints.stream().collect(Collectors.toMap(SprintDTO::getSprintId, x -> x));
             sprints = new ArrayList<>(boardFilter.getSprintIds().size());
             for (Long sprintId : boardFilter.getSprintIds()) {
-                SprintDO sprintDO = map.get(sprintId);
-                if (sprintDO != null) {
-                    sprints.add(sprintDO);
+                SprintDTO sprintDTO = map.get(sprintId);
+                if (sprintDTO != null) {
+                    sprints.add(sprintDTO);
                 } else {
                     throw new CommonException(SPRINT_NOTFOUND_ERROR);
                 }
@@ -313,7 +313,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             //计算出要展示的团队
             Map<Long, ProjectRelationshipDTO> teamMap = projectRelationships.stream().collect(Collectors.toMap(ProjectRelationshipDTO::getProjectId, x -> x));
             projectRelationships = new ArrayList<>();
-            List<Long> sprintIds = sprints.stream().map(SprintDO::getSprintId).collect(Collectors.toList());
+            List<Long> sprintIds = sprints.stream().map(SprintDTO::getSprintId).collect(Collectors.toList());
             List<Long> projectIds = newFeatures.stream().filter(x -> sprintIds.contains(x.getSprintId())).map(BoardFeatureInfoDTO::getTeamProjectId).distinct().collect(Collectors.toList());
             if (projectIds.isEmpty()) {
                 for (Long teamProjectId : boardFilter.getTeamProjectIds()) {
@@ -340,7 +340,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
      * @param teamFeatureInfoMap
      * @param teamProjects
      */
-    private void handleTeamData(Long programId, List<ProjectRelationshipDTO> projectRelationshipDTOs, Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoDTO> teamProjects, List<SprintDO> sprints) {
+    private void handleTeamData(Long programId, List<ProjectRelationshipDTO> projectRelationshipDTOs, Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoDTO> teamProjects, List<SprintDTO> sprints) {
         Map<Long, BoardTeamDO> teamMap = boardTeamRepository.queryByProgramId(programId).stream().collect(Collectors.toMap(BoardTeamDO::getTeamProjectId, x -> x));
         for (ProjectRelationshipDTO relationshipDTO : projectRelationshipDTOs) {
             //判断boardTeam数据是否存在
@@ -352,7 +352,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             Map<Long, List<BoardFeatureInfoDTO>> sprintFeatureInfoMap = teamFeatureInfoMap.get(relationshipDTO.getProjectId());
             List<ProgramBoardTeamSprintInfoDTO> teamSprintInfos = new ArrayList<>(sprints.size());
             if (sprintFeatureInfoMap != null) {
-                for (SprintDO sprint : sprints) {
+                for (SprintDTO sprint : sprints) {
                     List<BoardFeatureInfoDTO> boardFeatures = sprintFeatureInfoMap.getOrDefault(sprint.getSprintId(), new ArrayList<>());
                     ProgramBoardTeamSprintInfoDTO teamSprintInfo = new ProgramBoardTeamSprintInfoDTO();
                     teamSprintInfo.setSprintId(sprint.getSprintId());
@@ -360,7 +360,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
                     teamSprintInfos.add(teamSprintInfo);
                 }
             } else {
-                for (SprintDO sprint : sprints) {
+                for (SprintDTO sprint : sprints) {
                     ProgramBoardTeamSprintInfoDTO teamSprintInfo = new ProgramBoardTeamSprintInfoDTO();
                     teamSprintInfo.setSprintId(sprint.getSprintId());
                     teamSprintInfo.setBoardFeatures(new ArrayList<>());

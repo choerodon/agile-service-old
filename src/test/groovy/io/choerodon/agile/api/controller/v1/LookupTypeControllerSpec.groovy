@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.LookupTypeDTO
+import io.choerodon.agile.api.vo.LookupTypeVO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -37,7 +37,7 @@ class LookupTypeControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<LookupTypeDTO> list = entity.getBody()
+        List<LookupTypeVO> list = entity.getBody()
 
         expect: '设置期望值'
         list.size() == 11

@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author shinan.chen
  * @since 2019/5/30
  */
-public class SprintDTO {
+public class SprintVO {
 
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;

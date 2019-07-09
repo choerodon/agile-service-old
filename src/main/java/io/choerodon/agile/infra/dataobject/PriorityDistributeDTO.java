@@ -7,7 +7,7 @@ import io.choerodon.agile.api.vo.PriorityDTO;
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
  * Email: fuqianghuang01@gmail.com
  */
-public class PriorityDistributeDO {
+public class PriorityDistributeDTO {
 
     private Long issueId;
 

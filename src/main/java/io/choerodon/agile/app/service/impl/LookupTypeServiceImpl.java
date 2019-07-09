@@ -1,12 +1,15 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.LookupTypeDTO;
+import io.choerodon.agile.api.vo.LookupTypeVO;
 import io.choerodon.agile.app.service.LookupTypeService;
 import io.choerodon.agile.infra.mapper.LookupTypeMapper;
-import io.choerodon.core.convertor.ConvertHelper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -21,9 +24,16 @@ public class LookupTypeServiceImpl implements LookupTypeService {
     @Autowired
     private LookupTypeMapper lookupTypeMapper;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     @Override
-    public List<LookupTypeDTO> listLookupType(Long project) {
-        return ConvertHelper.convertList(lookupTypeMapper.selectAll(), LookupTypeDTO.class);
+    public List<LookupTypeVO> listLookupType(Long project) {
+        return modelMapper.map(lookupTypeMapper.selectAll(), new TypeToken<LookupTypeVO>(){}.getType());
     }
 
 }

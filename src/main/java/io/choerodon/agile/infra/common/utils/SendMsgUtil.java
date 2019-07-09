@@ -3,7 +3,6 @@ package io.choerodon.agile.infra.common.utils;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.NoticeService;
-import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -232,11 +231,11 @@ public class SendMsgUtil {
         }
         List<Long> result = new ArrayList<>();
         getProjectOwnerByProjects(projectIds, result);
-        List<SprintDO> sprintDOList = sprintMapper.selectListByPiId(programId, piDTO.getId());
+        List<SprintDTO> sprintDTOList = sprintMapper.selectListByPiId(programId, piDTO.getId());
         Map<String, Object> params = new HashMap<>();
         params.put("programName", projectDTO.getName());
         params.put("piName", piDTO.getCode() + "-" + piDTO.getName());
-        params.put("sprintNameList", sprintDOList != null && !sprintDOList.isEmpty() ? sprintDOList.stream().map(SprintDO::getSprintName).collect(Collectors.joining(",")) : "");
+        params.put("sprintNameList", sprintDTOList != null && !sprintDTOList.isEmpty() ? sprintDTOList.stream().map(SprintDTO::getSprintName).collect(Collectors.joining(",")) : "");
         siteMsgUtil.piComplete(result, customUserDetails.getUserId(), programId, params);
     }
 }

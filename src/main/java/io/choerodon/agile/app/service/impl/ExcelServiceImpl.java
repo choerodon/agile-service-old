@@ -105,7 +105,7 @@ public class ExcelServiceImpl implements ExcelService {
         List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
         List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
         List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
-        List<SprintDO> sprintDOList = sprintMapper.selectNotDoneByProjectId(projectId);
+        List<SprintDTO> sprintDTOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> priorityList = new ArrayList<>();
         for (PriorityDTO priorityDTO : priorityDTOList) {
             if (priorityDTO.getEnable()){
@@ -129,8 +129,8 @@ public class ExcelServiceImpl implements ExcelService {
             componentList.add(issueComponentDTO.getName());
         }
         List<String> sprintList = new ArrayList<>();
-        for (SprintDO sprintDO : sprintDOList) {
-            sprintList.add(sprintDO.getSprintName());
+        for (SprintDTO sprintDTO : sprintDTOList) {
+            sprintList.add(sprintDTO.getSprintName());
         }
         Workbook wb = new XSSFWorkbook();
         // create guide sheet
@@ -474,7 +474,7 @@ public class ExcelServiceImpl implements ExcelService {
         Map<String, Long> sprintMap = new HashMap<>();
         List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
         List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
-        List<SprintDO> sprintDOList = sprintMapper.selectNotDoneByProjectId(projectId);
+        List<SprintDTO> sprintDTOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> versionList = new ArrayList<>();
         for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
             if (VERSION_PLANNING.equals(productVersionCommonDO.getStatusCode())) {
@@ -488,9 +488,9 @@ public class ExcelServiceImpl implements ExcelService {
             componentMap.put(issueComponentDTO.getName(), issueComponentDTO.getComponentId());
         }
         List<String> sprintList = new ArrayList<>();
-        for (SprintDO sprintDO : sprintDOList) {
-            sprintList.add(sprintDO.getSprintName());
-            sprintMap.put(sprintDO.getSprintName(), sprintDO.getSprintId());
+        for (SprintDTO sprintDTO : sprintDTOList) {
+            sprintList.add(sprintDTO.getSprintName());
+            sprintMap.put(sprintDTO.getSprintName(), sprintDTO.getSprintId());
         }
         List<Long> importedIssueIds = new ArrayList<>();
         for (int r = 1; r <= allRowCount; r++) {

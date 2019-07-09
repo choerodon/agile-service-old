@@ -47,7 +47,7 @@ public class FeatureExportDTO {
 
     private String acceptanceCritera;
 
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     private IssueTypeDTO issueTypeDTO;
 
@@ -129,12 +129,12 @@ public class FeatureExportDTO {
         this.acceptanceCritera = acceptanceCritera;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
     public Long getEpicId() {

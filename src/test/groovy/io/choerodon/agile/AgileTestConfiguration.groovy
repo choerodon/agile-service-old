@@ -311,7 +311,7 @@ class AgileTestConfiguration {
     }
 
     private void initSprint() {
-        SprintDO sprintDO = new SprintDO()
+        SprintDTO sprintDO = new SprintDTO()
         sprintDO.sprintId = 1L
         sprintDO.projectId = 1L
         sprintDO.sprintName = 'sprint-test'

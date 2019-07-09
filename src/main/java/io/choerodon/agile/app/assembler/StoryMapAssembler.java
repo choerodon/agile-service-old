@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IssueTypeDTO;
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.api.vo.StoryMapStoryDTO;
 import io.choerodon.agile.api.vo.StoryMapVersionDTO;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -27,11 +27,11 @@ public class StoryMapAssembler extends AbstractAssembler {
         }
         List<StoryMapStoryDTO> result = new ArrayList<>();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, APPLYTYPE_AGILE);
-        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         storyMapStoryDOList.forEach(storyMapStoryDO -> {
             StoryMapStoryDTO storyMapStoryDTO = toTarget(storyMapStoryDO, StoryMapStoryDTO.class);
             storyMapStoryDTO.setIssueTypeDTO(issueTypeDTOMap.get(storyMapStoryDO.getIssueTypeId()));
-            storyMapStoryDTO.setStatusMapDTO(statusMapDTOMap.get(storyMapStoryDO.getStatusId()));
+            storyMapStoryDTO.setStatusMapVO(statusMapDTOMap.get(storyMapStoryDO.getStatusId()));
             storyMapStoryDTO.setStoryMapVersionDTOList(toTargetList(storyMapStoryDO.getStoryMapVersionDOList(), StoryMapVersionDTO.class));
             result.add(storyMapStoryDTO);
         });

@@ -23,7 +23,7 @@ public class ProgramBoardInfoDTO {
     private List<BoardDependInfoDTO> boardDepends;
 
     @ApiModelProperty(value = "冲刺筛选列表")
-    private List<SprintDTO> filterSprintList;
+    private List<SprintVO> filterSprintList;
     @ApiModelProperty(value = "团队筛选列表")
     private List<TeamProjectDTO> filterTeamList;
 
@@ -75,11 +75,11 @@ public class ProgramBoardInfoDTO {
         this.boardDepends = boardDepends;
     }
 
-    public List<SprintDTO> getFilterSprintList() {
+    public List<SprintVO> getFilterSprintList() {
         return filterSprintList;
     }
 
-    public void setFilterSprintList(List<SprintDTO> filterSprintList) {
+    public void setFilterSprintList(List<SprintVO> filterSprintList) {
         this.filterSprintList = filterSprintList;
     }
 

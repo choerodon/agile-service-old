@@ -41,7 +41,7 @@ public class ConvertUtil {
      * @param projectId projectId
      * @return StatusMap
      */
-    public static Map<Long, StatusMapDTO> getIssueStatusMap(Long projectId) {
+    public static Map<Long, StatusMapVO> getIssueStatusMap(Long projectId) {
         Long organizationId = getOrganizationId(projectId);
         return SpringBeanUtil.getBean(StateMachineFeignClient.class).queryAllStatusMap(organizationId).getBody();
     }

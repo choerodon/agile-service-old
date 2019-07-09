@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.LookupTypeWithValuesDTO
+import io.choerodon.agile.api.vo.LookupTypeWithValuesVO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -31,13 +31,13 @@ class LookupValueControllerSpec extends Specification {
 
     def 'queryLookupValueByCode'() {
         when: '向查询接口发送请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/lookup_values/{typeCode}', LookupTypeWithValuesDTO,projectId, typeCode)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/lookup_values/{typeCode}', LookupTypeWithValuesVO,projectId, typeCode)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        LookupTypeWithValuesDTO lookupTypeWithValuesDTO = entity.body
+        LookupTypeWithValuesVO lookupTypeWithValuesDTO = entity.body
 
         expect: '设置期望值'
         lookupTypeWithValuesDTO.lookupValues.size() == expectConut
@@ -52,13 +52,13 @@ class LookupValueControllerSpec extends Specification {
 
     def 'queryConstraintLookupValue'() {
         when: '向查询列约束下的value值接口发送请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/lookup_values/constraint/list', LookupTypeWithValuesDTO,projectId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/lookup_values/constraint/list', LookupTypeWithValuesVO,projectId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        LookupTypeWithValuesDTO lookupTypeWithValuesDTO = entity.body
+        LookupTypeWithValuesVO lookupTypeWithValuesDTO = entity.body
 
         expect: '设置期望值'
         lookupTypeWithValuesDTO.lookupValues.size() == 3

@@ -6,7 +6,7 @@ import java.util.List;
 
 import io.choerodon.agile.api.vo.IssueTypeDTO;
 import io.choerodon.agile.api.vo.PriorityDTO;
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
 /**
@@ -92,7 +92,7 @@ public class IssueDetailDO {
 
     private IssueTypeDTO issueTypeDTO;
 
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     private Long createdBy;
 
@@ -118,12 +118,12 @@ public class IssueDetailDO {
         this.issueTypeCode = issueTypeCode;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
     public Long getIssueId() {

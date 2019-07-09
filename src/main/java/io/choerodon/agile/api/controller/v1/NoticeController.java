@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.MessageDTO;
+import io.choerodon.agile.api.vo.MessageVO;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -31,7 +31,7 @@ public class NoticeController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目下的通知")
     @GetMapping
-    public ResponseEntity<List<MessageDTO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<MessageVO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(noticeService.queryByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -44,8 +44,8 @@ public class NoticeController {
     public ResponseEntity updateNotice(@ApiParam(value = "项目id", required = true)
                                        @PathVariable(name = "project_id") Long projectId,
                                        @ApiParam(value = "修改的设置", required = true)
-                                       @RequestBody List<MessageDTO> messageDTOList) {
-        noticeService.updateNotice(projectId, messageDTOList);
+                                       @RequestBody List<MessageVO> messageVOList) {
+        noticeService.updateNotice(projectId, messageVOList);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

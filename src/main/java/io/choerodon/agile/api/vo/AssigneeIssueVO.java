@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * Created by jian_zhang02@163.com on 2018/6/2.
  */
-public class AssigneeIssueDTO {
+public class AssigneeIssueVO {
 
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;

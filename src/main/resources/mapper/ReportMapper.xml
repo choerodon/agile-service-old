@@ -21,29 +21,29 @@
     <select id="queryIssueIdsBeforeSprintStart" resultType="java.lang.Long">
         SELECT adl5.issue_id
         FROM agile_data_log adl5
-        WHERE adl5.project_id = #{sprintDO.projectId}
+        WHERE adl5.project_id = #{sprintDTO.projectId}
         and adl5.field = 'Sprint'
         and adl5.log_id IN
         (SELECT MAX(adl.log_id) AS log_id
                               FROM agile_data_log adl
-                              WHERE adl.project_id = #{sprintDO.projectId} and adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDO.startDate}
+                              WHERE adl.project_id = #{sprintDTO.projectId} and adl.field = 'Sprint' AND adl.creation_date &lt;= #{sprintDTO.startDate}
                               GROUP BY
                                   adl.issue_id)
-        AND adl5.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        AND adl5.new_value REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
         UNION
         SELECT aisr2.issue_id
         FROM
             agile_issue_sprint_rel aisr2
         WHERE
-            aisr2.creation_date &lt;= #{sprintDO.startDate}
-            AND aisr2.sprint_id = #{sprintDO.sprintId}
+            aisr2.creation_date &lt;= #{sprintDTO.startDate}
+            AND aisr2.sprint_id = #{sprintDTO.sprintId}
     </select>
 
     <select id="queryValueBeforeSprintStart" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
         IFNULL(a.new_string,0) as new_value,
         d.issue_id,
-        #{sprintDO.startDate} AS date,
+        #{sprintDTO.startDate} AS date,
         'startSprint' AS type,
         1 AS statistical,
         0 AS old_value,
@@ -59,7 +59,7 @@
         FROM
         agile_issue ai
         WHERE
-        ai.project_id = #{sprintDO.projectId} and
+        ai.project_id = #{sprintDTO.projectId} and
         ai.issue_id IN
         <foreach collection="issueIdList" item="issueId"
                  open="(" close=")" separator=",">
@@ -70,15 +70,15 @@
         select
         adl3.new_string,adl3.issue_id,adl3.creation_date
         from
-        agile_data_log adl3 where adl3.project_id = #{sprintDO.projectId} and adl3.field = #{field} and adl3.log_id in
+        agile_data_log adl3 where adl3.project_id = #{sprintDTO.projectId} and adl3.field = #{field} and adl3.log_id in
         (SELECT
         MAX(adl.log_id) as log_id
         FROM
         agile_data_log adl
         WHERE
-        adl.project_id = #{sprintDO.projectId} and
+        adl.project_id = #{sprintDTO.projectId} and
         adl.field = #{field}
-        AND adl.creation_date &lt; #{sprintDO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.startDate}
         AND adl.issue_id IN
         <foreach collection="issueIdList" item="issueId"
                  open="(" close=")" separator=",">
@@ -96,12 +96,12 @@
         SELECT DISTINCT adl2.issue_id
         FROM agile_data_log adl2
         WHERE
-            adl2.project_id = #{sprintDO.projectId}
+            adl2.project_id = #{sprintDTO.projectId}
             and  adl2.field = 'Sprint'
-            AND adl2.creation_date &gt; #{sprintDO.startDate} AND
-            adl2.creation_date &lt;= #{sprintDO.actualEndDate}
-            AND adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-            AND (adl2.old_value is null or not (adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
+            AND adl2.creation_date &gt; #{sprintDTO.startDate} AND
+            adl2.creation_date &lt;= #{sprintDTO.actualEndDate}
+            AND adl2.new_value REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
+            AND (adl2.old_value is null or not (adl2.old_value REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'))
 
     </select>
 
@@ -126,7 +126,7 @@
         adl3.issue_id = bbb.issue_id
         AND adl3.creation_date &lt; bbb.date
         AND adl3.field = 'resolution'
-        AND adl3.project_id = #{sprintDO.projectId}
+        AND adl3.project_id = #{sprintDTO.projectId}
         ORDER BY adl3.creation_date DESC
         LIMIT 1
         ) is null then 1
@@ -141,7 +141,7 @@
         adl3.issue_id = bbb.issue_id
         AND adl3.creation_date &lt; bbb.date
         AND adl3.field = 'resolution'
-        AND adl3.project_id = #{sprintDO.projectId}
+        AND adl3.project_id = #{sprintDTO.projectId}
         ORDER BY adl3.creation_date DESC
         LIMIT 1
         ) end as statistical
@@ -156,11 +156,11 @@
         agile_data_log adl
         WHERE
         adl.field = 'Sprint'
-        AND adl.project_id = #{sprintDO.projectId}
-        AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+        AND adl.project_id = #{sprintDTO.projectId}
+        AND adl.creation_date &gt; #{sprintDTO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
         AND adl.new_value REGEXP
-        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
                  open="(" close=")" separator=",">
@@ -179,14 +179,14 @@
         FROM (SELECT adl2.issue_id
               FROM agile_data_log adl2
               WHERE
-                  adl2.project_id = #{sprintDO.projectId} AND
-                  adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
-                  adl2.creation_date &lt;= #{sprintDO.actualEndDate}
-                  AND adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-                  AND (adl2.new_value is null or not (adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
+                  adl2.project_id = #{sprintDTO.projectId} AND
+                  adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDTO.startDate} AND
+                  adl2.creation_date &lt;= #{sprintDTO.actualEndDate}
+                  AND adl2.old_value REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
+                  AND (adl2.new_value is null or not (adl2.new_value REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'))
                   AND adl2.issue_id NOT IN (SELECT ais.issue_id
                                             FROM agile_issue_sprint_rel ais
-                                            WHERE ais.sprint_id = #{sprintDO.sprintId})) aa LEFT JOIN agile_issue ai
+                                            WHERE ais.sprint_id = #{sprintDTO.sprintId})) aa LEFT JOIN agile_issue ai
                 ON ai.issue_id = aa.issue_id
         WHERE ai.type_code in ('story', 'task', 'bug')
     </select>
@@ -211,7 +211,7 @@
         adl3.issue_id = a.issue_id
         AND adl3.creation_date &lt; a.date
         AND adl3.field = 'resolution'
-        AND adl3.project_id = #{sprintDO.projectId}
+        AND adl3.project_id = #{sprintDTO.projectId}
         ORDER BY adl3.creation_date DESC
         LIMIT 1
         ) is null then 1
@@ -226,7 +226,7 @@
         adl3.issue_id = a.issue_id
         AND adl3.creation_date &lt; a.date
         AND adl3.field = 'resolution'
-        AND adl3.project_id = #{sprintDO.projectId}
+        AND adl3.project_id = #{sprintDTO.projectId}
         ORDER BY adl3.creation_date DESC
         LIMIT 1
         ) end
@@ -243,13 +243,13 @@
         agile_data_log adl
         WHERE
         adl.field = 'Sprint'
-        AND adl.project_id = #{sprintDO.projectId}
-        AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+        AND adl.project_id = #{sprintDTO.projectId}
+        AND adl.creation_date &gt; #{sprintDTO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
         AND adl.old_value REGEXP
-        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
         AND (adl.new_value is null or not (adl.new_value REGEXP
-        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'))
+        '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'))
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
                  open="(" close=")" separator=",">
@@ -286,7 +286,7 @@
         adl2.issue_id = ai.issue_id
         AND adl2.creation_date &lt; abd.date
         AND adl2.field = 'resolution'
-        AND adl2.project_id = #{sprintDO.projectId}
+        AND adl2.project_id = #{sprintDTO.projectId}
         ORDER BY
         adl2.creation_date DESC
         LIMIT 1
@@ -306,7 +306,7 @@
         adl2.issue_id = ai.issue_id
         AND adl2.creation_date &lt; abd.date
         AND adl2.field = 'resolution'
-        AND adl2.project_id = #{sprintDO.projectId}
+        AND adl2.project_id = #{sprintDTO.projectId}
         ORDER BY
         adl2.creation_date DESC
         LIMIT 1
@@ -318,11 +318,11 @@
         agile_data_log adl
         WHERE
         adl.field = 'Sprint'
-        AND adl.project_id = #{sprintDO.projectId}
-        AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+        AND adl.project_id = #{sprintDTO.projectId}
+        AND adl.creation_date &gt; #{sprintDTO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
         AND adl.new_value REGEXP
-        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdAddList" item="issueId"
                  open="(" close=")" separator=",">
@@ -359,7 +359,7 @@
         adl2.issue_id = adl.issue_id
         AND adl2.creation_date &lt; adl.creation_date
         AND adl2.field = 'resolution'
-        AND adl2.project_id = #{sprintDO.projectId}
+        AND adl2.project_id = #{sprintDTO.projectId}
         ORDER BY
         adl2.creation_date DESC
         LIMIT 1
@@ -379,7 +379,7 @@
         adl2.issue_id = adl.issue_id
         AND adl2.creation_date &lt; adl.creation_date
         AND adl2.field = 'resolution'
-        AND adl2.project_id = #{sprintDO.projectId}
+        AND adl2.project_id = #{sprintDTO.projectId}
         ORDER BY
         adl2.creation_date DESC
         LIMIT 1
@@ -392,11 +392,11 @@
         api2.project_id = ai2.project_id
         WHERE
         adl.field = 'Sprint'
-        AND adl.project_id = #{sprintDO.projectId}
-        AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+        AND adl.project_id = #{sprintDTO.projectId}
+        AND adl.creation_date &gt; #{sprintDTO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
         AND adl.old_value REGEXP
-        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveList" item="issueId"
                  open="(" close=")" separator=",">
@@ -409,10 +409,10 @@
         FROM
         agile_data_log adl
         WHERE
-        adl.project_id = #{sprintDO.projectId}
+        adl.project_id = #{sprintDTO.projectId}
         AND adl.field = 'resolution'
-        AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+        AND adl.creation_date &gt; #{sprintDTO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
         AND adl.new_value != ''
         AND
         adl.issue_id in
@@ -427,10 +427,10 @@
         FROM
         agile_data_log adl
         WHERE
-        adl.project_id = #{sprintDO.projectId}
+        adl.project_id = #{sprintDTO.projectId}
         and adl.field = 'resolution'
-        AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+        AND adl.creation_date &gt; #{sprintDTO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
         AND adl.new_value is NULL
         and adl.issue_id in
         <foreach collection="issueAllList" item="issueId"
@@ -446,7 +446,7 @@
         'addDoneDuringSprint' as type,
         case when
         (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = a.issue_id and adl3.field = 'Sprint' and
-        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1) REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1) REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
         then 1 else 0 end as statistical,
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
@@ -457,14 +457,14 @@
         adl.issue_id,
         adl.creation_date as date,
         IFNULL((select adl2.new_string from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id AND adl2.project_id = #{sprintDO.projectId} and adl2.creation_date &lt; adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
+        adl.issue_id AND adl2.project_id = #{sprintDTO.projectId} and adl2.creation_date &lt; adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
         old_value
         FROM
         agile_data_log adl
         WHERE
-        adl.project_id = #{sprintDO.projectId} and
-        adl.field = 'resolution' AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+        adl.project_id = #{sprintDTO.projectId} and
+        adl.field = 'resolution' AND adl.creation_date &gt; #{sprintDTO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
         AND adl.new_value IS not null
         AND adl.issue_id = #{issueId}
         )a LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON
@@ -480,8 +480,8 @@
         'removeDoneDuringSprint' as type,
         case when
         (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = a.issue_id and adl3.field = 'Sprint'
-        AND adl3.project_id = #{sprintDO.projectId} and
-        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1) REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        AND adl3.project_id = #{sprintDTO.projectId} and
+        adl3.creation_date &lt; a.date order by adl3.log_id desc limit 1) REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
         then 1 else 0 end as statistical,
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         CONCAT_WS('-', api2.project_code, ai2.issue_num) AS parent_issue_num,
@@ -492,17 +492,17 @@
         adl.issue_id,
         adl.creation_date as date,
         IFNULL((select adl2.new_string from agile_data_log adl2 where adl2.field = #{field} and adl2.issue_id =
-        adl.issue_id AND adl2.project_id = #{sprintDO.projectId} and adl2.creation_date &lt; adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
+        adl.issue_id AND adl2.project_id = #{sprintDTO.projectId} and adl2.creation_date &lt; adl.creation_date order by adl2.creation_date desc limit 1) ,0)as
         new_value
         FROM
         agile_data_log adl
         WHERE
-        adl.project_id = #{sprintDO.projectId}
+        adl.project_id = #{sprintDTO.projectId}
         AND adl.issue_id =#{issueId}
         and adl.field = 'resolution'
-        AND adl.creation_date &gt; #{sprintDO.startDate}
+        AND adl.creation_date &gt; #{sprintDTO.startDate}
          AND adl.new_value IS null
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+        AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
         ) a
         LEFT JOIN agile_issue ai on ai.issue_id = a.issue_id LEFT JOIN agile_project_info api ON api.project_id =
         ai.project_id LEFT JOIN agile_issue ai2 on ai.parent_issue_id = ai2.issue_id LEFT JOIN agile_project_info api2
@@ -514,7 +514,7 @@
     <select id="queryDoneIssueIdsBeforeSprintStart" resultType="java.lang.Long">
         SELECT adl2.issue_id
         FROM
-        agile_data_log adl2 where adl2.project_id = #{sprintDO.projectId} and adl2.field = 'resolution'
+        agile_data_log adl2 where adl2.project_id = #{sprintDTO.projectId} and adl2.field = 'resolution'
         AND adl2.new_value is not null and adl2.issue_id IN
         <foreach collection="issueIdList" item="issueId"
                  open="(" close=")" separator=",">
@@ -526,9 +526,9 @@
         FROM
         agile_data_log adl
         WHERE
-        adl.project_id = #{sprintDO.projectId}
+        adl.project_id = #{sprintDTO.projectId}
         AND adl.field = 'resolution'
-        AND adl.creation_date &lt; #{sprintDO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.startDate}
         AND adl.issue_id IN
         <foreach collection="issueIdList" item="issueId"
                  open="(" close=")" separator=",">
@@ -551,9 +551,9 @@
         ai2.issue_id as parent_issue_id,
         case when
         (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint'
-        AND adl3.project_id = #{sprintDO.projectId} and
+        AND adl3.project_id = #{sprintDTO.projectId} and
         adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1) REGEXP
-        '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
         then 1 else 0 end as statistical
         FROM
         agile_data_log adl left join agile_issue ai on adl.issue_id = ai.issue_id LEFT JOIN agile_project_info api ON
@@ -562,9 +562,9 @@
         api2.project_id = ai2.project_id
         WHERE
         adl.field = 'resolution'
-        AND adl.project_id = #{sprintDO.projectId}
-        AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.project_id = #{sprintDTO.projectId}
+        AND adl.creation_date &gt; #{sprintDTO.startDate}
+        AND adl.creation_date &lt;= #{sprintDTO.actualEndDate}
         AND adl.old_value is NULL
         AND adl.issue_id IN
         <foreach collection="issueIdAddDoneList" item="issueId"
@@ -586,8 +586,8 @@
         ai2.issue_id as parent_issue_id,
         case when
         (select adl3.new_value from agile_data_log adl3 where adl3.issue_id = adl.issue_id and adl3.field = 'Sprint'
-        AND adl3.project_id = #{sprintDO.projectId} and adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1)
-        REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
+        AND adl3.project_id = #{sprintDTO.projectId} and adl3.creation_date &lt; adl.creation_date order by adl3.log_id desc limit 1)
+        REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
         then 1 else 0
         end as statistical
         FROM
@@ -598,9 +598,9 @@
         LEFT JOIN agile_project_info api2 ON api2.project_id = ai2.project_id
         WHERE
         adl.field = 'resolution'
-        AND adl.project_id = #{sprintDO.projectId}
-        AND adl.creation_date &gt;= #{sprintDO.startDate}
-        AND adl.creation_date &lt;= #{sprintDO.actualEndDate}
+        AND adl.project_id = #{sprintDTO.projectId}
+        AND adl.creation_date &gt;= #{sprintDTO.startDate}
+        AND adl.creation_date &lt;= #{sprintDTO.actualEndDate}
         and adl.new_value is NULL
         AND adl.issue_id IN
         <foreach collection="issueIdRemoveDoneList" item="issueId"
@@ -627,9 +627,9 @@
         agile_project_info api2 ON
         api2.project_id = ai2.project_id
         WHERE adl.field = #{field}
-        AND adl.project_id = #{sprintDO.projectId}
-        AND adl.creation_date &gt; #{sprintDO.startDate}
-        AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+        AND adl.project_id = #{sprintDTO.projectId}
+        AND adl.creation_date &gt; #{sprintDTO.startDate}
+        AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
         AND adl.issue_id IN
         <foreach collection="issueAllList" item="issueId"
                  open="(" close=")" separator=",">
@@ -641,7 +641,7 @@
             resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
         SELECT
         ai.issue_id,
-        #{sprintDO.startDate} AS date,
+        #{sprintDTO.startDate} AS date,
         'startSprint' as type,
         0 as old_value,
         1 as new_value,
@@ -677,7 +677,7 @@
                     (cc.new_value IS NULL, 0, 1) AS old_value,
                     IF
                     (cc.new_value IS NULL, 1, 0) AS new_value,
-                    #{sprintDO.actualEndDate}    AS date
+                    #{sprintDTO.actualEndDate}    AS date
                 FROM
                     agile_issue_sprint_rel aspr
                     LEFT JOIN (
@@ -689,12 +689,12 @@
                                         (SELECT MAX(adl.log_id) AS log_id
                                          FROM agile_data_log adl
                                          WHERE adl.field = 'resolution'
-                                         AND adl.project_id = #{sprintDO.projectId}
-                                         AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+                                         AND adl.project_id = #{sprintDTO.projectId}
+                                         AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
                                          GROUP BY issue_id)
                               ) cc ON aspr.issue_id = cc.issue_id
                 WHERE
-                    aspr.sprint_id = #{sprintDO.sprintId}
+                    aspr.sprint_id = #{sprintDTO.sprintId}
             ) c
             LEFT JOIN agile_issue ai ON c.issue_id = ai.issue_id
             LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
@@ -718,19 +718,19 @@
                     aspr.issue_id,
                     IFNULL(cc.new_string, 0)  AS new_value,
                     0                         AS old_value,
-                    #{sprintDO.actualEndDate} AS date
+                    #{sprintDTO.actualEndDate} AS date
                 FROM
-                    (select issue_id,project_id from agile_issue_sprint_rel where project_id = #{sprintDO.projectId} and sprint_id = #{sprintDO.sprintId} ) aspr
+                    (select issue_id,project_id from agile_issue_sprint_rel where project_id = #{sprintDTO.projectId} and sprint_id = #{sprintDTO.sprintId} ) aspr
                     LEFT JOIN (SELECT
                                    adl5.issue_id,
                                    adl5.new_string
                                FROM agile_data_log adl5
-                               WHERE adl5.project_id = #{sprintDO.projectId}
+                               WHERE adl5.project_id = #{sprintDTO.projectId}
 			                        and adl5.field = #{field} and adl5.log_id IN (SELECT MAX(adl.log_id) AS log_id
                                                      FROM agile_data_log adl
-                                                     WHERE adl.project_id = #{sprintDO.projectId}
+                                                     WHERE adl.project_id = #{sprintDTO.projectId}
 			                                               and adl.field = #{field}
-                                                           AND adl.creation_date &lt; #{sprintDO.actualEndDate}
+                                                           AND adl.creation_date &lt; #{sprintDTO.actualEndDate}
                                                      GROUP BY
                                                          adl.issue_id)) cc ON aspr.issue_id = cc.issue_id
 
@@ -740,19 +740,19 @@
                               aspr1.issue_id,
                               cdc.new_value
                           FROM
-                             ( SELECT issue_id, project_id FROM agile_issue_sprint_rel WHERE project_id = #{sprintDO.projectId} AND sprint_id = #{sprintDO.sprintId} ) aspr1
+                             ( SELECT issue_id, project_id FROM agile_issue_sprint_rel WHERE project_id = #{sprintDTO.projectId} AND sprint_id = #{sprintDTO.sprintId} ) aspr1
                               LEFT JOIN (SELECT
                                              adl7.new_value,
                                              adl7.issue_id
                                          FROM agile_data_log adl7
-                                         WHERE adl7.project_id = #{sprintDO.projectId}
+                                         WHERE adl7.project_id = #{sprintDTO.projectId}
 	                                            AND adl7.field = 'resolution'
 	                                             and adl7.log_id IN (SELECT MAX(adl1.log_id) AS log_id
                                                                FROM agile_data_log adl1
-                                                               WHERE adl1.project_id = #{sprintDO.projectId}
+                                                               WHERE adl1.project_id = #{sprintDTO.projectId}
                                                                      and adl1.field = 'resolution'
-                                                                     AND adl1.creation_date &lt; #{sprintDO.actualEndDate}
-                                                                     and adl1.issue_id in(SELECT issue_id FROM agile_issue_sprint_rel WHERE project_id = #{sprintDO.projectId} AND sprint_id = #{sprintDO.sprintId} )
+                                                                     AND adl1.creation_date &lt; #{sprintDTO.actualEndDate}
+                                                                     and adl1.issue_id in(SELECT issue_id FROM agile_issue_sprint_rel WHERE project_id = #{sprintDTO.projectId} AND sprint_id = #{sprintDTO.sprintId} )
                                                                GROUP BY
                                                                    adl1.issue_id)) cdc ON
                                                                                            cdc.issue_id = aspr1.issue_id
@@ -940,10 +940,10 @@
         SELECT DISTINCT adl2.issue_id
         FROM agile_data_log adl2
         WHERE
-            adl2.project_id = #{sprintDO.projectId} and  adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDO.startDate} AND
-            adl2.creation_date &lt;= #{sprintDO.actualEndDate}
-            AND adl2.old_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$'
-            AND (adl2.new_value is null or not (adl2.new_value REGEXP '^${sprintDO.sprintId},|,${sprintDO.sprintId},|^${sprintDO.sprintId}$|,${sprintDO.sprintId}$' ))
+            adl2.project_id = #{sprintDTO.projectId} and  adl2.field = 'Sprint' AND adl2.creation_date &gt; #{sprintDTO.startDate} AND
+            adl2.creation_date &lt;= #{sprintDTO.actualEndDate}
+            AND adl2.old_value REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$'
+            AND (adl2.new_value is null or not (adl2.new_value REGEXP '^${sprintDTO.sprintId},|,${sprintDTO.sprintId},|^${sprintDTO.sprintId}$|,${sprintDTO.sprintId}$' ))
     </select>
 
 

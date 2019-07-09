@@ -3,8 +3,8 @@ package io.choerodon.agile.domain.agile.converter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import io.choerodon.agile.api.vo.IssueTypeDistributeDTO;
-import io.choerodon.agile.infra.dataobject.IssueTypeDistributeDO;
+import io.choerodon.agile.api.vo.IssueTypeDistributeVO;
+import io.choerodon.agile.infra.dataobject.IssueTypeDistributeDTO;
 import io.choerodon.core.convertor.ConvertorI;
 
 /**
@@ -13,12 +13,12 @@ import io.choerodon.core.convertor.ConvertorI;
  * Description:
  */
 @Component
-public class IssueTypeDistributeConverter implements ConvertorI<Object, IssueTypeDistributeDO, IssueTypeDistributeDTO> {
+public class IssueTypeDistributeConverter implements ConvertorI<Object, IssueTypeDistributeDTO, IssueTypeDistributeVO> {
 
     @Override
-    public IssueTypeDistributeDTO doToDto(IssueTypeDistributeDO issueTypeDistributeDO) {
-        IssueTypeDistributeDTO issueTypeDistributeDTO = new IssueTypeDistributeDTO();
-        BeanUtils.copyProperties(issueTypeDistributeDO, issueTypeDistributeDTO);
-        return issueTypeDistributeDTO;
+    public IssueTypeDistributeVO doToDto(IssueTypeDistributeDTO issueTypeDistributeDTO) {
+        IssueTypeDistributeVO issueTypeDistributeVO = new IssueTypeDistributeVO();
+        BeanUtils.copyProperties(issueTypeDistributeDTO, issueTypeDistributeVO);
+        return issueTypeDistributeVO;
     }
 }

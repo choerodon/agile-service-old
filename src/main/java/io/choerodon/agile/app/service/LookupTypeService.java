@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 
-import io.choerodon.agile.api.vo.LookupTypeDTO;
+import io.choerodon.agile.api.vo.LookupTypeVO;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public interface LookupTypeService {
      * 查询所有lookupType
      *
      * @param project project
-     * @return LookupTypeDTO
+     * @return LookupTypeVO
      */
-    List<LookupTypeDTO> listLookupType(Long project);
+    List<LookupTypeVO> listLookupType(Long project);
 }

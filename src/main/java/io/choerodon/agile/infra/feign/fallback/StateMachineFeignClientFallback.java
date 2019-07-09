@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.feign.fallback;
 
 import io.choerodon.agile.api.vo.Status;
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.statemachine.dto.StateMachineTransformDTO;
@@ -25,12 +25,12 @@ public class StateMachineFeignClientFallback implements StateMachineFeignClient 
     }
 
     @Override
-    public ResponseEntity<Map<Long, StatusMapDTO>> queryAllStatusMap(Long organizationId) {
+    public ResponseEntity<Map<Long, StatusMapVO>> queryAllStatusMap(Long organizationId) {
         throw new CommonException("error.statusMap.get");
     }
 
     @Override
-    public ResponseEntity<StatusMapDTO> queryStatusById(Long organizationId, Long statusId) {
+    public ResponseEntity<StatusMapVO> queryStatusById(Long organizationId, Long statusId) {
         throw new CommonException("error.status.get");
     }
 

@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.BoardVO
 import io.choerodon.agile.api.vo.IssueMoveVO
-import io.choerodon.agile.api.vo.MessageDTO
+import io.choerodon.agile.api.vo.MessageVO
 import io.choerodon.agile.api.vo.UserSettingVO
 import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.BoardService
@@ -169,14 +169,14 @@ class BoardControllerSpec extends Specification {
         issueMoveDTO.rank = false
 
         and:
-        List<MessageDTO> messageDTOList = new ArrayList<>()
-        MessageDTO messageDTO1 = new MessageDTO()
+        List<MessageVO> messageDTOList = new ArrayList<>()
+        MessageVO messageDTO1 = new MessageVO()
         messageDTO1.setEvent("issue_solved")
         messageDTO1.setNoticeType("project_owner")
         messageDTO1.setEnable(true)
         messageDTO1.setNoticeName("项目所有者")
         messageDTOList.add(messageDTO1)
-        MessageDTO messageDTO2 = new MessageDTO()
+        MessageVO messageDTO2 = new MessageVO()
         messageDTO2.setEvent("issue_solved")
         messageDTO2.setNoticeType("users")
         messageDTO2.setEnable(true)

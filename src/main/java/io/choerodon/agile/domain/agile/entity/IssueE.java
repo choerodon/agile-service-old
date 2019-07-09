@@ -4,7 +4,7 @@ package io.choerodon.agile.domain.agile.entity;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.IssueNumUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import io.choerodon.agile.infra.dataobject.LookupValueDO;
+import io.choerodon.agile.infra.dataobject.LookupValueDTO;
 import io.choerodon.core.oauth.DetailsHelper;
 
 import java.math.BigDecimal;
@@ -339,10 +339,10 @@ public class IssueE {
     /**
      * 对epic类型的issue初始化颜色
      *
-     * @param lookupValueDOList lookupValueDOList
+     * @param lookupValueDTOList lookupValueDTOList
      */
-    public void initializationColor(List<LookupValueDO> lookupValueDOList) {
-        this.colorCode = lookupValueDOList.get(new Random().nextInt(lookupValueDOList.size())).getValueCode();
+    public void initializationColor(List<LookupValueDTO> lookupValueDTOList) {
+        this.colorCode = lookupValueDTOList.get(new Random().nextInt(lookupValueDTOList.size())).getValueCode();
     }
 
     /**

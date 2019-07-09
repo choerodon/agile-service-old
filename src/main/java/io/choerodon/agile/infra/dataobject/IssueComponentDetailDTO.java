@@ -56,7 +56,7 @@ public class IssueComponentDetailDTO {
 
     private IssueTypeDTO issueTypeDTO;
 
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     private PriorityDTO priorityDTO;
 
@@ -228,12 +228,12 @@ public class IssueComponentDetailDTO {
         this.issueTypeDTO = issueTypeDTO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
     public PriorityDTO getPriorityDTO() {

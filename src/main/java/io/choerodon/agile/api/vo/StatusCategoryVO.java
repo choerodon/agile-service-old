@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
  * Email: fuqianghuang01@gmail.com
  */
-public class StatusCategoryDTO {
+public class StatusCategoryVO {
 
     @ApiModelProperty(value = "状态类别")
     private String categoryCode;

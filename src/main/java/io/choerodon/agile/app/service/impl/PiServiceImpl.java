@@ -298,7 +298,7 @@ public class PiServiceImpl implements PiService {
         }
     }
 
-    private void setStatusIsCompleted(Long projectId, Map<Long, StatusMapDTO> statusMapDTOMap) {
+    private void setStatusIsCompleted(Long projectId, Map<Long, StatusMapVO> statusMapDTOMap) {
         IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
         issueStatusDTO.setProjectId(projectId);
         Map<Long, Boolean> statusCompletedMap = issueStatusMapper.select(issueStatusDTO).stream().collect(Collectors.toMap(IssueStatusDTO::getStatusId, IssueStatusDTO::getCompleted));
@@ -310,7 +310,7 @@ public class PiServiceImpl implements PiService {
         // return result by JSONObject
         JSONObject result = new JSONObject();
         // get statusMap and issueTypeMap by organizationId
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         // set status completed
         setStatusIsCompleted(programId, statusMapDTOMap);
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
@@ -339,14 +339,14 @@ public class PiServiceImpl implements PiService {
     }
 
     private void createSprintWhenStartPi(Long programId, Long piId) {
-        SprintDO sprintDO = new SprintDO();
-        sprintDO.setProjectId(programId);
-        sprintDO.setPiId(piId);
-        List<SprintDO> sprintDOList = sprintMapper.select(sprintDO);
+        SprintDTO sprintDTO = new SprintDTO();
+        sprintDTO.setProjectId(programId);
+        sprintDTO.setPiId(piId);
+        List<SprintDTO> sprintDTOList = sprintMapper.select(sprintDTO);
         List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
-            for (SprintDO sprint : sprintDOList) {
+            for (SprintDTO sprint : sprintDTOList) {
                 sprintRepository.createSprint(new SprintE(projectId, sprint.getSprintName(), sprint.getStartDate(), sprint.getEndDate(), sprint.getStatusCode(), sprint.getPiId()));
             }
         }
@@ -469,7 +469,7 @@ public class PiServiceImpl implements PiService {
         for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
             Long projectId = projectRelationshipDTO.getProjectId();
             List<Long> sprintIds = sprintMapper.selectNotDoneByPiId(projectId, piId);
-            SprintDO newSprint = sprintMapper.selectFirstSprintByPiId(projectId, nextPiId);
+            SprintDTO newSprint = sprintMapper.selectFirstSprintByPiId(projectId, nextPiId);
             for (Long sprintId : sprintIds) {
                 SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
                 sprintCompleteDTO.setProjectId(projectId);
@@ -672,7 +672,7 @@ public class PiServiceImpl implements PiService {
         }
         List<PiWithFeatureDTO> piWithFeatureDTOList = piMapper.selectRoadMapPiList(programId, activeArt.getId());
         if (piWithFeatureDTOList != null && !piWithFeatureDTOList.isEmpty()) {
-            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             setStatusIsCompleted(programId, statusMapDTOMap);
             Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             return piAssembler.piWithFeatureDOTODTO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap);

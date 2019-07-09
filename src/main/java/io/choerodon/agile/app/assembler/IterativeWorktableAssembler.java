@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.vo.AssigneeIssueDTO;
+import io.choerodon.agile.api.vo.AssigneeIssueVO;
+import io.choerodon.agile.infra.dataobject.AssigneeIssueDTO;
 import io.choerodon.agile.infra.repository.UserRepository;
-import io.choerodon.agile.infra.dataobject.AssigneeIssueDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,22 +24,22 @@ public class IterativeWorktableAssembler {
     @Autowired
     private UserRepository userRepository;
 
-    public List<AssigneeIssueDTO> assigneeIssueDOToDTO(List<AssigneeIssueDO> assigneeIssueDOList) {
-        List<AssigneeIssueDTO> assigneeIssueDTOList = new ArrayList<>(assigneeIssueDOList.size());
-        List<Long> assigneeIds = assigneeIssueDOList.stream().
+    public List<AssigneeIssueVO> assigneeIssueDOToDTO(List<AssigneeIssueDTO> assigneeIssueDTOList) {
+        List<AssigneeIssueVO> assigneeIssueVOList = new ArrayList<>(assigneeIssueDTOList.size());
+        List<Long> assigneeIds = assigneeIssueDTOList.stream().
                 filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).
-                map(AssigneeIssueDO::getAssigneeId).distinct().collect(Collectors.toList());
+                map(AssigneeIssueDTO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-        assigneeIssueDOList.forEach(assigneeIssueDO -> {
+        assigneeIssueDTOList.forEach(assigneeIssueDO -> {
             String assigneeName = usersMap.get(assigneeIssueDO.getAssigneeId()) != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getName() : null;
             String imageUrl = assigneeName != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getImageUrl() : null;
-            AssigneeIssueDTO assigneeIssueDTO = new AssigneeIssueDTO();
-            BeanUtils.copyProperties(assigneeIssueDO, assigneeIssueDTO);
-            assigneeIssueDTO.setImageUrl(imageUrl);
-            assigneeIssueDTO.setAssigneeName(assigneeName);
-            assigneeIssueDTOList.add(assigneeIssueDTO);
+            AssigneeIssueVO assigneeIssueVO = new AssigneeIssueVO();
+            BeanUtils.copyProperties(assigneeIssueDO, assigneeIssueVO);
+            assigneeIssueVO.setImageUrl(imageUrl);
+            assigneeIssueVO.setAssigneeName(assigneeName);
+            assigneeIssueVOList.add(assigneeIssueVO);
         });
-        return assigneeIssueDTOList;
+        return assigneeIssueVOList;
     }
 
 }

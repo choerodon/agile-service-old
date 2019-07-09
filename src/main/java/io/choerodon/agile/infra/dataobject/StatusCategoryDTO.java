@@ -5,7 +5,7 @@ package io.choerodon.agile.infra.dataobject;
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
  * Email: fuqianghuang01@gmail.com
  */
-public class StatusCategoryDO {
+public class StatusCategoryDTO {
 
     private Long statusId;
 

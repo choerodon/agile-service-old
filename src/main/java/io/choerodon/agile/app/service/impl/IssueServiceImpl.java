@@ -291,7 +291,7 @@ public class IssueServiceImpl implements IssueService {
     public void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE) {
         //如果是epic，初始化颜色
         if (ISSUE_EPIC.equals(issueE.getTypeCode())) {
-            List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
+            List<LookupValueDTO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
             issueE.initializationColor(colorList);
             //排序编号
             Integer sequence = issueMapper.queryMaxEpicSequenceByProject(issueE.getProjectId());
@@ -348,7 +348,7 @@ public class IssueServiceImpl implements IssueService {
             issue.getIssueAttachmentDTOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
-        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueVO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueCreate(projectId, result);
@@ -371,8 +371,8 @@ public class IssueServiceImpl implements IssueService {
         return issueTypeDTOResponseEntity.getBody();
     }
 
-    private StatusMapDTO getStatusById(Long organizationId, Long statusId) {
-        ResponseEntity<StatusMapDTO> statusInfoDTOResponseEntity = stateMachineFeignClient.queryStatusById(organizationId, statusId);
+    private StatusMapVO getStatusById(Long organizationId, Long statusId) {
+        ResponseEntity<StatusMapVO> statusInfoDTOResponseEntity = stateMachineFeignClient.queryStatusById(organizationId, statusId);
         if (statusInfoDTOResponseEntity == null) {
             throw new CommonException("error.status.get");
         }
@@ -400,7 +400,7 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
-        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         return issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
     }
@@ -417,7 +417,7 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
-        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueVO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueAssignee(projectId, fieldList, result);
@@ -485,7 +485,7 @@ public class IssueServiceImpl implements IssueService {
                 List<IssueDTO> issueDTOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getList());
                 Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
                 Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-                Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+                Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
                 Map<Long, Map<String, String>> foundationCodeValue = foundationFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIdPage.getList()).getBody();
                 issueListDTOPage = PageUtil.buildPageInfoWithPageInfoList(issueIdPage,
                         issueAssembler.issueDoToIssueListFieldKVDTO(issueDTOList, priorityMap, statusMapDTOMap, issueTypeDTOMap, foundationCodeValue));
@@ -773,7 +773,7 @@ public class IssueServiceImpl implements IssueService {
         }
         List<StoryMapEpicDTO> storyMapEpicDTOList = ConvertHelper.convertList(issueMapper.queryStoryMapEpicList(projectId, showDoneEpic, assigneeId, onlyStory, filterSql), StoryMapEpicDTO.class);
         if (!storyMapEpicDTOList.isEmpty()) {
-            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             List<Long> epicIds = storyMapEpicDTOList.stream().map(StoryMapEpicDTO::getIssueId).collect(Collectors.toList());
             Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
@@ -781,7 +781,7 @@ public class IssueServiceImpl implements IssueService {
             Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryNotEstimateIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
             Map<Long, BigDecimal> totalEstimateMap = issueMapper.queryTotalEstimateByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getStoryPointCount));
             storyMapEpicDTOList.forEach(epicData -> {
-                epicData.setStatusMapDTO(statusMapDTOMap.get(epicData.getStatusId()));
+                epicData.setStatusMapVO(statusMapDTOMap.get(epicData.getStatusId()));
                 epicData.setIssueTypeDTO(issueTypeDTOMap.get(epicData.getIssueTypeId()));
                 epicData.setDoneIssueCount(doneIssueCountMap.get(epicData.getIssueId()));
                 epicData.setIssueCount(issueCountMap.get(epicData.getIssueId()));
@@ -1336,7 +1336,7 @@ public class IssueServiceImpl implements IssueService {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         issue.setPriorityDTO(getPriorityById(organizationId, issue.getPriorityId()));
         issue.setIssueTypeDTO(getIssueTypeById(organizationId, issue.getIssueTypeId()));
-        issue.setStatusMapDTO(getStatusById(organizationId, issue.getStatusId()));
+        issue.setStatusMapVO(getStatusById(organizationId, issue.getStatusId()));
         if (issue.getIssueAttachmentDTOList() != null && !issue.getIssueAttachmentDTOList().isEmpty()) {
             issue.getIssueAttachmentDTOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -1367,7 +1367,7 @@ public class IssueServiceImpl implements IssueService {
             issueE.setRank(null);
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
             issueE.setEpicName(issueUpdateTypeDTO.getEpicName());
-            List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
+            List<LookupValueDTO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
             issueE.initializationColor(colorList);
             issueE.setRemainingTime(null);
             issueE.setEpicId(0L);
@@ -1629,9 +1629,9 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private Long getActiveSprintId(Long projectId) {
-        SprintDO sprintDO = sprintService.getActiveSprint(projectId);
-        if (sprintDO != null) {
-            return sprintDO.getSprintId();
+        SprintDTO sprintDTO = sprintService.getActiveSprint(projectId);
+        if (sprintDTO != null) {
+            return sprintDTO.getSprintId();
         }
         return null;
     }
@@ -1731,7 +1731,7 @@ public class IssueServiceImpl implements IssueService {
         List<FeatureExportDO> featureExportDOList = issueMapper.selectExportIssuesInProgram(programId, exportIssueIds);
         List<FeatureExportDTO> featureExportDTOList = (featureExportDOList != null && !featureExportDOList.isEmpty() ? ConvertHelper.convertList(featureExportDOList, FeatureExportDTO.class) : null);
         if (featureExportDTOList != null && !featureExportDTOList.isEmpty()) {
-            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             Map<Long, List<PiExportNameDO>> closePiIssueMap = issueMapper.queryPiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.groupingBy(PiExportNameDO::getIssueId));
             Map<Long, PiExportNameDO> activePiIssueMap = issueMapper.queryActivePiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.toMap(PiExportNameDO::getIssueId, Function.identity()));
@@ -2054,7 +2054,7 @@ public class IssueServiceImpl implements IssueService {
             issueE.setRank(null);
             issueE.setTypeCode(issueTransformTask.getTypeCode());
             issueE.setEpicName(issueTransformTask.getEpicName());
-            List<LookupValueDO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
+            List<LookupValueDTO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
             issueE.initializationColor(colorList);
             issueE.setRemainingTime(null);
             issueE.setEpicId(0L);
@@ -2128,7 +2128,7 @@ public class IssueServiceImpl implements IssueService {
 
     private PageInfo<IssueListTestDTO> handleIssueListTestDoToDto(PageInfo<IssueDTO> issueDOPage, Long organizationId, Long projectId) {
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
         return PageUtil.buildPageInfoWithPageInfoList(issueDOPage, issueAssembler.issueDoToIssueTestListDto(issueDOPage.getList(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
@@ -2149,8 +2149,8 @@ public class IssueServiceImpl implements IssueService {
 //                .queryVersionByProjectId(projectId).stream().collect(
 //                        Collectors.toMap(ProductVersionDataDTO::getVersionId, x-> x));
 
-        Map<Long, SprintDO> sprintDoMap = sprintMapper.getSprintByProjectId(projectId).stream().collect(
-                Collectors.toMap(SprintDO::getSprintId, x -> x));
+        Map<Long, SprintDTO> sprintDoMap = sprintMapper.getSprintByProjectId(projectId).stream().collect(
+                Collectors.toMap(SprintDTO::getSprintId, x -> x));
 
         List<IssueListTestWithSprintVersionDTO> issueListTestWithSprintVersionDTOS = new ArrayList<>();
 
@@ -2169,12 +2169,12 @@ public class IssueServiceImpl implements IssueService {
             });
 
             issueMapper.querySprintNameByIssueId(issueListTestWithSprintVersionDTO.getIssueId()).forEach(v -> {
-                SprintDO sprintDO = sprintDoMap.get(v.getSprintId());
+                SprintDTO sprintDTO = sprintDoMap.get(v.getSprintId());
 
                 IssueSprintDTO issueSprintDTO = new IssueSprintDTO();
-                issueSprintDTO.setSprintId(sprintDO.getSprintId());
-                issueSprintDTO.setSprintName(sprintDO.getSprintName());
-                issueSprintDTO.setStatusCode(sprintDO.getStatusCode());
+                issueSprintDTO.setSprintId(sprintDTO.getSprintId());
+                issueSprintDTO.setSprintName(sprintDTO.getSprintName());
+                issueSprintDTO.setStatusCode(sprintDTO.getStatusCode());
 
                 sprintList.add(issueSprintDTO);
             });
@@ -2304,7 +2304,7 @@ public class IssueServiceImpl implements IssueService {
         return sql.toString();
     }
 
-    private void getDoneIds(Map<Long, StatusMapDTO> statusMapDTOMap, List<Long> doneIds) {
+    private void getDoneIds(Map<Long, StatusMapVO> statusMapDTOMap, List<Long> doneIds) {
         for (Long key : statusMapDTOMap.keySet()) {
             if ("done".equals(statusMapDTOMap.get(key).getType())) {
                 doneIds.add(key);
@@ -2322,7 +2322,7 @@ public class IssueServiceImpl implements IssueService {
         //保存用户选择的泳道
         handleSaveUserSetting(projectId, type, pageType);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         List<Long> doneIds = new ArrayList<>();
         getDoneIds(statusMapDTOMap, doneIds);
@@ -2562,7 +2562,7 @@ public class IssueServiceImpl implements IssueService {
                 issueMapper.selectFeatureIdsByPage(programId, searchDTO)
         );
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         return PageUtil.buildPageInfoWithPageInfoList(featureCommonDOPage, featureCommonDOPage.getList() != null && !featureCommonDOPage.getList().isEmpty() ? featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getList()), statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
     }
 

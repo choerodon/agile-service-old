@@ -53,7 +53,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<List<StatusMapDTO>> queryStatusByProjectId(Long projectId, String applyType) {
+    public ResponseEntity<List<StatusMapVO>> queryStatusByProjectId(Long projectId, String applyType) {
         throw new CommonException("error.status.queryStatusByProjectId");
     }
 

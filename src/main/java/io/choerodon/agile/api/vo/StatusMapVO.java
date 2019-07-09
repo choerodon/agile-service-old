@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by HuangFuqiang@choerodon.io on 2018/10/25.
  * Email: fuqianghuang01@gmail.com
  */
-public class StatusMapDTO implements Serializable {
+public class StatusMapVO implements Serializable {
 
     @ApiModelProperty(value = "状态主键id")
     private Long id;

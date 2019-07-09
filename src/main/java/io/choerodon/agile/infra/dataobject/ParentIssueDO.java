@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.api.vo.IssueTypeDTO;
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/01/24.
@@ -17,7 +17,7 @@ public class ParentIssueDO {
 
     private IssueTypeDTO issueTypeDTO;
 
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     private Long statusId;
 
@@ -57,12 +57,12 @@ public class ParentIssueDO {
         this.issueTypeDTO = issueTypeDTO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
     public void setStatusId(Long statusId) {

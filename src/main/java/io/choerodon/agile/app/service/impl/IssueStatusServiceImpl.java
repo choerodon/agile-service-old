@@ -5,8 +5,6 @@ import io.choerodon.agile.api.validator.IssueStatusValidator;
 import io.choerodon.agile.api.vo.event.AddStatusWithProject;
 import io.choerodon.agile.app.service.ColumnStatusRelService;
 import io.choerodon.agile.app.service.IssueStatusService;
-import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
@@ -34,8 +32,6 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/16.
@@ -181,10 +177,10 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Override
     public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType) {
-        List<StatusMapDTO> statusMapDTOList = issueFeignClient.queryStatusByProjectId(projectId, applyType).getBody();
+        List<StatusMapVO> statusMapVOList = issueFeignClient.queryStatusByProjectId(projectId, applyType).getBody();
         List<Long> realStatusIds = new ArrayList<>();
-        for (StatusMapDTO statusMapDTO : statusMapDTOList) {
-            realStatusIds.add(statusMapDTO.getId());
+        for (StatusMapVO statusMapVO : statusMapVOList) {
+            realStatusIds.add(statusMapVO.getId());
         }
         if (realStatusIds.isEmpty()) {
             return new ArrayList<>();

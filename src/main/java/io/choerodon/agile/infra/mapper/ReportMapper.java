@@ -18,174 +18,174 @@ public interface ReportMapper {
      * 获取当前冲刺开启前的issue的指定修改字段信息
      *
      * @param issueIdList issueIdList当前冲刺开启前的issueIdList
-     * @param sprintDO    sprintDO
+     * @param sprintDTO    sprintDTO
      * @param field       filed修改字段
      * @return ReportIssueDO
      */
-    List<ReportIssueDO> queryValueBeforeSprintStart(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryValueBeforeSprintStart(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取当前冲刺期间加入的issue(包含加入时间、加入时的字段值)
      *
      * @param issueIdAddList issueIdList当前冲刺期间加入的issueIdList
-     * @param sprintDO       sprintDO
+     * @param sprintDTO       sprintDTO
      * @param field          filed修改字段
      * @return ReportIssueE
      */
-    List<ReportIssueDO> queryAddIssueValueDuringSprint(@Param("issueIdAddList") List<Long> issueIdAddList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryAddIssueValueDuringSprint(@Param("issueIdAddList") List<Long> issueIdAddList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取当前冲刺期间移除的issue(包含移除时间、移除时的字段值)
      *
      * @param issueIdRemoveList issueIdRemoveList
-     * @param sprintDO          sprintDO
+     * @param sprintDTO          sprintDTO
      * @param field             filed修改字段
      * @return ReportIssueE
      */
-    List<ReportIssueDO> queryRemoveIssueValueDurationSprint(@Param("issueIdRemoveList") List<Long> issueIdRemoveList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryRemoveIssueValueDurationSprint(@Param("issueIdRemoveList") List<Long> issueIdRemoveList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取冲刺开启前的issue
      *
-     * @param sprintDO sprintDO
+     * @param sprintDTO sprintDTO
      * @return issueIds
      */
-    List<Long> queryIssueIdsBeforeSprintStart(@Param("sprintDO") SprintDO sprintDO);
+    List<Long> queryIssueIdsBeforeSprintStart(@Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 获取冲刺期间加入的issue
      *
-     * @param sprintDO sprintDO
+     * @param sprintDTO sprintDTO
      * @return issueIdList
      */
-    List<Long> queryAddIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
+    List<Long> queryAddIssueIdsDuringSprint(@Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 获取冲刺期间移除的issue(不包含子任务和epic)
      *
-     * @param sprintDO sprintDO
+     * @param sprintDTO sprintDTO
      * @return issueIdList
      */
-    List<Long> queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(@Param("sprintDO") SprintDO sprintDO);
+    List<Long> queryRemoveIssueIdsDuringSprintWithOutSubEpicIssue(@Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 查询在冲刺期间添加的issue，包含issue加入的时间
      *
      * @param issueIdAddList issueIdAddList
-     * @param sprintDO       sprintDO
+     * @param sprintDTO       sprintDTO
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryAddIssueDuringSprint(@Param("issueIdAddList") List<Long> issueIdAddList, @Param("sprintDO") SprintDO sprintDO);
+    List<ReportIssueDO> queryAddIssueDuringSprint(@Param("issueIdAddList") List<Long> issueIdAddList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 查询在冲刺期间移除的issue，包含issue移除的时间
      *
      * @param issueIdRemoveList issueIdRemoveList
-     * @param sprintDO          sprintDO
+     * @param sprintDTO          sprintDTO
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryRemoveIssueDuringSprint(@Param("issueIdRemoveList") List<Long> issueIdRemoveList, @Param("sprintDO") SprintDO sprintDO);
+    List<ReportIssueDO> queryRemoveIssueDuringSprint(@Param("issueIdRemoveList") List<Long> issueIdRemoveList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 获取冲刺期间issue状态更改为done的issue
      *
-     * @param sprintDO     sprintDO
+     * @param sprintDTO     sprintDTO
      * @param issueAllList issueAllList
      * @return issueIds
      */
-    List<Long> queryAddDoneIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO, @Param("issueAllList") List<Long> issueAllList);
+    List<Long> queryAddDoneIssueIdsDuringSprint(@Param("sprintDTO") SprintDTO sprintDTO, @Param("issueAllList") List<Long> issueAllList);
 
     /**
      * 获取冲刺期间issue状态从done更改到其他的issue
      *
-     * @param sprintDO     sprintDO
+     * @param sprintDTO     sprintDTO
      * @param issueAllList issueAllList
      * @return issueIds
      */
-    List<Long> queryRemoveDoneIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO, @Param("issueAllList") List<Long> issueAllList);
+    List<Long> queryRemoveDoneIssueIdsDuringSprint(@Param("sprintDTO") SprintDTO sprintDTO, @Param("issueAllList") List<Long> issueAllList);
 
     /**
      * 获取冲刺期间移动到done状态的字段变更值（包含变更时间）
      *
      * @param issueId  issueId
-     * @param sprintDO sprintDO
+     * @param sprintDTO sprintDTO
      * @param field    field
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryAddIssueDoneValueDuringSprint(@Param("issueId") Long issueId, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryAddIssueDoneValueDuringSprint(@Param("issueId") Long issueId, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取冲刺期间done移动到非done状态的字段变更值（包含变更时间）
      *
      * @param issueId  issueId
-     * @param sprintDO sprintDO
+     * @param sprintDTO sprintDTO
      * @param field    field
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryRemoveIssueDoneValueDurationSprint(@Param("issueId") Long issueId, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryRemoveIssueDoneValueDurationSprint(@Param("issueId") Long issueId, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取开启冲刺前，issue状态为done的issueId
      *
      * @param issueIdList issueIdList开启冲刺前冲刺内的issue
-     * @param sprintDO    sprintDO
+     * @param sprintDTO    sprintDTO
      * @return issueDoneCount
      */
-    List<Long> queryDoneIssueIdsBeforeSprintStart(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDO") SprintDO sprintDO);
+    List<Long> queryDoneIssueIdsBeforeSprintStart(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 冲刺期间issue移动到done的时间
      *
      * @param issueIdAddDoneList issueIdAddDoneList冲刺期间移动到done的issue
-     * @param sprintDO           sprintDO
+     * @param sprintDTO           sprintDTO
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryAddIssueDoneDetailDuringSprint(@Param("issueIdAddDoneList") List<Long> issueIdAddDoneList, @Param("sprintDO") SprintDO sprintDO);
+    List<ReportIssueDO> queryAddIssueDoneDetailDuringSprint(@Param("issueIdAddDoneList") List<Long> issueIdAddDoneList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 冲刺期间issue从done移除的时间
      *
      * @param issueIdRemoveDoneList issueIdAddDoneList冲刺期间移动到非done的issue
-     * @param sprintDO              sprintDO
+     * @param sprintDTO              sprintDTO
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryRemoveIssueDoneDetailDurationSprint(@Param("issueIdRemoveDoneList") List<Long> issueIdRemoveDoneList, @Param("sprintDO") SprintDO sprintDO);
+    List<ReportIssueDO> queryRemoveIssueDoneDetailDurationSprint(@Param("issueIdRemoveDoneList") List<Long> issueIdRemoveDoneList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 冲刺期间issue的字段值变化（包含变化时间）
      *
      * @param issueAllList issueAllList
-     * @param sprintDO     sprintDO
+     * @param sprintDTO     sprintDTO
      * @param field        field
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryIssueChangeValueDurationSprint(@Param("issueAllList") List<Long> issueAllList, @Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryIssueChangeValueDurationSprint(@Param("issueAllList") List<Long> issueAllList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 冲刺开启前的issue数量统计信息
      *
      * @param issueIdList issueIdList
-     * @param sprintDO    sprintDO
+     * @param sprintDTO    sprintDTO
      * @return ReportIssueDO
      */
-    List<ReportIssueDO> queryAddIssueBeforeDuringSprint(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDO") SprintDO sprintDO);
+    List<ReportIssueDO> queryAddIssueBeforeDuringSprint(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 查询冲刺结束后的issue数量统计信息
      *
-     * @param sprintDO sprintDO
+     * @param sprintDTO sprintDTO
      * @return ReportIssueDO
      */
-    List<ReportIssueDO> queryIssueCountAfterSprint(@Param("sprintDO") SprintDO sprintDO);
+    List<ReportIssueDO> queryIssueCountAfterSprint(@Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 查询冲刺结束后的字段value统计信息
      *
-     * @param sprintDO sprintDO
+     * @param sprintDTO sprintDTO
      * @param field    field
      * @return ReportIssueDO
      */
-    List<ReportIssueDO> queryIssueValueAfterSprint(@Param("sprintDO") SprintDO sprintDO, @Param("field") String field);
+    List<ReportIssueDO> queryIssueValueAfterSprint(@Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     List<Long> queryReportIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("startDate") Date startDate, @Param("actualEndDate") Date actualEndDate, @Param("status") Boolean status);
 
@@ -209,10 +209,10 @@ public interface ReportMapper {
     /**
      * 冲刺期间移出的issue
      *
-     * @param sprintDO sprintDO
+     * @param sprintDTO sprintDTO
      * @return Long
      */
-    List<Long> queryRemoveIssueIdsDuringSprint(@Param("sprintDO") SprintDO sprintDO);
+    List<Long> queryRemoveIssueIdsDuringSprint(@Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 判断issue是否在冲刺外

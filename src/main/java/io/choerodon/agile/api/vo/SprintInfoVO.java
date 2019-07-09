@@ -10,7 +10,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
  * Email: fuqianghuang01@gmail.com
  */
-public class SprintInfoDTO {
+public class SprintInfoVO {
 
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
@@ -39,7 +39,7 @@ public class SprintInfoDTO {
     @ApiModelProperty(value = "问题数量")
     private Integer issueCount;
 
-    private List<AssigneeIssueDTO> assigneeIssueDTOList;
+    private List<AssigneeIssueVO> assigneeIssueVOList;
 
     public Long getSprintId() {
         return sprintId;
@@ -89,12 +89,12 @@ public class SprintInfoDTO {
         this.endDate = endDate;
     }
 
-    public List<AssigneeIssueDTO> getAssigneeIssueDTOList() {
-        return assigneeIssueDTOList;
+    public List<AssigneeIssueVO> getAssigneeIssueVOList() {
+        return assigneeIssueVOList;
     }
 
-    public void setAssigneeIssueDTOList(List<AssigneeIssueDTO> assigneeIssueDTOList) {
-        this.assigneeIssueDTOList = assigneeIssueDTOList;
+    public void setAssigneeIssueVOList(List<AssigneeIssueVO> assigneeIssueVOList) {
+        this.assigneeIssueVOList = assigneeIssueVOList;
     }
 
     public void setDayRemain(Integer dayRemain) {

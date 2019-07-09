@@ -2,7 +2,7 @@ package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.api.vo.SprintUpdateDTO;
 import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.dataobject.SprintDTO;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +30,11 @@ public class SprintValidator {
 
     public void checkSprintStartInProgram(SprintE sprintE) {
         Long sprintId = sprintE.getSprintId();
-        SprintDO sprintDO = sprintMapper.selectByPrimaryKey(sprintId);
-        if (sprintDO == null) {
+        SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
+        if (sprintDTO == null) {
             throw new CommonException("error.sprint.get");
         }
-        if (sprintDO.getPiId() != null) {
+        if (sprintDTO.getPiId() != null) {
             Date nowDate = new Date();
             if (nowDate.before(sprintE.getEndDate())) {
                 sprintE.setStartDate(nowDate);
@@ -44,11 +44,11 @@ public class SprintValidator {
 
     public void judgeExist(Long projectId, Long sprintId) {
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-            SprintDO sprintDO = new SprintDO();
-            sprintDO.setProjectId(projectId);
-            sprintDO.setSprintId(sprintId);
-            sprintDO = sprintMapper.selectOne(sprintDO);
-            if (sprintDO == null || Objects.equals(sprintDO.getStatusCode(), SPRINT_CLOSED_CODE)) {
+            SprintDTO sprintDTO = new SprintDTO();
+            sprintDTO.setProjectId(projectId);
+            sprintDTO.setSprintId(sprintId);
+            sprintDTO = sprintMapper.selectOne(sprintDTO);
+            if (sprintDTO == null || Objects.equals(sprintDTO.getStatusCode(), SPRINT_CLOSED_CODE)) {
                 throw new CommonException(SPRINT_ERROR);
             }
         }
@@ -64,33 +64,33 @@ public class SprintValidator {
 
     private void judgePlanningExist(Long projectId, Long sprintId) {
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-            SprintDO sprintDO = new SprintDO();
-            sprintDO.setProjectId(projectId);
-            sprintDO.setStatusCode(SPRINT_PLANNING_CODE);
-            sprintDO.setSprintId(sprintId);
-            if (sprintMapper.selectOne(sprintDO) == null) {
+            SprintDTO sprintDTO = new SprintDTO();
+            sprintDTO.setProjectId(projectId);
+            sprintDTO.setStatusCode(SPRINT_PLANNING_CODE);
+            sprintDTO.setSprintId(sprintId);
+            if (sprintMapper.selectOne(sprintDTO) == null) {
                 throw new CommonException(SPRINT_NOT_FOUND);
             }
         }
     }
 
     public void checkDate(SprintUpdateDTO sprintUpdateDTO) {
-        SprintDO sprintDO = new SprintDO();
-        sprintDO.setProjectId(sprintUpdateDTO.getProjectId());
-        sprintDO.setSprintId(sprintUpdateDTO.getSprintId());
-        sprintDO = sprintMapper.selectOne(sprintDO);
-        if (sprintDO == null || (Objects.equals(sprintDO.getStatusCode(), SPRINT_START_CODE)
-                && (sprintDO.getStartDate() == null || sprintDO.getEndDate() == null || sprintDO.getStartDate().after(sprintDO.getEndDate())))) {
+        SprintDTO sprintDTO = new SprintDTO();
+        sprintDTO.setProjectId(sprintUpdateDTO.getProjectId());
+        sprintDTO.setSprintId(sprintUpdateDTO.getSprintId());
+        sprintDTO = sprintMapper.selectOne(sprintDTO);
+        if (sprintDTO == null || (Objects.equals(sprintDTO.getStatusCode(), SPRINT_START_CODE)
+                && (sprintDTO.getStartDate() == null || sprintDTO.getEndDate() == null || sprintDTO.getStartDate().after(sprintDTO.getEndDate())))) {
             throw new CommonException(SPRINT_DATE_ERROR);
         }
     }
 
     public void validatorSprint(Long sprintId, Long projectId) {
-        SprintDO sprintDO = new SprintDO();
-        sprintDO.setProjectId(projectId);
-        sprintDO.setSprintId(sprintId);
-        sprintDO = sprintMapper.selectOne(sprintDO);
-        if (sprintDO == null) {
+        SprintDTO sprintDTO = new SprintDTO();
+        sprintDTO.setProjectId(projectId);
+        sprintDTO.setSprintId(sprintId);
+        sprintDTO = sprintMapper.selectOne(sprintDTO);
+        if (sprintDTO == null) {
             throw new CommonException("error.spring.query");
         }
     }

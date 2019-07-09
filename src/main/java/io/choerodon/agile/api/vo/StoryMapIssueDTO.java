@@ -77,7 +77,7 @@ public class StoryMapIssueDTO {
     private Long statusId;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     public Long getSprintId() {
         return sprintId;
@@ -247,12 +247,12 @@ public class StoryMapIssueDTO {
         return statusId;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
     public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {

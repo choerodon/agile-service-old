@@ -28,7 +28,7 @@ public class UnfinishedIssueDTO {
     private IssueTypeDTO issueTypeDTO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     public Long getIssueId() {
         return issueId;
@@ -54,12 +54,12 @@ public class UnfinishedIssueDTO {
         this.issueTypeDTO = issueTypeDTO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
     public String getIssueNum() {

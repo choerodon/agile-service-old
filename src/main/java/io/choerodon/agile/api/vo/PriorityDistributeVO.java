@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
  * Email: fuqianghuang01@gmail.com
  */
-public class PriorityDistributeDTO {
+public class PriorityDistributeVO {
 
     @ApiModelProperty(value = "完成的问题总和")
     private Integer completedNum;

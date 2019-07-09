@@ -1,13 +1,8 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
 
-import io.choerodon.mybatis.entity.BaseDTO;
+
 import io.choerodon.agile.infra.common.utils.StringUtil;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import io.swagger.annotations.ApiModelProperty;
 
 /**
  * 敏捷开发code键值
@@ -15,30 +10,22 @@ import javax.validation.constraints.NotNull;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 09:40:27
  */
-@Table(name = "agile_lookup_value")
-public class LookupValueDO extends BaseDTO {
+public class LookupValueVO {
 
-    /***/
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(value = "快码值")
     private String valueCode;
 
-    /**
-     * 类型code
-     */
-    @NotNull(message = "error.lookup_value.type_codeNotNull")
+    @ApiModelProperty(value = "快码类型")
     private String typeCode;
 
-    /**
-     * 名称
-     */
-    @NotNull(message = "error.lookup_value.nameNotNull")
+    @ApiModelProperty(value = "快码名称")
     private String name;
 
-    /**
-     * 描述
-     */
+    @ApiModelProperty(value = "描述")
     private String description;
+
+    @ApiModelProperty(value = "版本号")
+    private Long objectVersionNumber;
 
     public String getValueCode() {
         return valueCode;
@@ -70,6 +57,14 @@ public class LookupValueDO extends BaseDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
     }
 
     @Override

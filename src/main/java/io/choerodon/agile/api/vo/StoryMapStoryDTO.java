@@ -26,7 +26,7 @@ public class StoryMapStoryDTO {
 
     private IssueTypeDTO issueTypeDTO;
 
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     private List<StoryMapVersionDTO> storyMapVersionDTOList;
 
@@ -102,12 +102,12 @@ public class StoryMapStoryDTO {
         this.issueTypeDTO = issueTypeDTO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
     public void setCompleted(Boolean completed) {

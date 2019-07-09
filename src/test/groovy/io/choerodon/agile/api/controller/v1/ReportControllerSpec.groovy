@@ -575,7 +575,7 @@ class ReportControllerSpec extends Specification {
 
     def 'deleteData'() {
         given: '删除数据DO'
-        SprintDO sprintDO = new SprintDO()
+        SprintDTO sprintDO = new SprintDTO()
         sprintDO.sprintId = sprintId
         sprintDO.projectId = projectId
 

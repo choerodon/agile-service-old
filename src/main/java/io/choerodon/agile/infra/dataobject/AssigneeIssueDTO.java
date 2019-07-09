@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * Created by jian_zhang02@163.com on 2018/6/2.
  */
-public class AssigneeIssueDO {
+public class AssigneeIssueDTO {
 
     private Long sprintId;
     private Long assigneeId;

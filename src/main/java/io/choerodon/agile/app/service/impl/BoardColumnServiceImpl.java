@@ -6,8 +6,6 @@ import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.app.service.ColumnStatusRelService;
 import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
-import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -454,7 +452,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         List<ColumnWithStatusRelDTO> columnWithStatusRelDTOList = boardColumnMapper.queryColumnStatusRelByProjectId(boardResult.getProjectId());
         Long projectId = boardResult.getProjectId();
         Long boardId = boardResult.getBoardId();
-        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         for (ColumnWithStatusRelDTO columnWithStatusRelDTO : columnWithStatusRelDTOList) {
             columnWithStatusRelDTO.setCategoryCode(statusMapDTOMap.get(columnWithStatusRelDTO.getStatusId()).getType());
         }

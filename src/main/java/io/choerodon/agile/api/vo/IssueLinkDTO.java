@@ -54,7 +54,7 @@ public class IssueLinkDTO {
     private IssueTypeDTO issueTypeDTO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     @ApiModelProperty(value = "优先级DTO")
     private PriorityDTO priorityDTO;
@@ -142,12 +142,12 @@ public class IssueLinkDTO {
         this.issueTypeDTO = issueTypeDTO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
     public PriorityDTO getPriorityDTO() {

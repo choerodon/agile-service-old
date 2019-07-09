@@ -14,7 +14,7 @@ import java.util.Date;
  */
 
 @Table(name = "agile_sprint")
-public class SprintDO extends BaseDTO {
+public class SprintDTO extends BaseDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long sprintId;

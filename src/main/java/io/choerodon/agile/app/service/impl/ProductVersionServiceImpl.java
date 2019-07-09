@@ -219,7 +219,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (!productVersions.isEmpty()) {
             List<Long> productVersionIds = productVersions.stream().map(ProductVersionDataDTO::getVersionId).collect(toList());
             Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
-                    .stream().collect(Collectors.groupingBy(StatusMapDTO::getType, Collectors.mapping(StatusMapDTO::getId, Collectors.toList())));
+                    .stream().collect(Collectors.groupingBy(StatusMapVO::getType, Collectors.mapping(StatusMapVO::getId, Collectors.toList())));
             List<Long> done = statusMap.get(CATEGORY_DONE_CODE);
             Boolean condition = done != null && !done.isEmpty();
             Map<Long, Integer> doneIssueCountMap = condition ? productVersionMapper.queryIssueCount(projectId, productVersionIds, done).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount)) : null;
@@ -239,9 +239,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(Long projectId, Long versionId) {
         ProductVersionStatisticsDTO productVersionStatisticsDTO = versionStatisticsAssembler.toTarget(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), ProductVersionStatisticsDTO.class);
-        List<StatusMapDTO> statusMapDTOS = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody();
-        Map<String, List<Long>> statusIdMap = statusMapDTOS.stream().collect(Collectors.groupingBy(StatusMapDTO::getType, Collectors.mapping(StatusMapDTO::getId, Collectors.toList())));
-        Map<String, List<StatusMapDTO>> statusMap = statusMapDTOS.stream().collect(Collectors.groupingBy(StatusMapDTO::getType));
+        List<StatusMapVO> statusMapVOS = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody();
+        Map<String, List<Long>> statusIdMap = statusMapVOS.stream().collect(Collectors.groupingBy(StatusMapVO::getType, Collectors.mapping(StatusMapVO::getId, Collectors.toList())));
+        Map<String, List<StatusMapVO>> statusMap = statusMapVOS.stream().collect(Collectors.groupingBy(StatusMapVO::getType));
         productVersionStatisticsDTO.setTodoIssueCount(statusIdMap.get(CATEGORY_TODO_CODE) != null && !statusIdMap.get(CATEGORY_TODO_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusIdMap.get(CATEGORY_TODO_CODE), projectId, versionId) : 0);
         productVersionStatisticsDTO.setDoingIssueCount(statusIdMap.get(CATEGORY_DOING_CODE) != null && !statusIdMap.get(CATEGORY_DOING_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusIdMap.get(CATEGORY_DOING_CODE), projectId, versionId) : 0);
         productVersionStatisticsDTO.setDoneIssueCount(statusIdMap.get(CATEGORY_DONE_CODE) != null && !statusIdMap.get(CATEGORY_DONE_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusIdMap.get(CATEGORY_DONE_CODE), projectId, versionId) : 0);
@@ -258,7 +258,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         Boolean condition = issueService.handleSearchUser(searchDTO, projectId);
         if (condition) {
             Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             List<Long> filterStatusIds = new ArrayList<>();
             if (statusCode != null) {

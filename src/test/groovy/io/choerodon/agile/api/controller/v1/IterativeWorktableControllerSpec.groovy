@@ -2,10 +2,10 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.AssigneeDistributeDTO
-import io.choerodon.agile.api.vo.IssueTypeDistributeDTO
-import io.choerodon.agile.api.vo.PriorityDistributeDTO
-import io.choerodon.agile.api.vo.SprintInfoDTO
+import io.choerodon.agile.api.vo.AssigneeDistributeVO
+import io.choerodon.agile.api.vo.IssueTypeDistributeVO
+import io.choerodon.agile.api.vo.PriorityDistributeVO
+import io.choerodon.agile.api.vo.SprintInfoVO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -67,7 +67,7 @@ class IterativeWorktableControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        List<PriorityDistributeDTO> result = entity.body
+        List<PriorityDistributeVO> result = entity.body
         result.size() == 1
         result.get(0).priorityDTO.name.equals("高")
     }
@@ -126,7 +126,7 @@ class IterativeWorktableControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/iterative_worktable/sprint/{organizationId}?sprintId={sprintId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
-                SprintInfoDTO.class,
+                SprintInfoVO.class,
                 projectId,
                 1,
                 sprintId)
@@ -135,7 +135,7 @@ class IterativeWorktableControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
         entity.body.sprintId == 1
         entity.body.sprintName.equals("sprint-test")
-        entity.body.assigneeIssueDTOList.size() > 0
+        entity.body.assigneeIssueVOList.size() > 0
     }
 
     def 'querySprintInfo fail'() {
@@ -168,7 +168,7 @@ class IterativeWorktableControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<AssigneeDistributeDTO> result = entity.body
+        List<AssigneeDistributeVO> result = entity.body
 
         expect: '期望值'
         result.size() == 1
@@ -190,7 +190,7 @@ class IterativeWorktableControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueTypeDistributeDTO> result = entity.body
+        List<IssueTypeDistributeVO> result = entity.body
 
         expect: '期望值'
         result.size() == 1

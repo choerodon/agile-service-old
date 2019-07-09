@@ -2,8 +2,8 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.MessageDTO
-import io.choerodon.agile.infra.dataobject.MessageDO
+import io.choerodon.agile.api.vo.MessageVO
+import io.choerodon.agile.infra.dataobject.MessageDTO
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper
 import io.choerodon.agile.infra.mapper.NoticeMapper
 import io.choerodon.core.convertor.ConvertHelper
@@ -54,14 +54,14 @@ class NoticeControllerSpec extends Specification {
     def 'updateNotice'() {
         given:
         String users = "1,2,3"
-        List<MessageDO> originList = noticeMapper.selectAll()
-        for (MessageDO messageDO : originList) {
+        List<MessageDTO> originList = noticeMapper.selectAll()
+        for (MessageDTO messageDO : originList) {
             messageDO.setEnable(false)
             messageDO.setUser(users)
         }
 
         when:
-        HttpEntity<List<MessageDTO>> messages = new HttpEntity<>(ConvertHelper.convertList(originList, MessageDTO.class))
+        HttpEntity<List<MessageVO>> messages = new HttpEntity<>(ConvertHelper.convertList(originList, MessageVO.class))
         def entity = restTemplate.exchange("/v1/projects/{project_id}/notice",
                 HttpMethod.PUT,
                 messages,
@@ -74,12 +74,12 @@ class NoticeControllerSpec extends Specification {
 
     def 'updateNotice unSuccess'() {
         given:
-        List<MessageDO> originList = noticeMapper.selectAll()
+        List<MessageDTO> originList = noticeMapper.selectAll()
         originList.get(0).setEnable(false)
         originList.get(0).setObjectVersionNumber(originList.get(0).getObjectVersionNumber() + 1)
 
         when:
-        HttpEntity<List<MessageDTO>> messages = new HttpEntity<>(ConvertHelper.convertList(originList, MessageDTO.class))
+        HttpEntity<List<MessageVO>> messages = new HttpEntity<>(ConvertHelper.convertList(originList, MessageVO.class))
         def entity = restTemplate.exchange("/v1/projects/{project_id}/notice",
                 HttpMethod.PUT,
                 messages,
@@ -101,7 +101,7 @@ class NoticeControllerSpec extends Specification {
                 projectId)
         then:
         entity.statusCode.is2xxSuccessful()
-        for (MessageDTO messageDTO : entity.body) {
+        for (MessageVO messageDTO : entity.body) {
             messageDTO.enable == false
             messageDTO.user == "1,2,3"
         }

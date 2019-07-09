@@ -1,10 +1,10 @@
 package io.choerodon.agile.domain.agile.converter;
 
 
+import io.choerodon.agile.api.vo.LookupTypeVO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.BeanUtils;
-import io.choerodon.agile.api.vo.LookupTypeDTO;
 import io.choerodon.agile.infra.dataobject.LookupTypeDO;
 import io.choerodon.agile.domain.agile.entity.LookupTypeE;
 
@@ -15,12 +15,12 @@ import io.choerodon.agile.domain.agile.entity.LookupTypeE;
  * @since 2018-05-15 10:13:37
  */
 @Component
-public class LookupTypeConverter implements ConvertorI<LookupTypeE, LookupTypeDO, LookupTypeDTO> {
+public class LookupTypeConverter implements ConvertorI<LookupTypeE, LookupTypeDO, LookupTypeVO> {
 
     @Override
-    public LookupTypeE dtoToEntity(LookupTypeDTO lookupTypeDTO) {
+    public LookupTypeE dtoToEntity(LookupTypeVO lookupTypeVO) {
         LookupTypeE lookupTypeE = new LookupTypeE();
-        BeanUtils.copyProperties(lookupTypeDTO, lookupTypeE);
+        BeanUtils.copyProperties(lookupTypeVO, lookupTypeE);
         return lookupTypeE;
     }
 
@@ -32,10 +32,10 @@ public class LookupTypeConverter implements ConvertorI<LookupTypeE, LookupTypeDO
     }
 
     @Override
-    public LookupTypeDTO entityToDto(LookupTypeE lookupTypeE) {
-        LookupTypeDTO lookupTypeDTO = new LookupTypeDTO();
-        BeanUtils.copyProperties(lookupTypeE, lookupTypeDTO);
-        return lookupTypeDTO;
+    public LookupTypeVO entityToDto(LookupTypeE lookupTypeE) {
+        LookupTypeVO lookupTypeVO = new LookupTypeVO();
+        BeanUtils.copyProperties(lookupTypeE, lookupTypeVO);
+        return lookupTypeVO;
     }
 
     @Override
@@ -46,16 +46,16 @@ public class LookupTypeConverter implements ConvertorI<LookupTypeE, LookupTypeDO
     }
 
     @Override
-    public LookupTypeDTO doToDto(LookupTypeDO lookupTypeDO) {
-        LookupTypeDTO lookupTypeDTO = new LookupTypeDTO();
-        BeanUtils.copyProperties(lookupTypeDO, lookupTypeDTO);
-        return lookupTypeDTO;
+    public LookupTypeVO doToDto(LookupTypeDO lookupTypeDO) {
+        LookupTypeVO lookupTypeVO = new LookupTypeVO();
+        BeanUtils.copyProperties(lookupTypeDO, lookupTypeVO);
+        return lookupTypeVO;
     }
 
     @Override
-    public LookupTypeDO dtoToDo(LookupTypeDTO lookupTypeDTO) {
+    public LookupTypeDO dtoToDo(LookupTypeVO lookupTypeVO) {
         LookupTypeDO lookupTypeDO = new LookupTypeDO();
-        BeanUtils.copyProperties(lookupTypeDTO, lookupTypeDO);
+        BeanUtils.copyProperties(lookupTypeVO, lookupTypeDO);
         return lookupTypeDO;
     }
 }

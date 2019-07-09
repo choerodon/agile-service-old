@@ -219,10 +219,10 @@ public class ReportServiceImpl implements ReportService {
 
     private List<ReportIssueE> getBurnDownReport(Long projectId, Long sprintId, String type) {
         List<ReportIssueE> reportIssueEList = new ArrayList<>();
-        SprintDO sprintDO = new SprintDO();
-        sprintDO.setSprintId(sprintId);
-        sprintDO.setProjectId(projectId);
-        SprintE sprintE = sprintConverter.doToEntity(sprintMapper.selectOne(sprintDO));
+        SprintDTO sprintDTO = new SprintDTO();
+        sprintDTO.setSprintId(sprintId);
+        sprintDTO.setProjectId(projectId);
+        SprintE sprintE = sprintConverter.doToEntity(sprintMapper.selectOne(sprintDTO));
         if (sprintE != null && !sprintE.getStatusCode().equals(SPRINT_PLANNING_CODE)) {
             sprintE.initStartAndEndTime();
             switch (type) {
@@ -394,7 +394,7 @@ public class ReportServiceImpl implements ReportService {
                 queryReportIssues(projectId, versionId, status, type));
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         return PageUtil.buildPageInfoWithPageInfoList(reportIssuePage, issueAssembler.issueDoToIssueListDto(reportIssuePage.getList(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
 
@@ -693,7 +693,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void queryIssueCount(SprintE sprintE, List<ReportIssueE> reportIssueEList) {
-        SprintDO sprintDO = sprintConverter.entityToDo(sprintE);
+        SprintDTO sprintDTO = sprintConverter.entityToDo(sprintE);
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList;
         //获取当前冲刺期间加入的issue
@@ -702,32 +702,32 @@ public class ReportServiceImpl implements ReportService {
         List<Long> issueIdRemoveList;
         //异步任务
         CompletableFuture<List<Long>> task1 = CompletableFuture
-                .supplyAsync(() -> reportMapper.queryIssueIdsBeforeSprintStart(sprintDO), pool);
+                .supplyAsync(() -> reportMapper.queryIssueIdsBeforeSprintStart(sprintDTO), pool);
         CompletableFuture<List<Long>> task2 = CompletableFuture
-                .supplyAsync(() -> reportMapper.queryAddIssueIdsDuringSprint(sprintDO), pool);
+                .supplyAsync(() -> reportMapper.queryAddIssueIdsDuringSprint(sprintDTO), pool);
         CompletableFuture<List<Long>> task3 = CompletableFuture
-                .supplyAsync(() -> reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO), pool);
+                .supplyAsync(() -> reportMapper.queryRemoveIssueIdsDuringSprint(sprintDTO), pool);
         issueIdBeforeSprintList = task1.join();
         issueIdAddList = task2.join();
         issueIdRemoveList = task3.join();
         //获取冲刺开启前的issue统计
-        handleIssueCountBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList);
+        handleIssueCountBeforeSprint(sprintDTO, reportIssueEList, issueIdBeforeSprintList);
         //获取当前冲刺期间加入的issue
-        handleAddIssueCountDuringSprint(sprintDO, reportIssueEList, issueIdAddList);
+        handleAddIssueCountDuringSprint(sprintDTO, reportIssueEList, issueIdAddList);
         //获取当前冲刺期间移除的issue
-        handleRemoveCountDuringSprint(sprintDO, reportIssueEList, issueIdRemoveList);
+        handleRemoveCountDuringSprint(sprintDTO, reportIssueEList, issueIdRemoveList);
         //获取冲刺结束时的issue
-        handleIssueCountAfterSprint(sprintDO, reportIssueEList);
+        handleIssueCountAfterSprint(sprintDTO, reportIssueEList);
         //获取冲刺期间所有操作到的issue
         List<Long> issueAllList = getAllIssueDuringSprint(issueIdBeforeSprintList, issueIdAddList, issueIdRemoveList);
         //获取当前冲刺期间移动到done状态的issue
-        handleAddDoneIssueCountDuringSprint(sprintDO, reportIssueEList, issueAllList);
+        handleAddDoneIssueCountDuringSprint(sprintDTO, reportIssueEList, issueAllList);
         //获取当前冲刺期间移出done状态的issue
-        handleRemoveDoneIssueCountDuringSprint(sprintDO, reportIssueEList, issueAllList);
+        handleRemoveDoneIssueCountDuringSprint(sprintDTO, reportIssueEList, issueAllList);
     }
 
     private void queryStoryPointsOrRemainingEstimatedTime(SprintE sprintE, List<ReportIssueE> reportIssueEList, String field) {
-        SprintDO sprintDO = sprintConverter.entityToDo(sprintE);
+        SprintDTO sprintDTO = sprintConverter.entityToDo(sprintE);
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList;
         //获取当前冲刺期间加入的issue
@@ -736,29 +736,29 @@ public class ReportServiceImpl implements ReportService {
         List<Long> issueIdRemoveList;
         //异步任务
         CompletableFuture<List<Long>> task1 = CompletableFuture
-                .supplyAsync(() -> reportMapper.queryIssueIdsBeforeSprintStart(sprintDO), pool);
+                .supplyAsync(() -> reportMapper.queryIssueIdsBeforeSprintStart(sprintDTO), pool);
         CompletableFuture<List<Long>> task2 = CompletableFuture
-                .supplyAsync(() -> reportMapper.queryAddIssueIdsDuringSprint(sprintDO), pool);
+                .supplyAsync(() -> reportMapper.queryAddIssueIdsDuringSprint(sprintDTO), pool);
         CompletableFuture<List<Long>> task3 = CompletableFuture
-                .supplyAsync(() -> reportMapper.queryRemoveIssueIdsDuringSprint(sprintDO), pool);
+                .supplyAsync(() -> reportMapper.queryRemoveIssueIdsDuringSprint(sprintDTO), pool);
         issueIdBeforeSprintList = task1.join();
         issueIdAddList = task2.join();
         issueIdRemoveList = task3.join();
         //获取当前冲刺开启前的issue信息
-        handleIssueValueBeforeSprint(sprintDO, reportIssueEList, issueIdBeforeSprintList, field);
+        handleIssueValueBeforeSprint(sprintDTO, reportIssueEList, issueIdBeforeSprintList, field);
         //获取当前冲刺期间加入的issue信息
-        handleAddIssueValueDuringSprint(sprintDO, reportIssueEList, issueIdAddList, field);
+        handleAddIssueValueDuringSprint(sprintDTO, reportIssueEList, issueIdAddList, field);
         //获取当前冲刺期间移除的issue信息
-        handleRemoveIssueValueDuringSprint(sprintDO, reportIssueEList, issueIdRemoveList, field);
+        handleRemoveIssueValueDuringSprint(sprintDTO, reportIssueEList, issueIdRemoveList, field);
         //获取冲刺期间所有操作到的issue变更信息
         List<Long> issueAllList = getAllIssueDuringSprint(issueIdBeforeSprintList, issueIdAddList, issueIdRemoveList);
-        handleChangeIssueValueDuringSprint(sprintDO, reportIssueEList, issueAllList, field);
+        handleChangeIssueValueDuringSprint(sprintDTO, reportIssueEList, issueAllList, field);
         //获取当前冲刺期间移动到done状态的issue信息
-        handleAddDoneIssueValueDuringSprint(sprintDO, reportIssueEList, field, issueAllList);
+        handleAddDoneIssueValueDuringSprint(sprintDTO, reportIssueEList, field, issueAllList);
         //获取当前冲刺期间移出done状态的issue信息
-        handleRemoveDoneIssueValueDuringSprint(sprintDO, reportIssueEList, field, issueAllList);
+        handleRemoveDoneIssueValueDuringSprint(sprintDTO, reportIssueEList, field, issueAllList);
         //获取冲刺结束时的issue(结束前状态为done的issue计入统计字段设为false)
-        handleIssueValueAfterSprint(sprintDO, reportIssueEList, field);
+        handleIssueValueAfterSprint(sprintDTO, reportIssueEList, field);
     }
 
     private List<Long> getAllIssueDuringSprint(List<Long> issueIdList, List<Long> issueIdAddList, List<Long> issueIdRemoveList) {
@@ -776,55 +776,55 @@ public class ReportServiceImpl implements ReportService {
     }
 
 
-    private void handleIssueCountAfterSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList) {
-        if (sprintDO.getStatusCode().equals(SPRINT_CLOSED)) {
-            List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueCountAfterSprint(sprintDO), ReportIssueE.class);
+    private void handleIssueCountAfterSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList) {
+        if (sprintDTO.getStatusCode().equals(SPRINT_CLOSED)) {
+            List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueCountAfterSprint(sprintDTO), ReportIssueE.class);
             if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
                 reportIssueEList.addAll(issueAfterSprintList);
             } else {
                 ReportIssueE reportIssueE = new ReportIssueE();
-                reportIssueE.initEndSprint(sprintDO.getActualEndDate());
+                reportIssueE.initEndSprint(sprintDTO.getActualEndDate());
                 reportIssueEList.add(reportIssueE);
             }
         }
     }
 
-    private void handleRemoveDoneIssueCountDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueAllList) {
+    private void handleRemoveDoneIssueCountDuringSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, List<Long> issueAllList) {
         // 获取当前冲刺期间移除done状态的issue
-        List<Long> issueIdRemoveDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryRemoveDoneIssueIdsDuringSprint(sprintDO, issueAllList) : null;
-        List<ReportIssueE> issueRemoveDoneList = issueIdRemoveDoneList != null && !issueIdRemoveDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDoneDetailDurationSprint(issueIdRemoveDoneList, sprintDO), ReportIssueE.class) : null;
+        List<Long> issueIdRemoveDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryRemoveDoneIssueIdsDuringSprint(sprintDTO, issueAllList) : null;
+        List<ReportIssueE> issueRemoveDoneList = issueIdRemoveDoneList != null && !issueIdRemoveDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDoneDetailDurationSprint(issueIdRemoveDoneList, sprintDTO), ReportIssueE.class) : null;
         if (issueRemoveDoneList != null && !issueRemoveDoneList.isEmpty()) {
             reportIssueEList.addAll(issueRemoveDoneList);
         }
     }
 
-    private void handleAddDoneIssueCountDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueAllList) {
+    private void handleAddDoneIssueCountDuringSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, List<Long> issueAllList) {
         // 获取当前冲刺期间移动到done状态的issue
-        List<Long> issueIdAddDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryAddDoneIssueIdsDuringSprint(sprintDO, issueAllList) : null;
-        List<ReportIssueE> issueAddDoneList = issueIdAddDoneList != null && !issueIdAddDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDoneDetailDuringSprint(issueIdAddDoneList, sprintDO), ReportIssueE.class) : null;
+        List<Long> issueIdAddDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryAddDoneIssueIdsDuringSprint(sprintDTO, issueAllList) : null;
+        List<ReportIssueE> issueAddDoneList = issueIdAddDoneList != null && !issueIdAddDoneList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDoneDetailDuringSprint(issueIdAddDoneList, sprintDTO), ReportIssueE.class) : null;
         if (issueAddDoneList != null && !issueAddDoneList.isEmpty()) {
             reportIssueEList.addAll(issueAddDoneList);
         }
     }
 
-    private void handleRemoveCountDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdRemoveList) {
-        List<ReportIssueE> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDuringSprint(issueIdRemoveList, sprintDO), ReportIssueE.class) : null;
+    private void handleRemoveCountDuringSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, List<Long> issueIdRemoveList) {
+        List<ReportIssueE> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueDuringSprint(issueIdRemoveList, sprintDTO), ReportIssueE.class) : null;
         if (issueRemoveList != null && !issueRemoveList.isEmpty()) {
             reportIssueEList.addAll(issueRemoveList);
         }
     }
 
-    private void handleAddIssueCountDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList) {
-        List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDuringSprint(issueIdAddList, sprintDO), ReportIssueE.class) : null;
+    private void handleAddIssueCountDuringSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList) {
+        List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueDuringSprint(issueIdAddList, sprintDTO), ReportIssueE.class) : null;
         if (issueAddList != null && !issueAddList.isEmpty()) {
             reportIssueEList.addAll(issueAddList);
         }
     }
 
-    private void handleIssueCountBeforeSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdBeforeSprintList) {
+    private void handleIssueCountBeforeSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, List<Long> issueIdBeforeSprintList) {
         //获取冲刺开启前状态为done的issue
-        List<Long> doneBeforeIssue = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryDoneIssueIdsBeforeSprintStart(issueIdBeforeSprintList, sprintDO) : null;
-        List<ReportIssueE> issueBeforeSprintList = !issueIdBeforeSprintList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueBeforeDuringSprint(issueIdBeforeSprintList, sprintDO), ReportIssueE.class) : null;
+        List<Long> doneBeforeIssue = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryDoneIssueIdsBeforeSprintStart(issueIdBeforeSprintList, sprintDTO) : null;
+        List<ReportIssueE> issueBeforeSprintList = !issueIdBeforeSprintList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueBeforeDuringSprint(issueIdBeforeSprintList, sprintDTO), ReportIssueE.class) : null;
         // 过滤开启冲刺前状态为done的issue，统计字段设为false（表示跳过统计）
         if (issueBeforeSprintList != null && !issueBeforeSprintList.isEmpty()) {
             if (doneBeforeIssue != null && !doneBeforeIssue.isEmpty()) {
@@ -835,32 +835,32 @@ public class ReportServiceImpl implements ReportService {
             reportIssueEList.addAll(issueBeforeSprintList);
         } else {
             ReportIssueE reportIssueE = new ReportIssueE();
-            reportIssueE.initStartSprint(sprintDO.getStartDate());
+            reportIssueE.initStartSprint(sprintDTO.getStartDate());
             reportIssueEList.add(reportIssueE);
         }
     }
 
-    private void handleIssueValueAfterSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, String field) {
-        if (sprintDO.getStatusCode().equals(SPRINT_CLOSED)) {
-            List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueValueAfterSprint(sprintDO, field), ReportIssueE.class);
+    private void handleIssueValueAfterSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, String field) {
+        if (sprintDTO.getStatusCode().equals(SPRINT_CLOSED)) {
+            List<ReportIssueE> issueAfterSprintList = ConvertHelper.convertList(reportMapper.queryIssueValueAfterSprint(sprintDTO, field), ReportIssueE.class);
             if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
                 reportIssueEList.addAll(issueAfterSprintList);
             } else {
                 ReportIssueE reportIssueE = new ReportIssueE();
-                reportIssueE.initEndSprint(sprintDO.getEndDate());
+                reportIssueE.initEndSprint(sprintDTO.getEndDate());
                 reportIssueEList.add(reportIssueE);
             }
         }
     }
 
-    private void handleRemoveDoneIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, String field, List<Long> issueAllList) {
+    private void handleRemoveDoneIssueValueDuringSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, String field, List<Long> issueAllList) {
         // 获取当前冲刺期间移出done状态的issue
-        List<Long> issueIdRemoveDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryRemoveDoneIssueIdsDuringSprint(sprintDO, issueAllList) : null;
+        List<Long> issueIdRemoveDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryRemoveDoneIssueIdsDuringSprint(sprintDTO, issueAllList) : null;
         List<ReportIssueDO> reportIssueDOS = Collections.synchronizedList(new ArrayList<>());
         List<ReportIssueE> issueRemoveDoneList = new ArrayList<>();
         if (issueIdRemoveDoneList != null && !issueIdRemoveDoneList.isEmpty()) {
             //todo 还需要优化
-            issueIdRemoveDoneList.parallelStream().forEach(issueIdRemoveDone -> reportIssueDOS.addAll(reportMapper.queryRemoveIssueDoneValueDurationSprint(issueIdRemoveDone, sprintDO, field)));
+            issueIdRemoveDoneList.parallelStream().forEach(issueIdRemoveDone -> reportIssueDOS.addAll(reportMapper.queryRemoveIssueDoneValueDurationSprint(issueIdRemoveDone, sprintDTO, field)));
             issueRemoveDoneList = !reportIssueDOS.isEmpty() ? ConvertHelper.convertList(reportIssueDOS, ReportIssueE.class) : null;
         }
         if (issueRemoveDoneList != null && !issueRemoveDoneList.isEmpty()) {
@@ -868,14 +868,14 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void handleAddDoneIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, String field, List<Long> issueAllList) {
+    private void handleAddDoneIssueValueDuringSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, String field, List<Long> issueAllList) {
         // 获取当前冲刺期间移动到done状态的issue
-        List<Long> issueIdAddDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryAddDoneIssueIdsDuringSprint(sprintDO, issueAllList) : null;
+        List<Long> issueIdAddDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryAddDoneIssueIdsDuringSprint(sprintDTO, issueAllList) : null;
         List<ReportIssueDO> reportIssueDOS = Collections.synchronizedList(new ArrayList<>());
         List<ReportIssueE> issueAddDoneList = new ArrayList<>();
         if (issueIdAddDoneList != null && !issueIdAddDoneList.isEmpty()) {
             //todo 还需要优化
-            issueIdAddDoneList.parallelStream().forEach(issueIdAddDone -> reportIssueDOS.addAll(reportMapper.queryAddIssueDoneValueDuringSprint(issueIdAddDone, sprintDO, field)));
+            issueIdAddDoneList.parallelStream().forEach(issueIdAddDone -> reportIssueDOS.addAll(reportMapper.queryAddIssueDoneValueDuringSprint(issueIdAddDone, sprintDTO, field)));
             issueAddDoneList = !reportIssueDOS.isEmpty() ? ConvertHelper.convertList(reportIssueDOS, ReportIssueE.class) : null;
         }
         if (issueAddDoneList != null && !issueAddDoneList.isEmpty()) {
@@ -885,22 +885,22 @@ public class ReportServiceImpl implements ReportService {
         List<ReportIssueE> remove = reportIssueEList.stream().filter(x -> x.getType().equals("removeDuringSprint")).collect(Collectors.toList());
         // 查看上一个resolution是完成，则移出时时间不再计算（置为false）
         remove.forEach(x -> {
-            ReportIssueDO reportIssueDO = reportMapper.queryLastResolutionBeforeMoveOutSprint(sprintDO.getProjectId(), x.getIssueId(), x.getDate());
+            ReportIssueDO reportIssueDO = reportMapper.queryLastResolutionBeforeMoveOutSprint(sprintDTO.getProjectId(), x.getIssueId(), x.getDate());
             if (reportIssueDO != null && reportIssueDO.getNewValue() != null) {
                 x.setStatistical(false);
             }
         });
     }
 
-    private void handleChangeIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueAllList, String field) {
+    private void handleChangeIssueValueDuringSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, List<Long> issueAllList, String field) {
         //获取冲刺期间所有的当前值的变更
-        List<ReportIssueE> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryIssueChangeValueDurationSprint(issueAllList, sprintDO, field), ReportIssueE.class) : null;
+        List<ReportIssueE> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryIssueChangeValueDurationSprint(issueAllList, sprintDTO, field), ReportIssueE.class) : null;
         if (issueChangeList != null && !issueChangeList.isEmpty()) {
             issueChangeList.parallelStream().forEach(reportIssueE -> {
                 //变更时间是在done状态，计入统计字段设为false
                 handleDoneStatusIssue(reportIssueE);
                 //变更时间是在移出冲刺期间，计入统计字段设为false
-                handleRemoveIssue(reportIssueE, sprintDO.getSprintId());
+                handleRemoveIssue(reportIssueE, sprintDTO.getSprintId());
             });
             reportIssueEList.addAll(issueChangeList);
         }
@@ -914,8 +914,8 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void handleRemoveIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdRemoveList, String field) {
-        List<ReportIssueE> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueValueDurationSprint(issueIdRemoveList, sprintDO, field), ReportIssueE.class) : null;
+    private void handleRemoveIssueValueDuringSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, List<Long> issueIdRemoveList, String field) {
+        List<ReportIssueE> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryRemoveIssueValueDurationSprint(issueIdRemoveList, sprintDTO, field), ReportIssueE.class) : null;
         if (issueRemoveList != null && !issueRemoveList.isEmpty()) {
             //移除时，状态为done的不计入统计
             reportIssueEList.addAll(issueRemoveList);
@@ -930,17 +930,17 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void handleAddIssueValueDuringSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList, String field) {
-        List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDO, field), ReportIssueE.class) : null;
+    private void handleAddIssueValueDuringSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, List<Long> issueIdAddList, String field) {
+        List<ReportIssueE> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDTO, field), ReportIssueE.class) : null;
         if (issueAddList != null && !issueAddList.isEmpty()) {
             reportIssueEList.addAll(issueAddList);
         }
     }
 
-    private void handleIssueValueBeforeSprint(SprintDO sprintDO, List<ReportIssueE> reportIssueEList, List<Long> issueIdBeforeSprintList, String field) {
-        List<ReportIssueE> issueBeforeList = !issueIdBeforeSprintList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryValueBeforeSprintStart(issueIdBeforeSprintList, sprintDO, field), ReportIssueE.class) : null;
+    private void handleIssueValueBeforeSprint(SprintDTO sprintDTO, List<ReportIssueE> reportIssueEList, List<Long> issueIdBeforeSprintList, String field) {
+        List<ReportIssueE> issueBeforeList = !issueIdBeforeSprintList.isEmpty() ? ConvertHelper.convertList(reportMapper.queryValueBeforeSprintStart(issueIdBeforeSprintList, sprintDTO, field), ReportIssueE.class) : null;
         // 获取冲刺开启前状态为done的issue
-        List<Long> doneIssueBeforeSprint = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryDoneIssueIdsBeforeSprintStart(issueIdBeforeSprintList, sprintDO) : null;
+        List<Long> doneIssueBeforeSprint = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryDoneIssueIdsBeforeSprintStart(issueIdBeforeSprintList, sprintDTO) : null;
         // 过滤开启冲刺前状态为done的issue，统计字段设为false（表示跳过统计）
         if (issueBeforeList != null) {
             if (doneIssueBeforeSprint != null && !doneIssueBeforeSprint.isEmpty()) {
@@ -950,7 +950,7 @@ public class ReportServiceImpl implements ReportService {
             reportIssueEList.addAll(issueBeforeList);
         } else {
             ReportIssueE reportIssueE = new ReportIssueE();
-            reportIssueE.initStartSprint(sprintDO.getStartDate());
+            reportIssueE.initStartSprint(sprintDTO.getStartDate());
             reportIssueEList.add(reportIssueE);
         }
     }
@@ -1148,7 +1148,7 @@ public class ReportServiceImpl implements ReportService {
                 startDate, endDate, sprintId, versionId);
         if (pieChartDOS != null && !pieChartDOS.isEmpty()) {
             List<PieChartDTO> pieChartDTOS = reportAssembler.toTargetList(pieChartDOS, PieChartDTO.class);
-            Map<Long, StatusMapDTO> statusMap = ConvertUtil.getIssueStatusMap(projectId);
+            Map<Long, StatusMapVO> statusMap = ConvertUtil.getIssueStatusMap(projectId);
             pieChartDTOS.forEach(pieChartDTO -> pieChartDTO.setName(statusMap.get(Long.parseLong(pieChartDTO.getTypeName())).getName()));
             return pieChartDTOS;
         } else {
@@ -1361,10 +1361,10 @@ public class ReportServiceImpl implements ReportService {
         List<GroupDataChartListDO> groupDataChartListDOList = reportMapper.selectEpicIssueList(projectId, epicId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         for (GroupDataChartListDO groupDataChartListDO : groupDataChartListDOList) {
             groupDataChartListDO.setPriorityDTO(priorityMap.get(groupDataChartListDO.getPriorityId()));
-            groupDataChartListDO.setStatusMapDTO(statusMapDTOMap.get(groupDataChartListDO.getStatusId()));
+            groupDataChartListDO.setStatusMapVO(statusMapDTOMap.get(groupDataChartListDO.getStatusId()));
             groupDataChartListDO.setIssueTypeDTO(issueTypeDTOMap.get(groupDataChartListDO.getIssueTypeId()));
         }
         return groupDataChartListDOList;
@@ -1406,12 +1406,12 @@ public class ReportServiceImpl implements ReportService {
                 return new ArrayList<>();
             } else {
                 JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);
-                List<SprintDO> sprintDOList = (List<SprintDO>) jsonObject.get(SPRINT_DO_LIST);
+                List<SprintDTO> sprintDTOList = (List<SprintDTO>) jsonObject.get(SPRINT_DO_LIST);
                 Date startDate = (Date) jsonObject.get(START_DATE);
                 List<IssueBurnDownReportDO> issueDOS = issueDOList.stream().filter(issueDO -> issueDO.getStoryPoints() != null).collect(Collectors.toList());
                 List<BurnDownReportCoordinateDTO> reportCoordinateDTOS = new ArrayList<>();
-                if (sprintDOList != null && !sprintDOList.isEmpty()) {
-                    handleBurnDownCoordinateByTypeExistSprint(issueDOS, reportCoordinateDTOS, startDate, sprintDOList, type);
+                if (sprintDTOList != null && !sprintDTOList.isEmpty()) {
+                    handleBurnDownCoordinateByTypeExistSprint(issueDOS, reportCoordinateDTOS, startDate, sprintDTOList, type);
                 } else {
                     BigDecimal addNum = calculateStoryPoints(issueDOS);
                     BigDecimal done = calculateCompletedStoryPoints(issueDOS);
@@ -1427,15 +1427,15 @@ public class ReportServiceImpl implements ReportService {
 
     private JSONObject handleSprintListAndStartDate(Long id, Long projectId, String type) {
         Date startDate;
-        List<SprintDO> sprintDOList;
+        List<SprintDTO> sprintDTOList;
         if (E_PIC.equals(type)) {
             IssueDTO issueDTO = issueMapper.queryEpicWithStatusByIssueId(id, projectId);
             if (issueDTO != null) {
                 startDate = issueDTO.getCreationDate();
                 if (issueDTO.getCompleted() && issueDTO.getDoneDate() != null) {
-                    sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, issueDTO.getDoneDate());
+                    sprintDTOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, issueDTO.getDoneDate());
                 } else {
-                    sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, null);
+                    sprintDTOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, null);
                 }
             } else {
                 throw new CommonException(EPIC_OR_VERSION_NOT_FOUND_ERROR);
@@ -1447,13 +1447,13 @@ public class ReportServiceImpl implements ReportService {
             ProductVersionDO productVersionDO = versionMapper.selectOne(query);
             if (productVersionDO != null) {
                 startDate = productVersionDO.getStartDate() == null ? productVersionDO.getCreationDate() : productVersionDO.getStartDate();
-                sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, productVersionDO.getReleaseDate());
+                sprintDTOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, productVersionDO.getReleaseDate());
             } else {
                 throw new CommonException(EPIC_OR_VERSION_NOT_FOUND_ERROR);
             }
         }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(SPRINT_DO_LIST, sprintDOList);
+        jsonObject.put(SPRINT_DO_LIST, sprintDTOList);
         jsonObject.put(START_DATE, startDate);
         return jsonObject;
     }
@@ -1468,38 +1468,38 @@ public class ReportServiceImpl implements ReportService {
         handleBurnDownReportTypeData(burnDownReportDTO, id, projectId, typeCondition);
         if (issueDOList != null && !issueDOList.isEmpty()) {
             Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-            Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             List<IssueBurnDownReportDO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
             burnDownReportDTO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
             JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);
-            List<SprintDO> sprintDOList = (List<SprintDO>) jsonObject.get(SPRINT_DO_LIST);
-            if (sprintDOList != null && !sprintDOList.isEmpty()) {
+            List<SprintDTO> sprintDTOList = (List<SprintDTO>) jsonObject.get(SPRINT_DO_LIST);
+            if (sprintDTOList != null && !sprintDTOList.isEmpty()) {
                 List<IssueBurnDownReportDO> completeIssues = issueDOList.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null).collect(Collectors.toList());
-                handleBurnDownReportSprintData(sprintDOList, completeIssues, burnDownReportDTO, priorityMap, statusMapDTOMap, issueTypeDTOMap);
+                handleBurnDownReportSprintData(sprintDTOList, completeIssues, burnDownReportDTO, priorityMap, statusMapDTOMap, issueTypeDTOMap);
             }
         }
         return burnDownReportDTO;
     }
 
-    private void handleBurnDownReportSprintData(List<SprintDO> sprintDOList, List<IssueBurnDownReportDO> completeIssues, BurnDownReportDTO burnDownReportDTO, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+    private void handleBurnDownReportSprintData(List<SprintDTO> sprintDTOList, List<IssueBurnDownReportDO> completeIssues, BurnDownReportDTO burnDownReportDTO, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
         List<SprintBurnDownReportDTO> sprintBurnDownReportDTOS = new ArrayList<>();
-        if (sprintDOList.size() == 1) {
-            SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(0));
+        if (sprintDTOList.size() == 1) {
+            SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(0));
             List<IssueBurnDownReportDO> singleCompleteIssues = completeIssues.stream().filter(issueDO ->
                     issueDO.getDoneDate().after(sprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
             sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
             sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
         } else {
-            for (int i = 0; i < sprintDOList.size() - 1; i++) {
-                SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(i));
+            for (int i = 0; i < sprintDTOList.size() - 1; i++) {
+                SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i));
                 Date startDateOne = sprintBurnDownReportDTO.getStartDate();
-                Date startDateTwo = sprintDOList.get(i + 1).getStartDate();
+                Date startDateTwo = sprintDTOList.get(i + 1).getStartDate();
                 List<IssueBurnDownReportDO> duringSprintCompleteIssues = handleDuringSprintIncompleteIssues(completeIssues, startDateOne, startDateTwo);
                 sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
                 sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
-                if (i == sprintDOList.size() - 2) {
-                    SprintBurnDownReportDTO lastSprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDOList.get(i + 1));
+                if (i == sprintDTOList.size() - 2) {
+                    SprintBurnDownReportDTO lastSprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i + 1));
                     List<IssueBurnDownReportDO> lastCompleteIssues = completeIssues.stream().filter(issueDO ->
                             issueDO.getDoneDate().after(lastSprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
                     lastSprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
@@ -1541,36 +1541,36 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleBurnDownCoordinateByTypeExistSprint(List<IssueBurnDownReportDO> issueDOS, List<BurnDownReportCoordinateDTO> reportCoordinateDTOS,
-                                                           Date startDate, List<SprintDO> sprintDOList, String type) {
-        List<IssueBurnDownReportDO> issueFilters = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().before(sprintDOList.get(0).getStartDate())).collect(Collectors.toList());
+                                                           Date startDate, List<SprintDTO> sprintDTOList, String type) {
+        List<IssueBurnDownReportDO> issueFilters = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().before(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
         BigDecimal addNum = calculateStoryPoints(issueFilters);
-        List<IssueBurnDownReportDO> issueCompletedFilters = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().before(sprintDOList.get(0).getStartDate())).collect(Collectors.toList());
+        List<IssueBurnDownReportDO> issueCompletedFilters = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().before(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
         BigDecimal done = calculateStoryPoints(issueCompletedFilters);
         reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(new BigDecimal(0), addNum, done, addNum.subtract(done),
-                type + "开始时的预估", startDate, sprintDOList.get(0).getStartDate()));
-        if (sprintDOList.size() == 1) {
-            handleSprintSingle(reportCoordinateDTOS, issueDOS, sprintDOList);
+                type + "开始时的预估", startDate, sprintDTOList.get(0).getStartDate()));
+        if (sprintDTOList.size() == 1) {
+            handleSprintSingle(reportCoordinateDTOS, issueDOS, sprintDTOList);
         } else {
-            handleSprintMultitude(reportCoordinateDTOS, issueDOS, sprintDOList);
+            handleSprintMultitude(reportCoordinateDTOS, issueDOS, sprintDTOList);
         }
     }
 
-    private void handleSprintMultitude(List<BurnDownReportCoordinateDTO> reportCoordinateDTOS, List<IssueBurnDownReportDO> issueDOS, List<SprintDO> sprintDOList) {
-        for (int i = 0; i < sprintDOList.size() - 1; i++) {
-            Date startDateOne = sprintDOList.get(i).getStartDate();
-            Date startDateTwo = sprintDOList.get(i + 1).getStartDate();
-            Date endDate = sprintDOList.get(i).getActualEndDate() == null ? sprintDOList.get(i).getEndDate() : sprintDOList.get(i).getActualEndDate();
-            handleReportCoordinateDuringSprint(issueDOS, startDateOne, startDateTwo, reportCoordinateDTOS, endDate, sprintDOList.get(i).getSprintName());
-            if (i == sprintDOList.size() - 2) {
+    private void handleSprintMultitude(List<BurnDownReportCoordinateDTO> reportCoordinateDTOS, List<IssueBurnDownReportDO> issueDOS, List<SprintDTO> sprintDTOList) {
+        for (int i = 0; i < sprintDTOList.size() - 1; i++) {
+            Date startDateOne = sprintDTOList.get(i).getStartDate();
+            Date startDateTwo = sprintDTOList.get(i + 1).getStartDate();
+            Date endDate = sprintDTOList.get(i).getActualEndDate() == null ? sprintDTOList.get(i).getEndDate() : sprintDTOList.get(i).getActualEndDate();
+            handleReportCoordinateDuringSprint(issueDOS, startDateOne, startDateTwo, reportCoordinateDTOS, endDate, sprintDTOList.get(i).getSprintName());
+            if (i == sprintDTOList.size() - 2) {
                 BigDecimal startLast = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
                 List<IssueBurnDownReportDO> addList = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(startDateTwo)).collect(Collectors.toList());
                 BigDecimal addLast = calculateStoryPoints(addList);
                 List<IssueBurnDownReportDO> doneList = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateTwo)).collect(Collectors.toList());
                 BigDecimal doneLast = calculateStoryPoints(doneList);
                 BigDecimal left = startLast.add(addLast).subtract(doneLast);
-                endDate = sprintDOList.get(i + 1).getActualEndDate() == null ? sprintDOList.get(i + 1).getEndDate() : sprintDOList.get(i + 1).getActualEndDate();
+                endDate = sprintDTOList.get(i + 1).getActualEndDate() == null ? sprintDTOList.get(i + 1).getEndDate() : sprintDTOList.get(i + 1).getActualEndDate();
                 reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(startLast, addLast, doneLast, left,
-                        sprintDOList.get(i + 1).getSprintName(), sprintDOList.get(i + 1).getStartDate(), endDate));
+                        sprintDTOList.get(i + 1).getSprintName(), sprintDTOList.get(i + 1).getStartDate(), endDate));
             }
 
         }
@@ -1597,15 +1597,15 @@ public class ReportServiceImpl implements ReportService {
     }
 
 
-    private void handleSprintSingle(List<BurnDownReportCoordinateDTO> reportCoordinateDTOS, List<IssueBurnDownReportDO> issueDOS, List<SprintDO> sprintDOList) {
+    private void handleSprintSingle(List<BurnDownReportCoordinateDTO> reportCoordinateDTOS, List<IssueBurnDownReportDO> issueDOS, List<SprintDTO> sprintDTOList) {
         BigDecimal start = reportCoordinateDTOS.get(0).getLeft();
-        List<IssueBurnDownReportDO> addList = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(sprintDOList.get(0).getStartDate())).collect(Collectors.toList());
+        List<IssueBurnDownReportDO> addList = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
         BigDecimal addNum = calculateStoryPoints(addList);
-        List<IssueBurnDownReportDO> doneList = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().after(sprintDOList.get(0).getStartDate())).collect(Collectors.toList());
+        List<IssueBurnDownReportDO> doneList = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().after(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
         BigDecimal done = calculateStoryPoints(doneList);
-        Date endDate = sprintDOList.get(0).getActualEndDate() == null ? sprintDOList.get(0).getEndDate() : sprintDOList.get(0).getActualEndDate();
+        Date endDate = sprintDTOList.get(0).getActualEndDate() == null ? sprintDTOList.get(0).getEndDate() : sprintDTOList.get(0).getActualEndDate();
         reportCoordinateDTOS.add(new BurnDownReportCoordinateDTO(start, addNum, done, start.add(addNum).subtract(done),
-                sprintDOList.get(0).getSprintName(), sprintDOList.get(0).getStartDate(), endDate));
+                sprintDTOList.get(0).getSprintName(), sprintDTOList.get(0).getStartDate(), endDate));
     }
 
 
@@ -1646,10 +1646,10 @@ public class ReportServiceImpl implements ReportService {
         List<GroupDataChartListDO> groupDataChartListDOList = reportMapper.selectVersionIssueList(projectId, versionId);
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         for (GroupDataChartListDO groupDataChartListDO : groupDataChartListDOList) {
             groupDataChartListDO.setPriorityDTO(priorityMap.get(groupDataChartListDO.getPriorityId()));
-            groupDataChartListDO.setStatusMapDTO(statusMapDTOMap.get(groupDataChartListDO.getStatusId()));
+            groupDataChartListDO.setStatusMapVO(statusMapDTOMap.get(groupDataChartListDO.getStatusId()));
             groupDataChartListDO.setIssueTypeDTO(issueTypeDTOMap.get(groupDataChartListDO.getIssueTypeId()));
         }
         return groupDataChartListDOList;

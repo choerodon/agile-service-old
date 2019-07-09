@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.NoticeMapper">
 
-	<select id="selectChangeMessageByProjectId" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
+	<select id="selectChangeMessageByProjectId" resultType="io.choerodon.agile.infra.dataobject.MessageDTO">
 		select
 		  amd.id,
 		  amd.project_id,
@@ -16,14 +16,14 @@
 		where amd.project_id = #{projectId}
 	</select>
 
-	<select id="selectChangeMessageByDetail" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
+	<select id="selectChangeMessageByDetail" resultType="io.choerodon.agile.infra.dataobject.MessageDTO">
 		select * from agile_message_detail
 		where project_id = #{projectId}
 		and event = #{event}
 		and notice_type = #{noticeType}
 	</select>
 
-	<select id="selectByEvent" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
+	<select id="selectByEvent" resultType="io.choerodon.agile.infra.dataobject.MessageDTO">
 		select
 		  event,
 		  notice_type,
@@ -33,7 +33,7 @@
 		where event = #{event}
 	</select>
 
-	<select id="selectByProjectIdAndEvent" resultType="io.choerodon.agile.infra.dataobject.MessageDO">
+	<select id="selectByProjectIdAndEvent" resultType="io.choerodon.agile.infra.dataobject.MessageDTO">
 		select
 		  amd.id,
 		  amd.project_id,

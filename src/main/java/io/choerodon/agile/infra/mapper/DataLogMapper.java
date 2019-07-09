@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.dataobject.DataLogDTO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
@@ -32,11 +32,11 @@ public interface DataLogMapper extends Mapper<DataLogDTO> {
      * @param projectId    projectId
      * @param issueDTOS     issueDTOS
      * @param userId       userId
-     * @param statusMapDTO statusMapDTO
+     * @param statusMapVO statusMapVO
      * @param completed    completed
      */
     void batchCreateStatusLogByIssueDOS(@Param("projectId") Long projectId, @Param("issueDTOS") List<IssueDTO> issueDTOS
-            , @Param("userId") Long userId, @Param("statusMapDTO") StatusMapDTO statusMapDTO, @Param("completed") Boolean completed);
+            , @Param("userId") Long userId, @Param("statusMapVO") StatusMapVO statusMapVO, @Param("completed") Boolean completed);
 
     /**
      * 批量生成issue状态变更日志
@@ -48,7 +48,7 @@ public interface DataLogMapper extends Mapper<DataLogDTO> {
      * @param newStatus newStatus
      */
     void batchCreateChangeStatusLogByIssueDOS(@Param("projectId") Long projectId, @Param("issueDTOS") List<IssueDTO> issueDTOS, @Param("userId") Long userId,
-                                              @Param("oldStatus") StatusMapDTO oldStatus, @Param("newStatus") StatusMapDTO newStatus);
+                                              @Param("oldStatus") StatusMapVO oldStatus, @Param("newStatus") StatusMapVO newStatus);
 
 
     /**

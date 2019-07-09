@@ -1,15 +1,21 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
 
 import java.util.List;
 
+import io.choerodon.agile.infra.dataobject.IssueStatus;
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Creator: ChangpingShi0213@gmail.com
- * Date:  16:26 2018/9/4
+ * Date:  16:12 2018/9/4
  * Description:
  */
-public class IssueTypeDistributeDO {
+public class IssueTypeDistributeVO {
+
+    @ApiModelProperty(value = "问题类型code")
     private String typeCode;
 
+    @ApiModelProperty(value = "该问题类型下的状态类别")
     private List<IssueStatus> issueStatus;
 
     public String getTypeCode() {

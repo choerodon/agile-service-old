@@ -6,7 +6,7 @@ import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.dataobject.ColumnDO;
 import io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO;
-import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.dataobject.SprintDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -34,25 +34,25 @@ public class ReportAssembler extends AbstractAssembler {
         return cumulativeFlowDiagramDTOList;
     }
 
-    public SprintBurnDownReportDTO sprintBurnDownReportDoToDto(SprintDO sprintDO) {
+    public SprintBurnDownReportDTO sprintBurnDownReportDoToDto(SprintDTO sprintDTO) {
         SprintBurnDownReportDTO sprintBurnDownReportDTO = new SprintBurnDownReportDTO();
-        sprintBurnDownReportDTO.setSprintId(sprintDO.getSprintId());
-        sprintBurnDownReportDTO.setSprintName(sprintDO.getSprintName());
-        sprintBurnDownReportDTO.setStatusCode(sprintDO.getStatusCode());
-        sprintBurnDownReportDTO.setStartDate(sprintDO.getStartDate());
-        sprintBurnDownReportDTO.setEndDate(sprintDO.getActualEndDate() == null ? sprintDO.getEndDate() : sprintDO.getActualEndDate());
+        sprintBurnDownReportDTO.setSprintId(sprintDTO.getSprintId());
+        sprintBurnDownReportDTO.setSprintName(sprintDTO.getSprintName());
+        sprintBurnDownReportDTO.setStatusCode(sprintDTO.getStatusCode());
+        sprintBurnDownReportDTO.setStartDate(sprintDTO.getStartDate());
+        sprintBurnDownReportDTO.setEndDate(sprintDTO.getActualEndDate() == null ? sprintDTO.getEndDate() : sprintDTO.getActualEndDate());
         return sprintBurnDownReportDTO;
     }
 
     public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS, Map<Long, IssueTypeDTO> issueTypeDTOMap,
-                                                                   Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
+                                                                   Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
         List<IssueBurnDownReportDTO> issueBurnDownReportDTOS = new ArrayList<>(issueBurnDownReportDOS.size());
         if (!issueBurnDownReportDOS.isEmpty()) {
             issueBurnDownReportDOS.forEach(issueBurnDownReportDO -> {
                 IssueBurnDownReportDTO issueBurnDownReportDTO = new IssueBurnDownReportDTO();
                 BeanUtils.copyProperties(issueBurnDownReportDO, issueBurnDownReportDTO);
                 issueBurnDownReportDTO.setPriorityDTO(priorityDTOMap.get(issueBurnDownReportDO.getPriorityId()));
-                issueBurnDownReportDTO.setStatusMapDTO(statusMapDTOMap.get(issueBurnDownReportDO.getStatusId()));
+                issueBurnDownReportDTO.setStatusMapVO(statusMapDTOMap.get(issueBurnDownReportDO.getStatusId()));
                 issueBurnDownReportDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueBurnDownReportDO.getIssueTypeId()));
                 issueBurnDownReportDTOS.add(issueBurnDownReportDTO);
             });
@@ -62,24 +62,24 @@ public class ReportAssembler extends AbstractAssembler {
 
     public List<IssueTypeDistributionChartDTO> toIssueTypeDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDO> issueTypeDistributionChartDOS) {
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
-        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS = new ArrayList<>(issueTypeDistributionChartDOS.size());
         issueTypeDistributionChartDOS.forEach(issueTypeDistributionChartDO -> {
             IssueTypeDistributionChartDTO issueTypeDistributionChartDTO = toTarget(issueTypeDistributionChartDO, IssueTypeDistributionChartDTO.class);
             issueTypeDistributionChartDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueTypeDistributionChartDO.getIssueTypeId()));
             issueTypeDistributionChartDTO.setName(issueTypeDTOMap.get(issueTypeDistributionChartDO.getIssueTypeId()).getName());
-            issueTypeDistributionChartDTO.setStatusMapDTO(statusMapDTOMap.get(issueTypeDistributionChartDO.getStatusId()));
+            issueTypeDistributionChartDTO.setStatusMapVO(statusMapDTOMap.get(issueTypeDistributionChartDO.getStatusId()));
             issueTypeDistributionChartDTOS.add(issueTypeDistributionChartDTO);
         });
         return issueTypeDistributionChartDTOS;
     }
 
     public List<IssueTypeDistributionChartDTO> toIssueTypeVersionDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDO> issueTypeDistributionChartDOS) {
-        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS = new ArrayList<>(issueTypeDistributionChartDOS.size());
         issueTypeDistributionChartDOS.forEach(issueTypeDistributionChartDO -> {
             IssueTypeDistributionChartDTO issueTypeDistributionChartDTO = toTarget(issueTypeDistributionChartDO, IssueTypeDistributionChartDTO.class);
-            issueTypeDistributionChartDTO.setStatusMapDTO(statusMapDTOMap.get(issueTypeDistributionChartDO.getStatusId()));
+            issueTypeDistributionChartDTO.setStatusMapVO(statusMapDTOMap.get(issueTypeDistributionChartDO.getStatusId()));
             issueTypeDistributionChartDTOS.add(issueTypeDistributionChartDTO);
         });
         return issueTypeDistributionChartDTOS;

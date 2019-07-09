@@ -11,7 +11,7 @@ import javax.persistence.Transient;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_message")
-public class MessageDO extends BaseDTO {
+public class MessageDTO extends BaseDTO {
 
     @Transient
     private Long id;

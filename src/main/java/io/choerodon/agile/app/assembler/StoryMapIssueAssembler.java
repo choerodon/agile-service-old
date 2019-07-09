@@ -2,11 +2,11 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IssueTypeDTO;
 import io.choerodon.agile.api.vo.PriorityDTO;
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.api.vo.StoryMapIssueDTO;
+import io.choerodon.agile.infra.dataobject.LookupValueDTO;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.utils.ColorUtil;
-import io.choerodon.agile.infra.dataobject.LookupValueDO;
 import io.choerodon.agile.infra.dataobject.StoryMapIssueDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
@@ -35,11 +35,11 @@ public class StoryMapIssueAssembler {
 
     private static final String ISSUE_STATUS_COLOR = "issue_status_color";
 
-    public List<StoryMapIssueDTO> storyMapIssueDOToDTO(List<StoryMapIssueDO> storyMapIssueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        LookupValueDO lookupValueDO = new LookupValueDO();
-        lookupValueDO.setTypeCode(ISSUE_STATUS_COLOR);
+    public List<StoryMapIssueDTO> storyMapIssueDOToDTO(List<StoryMapIssueDO> storyMapIssueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+        LookupValueDTO lookupValueDTO = new LookupValueDTO();
+        lookupValueDTO.setTypeCode(ISSUE_STATUS_COLOR);
         List<StoryMapIssueDTO> storyMapIssueDTOList = new ArrayList<>(storyMapIssueDOList.size());
-        Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDO).stream().collect(Collectors.toMap(LookupValueDO::getValueCode, LookupValueDO::getName));
+        Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDTO).stream().collect(Collectors.toMap(LookupValueDTO::getValueCode, LookupValueDTO::getName));
         List<Long> assigneeIds = storyMapIssueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(StoryMapIssueDO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
         storyMapIssueDOList.forEach(storyMapIssueDO -> {
@@ -52,7 +52,7 @@ public class StoryMapIssueAssembler {
             storyMapIssueDTO.setImageUrl(imageUrl);
             storyMapIssueDTO.setPriorityDTO(priorityMap.get(storyMapIssueDO.getPriorityId()));
             storyMapIssueDTO.setIssueTypeDTO(issueTypeDTOMap.get(storyMapIssueDO.getIssueTypeId()));
-            storyMapIssueDTO.setStatusMapDTO(statusMapDTOMap.get(storyMapIssueDTO.getStatusId()));
+            storyMapIssueDTO.setStatusMapVO(statusMapDTOMap.get(storyMapIssueDTO.getStatusId()));
             storyMapIssueDTOList.add(storyMapIssueDTO);
         });
         return storyMapIssueDTOList;

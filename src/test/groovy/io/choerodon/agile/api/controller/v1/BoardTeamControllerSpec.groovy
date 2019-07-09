@@ -8,7 +8,7 @@ import io.choerodon.agile.api.vo.ProgramBoardInfoDTO
 import io.choerodon.agile.app.service.BoardFeatureService
 import io.choerodon.agile.infra.dataobject.ArtDTO
 import io.choerodon.agile.infra.dataobject.PiDTO
-import io.choerodon.agile.infra.dataobject.SprintDO
+import io.choerodon.agile.infra.dataobject.SprintDTO
 import io.choerodon.agile.infra.mapper.ArtMapper
 import io.choerodon.agile.infra.mapper.PiMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
@@ -71,7 +71,7 @@ class BoardTeamControllerSpec extends Specification {
         pi.artId = art.id
         pi.statusCode = "doing"
         piMapper.insert(pi)
-        SprintDO sprint = new SprintDO()
+        SprintDTO sprint = new SprintDTO()
         sprint.statusCode = "sprint_planning"
         sprint.projectId = programId
         sprint.piId = pi.id

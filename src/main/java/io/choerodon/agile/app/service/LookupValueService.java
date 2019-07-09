@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.LookupTypeWithValuesDTO;
+import io.choerodon.agile.api.vo.LookupTypeWithValuesVO;
 
 /**
  * 敏捷开发code键值
@@ -10,8 +10,8 @@ import io.choerodon.agile.api.vo.LookupTypeWithValuesDTO;
  */
 public interface LookupValueService {
 
-    LookupTypeWithValuesDTO queryLookupValueByCode(Long projectId, String typeCode);
+    LookupTypeWithValuesVO queryLookupValueByCode(Long projectId, String typeCode);
 
-    LookupTypeWithValuesDTO queryConstraintLookupValue(Long projectId);
+    LookupTypeWithValuesVO queryConstraintLookupValue(Long projectId);
 
 }

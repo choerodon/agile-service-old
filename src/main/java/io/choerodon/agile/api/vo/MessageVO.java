@@ -9,7 +9,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/10/9.
  * Email: fuqianghuang01@gmail.com
  */
-public class MessageDTO {
+public class MessageVO {
 
     @ApiModelProperty(value = "主键id")
     private Long id;

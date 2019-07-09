@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.LookupTypeDTO;
+import io.choerodon.agile.api.vo.LookupTypeVO;
 import io.choerodon.agile.app.service.LookupTypeService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -33,7 +33,7 @@ public class LookupTypeController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询所有lookup type类型")
     @GetMapping
-    public ResponseEntity<List<LookupTypeDTO>> listLookupType(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<LookupTypeVO>> listLookupType(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(lookupTypeService.listLookupType(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

@@ -3,7 +3,7 @@ package io.choerodon.agile.app.assembler;
 import io.choerodon.agile.api.vo.FeatureCommonDTO;
 import io.choerodon.agile.api.vo.IssueTypeDTO;
 import io.choerodon.agile.api.vo.PiNameVO;
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
@@ -27,7 +27,7 @@ public class FeatureCommonAssembler {
     @Autowired
     private UserRepository userRepository;
 
-    public List<FeatureCommonDTO> featureCommonDOToDTO(List<FeatureCommonDO> featureCommonDOList, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+    public List<FeatureCommonDTO> featureCommonDOToDTO(List<FeatureCommonDO> featureCommonDOList, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
         List<FeatureCommonDTO> result = new ArrayList<>();
         List<Long> reporterIds = new ArrayList<>();
         reporterIds.addAll(featureCommonDOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(FeatureCommonDO::getReporterId).collect(Collectors.toSet()));
@@ -36,7 +36,7 @@ public class FeatureCommonAssembler {
         featureCommonDOList.forEach(featureCommonDO -> {
             FeatureCommonDTO featureCommonDTO = ConvertHelper.convert(featureCommonDO, FeatureCommonDTO.class);
             featureCommonDTO.setPiNameVOList(ConvertHelper.convertList(featureCommonDO.getPiNameDTOList(), PiNameVO.class));
-            featureCommonDTO.setStatusMapDTO(statusMapDTOMap.get(featureCommonDO.getStatusId()));
+            featureCommonDTO.setStatusMapVO(statusMapDTOMap.get(featureCommonDO.getStatusId()));
             featureCommonDTO.setIssueTypeDTO(issueTypeDTOMap.get(featureCommonDO.getIssueTypeId()));
             UserMessageDO userMessageDO = userMessageDOMap.get(featureCommonDO.getReporterId());
             if (userMessageDO != null) {

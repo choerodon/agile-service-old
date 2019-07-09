@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 import io.choerodon.agile.domain.agile.entity.SprintE;
-import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.dataobject.SprintDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -10,15 +10,15 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SprintConverter {
-    public SprintDO entityToDo(SprintE sprintE){
-        SprintDO sprintDO = new SprintDO();
-        BeanUtils.copyProperties(sprintE, sprintDO);
-        return sprintDO;
+    public SprintDTO entityToDo(SprintE sprintE){
+        SprintDTO sprintDTO = new SprintDTO();
+        BeanUtils.copyProperties(sprintE, sprintDTO);
+        return sprintDTO;
     }
 
-    public SprintE doToEntity(SprintDO sprintDO) {
+    public SprintE doToEntity(SprintDTO sprintDTO) {
         SprintE sprintE = new SprintE();
-        BeanUtils.copyProperties(sprintDO, sprintE);
+        BeanUtils.copyProperties(sprintDTO, sprintE);
         return sprintE;
     }
 }

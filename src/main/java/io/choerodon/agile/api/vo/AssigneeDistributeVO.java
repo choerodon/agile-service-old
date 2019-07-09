@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Date:  11:16 2018/9/4
  * Description:
  */
-public class AssigneeDistributeDTO {
+public class AssigneeDistributeVO {
 
     @ApiModelProperty(value = "经办人名称")
     private String assigneeName;

@@ -88,7 +88,7 @@ public class IssueListFieldKVDTO {
     private PriorityDTO priorityDTO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
     @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeDTO issueTypeDTO;
@@ -304,12 +304,12 @@ public class IssueListFieldKVDTO {
         return priorityDTO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
     public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {

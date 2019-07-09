@@ -20,7 +20,7 @@ import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
-import io.choerodon.agile.infra.dataobject.SprintDO
+import io.choerodon.agile.infra.dataobject.SprintDTO
 import io.choerodon.agile.infra.mapper.DataLogMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueSprintRelMapper
@@ -338,7 +338,7 @@ class SprintControllerSpec extends Specification {
 
     def "startSprint"() {
         given: '冲刺更新对象'
-        SprintDO sprintDO = sprintMapper.queryByProjectIdAndSprintId(projectId, sprintIds[0])
+        SprintDTO sprintDO = sprintMapper.queryByProjectIdAndSprintId(projectId, sprintIds[0])
         SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO()
         sprintUpdateDTO.sprintId = sprintIds[0]
         sprintUpdateDTO.projectId = projectId

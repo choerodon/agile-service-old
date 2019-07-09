@@ -1,9 +1,9 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IdWithNameDTO;
-import io.choerodon.agile.api.vo.MessageDTO;
+import io.choerodon.agile.api.vo.MessageVO;
 import io.choerodon.agile.infra.repository.UserRepository;
-import io.choerodon.agile.infra.dataobject.MessageDO;
+import io.choerodon.agile.infra.dataobject.MessageDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,13 @@ public class NoticeMessageAssembler {
     private UserRepository userRepository;
 
 
-    public List<MessageDTO> messageDOToIDTO(List<MessageDO> messageDOList, List<Long> ids) {
-        List<MessageDTO> messageDTOList = new ArrayList<>(messageDOList.size());
+    public List<MessageVO> messageDOToIDTO(List<MessageDTO> messageDTOList, List<Long> ids) {
+        List<MessageVO> messageVOList = new ArrayList<>(messageDTOList.size());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(ids, true);
-        messageDOList.forEach(messageDO -> {
+        messageDTOList.forEach(messageDTO -> {
             List<IdWithNameDTO> idWithNameDTOList = new ArrayList<>();
-            if (messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0 && !"null".equals(messageDO.getUser())) {
-                String[] strs = messageDO.getUser().split(",");
+            if (messageDTO.getEnable() && messageDTO.getUser() != null && messageDTO.getUser().length() != 0 && !"null".equals(messageDTO.getUser())) {
+                String[] strs = messageDTO.getUser().split(",");
                 for (String str : strs) {
                     Long id = Long.parseLong(str);
                     if (usersMap.get(id) != null) {
@@ -38,12 +38,12 @@ public class NoticeMessageAssembler {
                     }
                 }
             }
-            MessageDTO messageDTO = new MessageDTO();
-            BeanUtils.copyProperties(messageDO, messageDTO);
-            messageDTO.setIdWithNameDTOList(idWithNameDTOList);
-            messageDTOList.add(messageDTO);
+            MessageVO messageVO = new MessageVO();
+            BeanUtils.copyProperties(messageDTO, messageVO);
+            messageVO.setIdWithNameDTOList(idWithNameDTOList);
+            messageVOList.add(messageVO);
         });
-        return messageDTOList;
+        return messageVOList;
     }
 
 }

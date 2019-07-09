@@ -1083,7 +1083,7 @@ class IssueControllerSpec extends Specification {
 //        productVersionDO.name = 'v1.0.0'
 //        productVersionId = productVersionMapper.selectOne(productVersionDO).versionId
 //
-//        SprintDO sprintDO = new SprintDO()
+//        SprintDTO sprintDO = new SprintDTO()
 //        sprintDO.projectId = 1L
 //        sprintDO.sprintName = 'sprint-test1111'
 //        sprintDO.statusCode = 'sprint_planning'

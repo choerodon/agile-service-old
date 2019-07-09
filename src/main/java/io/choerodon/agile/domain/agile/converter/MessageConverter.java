@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.MessageDTO;
-import io.choerodon.agile.infra.dataobject.MessageDO;
+import io.choerodon.agile.api.vo.MessageVO;
+import io.choerodon.agile.infra.dataobject.MessageDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,19 +12,19 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class MessageConverter implements ConvertorI<Object, MessageDO, MessageDTO> {
+public class MessageConverter implements ConvertorI<Object, MessageDTO, MessageVO> {
 
     @Override
-    public MessageDTO doToDto(MessageDO messageDO) {
-        MessageDTO messageDTO = new MessageDTO();
-        BeanUtils.copyProperties(messageDO, messageDTO);
-        return messageDTO;
+    public MessageVO doToDto(MessageDTO messageDTO) {
+        MessageVO messageVO = new MessageVO();
+        BeanUtils.copyProperties(messageDTO, messageVO);
+        return messageVO;
     }
 
     @Override
-    public MessageDO dtoToDo(MessageDTO messageDTO) {
-        MessageDO messageDO = new MessageDO();
-        BeanUtils.copyProperties(messageDTO, messageDO);
-        return messageDO;
+    public MessageDTO dtoToDo(MessageVO messageVO) {
+        MessageDTO messageDTO = new MessageDTO();
+        BeanUtils.copyProperties(messageVO, messageDTO);
+        return messageDTO;
     }
 }

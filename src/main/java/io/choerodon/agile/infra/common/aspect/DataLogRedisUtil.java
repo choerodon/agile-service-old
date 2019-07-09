@@ -1,13 +1,12 @@
 package io.choerodon.agile.infra.common.aspect;
 
 import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.IssueStatusDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
-import io.choerodon.agile.infra.dataobject.SprintDO;
+import io.choerodon.agile.infra.dataobject.SprintDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper;
@@ -191,11 +190,11 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleSprintDataLog(SprintDO sprintDO) {
-        deleteBurnDownCache(sprintDO.getSprintId(), sprintDO.getProjectId(), null, POINTER);
-        redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + sprintDO.getProjectId() + COLON + POINTER,
-                PIE_CHART + sprintDO.getProjectId() + COLON + SPRINT + POINTER,
-                BURN_DOWN_COORDINATE_BY_TYPE + sprintDO.getProjectId() + COLON + POINTER});
+    public void deleteByHandleSprintDataLog(SprintDTO sprintDTO) {
+        deleteBurnDownCache(sprintDTO.getSprintId(), sprintDTO.getProjectId(), null, POINTER);
+        redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + sprintDTO.getProjectId() + COLON + POINTER,
+                PIE_CHART + sprintDTO.getProjectId() + COLON + SPRINT + POINTER,
+                BURN_DOWN_COORDINATE_BY_TYPE + sprintDTO.getProjectId() + COLON + POINTER});
     }
 
     @Async(REDIS_TASK_EXECUTOR)

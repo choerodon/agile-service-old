@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.vo.event;
 
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class AddStatusWithProject {
     private Long projectId;
-    private List<StatusMapDTO> addStatuses;
+    private List<StatusMapVO> addStatuses;
 
     public Long getProjectId() {
         return projectId;
@@ -20,11 +20,11 @@ public class AddStatusWithProject {
         this.projectId = projectId;
     }
 
-    public List<StatusMapDTO> getAddStatuses() {
+    public List<StatusMapVO> getAddStatuses() {
         return addStatuses;
     }
 
-    public void setAddStatuses(List<StatusMapDTO> addStatuses) {
+    public void setAddStatuses(List<StatusMapVO> addStatuses) {
         this.addStatuses = addStatuses;
     }
 }

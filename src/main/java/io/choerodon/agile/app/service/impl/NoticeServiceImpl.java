@@ -5,7 +5,7 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.assembler.NoticeMessageAssembler;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.infra.repository.UserRepository;
-import io.choerodon.agile.infra.dataobject.MessageDO;
+import io.choerodon.agile.infra.dataobject.MessageDTO;
 import io.choerodon.agile.infra.dataobject.MessageDetailDO;
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper;
 import io.choerodon.agile.infra.mapper.NoticeMapper;
@@ -37,10 +37,10 @@ public class NoticeServiceImpl implements NoticeService {
     @Autowired
     private NoticeMessageAssembler noticeMessageAssembler;
 
-    private void getIds(List<MessageDO> result, List<Long> ids) {
-        for (MessageDO messageDO : result) {
-            if (USERS.equals(messageDO.getNoticeType()) && messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0 && !"null".equals(messageDO.getUser())) {
-                String[] strs = messageDO.getUser().split(",");
+    private void getIds(List<MessageDTO> result, List<Long> ids) {
+        for (MessageDTO messageDTO : result) {
+            if (USERS.equals(messageDTO.getNoticeType()) && messageDTO.getEnable() && messageDTO.getUser() != null && messageDTO.getUser().length() != 0 && !"null".equals(messageDTO.getUser())) {
+                String[] strs = messageDTO.getUser().split(",");
                 for (String str : strs) {
                     Long id = Long.parseLong(str);
                     if (!ids.contains(id)) {
@@ -52,21 +52,21 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public List<MessageDTO> queryByProjectId(Long projectId) {
-        List<MessageDO> result = new ArrayList<>();
-        List<MessageDO> originMessageList = noticeMapper.selectAll();
-        List<MessageDO> changeMessageList = noticeMapper.selectChangeMessageByProjectId(projectId);
-        for (MessageDO messageDO : originMessageList) {
+    public List<MessageVO> queryByProjectId(Long projectId) {
+        List<MessageDTO> result = new ArrayList<>();
+        List<MessageDTO> originMessageList = noticeMapper.selectAll();
+        List<MessageDTO> changeMessageList = noticeMapper.selectChangeMessageByProjectId(projectId);
+        for (MessageDTO messageDTO : originMessageList) {
             int flag = 0;
-            for (MessageDO changeMessageDO : changeMessageList) {
-                if (messageDO.getEvent().equals(changeMessageDO.getEvent()) && messageDO.getNoticeType().equals(changeMessageDO.getNoticeType())) {
+            for (MessageDTO changeMessageDTO : changeMessageList) {
+                if (messageDTO.getEvent().equals(changeMessageDTO.getEvent()) && messageDTO.getNoticeType().equals(changeMessageDTO.getNoticeType())) {
                     flag = 1;
-                    result.add(changeMessageDO);
+                    result.add(changeMessageDTO);
                     break;
                 }
             }
             if (flag == 0) {
-                result.add(messageDO);
+                result.add(messageDTO);
             }
         }
         List<Long> ids = new ArrayList<>();
@@ -75,22 +75,22 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void updateNotice(Long projectId, List<MessageDTO> messageDTOList) {
-        for (MessageDTO messageDTO : messageDTOList) {
+    public void updateNotice(Long projectId, List<MessageVO> messageVOList) {
+        for (MessageVO messageVO : messageVOList) {
             MessageDetailDO messageDetailDO = new MessageDetailDO();
             messageDetailDO.setProjectId(projectId);
-            messageDetailDO.setEnable(messageDTO.getEnable());
-            messageDetailDO.setEvent(messageDTO.getEvent());
-            messageDetailDO.setNoticeType(messageDTO.getNoticeType());
-            messageDetailDO.setNoticeName(messageDTO.getNoticeName());
-            messageDetailDO.setUser(messageDTO.getUser());
-            if (noticeMapper.selectChangeMessageByDetail(projectId, messageDTO.getEvent(), messageDTO.getNoticeType()) == null) {
+            messageDetailDO.setEnable(messageVO.getEnable());
+            messageDetailDO.setEvent(messageVO.getEvent());
+            messageDetailDO.setNoticeType(messageVO.getNoticeType());
+            messageDetailDO.setNoticeName(messageVO.getNoticeName());
+            messageDetailDO.setUser(messageVO.getUser());
+            if (noticeMapper.selectChangeMessageByDetail(projectId, messageVO.getEvent(), messageVO.getNoticeType()) == null) {
                 if (noticeDetailMapper.insert(messageDetailDO) != 1) {
                     throw new CommonException("error.messageDetailDO.insert");
                 }
             } else {
-                messageDetailDO.setId(messageDTO.getId());
-                messageDetailDO.setObjectVersionNumber(messageDTO.getObjectVersionNumber());
+                messageDetailDO.setId(messageVO.getId());
+                messageDetailDO.setObjectVersionNumber(messageVO.getObjectVersionNumber());
                 if (noticeDetailMapper.updateByPrimaryKeySelective(messageDetailDO) != 1) {
                     throw new CommonException("error.messageDetailDO.update");
                 }
@@ -143,32 +143,32 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
 
-    private String[] judgeUserType(MessageDO changeMessageDO, List<String> res) {
+    private String[] judgeUserType(MessageDTO changeMessageDTO, List<String> res) {
         String[] users = null;
-        if (changeMessageDO.getEnable()) {
-            res.add(changeMessageDO.getNoticeType());
-            users = USERS.equals(changeMessageDO.getNoticeType()) && changeMessageDO.getUser() != null && changeMessageDO.getUser().length() != 0 && !"null".equals(changeMessageDO.getUser()) ? changeMessageDO.getUser().split(",") : null;
+        if (changeMessageDTO.getEnable()) {
+            res.add(changeMessageDTO.getNoticeType());
+            users = USERS.equals(changeMessageDTO.getNoticeType()) && changeMessageDTO.getUser() != null && changeMessageDTO.getUser().length() != 0 && !"null".equals(changeMessageDTO.getUser()) ? changeMessageDTO.getUser().split(",") : null;
         }
         return users;
     }
 
     @Override
     public List<Long> queryUserIdsByProjectId(Long projectId, String event, IssueVO issueVO) {
-        List<MessageDO> originMessageList = noticeMapper.selectByEvent(event);
-        List<MessageDO> changeMessageList = noticeMapper.selectByProjectIdAndEvent(projectId, event);
+        List<MessageDTO> originMessageList = noticeMapper.selectByEvent(event);
+        List<MessageDTO> changeMessageList = noticeMapper.selectByProjectIdAndEvent(projectId, event);
         List<String> res = new ArrayList<>();
         String[] users = null;
-        for (MessageDO messageDO : originMessageList) {
+        for (MessageDTO messageDTO : originMessageList) {
             int flag = 0;
-            for (MessageDO changeMessageDO : changeMessageList) {
-                if (messageDO.getEvent().equals(changeMessageDO.getEvent()) && messageDO.getNoticeType().equals(changeMessageDO.getNoticeType())) {
+            for (MessageDTO changeMessageDTO : changeMessageList) {
+                if (messageDTO.getEvent().equals(changeMessageDTO.getEvent()) && messageDTO.getNoticeType().equals(changeMessageDTO.getNoticeType())) {
                     flag = 1;
-                    users = judgeUserType(changeMessageDO, res);
+                    users = judgeUserType(changeMessageDTO, res);
                     break;
                 }
             }
-            if (flag == 0 && messageDO.getEnable()) {
-                res.add(messageDO.getNoticeType());
+            if (flag == 0 && messageDTO.getEnable()) {
+                res.add(messageDTO.getNoticeType());
             }
         }
         List<Long> result = new ArrayList<>();

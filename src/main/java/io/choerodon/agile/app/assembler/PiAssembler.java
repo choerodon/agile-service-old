@@ -2,7 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IssueTypeDTO;
 import io.choerodon.agile.api.vo.PiWithFeatureVO;
-import io.choerodon.agile.api.vo.StatusMapDTO;
+import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.dataobject.PiWithFeatureDTO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
 import org.springframework.beans.BeanUtils;
@@ -20,13 +20,13 @@ import java.util.Map;
 public class PiAssembler {
 
     public List<io.choerodon.agile.api.vo.SubFeatureDTO> subFeatureDOTODTO(List<SubFeatureDTO> subFeatureDOList,
-                                                                           Map<Long, StatusMapDTO> statusMapDTOMap,
+                                                                           Map<Long, StatusMapVO> statusMapDTOMap,
                                                                            Map<Long, IssueTypeDTO> issueTypeDTOMap) {
         List<io.choerodon.agile.api.vo.SubFeatureDTO> subFeatureDTOList = new ArrayList<>();
         subFeatureDOList.forEach(subFeatureDO -> {
             io.choerodon.agile.api.vo.SubFeatureDTO subFeatureDTO = new io.choerodon.agile.api.vo.SubFeatureDTO();
             BeanUtils.copyProperties(subFeatureDO, subFeatureDTO);
-            subFeatureDTO.setStatusMapDTO(statusMapDTOMap.get(subFeatureDO.getStatusId()));
+            subFeatureDTO.setStatusMapVO(statusMapDTOMap.get(subFeatureDO.getStatusId()));
             subFeatureDTO.setIssueTypeDTO(issueTypeDTOMap.get(subFeatureDO.getIssueTypeId()));
             subFeatureDTOList.add(subFeatureDTO);
         });
@@ -34,7 +34,7 @@ public class PiAssembler {
     }
 
     public List<PiWithFeatureVO> piWithFeatureDOTODTO(List<PiWithFeatureDTO> piWithFeatureDTOList,
-                                                      Map<Long, StatusMapDTO> statusMapDTOMap,
+                                                      Map<Long, StatusMapVO> statusMapDTOMap,
                                                       Map<Long, IssueTypeDTO> issueTypeDTOMap) {
         List<PiWithFeatureVO> piWithFeatureVOList = new ArrayList<>();
         piWithFeatureDTOList.forEach(piWithFeatureDTO -> {

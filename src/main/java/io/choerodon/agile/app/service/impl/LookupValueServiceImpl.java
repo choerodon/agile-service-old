@@ -1,14 +1,20 @@
 package io.choerodon.agile.app.service.impl;
 
 
-import io.choerodon.agile.api.vo.LookupTypeWithValuesDTO;
-import io.choerodon.agile.api.vo.LookupValueDTO;
+import io.choerodon.agile.api.vo.LookupTypeWithValuesVO;
+import io.choerodon.agile.api.vo.LookupValueVO;
 import io.choerodon.agile.app.service.LookupValueService;
-import io.choerodon.agile.infra.dataobject.LookupTypeWithValuesDO;
+import io.choerodon.agile.infra.dataobject.LookupTypeWithValuesDTO;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.List;
 
 /**
  * 敏捷开发code键值
@@ -22,19 +28,25 @@ public class LookupValueServiceImpl implements LookupValueService {
     @Autowired
     private LookupValueMapper lookupValueMapper;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
     @Override
-    public LookupTypeWithValuesDTO queryLookupValueByCode(Long projectId, String typeCode) {
-        LookupTypeWithValuesDO typeWithValues = lookupValueMapper.queryLookupValueByCode(typeCode);
-        LookupTypeWithValuesDTO result = ConvertHelper.convert(typeWithValues, LookupTypeWithValuesDTO.class);
-        result.setLookupValues(ConvertHelper.convertList(typeWithValues.getLookupValues(), LookupValueDTO.class));
+    public LookupTypeWithValuesVO queryLookupValueByCode(Long projectId, String typeCode) {
+        LookupTypeWithValuesDTO typeWithValues = lookupValueMapper.queryLookupValueByCode(typeCode);
+        LookupTypeWithValuesVO result = modelMapper.map(typeWithValues, new TypeToken<LookupTypeWithValuesVO>(){}.getType());
+        result.setLookupValues(modelMapper.map(typeWithValues.getLookupValues(), new TypeToken<List<LookupTypeWithValuesVO>>(){}.getType()));
         return result;
     }
 
     @Override
-    public LookupTypeWithValuesDTO queryConstraintLookupValue(Long projectId) {
-        LookupTypeWithValuesDO typeWithValues = lookupValueMapper.queryLookupValueByCode("constraint");
-        LookupTypeWithValuesDTO result = ConvertHelper.convert(typeWithValues, LookupTypeWithValuesDTO.class);
-        result.setLookupValues(ConvertHelper.convertList(typeWithValues.getLookupValues(), LookupValueDTO.class));
+    public LookupTypeWithValuesVO queryConstraintLookupValue(Long projectId) {
+        LookupTypeWithValuesDTO typeWithValues = lookupValueMapper.queryLookupValueByCode("constraint");
+        LookupTypeWithValuesVO result = modelMapper.map(typeWithValues, LookupTypeWithValuesVO.class);
+        result.setLookupValues(modelMapper.map(typeWithValues.getLookupValues(), new TypeToken<LookupValueVO>(){}.getType()));
         return result;
     }
 }
