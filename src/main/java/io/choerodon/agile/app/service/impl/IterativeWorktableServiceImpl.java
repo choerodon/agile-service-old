@@ -150,7 +150,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     @Override
     public List<AssigneeDistributeVO> queryAssigneeDistribute(Long projectId, Long sprintId) {
         Integer total = iterativeWorktableMapper.queryAssigneeAll(projectId, sprintId);
-        List<AssigneeDistributeVO> assigneeDistributeVOList = modelMapper.map(iterativeWorktableMapper.queryAssigneeDistribute(projectId, sprintId, total), new TypeToken<AssigneeDistributeVO>(){}.getType());
+        List<AssigneeDistributeVO> assigneeDistributeVOList = modelMapper.map(iterativeWorktableMapper.queryAssigneeDistribute(projectId, sprintId, total), new TypeToken<List<AssigneeDistributeVO>>(){}.getType());
         if (assigneeDistributeVOList != null && !assigneeDistributeVOList.isEmpty()) {
             List<Long> userIds = assigneeDistributeVOList.stream().filter(assigneeDistributeVO ->
                     assigneeDistributeVO.getAssigneeId() != null).map(assigneeDistributeVO -> (assigneeDistributeVO.getAssigneeId())).collect(Collectors.toList());
@@ -176,6 +176,6 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
                 issueStatus.setCategoryCode(statusMapVOMap.get(issueStatus.getStatusId()).getType());
             }
         }
-        return modelMapper.map(issueTypeDistributeDTOList, new TypeToken<IssueTypeDistributeVO>(){}.getType());
+        return modelMapper.map(issueTypeDistributeDTOList, new TypeToken<List<IssueTypeDistributeVO>>(){}.getType());
     }
 }
