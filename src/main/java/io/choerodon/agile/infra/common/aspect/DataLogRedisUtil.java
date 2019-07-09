@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.common.aspect;
 
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
-import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.IssueStatusDTO;
@@ -243,12 +243,12 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByUpdateSprint(SprintE sprintE) {
+    public void deleteByUpdateSprint(SprintConvertDTO sprintConvertDTO) {
         redisUtil.deleteRedisCache(new String[]{
-                BURN_DOWN_COORDINATE + sprintE.getProjectId() + COLON + sprintE.getSprintId() + COLON + POINTER,
-                BURN_DOWN_COORDINATE_BY_TYPE + sprintE.getProjectId() + COLON + POINTER,
-                VELOCITY_CHART + sprintE.getProjectId() + COLON + POINTER
-                , PIE_CHART + sprintE.getProjectId() + COLON + SPRINT + POINTER
+                BURN_DOWN_COORDINATE + sprintConvertDTO.getProjectId() + COLON + sprintConvertDTO.getSprintId() + COLON + POINTER,
+                BURN_DOWN_COORDINATE_BY_TYPE + sprintConvertDTO.getProjectId() + COLON + POINTER,
+                VELOCITY_CHART + sprintConvertDTO.getProjectId() + COLON + POINTER
+                , PIE_CHART + sprintConvertDTO.getProjectId() + COLON + SPRINT + POINTER
         });
     }
 
@@ -274,8 +274,8 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByCreateSprint(SprintE sprintE) {
-        redisUtil.deleteRedisCache(new String[]{PIE_CHART + sprintE.getProjectId() + COLON + SPRINT + POINTER,
-                VELOCITY_CHART + sprintE.getSprintId() + COLON + POINTER});
+    public void deleteByCreateSprint(SprintConvertDTO sprintConvertDTO) {
+        redisUtil.deleteRedisCache(new String[]{PIE_CHART + sprintConvertDTO.getProjectId() + COLON + SPRINT + POINTER,
+                VELOCITY_CHART + sprintConvertDTO.getSprintId() + COLON + POINTER});
     }
 }

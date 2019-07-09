@@ -7,7 +7,8 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.SprintValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
+import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.PageUtil;
@@ -26,10 +27,13 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -94,6 +98,10 @@ public class SprintServiceImpl implements SprintService {
     @Autowired
     private ArtMapper artMapper;
 
+    @Autowired
+    private DataLogRedisUtil dataLogRedisUtil;
+
+
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
     private static final String BACKLOG_DATA = "backlogData";
@@ -110,9 +118,20 @@ public class SprintServiceImpl implements SprintService {
     private static final String SPRINT_REPORT_ERROR = "error.sprint.report";
     private static final String SPRINT_PLANNING_CODE = "sprint_planning";
     private static final String STATUS_SPRINT_PLANNING_CODE = "sprint_planning";
+    private static final String INSERT_ERROR = "error.sprint.insert";
+    private static final String DELETE_ERROR = "error.sprint.delete";
+    private static final String UPDATE_ERROR = "error.sprint.update";
+
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     @Override
-    public synchronized SprintDetailDTO createSprint(Long projectId) {
+    public synchronized SprintDetailVO createSprint(Long projectId) {
         ProjectInfoDTO projectInfo = new ProjectInfoDTO();
         projectInfo.setProjectId(projectId);
         projectInfo = projectInfoMapper.selectOne(projectInfo);
@@ -120,14 +139,14 @@ public class SprintServiceImpl implements SprintService {
             throw new CommonException(PROJECT_NOT_FOUND_ERROR);
         }
         SprintDTO sprintDTO = sprintMapper.queryLastSprint(projectId);
-        SprintE sprint = new SprintE();
+        SprintConvertDTO sprint = new SprintConvertDTO();
         if (sprintDTO == null) {
             sprint.createSprint(projectInfo);
         } else {
-            SprintE sprintE = sprintCreateAssembler.toTarget(sprintDTO, SprintE.class);
-            sprint.createSprint(sprintE);
+            SprintConvertDTO sprintConvertDTO = sprintCreateAssembler.toTarget(sprintDTO, SprintConvertDTO.class);
+            sprint.createSprint(sprintConvertDTO);
         }
-        return sprintCreateAssembler.toTarget(sprintRepository.createSprint(sprint), SprintDetailDTO.class);
+        return sprintCreateAssembler.toTarget(create(sprint), SprintDetailVO.class);
     }
 
     private Boolean checkNameUpdate(Long projectId, Long sprintId, String sprintName) {
@@ -143,17 +162,17 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public SprintDetailDTO updateSprint(Long projectId, SprintUpdateDTO sprintUpdateDTO) {
-        if (!Objects.equals(projectId, sprintUpdateDTO.getProjectId())) {
+    public SprintDetailVO updateSprint(Long projectId, SprintUpdateVO sprintUpdateVO) {
+        if (!Objects.equals(projectId, sprintUpdateVO.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
-        if (sprintUpdateDTO.getSprintName() != null && checkNameUpdate(projectId, sprintUpdateDTO.getSprintId(), sprintUpdateDTO.getSprintName())) {
+        if (sprintUpdateVO.getSprintName() != null && checkNameUpdate(projectId, sprintUpdateVO.getSprintId(), sprintUpdateVO.getSprintName())) {
             throw new CommonException("error.sprintName.exist");
         }
-        sprintValidator.checkDate(sprintUpdateDTO);
-        SprintE sprintE = sprintUpdateAssembler.toTarget(sprintUpdateDTO, SprintE.class);
-        sprintE.trimSprintName();
-        return sprintUpdateAssembler.toTarget(sprintRepository.updateSprint(sprintE), SprintDetailDTO.class);
+        sprintValidator.checkDate(sprintUpdateVO);
+        SprintConvertDTO sprintConvertDTO = sprintUpdateAssembler.toTarget(sprintUpdateVO, SprintConvertDTO.class);
+        sprintConvertDTO.trimSprintName();
+        return sprintUpdateAssembler.toTarget(update(sprintConvertDTO), SprintDetailVO.class);
     }
 
     @Override
@@ -161,14 +180,14 @@ public class SprintServiceImpl implements SprintService {
         SprintDTO sprintDTO = new SprintDTO();
         sprintDTO.setProjectId(projectId);
         sprintDTO.setSprintId(sprintId);
-        SprintE sprintE = sprintSearchAssembler.toTarget(sprintMapper.selectOne(sprintDTO), SprintE.class);
-        if (sprintE == null) {
+        SprintConvertDTO sprintConvertDTO = sprintSearchAssembler.toTarget(sprintMapper.selectOne(sprintDTO), SprintConvertDTO.class);
+        if (sprintConvertDTO == null) {
             throw new CommonException(NOT_FOUND_ERROR);
         }
-        sprintE.judgeDelete();
+        sprintConvertDTO.judgeDelete();
         moveIssueToBacklog(projectId, sprintId);
         issueRepository.batchRemoveFromSprint(projectId, sprintId);
-        sprintRepository.deleteSprint(sprintE);
+        delete(sprintConvertDTO);
         return true;
     }
 
@@ -297,24 +316,24 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public SprintDetailDTO startSprint(Long projectId, SprintUpdateDTO sprintUpdateDTO) {
-        if (!Objects.equals(projectId, sprintUpdateDTO.getProjectId())) {
+    public SprintDetailVO startSprint(Long projectId, SprintUpdateVO sprintUpdateVO) {
+        if (!Objects.equals(projectId, sprintUpdateVO.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
         if (sprintMapper.selectCountByStartedSprint(projectId) != 0) {
             throw new CommonException(START_SPRINT_ERROR);
         }
-        SprintE sprintE = sprintUpdateAssembler.toTarget(sprintUpdateDTO, SprintE.class);
-        sprintE.checkDate();
-        sprintValidator.checkSprintStartInProgram(sprintE);
-        sprintE.startSprint();
-        if (sprintUpdateDTO.getWorkDates() != null && !sprintUpdateDTO.getWorkDates().isEmpty()) {
+        SprintConvertDTO sprintConvertDTO = sprintUpdateAssembler.toTarget(sprintUpdateVO, SprintConvertDTO.class);
+        sprintConvertDTO.checkDate();
+        sprintValidator.checkSprintStartInProgram(sprintConvertDTO);
+        sprintConvertDTO.startSprint();
+        if (sprintUpdateVO.getWorkDates() != null && !sprintUpdateVO.getWorkDates().isEmpty()) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Calendar calendar = Calendar.getInstance();
-            sprintUpdateDTO.getWorkDates().forEach(workDates -> {
+            sprintUpdateVO.getWorkDates().forEach(workDates -> {
                 WorkCalendarRefDO workCalendarRefDO = new WorkCalendarRefDO();
-                workCalendarRefDO.setSprintId(sprintE.getSprintId());
-                workCalendarRefDO.setProjectId(sprintE.getProjectId());
+                workCalendarRefDO.setSprintId(sprintConvertDTO.getSprintId());
+                workCalendarRefDO.setProjectId(sprintConvertDTO.getProjectId());
                 workCalendarRefDO.setWorkDay(workDates.getWorkDay());
                 try {
                     calendar.setTime(dateFormat.parse(workDates.getWorkDay()));
@@ -326,39 +345,39 @@ public class SprintServiceImpl implements SprintService {
                 sprintWorkCalendarRefRepository.create(workCalendarRefDO);
             });
         }
-        issueRepository.updateStayDate(projectId, sprintE.getSprintId(), new Date());
-        return sprintUpdateAssembler.toTarget(sprintRepository.updateSprint(sprintE), SprintDetailDTO.class);
+        issueRepository.updateStayDate(projectId, sprintConvertDTO.getSprintId(), new Date());
+        return sprintUpdateAssembler.toTarget(update(sprintConvertDTO), SprintDetailVO.class);
     }
 
     @Override
-    public Boolean completeSprint(Long projectId, SprintCompleteDTO sprintCompleteDTO) {
-        if (!Objects.equals(projectId, sprintCompleteDTO.getProjectId())) {
+    public Boolean completeSprint(Long projectId, SprintCompleteVO sprintCompleteVO) {
+        if (!Objects.equals(projectId, sprintCompleteVO.getProjectId())) {
             throw new CommonException(NOT_EQUAL_ERROR);
         }
-        sprintValidator.judgeCompleteSprint(projectId, sprintCompleteDTO.getIncompleteIssuesDestination());
+        sprintValidator.judgeCompleteSprint(projectId, sprintCompleteVO.getIncompleteIssuesDestination());
         SprintDTO sprintDTO = new SprintDTO();
         sprintDTO.setProjectId(projectId);
-        sprintDTO.setSprintId(sprintCompleteDTO.getSprintId());
-        SprintE sprintE = sprintUpdateAssembler.toTarget(sprintMapper.selectOne(sprintDTO), SprintE.class);
-        sprintE.completeSprint();
-        sprintRepository.updateSprint(sprintE);
-        moveNotDoneIssueToTargetSprint(projectId, sprintCompleteDTO);
+        sprintDTO.setSprintId(sprintCompleteVO.getSprintId());
+        SprintConvertDTO sprintConvertDTO = sprintUpdateAssembler.toTarget(sprintMapper.selectOne(sprintDTO), SprintConvertDTO.class);
+        sprintConvertDTO.completeSprint();
+        update(sprintConvertDTO);
+        moveNotDoneIssueToTargetSprint(projectId, sprintCompleteVO);
         return true;
     }
 
-    private void moveNotDoneIssueToTargetSprint(Long projectId, SprintCompleteDTO sprintCompleteDTO) {
+    private void moveNotDoneIssueToTargetSprint(Long projectId, SprintCompleteVO sprintCompleteVO) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
-        Long targetSprintId = sprintCompleteDTO.getIncompleteIssuesDestination();
-        List<Long> moveIssueRankIds = sprintMapper.queryIssueIdOrderByRankDesc(projectId, sprintCompleteDTO.getSprintId());
-        moveIssueRankIds.addAll(sprintMapper.queryUnDoneSubOfParentIds(projectId, sprintCompleteDTO.getSprintId()));
-        beforeRank(projectId, sprintCompleteDTO.getIncompleteIssuesDestination(), moveIssueDOS, moveIssueRankIds);
+        Long targetSprintId = sprintCompleteVO.getIncompleteIssuesDestination();
+        List<Long> moveIssueRankIds = sprintMapper.queryIssueIdOrderByRankDesc(projectId, sprintCompleteVO.getSprintId());
+        moveIssueRankIds.addAll(sprintMapper.queryUnDoneSubOfParentIds(projectId, sprintCompleteVO.getSprintId()));
+        beforeRank(projectId, sprintCompleteVO.getIncompleteIssuesDestination(), moveIssueDOS, moveIssueRankIds);
         if (moveIssueDOS.isEmpty()) {
             return;
         }
-        List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintCompleteDTO.getSprintId());
-        moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintCompleteDTO.getSprintId()));
-        moveIssueIds.addAll(sprintMapper.queryParentsDoneSubtaskUnDoneIds(projectId, sprintCompleteDTO.getSprintId()));
+        List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintCompleteVO.getSprintId());
+        moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintCompleteVO.getSprintId()));
+        moveIssueIds.addAll(sprintMapper.queryParentsDoneSubtaskUnDoneIds(projectId, sprintCompleteVO.getSprintId()));
         if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
             issueRepository.issueToDestinationByIdsCloseSprint(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
@@ -385,8 +404,8 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public SprintCompleteMessageDTO queryCompleteMessageBySprintId(Long projectId, Long sprintId) {
-        SprintCompleteMessageDTO sprintCompleteMessage = new SprintCompleteMessageDTO();
+    public SprintCompleteMessageVO queryCompleteMessageBySprintId(Long projectId, Long sprintId) {
+        SprintCompleteMessageVO sprintCompleteMessage = new SprintCompleteMessageVO();
         sprintCompleteMessage.setSprintNames(sprintNameAssembler.toTargetList(sprintMapper.queryPlanSprintName(projectId), SprintNameDTO.class));
         sprintCompleteMessage.setParentsDoneUnfinishedSubtasks(issueAssembler.toTargetList(sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId), IssueNumVO.class));
         sprintCompleteMessage.setIncompleteIssues(sprintMapper.queryNotDoneIssueCount(projectId, sprintId));
@@ -400,19 +419,19 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public SprintDetailDTO querySprintById(Long projectId, Long sprintId) {
+    public SprintDetailVO querySprintById(Long projectId, Long sprintId) {
         SprintDTO sprintDTO = new SprintDTO();
         sprintDTO.setProjectId(projectId);
         sprintDTO.setSprintId(sprintId);
-        SprintDetailDTO sprintDetailDTO = sprintSearchAssembler.toTarget(sprintMapper.selectOne(sprintDTO), SprintDetailDTO.class);
-        if (sprintDetailDTO != null) {
-            sprintDetailDTO.setIssueCount(sprintMapper.queryIssueCount(projectId, sprintId));
+        SprintDetailVO sprintDetailVO = sprintSearchAssembler.toTarget(sprintMapper.selectOne(sprintDTO), SprintDetailVO.class);
+        if (sprintDetailVO != null) {
+            sprintDetailVO.setIssueCount(sprintMapper.queryIssueCount(projectId, sprintId));
         }
-        return sprintDetailDTO;
+        return sprintDetailVO;
     }
 
     @Override
-    public PageInfo<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest, Long organizationId) {
+    public PageInfo<IssueListVO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest, Long organizationId) {
         SprintDTO sprintDTO = new SprintDTO();
         sprintDTO.setProjectId(projectId);
         sprintDTO.setSprintId(sprintId);
@@ -519,34 +538,34 @@ public class SprintServiceImpl implements SprintService {
         if (sprintDTO == null) {
             return projectInfo.getProjectCode().trim() + " 1";
         } else {
-            SprintE sprintE = sprintCreateAssembler.toTarget(sprintDTO, SprintE.class);
-            return sprintE.assembleName(sprintE.getSprintName());
+            SprintConvertDTO sprintConvertDTO = sprintCreateAssembler.toTarget(sprintDTO, SprintConvertDTO.class);
+            return sprintConvertDTO.assembleName(sprintConvertDTO.getSprintName());
         }
     }
 
     @Override
-    public SprintDetailDTO createBySprintName(Long projectId, String sprintName) {
+    public SprintDetailVO createBySprintName(Long projectId, String sprintName) {
         if (checkName(projectId, sprintName)) {
             throw new CommonException("error.sprintName.exist");
         }
-        SprintE sprintE = new SprintE();
-        sprintE.setProjectId(projectId);
-        sprintE.setSprintName(sprintName);
-        sprintE.setStatusCode(STATUS_SPRINT_PLANNING_CODE);
-        return sprintCreateAssembler.toTarget(sprintRepository.createSprint(sprintE), SprintDetailDTO.class);
+        SprintConvertDTO sprintConvertDTO = new SprintConvertDTO();
+        sprintConvertDTO.setProjectId(projectId);
+        sprintConvertDTO.setSprintName(sprintName);
+        sprintConvertDTO.setStatusCode(STATUS_SPRINT_PLANNING_CODE);
+        return sprintCreateAssembler.toTarget(create(sprintConvertDTO), SprintDetailVO.class);
     }
 
     @Override
-    public List<SprintUnClosedDTO> queryUnClosedSprint(Long projectId) {
-        return ConvertHelper.convertList(sprintMapper.queryUnClosedSprint(projectId), SprintUnClosedDTO.class);
+    public List<SprintUnClosedVO> queryUnClosedSprint(Long projectId) {
+        return ConvertHelper.convertList(sprintMapper.queryUnClosedSprint(projectId), SprintUnClosedVO.class);
     }
 
     @Override
-    public ActiveSprintDTO queryActiveSprint(Long projectId, Long organizationId) {
-        ActiveSprintDTO result = new ActiveSprintDTO();
+    public ActiveSprintVO queryActiveSprint(Long projectId, Long organizationId) {
+        ActiveSprintVO result = new ActiveSprintVO();
         SprintDTO activeSprint = getActiveSprint(projectId);
         if (activeSprint != null) {
-            result = ConvertHelper.convert(activeSprint, ActiveSprintDTO.class);
+            result = ConvertHelper.convert(activeSprint, ActiveSprintVO.class);
             if (result.getEndDate() != null) {
                 Date startDate = new Date();
                 if (result.getStartDate().after(startDate)) {
@@ -608,14 +627,14 @@ public class SprintServiceImpl implements SprintService {
                     List<SprintDTO> sprintDTOList = sprintMapper.selectListByPiId(programId, res.getId());
                     if (sprintDTOList != null && !sprintDTOList.isEmpty()) {
                         for (SprintDTO sprint : sprintDTOList) {
-                            SprintE sprintE = new SprintE();
-                            sprintE.setPiId(sprint.getPiId());
-                            sprintE.setEndDate(sprint.getEndDate());
-                            sprintE.setStartDate(sprint.getStartDate());
-                            sprintE.setSprintName(sprint.getSprintName());
-                            sprintE.setProjectId(projectId);
-                            sprintE.setStatusCode(sprint.getStatusCode());
-                            sprintRepository.createSprint(sprintE);
+                            SprintConvertDTO sprintConvertDTO = new SprintConvertDTO();
+                            sprintConvertDTO.setPiId(sprint.getPiId());
+                            sprintConvertDTO.setEndDate(sprint.getEndDate());
+                            sprintConvertDTO.setStartDate(sprint.getStartDate());
+                            sprintConvertDTO.setSprintName(sprint.getSprintName());
+                            sprintConvertDTO.setProjectId(projectId);
+                            sprintConvertDTO.setStatusCode(sprint.getStatusCode());
+                            create(sprintConvertDTO);
                         }
                     }
                 }
@@ -633,14 +652,54 @@ public class SprintServiceImpl implements SprintService {
                 List<Long> sprintList = sprintMapper.selectNotDoneByPiId(projectId, res.getId());
                 if (sprintList != null && !sprintList.isEmpty()) {
                     for (Long sprintId : sprintList) {
-                        SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
-                        sprintCompleteDTO.setProjectId(projectId);
-                        sprintCompleteDTO.setSprintId(sprintId);
-                        sprintCompleteDTO.setIncompleteIssuesDestination(0L);
-                        completeSprint(projectId, sprintCompleteDTO);
+                        SprintCompleteVO sprintCompleteVO = new SprintCompleteVO();
+                        sprintCompleteVO.setProjectId(projectId);
+                        sprintCompleteVO.setSprintId(sprintId);
+                        sprintCompleteVO.setIncompleteIssuesDestination(0L);
+                        completeSprint(projectId, sprintCompleteVO);
                     }
                 }
             }
         }
+    }
+
+
+
+    @Override
+    public SprintConvertDTO create(SprintConvertDTO sprintConvertDTO) {
+        SprintDTO sprintDTO = modelMapper.map(sprintConvertDTO, SprintDTO.class);
+        if (sprintMapper.insertSelective(sprintDTO) != 1) {
+            throw new CommonException(INSERT_ERROR);
+        }
+        //清除冲刺报表相关缓存
+        dataLogRedisUtil.deleteByCreateSprint(sprintConvertDTO);
+        return modelMapper.map(sprintMapper.selectByPrimaryKey(sprintDTO.getSprintId()), SprintConvertDTO.class);
+    }
+
+    @Override
+    public SprintConvertDTO update(SprintConvertDTO sprintConvertDTO) {
+        SprintDTO sprintDTO = modelMapper.map(sprintConvertDTO, SprintDTO.class);
+        if (sprintMapper.updateByPrimaryKeySelective(sprintDTO) != 1) {
+            throw new CommonException(UPDATE_ERROR);
+        }
+        //清除冲刺报表相关缓存
+        dataLogRedisUtil.deleteByUpdateSprint(sprintConvertDTO);
+        return modelMapper.map(sprintMapper.selectByPrimaryKey(sprintDTO.getSprintId()), SprintConvertDTO.class);
+    }
+
+    @Override
+    public Boolean delete(SprintConvertDTO sprintConvertDTO) {
+        SprintDTO sprintDTO = modelMapper.map(sprintConvertDTO, SprintDTO.class);
+        if (sprintMapper.delete(sprintDTO) != 1) {
+            throw new CommonException(DELETE_ERROR);
+        }
+        //清除冲刺报表相关缓存
+        dataLogRedisUtil.deleteByUpdateSprint(sprintConvertDTO);
+        return true;
+    }
+
+    @Override
+    public void updateSprintNameByBatch(Long programId, List<Long> sprintIds) {
+        sprintMapper.updateSprintNameByBatch(programId, sprintIds);
     }
 }

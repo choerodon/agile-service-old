@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/8/23.
  * Email: fuqianghuang01@gmail.com
  */
-public class SprintUnClosedDTO {
+public class SprintUnClosedVO {
 
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;

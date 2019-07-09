@@ -253,7 +253,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId, SearchVO searchVO) {
+    public List<IssueListVO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId, SearchVO searchVO) {
         //处理用户搜索
         Boolean condition = issueService.handleSearchUser(searchVO, projectId);
         if (condition) {

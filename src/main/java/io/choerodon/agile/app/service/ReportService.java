@@ -38,7 +38,7 @@ public interface ReportService {
      */
     List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO);
 
-    PageInfo<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListVO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId);
 
     Map<String, Object> queryVersionLineChart(Long projectId, Long versionId, String type);
 

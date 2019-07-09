@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 /**
  * Created by jian_zhang02@163.com on 2018/5/17.
  */
-public class SprintCompleteDTO {
+public class SprintCompleteVO {
     private static final String SPRINT_ID_NULL_ERROR = "error.sprintId.NotNull";
     private static final String PROJECT_ID_NULL_ERROR = "error.projectId.NotNull";
 

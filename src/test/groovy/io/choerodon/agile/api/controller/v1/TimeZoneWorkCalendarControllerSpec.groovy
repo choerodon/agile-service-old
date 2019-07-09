@@ -4,7 +4,7 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.TimeZoneWorkCalendarDTO
 import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefCreateDTO
 import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDTO
-import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDetailDTO
+import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDetailVO
 import io.choerodon.agile.api.vo.TimeZoneWorkCalendarUpdateDTO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -110,11 +110,11 @@ class TimeZoneWorkCalendarControllerSpec extends Specification {
 
     def 'queryTimeZoneWorkCalendarDetail'() {
         when:
-        def entity = restTemplate.getForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars/detail?year={year}', TimeZoneWorkCalendarRefDetailDTO, organizationId, 2018)
+        def entity = restTemplate.getForEntity('/v1/organizations/{organization_id}/time_zone_work_calendars/detail?year={year}', TimeZoneWorkCalendarRefDetailVO, organizationId, 2018)
 
         then:
         entity.statusCode.is2xxSuccessful()
-        TimeZoneWorkCalendarRefDetailDTO timeZoneWorkCalendarRefDetailDTO = entity.body
+        TimeZoneWorkCalendarRefDetailVO timeZoneWorkCalendarRefDetailDTO = entity.body
 
         expect: '期望值'
         timeZoneWorkCalendarRefDetailDTO.useHoliday

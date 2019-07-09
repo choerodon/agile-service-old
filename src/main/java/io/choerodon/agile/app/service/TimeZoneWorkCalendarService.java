@@ -64,5 +64,5 @@ public interface TimeZoneWorkCalendarService {
      * @param year           year
      * @return TimeZoneWorkCalendarRefCreateDTO
      */
-    TimeZoneWorkCalendarRefDetailDTO queryTimeZoneWorkCalendarDetail(Long organizationId, Integer year);
+    TimeZoneWorkCalendarRefDetailVO queryTimeZoneWorkCalendarDetail(Long organizationId, Integer year);
 }

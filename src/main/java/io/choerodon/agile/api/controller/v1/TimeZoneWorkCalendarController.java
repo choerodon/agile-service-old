@@ -97,9 +97,9 @@ public class TimeZoneWorkCalendarController {
     @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR, InitRoleCode.ORGANIZATION_MEMBER})
     @ApiOperation("获取时区下的工作日历")
     @GetMapping(value = "/detail")
-    public ResponseEntity<TimeZoneWorkCalendarRefDetailDTO> queryTimeZoneWorkCalendarDetail(@ApiParam(value = "组织id", required = true)
+    public ResponseEntity<TimeZoneWorkCalendarRefDetailVO> queryTimeZoneWorkCalendarDetail(@ApiParam(value = "组织id", required = true)
                                                                                             @PathVariable(name = "organization_id") Long organizationId,
-                                                                                            @ApiParam(value = "年份", required = true)
+                                                                                           @ApiParam(value = "年份", required = true)
                                                                                             @RequestParam(name = "year") Integer year) {
         return Optional.ofNullable(timeZoneWorkCalendarService.queryTimeZoneWorkCalendarDetail(organizationId, year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

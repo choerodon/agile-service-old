@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by jian_zhang02@163.com on 2018/5/18.
  */
-public class SprintCompleteMessageDTO {
+public class SprintCompleteMessageVO {
     private Integer incompleteIssues;
     private Integer partiallyCompleteIssues;
     private List<SprintNameDTO> sprintNames;

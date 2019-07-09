@@ -47,7 +47,7 @@ public interface IssueService {
      * @param projectId   projectId
      * @param searchVO   searchVO
      * @param pageRequest pageRequest
-     * @return IssueListDTO
+     * @return IssueListVO
      */
     PageInfo<IssueListFieldKVVO> listIssueWithSub(Long projectId, SearchVO searchVO, PageRequest pageRequest, Long organizationId);
 
@@ -203,7 +203,7 @@ public interface IssueService {
      * @param projectId   projectId
      * @param searchVO   searchVO
      * @param pageRequest pageRequest
-     * @return IssueListDTO
+     * @return IssueListVO
      */
     PageInfo<IssueListTestVO> listIssueWithoutSubToTestComponent(Long projectId, SearchVO searchVO, PageRequest pageRequest, Long organizationId);
 

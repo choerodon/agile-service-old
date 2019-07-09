@@ -108,7 +108,7 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
     }
 
     @Override
-    public TimeZoneWorkCalendarRefDetailDTO queryTimeZoneWorkCalendarDetail(Long organizationId, Integer year) {
+    public TimeZoneWorkCalendarRefDetailVO queryTimeZoneWorkCalendarDetail(Long organizationId, Integer year) {
         TimeZoneWorkCalendarDO query = new TimeZoneWorkCalendarDO();
         query.setOrganizationId(organizationId);
         TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.selectOne(query);
@@ -129,9 +129,9 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
         }
     }
 
-    private TimeZoneWorkCalendarRefDetailDTO initTimeZoneWorkCalendarRefDetailDTO(TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Long organizationId, Integer year) {
-        TimeZoneWorkCalendarRefDetailDTO timeZoneWorkCalendarRefDetailDTO = timeZoneWorkCalendarAssembler.toTarget(timeZoneWorkCalendarDO, TimeZoneWorkCalendarRefDetailDTO.class);
-        timeZoneWorkCalendarRefDetailDTO.setTimeZoneWorkCalendarDTOS(timeZoneWorkCalendarRefMapper.queryWithNextYearByYear(organizationId, timeZoneWorkCalendarDO.getTimeZoneId(), year)
+    private TimeZoneWorkCalendarRefDetailVO initTimeZoneWorkCalendarRefDetailDTO(TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Long organizationId, Integer year) {
+        TimeZoneWorkCalendarRefDetailVO timeZoneWorkCalendarRefDetailVO = timeZoneWorkCalendarAssembler.toTarget(timeZoneWorkCalendarDO, TimeZoneWorkCalendarRefDetailVO.class);
+        timeZoneWorkCalendarRefDetailVO.setTimeZoneWorkCalendarDTOS(timeZoneWorkCalendarRefMapper.queryWithNextYearByYear(organizationId, timeZoneWorkCalendarDO.getTimeZoneId(), year)
                 .stream().map(d -> {
                     TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO = new TimeZoneWorkCalendarRefCreateDTO();
                     timeZoneWorkCalendarRefCreateDTO.setWorkDay(d.getWorkDay());
@@ -148,7 +148,7 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
                     LOGGER.warn(PARSE_EXCEPTION, e);
                 }
             });
-            timeZoneWorkCalendarRefDetailDTO.setWorkHolidayCalendarDTOS(DateUtil.stringDateCompare().
+            timeZoneWorkCalendarRefDetailVO.setWorkHolidayCalendarDTOS(DateUtil.stringDateCompare().
                     sortedCopy(workCalendarHolidayRefDOS).stream().map(d -> {
                 TimeZoneWorkCalendarHolidayRefDTO timeZoneWorkCalendarHolidayRefDTO = new TimeZoneWorkCalendarHolidayRefDTO();
                 timeZoneWorkCalendarHolidayRefDTO.setStatus(d.getStatus());
@@ -157,7 +157,7 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
                 return timeZoneWorkCalendarHolidayRefDTO;
             }).collect(Collectors.toSet()));
         }
-        return timeZoneWorkCalendarRefDetailDTO;
+        return timeZoneWorkCalendarRefDetailVO;
     }
 
 

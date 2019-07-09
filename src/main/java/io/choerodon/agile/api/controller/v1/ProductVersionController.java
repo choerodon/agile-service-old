@@ -161,14 +161,14 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "获取版本下指定状态的issue")
     @PostMapping(value = "/{versionId}/issues")
-    public ResponseEntity<List<IssueListDTO>> queryByVersionIdAndStatusCode(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<IssueListVO>> queryByVersionIdAndStatusCode(@ApiParam(value = "项目id", required = true)
                                                                             @PathVariable(name = "project_id") Long projectId,
-                                                                            @ApiParam(value = "versionId", required = true)
+                                                                           @ApiParam(value = "versionId", required = true)
                                                                             @PathVariable Long versionId,
-                                                                            @ApiParam(value = "组织id", required = true)
+                                                                           @ApiParam(value = "组织id", required = true)
                                                                             @RequestParam Long organizationId,
-                                                                            @RequestBody SearchVO searchVO,
-                                                                            @ApiParam(value = "issue状态码")
+                                                                           @RequestBody SearchVO searchVO,
+                                                                           @ApiParam(value = "issue状态码")
                                                                             @RequestParam(required = false) String statusCode) {
         return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, organizationId, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

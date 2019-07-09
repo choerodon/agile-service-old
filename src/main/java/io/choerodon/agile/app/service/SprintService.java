@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.dataobject.SprintDTO;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.domain.PageRequest;
@@ -13,9 +14,9 @@ import java.util.Map;
  */
 public interface SprintService {
 
-    SprintDetailDTO createSprint(Long projectId);
+    SprintDetailVO createSprint(Long projectId);
 
-    SprintDetailDTO updateSprint(Long projectId, SprintUpdateDTO sprintUpdateDTO);
+    SprintDetailVO updateSprint(Long projectId, SprintUpdateVO sprintUpdateVO);
 
     Boolean deleteSprint(Long projectId, Long sprintId);
 
@@ -23,27 +24,27 @@ public interface SprintService {
 
     List<SprintNameDTO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes);
 
-    SprintDetailDTO startSprint(Long projectId, SprintUpdateDTO sprintUpdateDTO);
+    SprintDetailVO startSprint(Long projectId, SprintUpdateVO sprintUpdateVO);
 
-    Boolean completeSprint(Long projectId, SprintCompleteDTO sprintCompleteDTO);
+    Boolean completeSprint(Long projectId, SprintCompleteVO sprintCompleteVO);
 
-    SprintCompleteMessageDTO queryCompleteMessageBySprintId(Long projectId, Long sprintId);
+    SprintCompleteMessageVO queryCompleteMessageBySprintId(Long projectId, Long sprintId);
 
     SprintDTO getActiveSprint(Long projectId);
 
-    SprintDetailDTO querySprintById(Long projectId, Long sprintId);
+    SprintDetailVO querySprintById(Long projectId, Long sprintId);
 
-    PageInfo<IssueListDTO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListVO> queryIssueByOptions(Long projectId, Long sprintId, String status, PageRequest pageRequest, Long organizationId);
 
     String getQuickFilter(List<Long> quickFilterIds);
 
     String queryCurrentSprintCreateName(Long projectId);
 
-    SprintDetailDTO createBySprintName(Long projectId, String sprintName);
+    SprintDetailVO createBySprintName(Long projectId, String sprintName);
 
-    List<SprintUnClosedDTO> queryUnClosedSprint(Long projectId);
+    List<SprintUnClosedVO> queryUnClosedSprint(Long projectId);
 
-    ActiveSprintDTO queryActiveSprint(Long projectId, Long organizationId);
+    ActiveSprintVO queryActiveSprint(Long projectId, Long organizationId);
 
     /**
      * 查询冲刺期间非工作日
@@ -60,4 +61,13 @@ public interface SprintService {
     void addSprintsWhenJoinProgram(Long programId, Long projectId);
 
     void completeSprintsByActivePi(Long programId, Long projectId);
+
+
+    SprintConvertDTO create(SprintConvertDTO sprintConvertDTO);
+
+    SprintConvertDTO update(SprintConvertDTO sprintConvertDTO);
+
+    Boolean delete(SprintConvertDTO sprintConvertDTO);
+
+    void updateSprintNameByBatch(Long programId, List<Long> sprintIds);
 }

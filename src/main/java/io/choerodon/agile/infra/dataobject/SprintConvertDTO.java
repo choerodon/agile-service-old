@@ -1,6 +1,5 @@
-package io.choerodon.agile.domain.agile.entity;
+package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.core.exception.CommonException;
 
 import java.util.Date;
@@ -9,11 +8,11 @@ import java.util.Date;
  * Created by jian_zhang02@163.com on 2018/5/14.
  */
 
-public class SprintE {
+public class SprintConvertDTO {
 
-    public SprintE() {}
+    public SprintConvertDTO() {}
 
-    public SprintE(Long projectId, String sprintName, Date startDate, Date endDate, String statusCode, Long piId) {
+    public SprintConvertDTO(Long projectId, String sprintName, Date startDate, Date endDate, String statusCode, Long piId) {
         this.projectId = projectId;
         this.sprintName = sprintName;
         this.startDate = startDate;
@@ -131,9 +130,9 @@ public class SprintE {
         }
     }
 
-    public void createSprint(SprintE sprintE) {
-        this.projectId = sprintE.getProjectId();
-        this.sprintName = assembleName(sprintE.getSprintName());
+    public void createSprint(SprintConvertDTO sprintConvertDTO) {
+        this.projectId = sprintConvertDTO.getProjectId();
+        this.sprintName = assembleName(sprintConvertDTO.getSprintName());
         this.statusCode = STATUS_SPRINT_PLANNING_CODE;
     }
 

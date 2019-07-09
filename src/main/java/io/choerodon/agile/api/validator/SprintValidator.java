@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.vo.SprintUpdateDTO;
-import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.api.vo.SprintUpdateVO;
+import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.dataobject.SprintDTO;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.core.exception.CommonException;
@@ -28,16 +28,16 @@ public class SprintValidator {
     @Autowired
     private SprintMapper sprintMapper;
 
-    public void checkSprintStartInProgram(SprintE sprintE) {
-        Long sprintId = sprintE.getSprintId();
+    public void checkSprintStartInProgram(SprintConvertDTO sprintConvertDTO) {
+        Long sprintId = sprintConvertDTO.getSprintId();
         SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
         if (sprintDTO == null) {
             throw new CommonException("error.sprint.get");
         }
         if (sprintDTO.getPiId() != null) {
             Date nowDate = new Date();
-            if (nowDate.before(sprintE.getEndDate())) {
-                sprintE.setStartDate(nowDate);
+            if (nowDate.before(sprintConvertDTO.getEndDate())) {
+                sprintConvertDTO.setStartDate(nowDate);
             }
         }
     }
@@ -74,10 +74,10 @@ public class SprintValidator {
         }
     }
 
-    public void checkDate(SprintUpdateDTO sprintUpdateDTO) {
+    public void checkDate(SprintUpdateVO sprintUpdateVO) {
         SprintDTO sprintDTO = new SprintDTO();
-        sprintDTO.setProjectId(sprintUpdateDTO.getProjectId());
-        sprintDTO.setSprintId(sprintUpdateDTO.getSprintId());
+        sprintDTO.setProjectId(sprintUpdateVO.getProjectId());
+        sprintDTO.setSprintId(sprintUpdateVO.getSprintId());
         sprintDTO = sprintMapper.selectOne(sprintDTO);
         if (sprintDTO == null || (Objects.equals(sprintDTO.getStatusCode(), SPRINT_START_CODE)
                 && (sprintDTO.getStartDate() == null || sprintDTO.getEndDate() == null || sprintDTO.getStartDate().after(sprintDTO.getEndDate())))) {

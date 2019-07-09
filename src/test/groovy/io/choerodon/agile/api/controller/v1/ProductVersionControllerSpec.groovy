@@ -609,7 +609,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        List<IssueListDTO> list = entity.body
+        List<IssueListVO> list = entity.body
 
         expect: "设置期望值"
         list.size() == expectCount

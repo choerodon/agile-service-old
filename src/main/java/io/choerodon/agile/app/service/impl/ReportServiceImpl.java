@@ -8,7 +8,7 @@ import io.choerodon.agile.app.assembler.ReportAssembler;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.domain.agile.entity.ReportIssueE;
-import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.repository.DataLogRepository;
@@ -222,21 +222,21 @@ public class ReportServiceImpl implements ReportService {
         SprintDTO sprintDTO = new SprintDTO();
         sprintDTO.setSprintId(sprintId);
         sprintDTO.setProjectId(projectId);
-        SprintE sprintE = sprintConverter.doToEntity(sprintMapper.selectOne(sprintDTO));
-        if (sprintE != null && !sprintE.getStatusCode().equals(SPRINT_PLANNING_CODE)) {
-            sprintE.initStartAndEndTime();
+        SprintConvertDTO sprintConvertDTO = sprintConverter.doToEntity(sprintMapper.selectOne(sprintDTO));
+        if (sprintConvertDTO != null && !sprintConvertDTO.getStatusCode().equals(SPRINT_PLANNING_CODE)) {
+            sprintConvertDTO.initStartAndEndTime();
             switch (type) {
                 case STORY_POINTS:
-                    queryStoryPointsOrRemainingEstimatedTime(sprintE, reportIssueEList, FIELD_STORY_POINTS);
+                    queryStoryPointsOrRemainingEstimatedTime(sprintConvertDTO, reportIssueEList, FIELD_STORY_POINTS);
                     break;
                 case REMAINING_ESTIMATED_TIME:
-                    queryStoryPointsOrRemainingEstimatedTime(sprintE, reportIssueEList, FIELD_TIMEESTIMATE);
+                    queryStoryPointsOrRemainingEstimatedTime(sprintConvertDTO, reportIssueEList, FIELD_TIMEESTIMATE);
                     break;
                 case ISSUE_COUNT:
-                    queryIssueCount(sprintE, reportIssueEList);
+                    queryIssueCount(sprintConvertDTO, reportIssueEList);
                     break;
                 default:
-                    queryStoryPointsOrRemainingEstimatedTime(sprintE, reportIssueEList, FIELD_STORY_POINTS);
+                    queryStoryPointsOrRemainingEstimatedTime(sprintConvertDTO, reportIssueEList, FIELD_STORY_POINTS);
                     break;
             }
         } else {
@@ -379,7 +379,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public PageInfo<IssueListDTO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId) {
+    public PageInfo<IssueListVO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId) {
         ProductVersionDO versionDO = new ProductVersionDO();
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
@@ -692,8 +692,8 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void queryIssueCount(SprintE sprintE, List<ReportIssueE> reportIssueEList) {
-        SprintDTO sprintDTO = sprintConverter.entityToDo(sprintE);
+    private void queryIssueCount(SprintConvertDTO sprintConvertDTO, List<ReportIssueE> reportIssueEList) {
+        SprintDTO sprintDTO = sprintConverter.entityToDo(sprintConvertDTO);
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList;
         //获取当前冲刺期间加入的issue
@@ -726,8 +726,8 @@ public class ReportServiceImpl implements ReportService {
         handleRemoveDoneIssueCountDuringSprint(sprintDTO, reportIssueEList, issueAllList);
     }
 
-    private void queryStoryPointsOrRemainingEstimatedTime(SprintE sprintE, List<ReportIssueE> reportIssueEList, String field) {
-        SprintDTO sprintDTO = sprintConverter.entityToDo(sprintE);
+    private void queryStoryPointsOrRemainingEstimatedTime(SprintConvertDTO sprintConvertDTO, List<ReportIssueE> reportIssueEList, String field) {
+        SprintDTO sprintDTO = sprintConverter.entityToDo(sprintConvertDTO);
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList;
         //获取当前冲刺期间加入的issue

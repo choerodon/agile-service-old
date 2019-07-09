@@ -2,20 +2,20 @@ package io.choerodon.agile.api.controller.v1
 
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.ActiveSprintDTO
+import io.choerodon.agile.api.vo.ActiveSprintVO
 import io.choerodon.agile.api.vo.BackLogIssueDTO
 import io.choerodon.agile.api.vo.IssueCreateVO
-import io.choerodon.agile.api.vo.IssueListDTO
+import io.choerodon.agile.api.vo.IssueListVO
 import io.choerodon.agile.api.vo.IssueVO
 import io.choerodon.agile.api.vo.ProjectDTO
-import io.choerodon.agile.api.vo.SprintCompleteDTO
-import io.choerodon.agile.api.vo.SprintCompleteMessageDTO
-import io.choerodon.agile.api.vo.SprintDetailDTO
+import io.choerodon.agile.api.vo.SprintCompleteVO
+import io.choerodon.agile.api.vo.SprintCompleteMessageVO
+import io.choerodon.agile.api.vo.SprintDetailVO
 import io.choerodon.agile.api.vo.SprintNameDTO
 import io.choerodon.agile.api.vo.SprintSearchDTO
-import io.choerodon.agile.api.vo.SprintUpdateDTO
+import io.choerodon.agile.api.vo.SprintUpdateVO
 import io.choerodon.agile.api.vo.WorkCalendarRefDTO
-import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDetailDTO
+import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDetailVO
 import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.app.service.UserService
@@ -114,13 +114,13 @@ class SprintControllerSpec extends Specification {
 
     def 'createSprint'() {
         when: '向创建冲刺的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint', null, SprintDetailDTO, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint', null, SprintDetailVO, projectId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        SprintDetailDTO sprintDetailDTO = entity.body
+        SprintDetailVO sprintDetailDTO = entity.body
         sprintIds << sprintDetailDTO.sprintId
 
         expect: '设置期望值'
@@ -157,7 +157,7 @@ class SprintControllerSpec extends Specification {
     def "updateSprint"() {
         given: '冲刺DTO对象'
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd")
-        SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO()
+        SprintUpdateVO sprintUpdateDTO = new SprintUpdateVO()
         sprintUpdateDTO.projectId = projectId
         sprintUpdateDTO.sprintId = sprintIds[0]
         sprintUpdateDTO.objectVersionNumber = 1
@@ -166,16 +166,16 @@ class SprintControllerSpec extends Specification {
         sprintUpdateDTO.endDate = MybatisFunctionTestUtil.dataSubFunction(sprintUpdateDTO.startDate, -10)
         String startDate = dateFormat.format(sprintUpdateDTO.startDate)
         String endDate = dateFormat.format(sprintUpdateDTO.endDate)
-        HttpEntity<SprintUpdateDTO> requestEntity = new HttpEntity<SprintUpdateDTO>(sprintUpdateDTO, null)
+        HttpEntity<SprintUpdateVO> requestEntity = new HttpEntity<SprintUpdateVO>(sprintUpdateDTO, null)
 
         when: '分页过滤查询issue列表提供给测试模块用'
-        def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint', HttpMethod.PUT, requestEntity, SprintDetailDTO, projectId)
+        def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint', HttpMethod.PUT, requestEntity, SprintDetailVO, projectId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        SprintDetailDTO sprintDetailDTO = entity.getBody()
+        SprintDetailVO sprintDetailDTO = entity.getBody()
 
         expect: '设置期望值'
         sprintDetailDTO.sprintId == sprintIds[0]
@@ -243,13 +243,13 @@ class SprintControllerSpec extends Specification {
         def sprintId = sprintIds[0]
 
         when: '发送请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}/names', SprintCompleteMessageDTO.class, projectId, sprintId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}/names', SprintCompleteMessageVO.class, projectId, sprintId)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
         and: '返回值'
-        SprintCompleteMessageDTO result = entity.body
+        SprintCompleteMessageVO result = entity.body
 
         expect: '期望值'
         result.incompleteIssues == 1
@@ -266,13 +266,13 @@ class SprintControllerSpec extends Specification {
         def sprintId = sprintIds[0]
 
         when: '发送请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}', SprintDetailDTO.class, projectId, sprintId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/{sprintId}', SprintDetailVO.class, projectId, sprintId)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
         and: '返回值'
-        SprintDetailDTO result = entity.body
+        SprintDetailVO result = entity.body
 
         expect: '期望值'
         result.sprintName == '测试冲刺1'
@@ -296,7 +296,7 @@ class SprintControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '返回值'
-        List<IssueListDTO> result = entity.body.content
+        List<IssueListVO> result = entity.body.content
 
         expect: '期望值'
         result.size() == 0
@@ -319,13 +319,13 @@ class SprintControllerSpec extends Specification {
 
     def "createBySprintName"() {
         when: '发送请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/create?sprintName={sprintName}', null, SprintDetailDTO.class, projectId, '测试冲刺2')
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/create?sprintName={sprintName}', null, SprintDetailVO.class, projectId, '测试冲刺2')
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
         and: '返回值'
-        SprintDetailDTO result = entity.body
+        SprintDetailVO result = entity.body
         sprintIds << result.sprintId
 
         expect: '期望值'
@@ -339,7 +339,7 @@ class SprintControllerSpec extends Specification {
     def "startSprint"() {
         given: '冲刺更新对象'
         SprintDTO sprintDO = sprintMapper.queryByProjectIdAndSprintId(projectId, sprintIds[0])
-        SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO()
+        SprintUpdateVO sprintUpdateDTO = new SprintUpdateVO()
         sprintUpdateDTO.sprintId = sprintIds[0]
         sprintUpdateDTO.projectId = projectId
         sprintUpdateDTO.objectVersionNumber = sprintDO.objectVersionNumber
@@ -356,13 +356,13 @@ class SprintControllerSpec extends Specification {
         sprintUpdateDTO.workDates = dateList
 
         when: '发送请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/start', sprintUpdateDTO, SprintDetailDTO.class, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/sprint/start', sprintUpdateDTO, SprintDetailVO.class, projectId)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
         and: '返回值'
-        SprintDetailDTO result = entity.body
+        SprintDetailVO result = entity.body
 
         expect: '期望值'
         result.sprintName == '测试冲刺1'
@@ -390,7 +390,7 @@ class SprintControllerSpec extends Specification {
         def entity = restTemplate.exchange('/v1/projects/{project_id}/sprint/active/{organizationId}',
                 HttpMethod.GET,
                 new HttpEntity<>(),
-                ActiveSprintDTO.class,
+                ActiveSprintVO.class,
                 projectId, 1)
 
         then:
@@ -401,7 +401,7 @@ class SprintControllerSpec extends Specification {
 
     def "completeSprint"() {
         given: '冲刺更新对象'
-        SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO()
+        SprintCompleteVO sprintCompleteDTO = new SprintCompleteVO()
         sprintCompleteDTO.projectId = projectId
         sprintCompleteDTO.sprintId = sprintIds[0]
         sprintCompleteDTO.incompleteIssuesDestination = 0
@@ -430,7 +430,7 @@ class SprintControllerSpec extends Specification {
 
     def 'queryTimeZoneWorkCalendarDetail'() {
         when:
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/time_zone_detail/{organization_id}?year={year}', TimeZoneWorkCalendarRefDetailDTO, projectId, 1, 2018)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/sprint/time_zone_detail/{organization_id}?year={year}', TimeZoneWorkCalendarRefDetailVO, projectId, 1, 2018)
 
         then:
         entity.statusCode.is2xxSuccessful()

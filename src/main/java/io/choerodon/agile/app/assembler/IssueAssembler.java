@@ -140,10 +140,10 @@ public class IssueAssembler extends AbstractAssembler {
      * issueDO转换到IssueListDTO
      *
      * @param issueDTOList issueDetailDO
-     * @return IssueListDTO
+     * @return IssueListVO
      */
-    public List<IssueListDTO> issueDoToIssueListDto(List<IssueDTO> issueDTOList, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
-        List<IssueListDTO> issueListDTOList = new ArrayList<>(issueDTOList.size());
+    public List<IssueListVO> issueDoToIssueListDto(List<IssueDTO> issueDTOList, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+        List<IssueListVO> issueListDTOList = new ArrayList<>(issueDTOList.size());
         Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
         userIds.addAll(issueDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDTO::getReporterId).collect(Collectors.toSet()));
         Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(Lists.newArrayList(userIds), true);
@@ -158,23 +158,23 @@ public class IssueAssembler extends AbstractAssembler {
             String reporterRealName = reporterUserDO != null ? reporterUserDO.getRealName() : null;
             String assigneeImageUrl = assigneeUserDO != null ? assigneeUserDO.getImageUrl() : null;
             String reporterImageUrl = reporterUserDO != null ? reporterUserDO.getImageUrl() : null;
-            IssueListDTO issueListDTO = toTarget(issueDO, IssueListDTO.class);
-            issueListDTO.setAssigneeName(assigneeName);
-            issueListDTO.setAssigneeLoginName(assigneeLoginName);
-            issueListDTO.setAssigneeRealName(assigneeRealName);
-            issueListDTO.setReporterName(reporterName);
-            issueListDTO.setReporterLoginName(reporterLoginName);
-            issueListDTO.setReporterRealName(reporterRealName);
-            issueListDTO.setPriorityVO(priorityMap.get(issueDO.getPriorityId()));
-            issueListDTO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
-            issueListDTO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
-            issueListDTO.setAssigneeImageUrl(assigneeImageUrl);
-            issueListDTO.setReporterImageUrl(reporterImageUrl);
-            issueListDTO.setVersionIssueRelDTOS(toTargetList(issueDO.getVersionIssueRelDOS(), VersionIssueRelDTO.class));
-            issueListDTO.setIssueComponentBriefDTOS(toTargetList(issueDO.getIssueComponentBriefDOS(), IssueComponentBriefDTO.class));
-            issueListDTO.setIssueSprintDTOS(toTargetList(issueDO.getIssueSprintDOS(), IssueSprintDTO.class));
-            issueListDTO.setLabelIssueRelDTOS(toTargetList(issueDO.getLabelIssueRelDOS(), LabelIssueRelDTO.class));
-            issueListDTOList.add(issueListDTO);
+            IssueListVO issueListVO = toTarget(issueDO, IssueListVO.class);
+            issueListVO.setAssigneeName(assigneeName);
+            issueListVO.setAssigneeLoginName(assigneeLoginName);
+            issueListVO.setAssigneeRealName(assigneeRealName);
+            issueListVO.setReporterName(reporterName);
+            issueListVO.setReporterLoginName(reporterLoginName);
+            issueListVO.setReporterRealName(reporterRealName);
+            issueListVO.setPriorityVO(priorityMap.get(issueDO.getPriorityId()));
+            issueListVO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
+            issueListVO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
+            issueListVO.setAssigneeImageUrl(assigneeImageUrl);
+            issueListVO.setReporterImageUrl(reporterImageUrl);
+            issueListVO.setVersionIssueRelDTOS(toTargetList(issueDO.getVersionIssueRelDOS(), VersionIssueRelDTO.class));
+            issueListVO.setIssueComponentBriefDTOS(toTargetList(issueDO.getIssueComponentBriefDOS(), IssueComponentBriefDTO.class));
+            issueListVO.setIssueSprintDTOS(toTargetList(issueDO.getIssueSprintDOS(), IssueSprintDTO.class));
+            issueListVO.setLabelIssueRelDTOS(toTargetList(issueDO.getLabelIssueRelDOS(), LabelIssueRelDTO.class));
+            issueListDTOList.add(issueListVO);
         });
         return issueListDTOList;
     }

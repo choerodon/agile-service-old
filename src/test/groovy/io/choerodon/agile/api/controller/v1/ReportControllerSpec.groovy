@@ -137,7 +137,7 @@ class ReportControllerSpec extends Specification {
 
     def 'createSprintToStart'() {
         given: '创建一个冲刺'
-        SprintDetailDTO sprintDetailDTO = sprintService.createSprint(1)
+        SprintDetailVO sprintDetailDTO = sprintService.createSprint(1)
         sprintId = sprintDetailDTO.sprintId
 
         and: '将issue加入到冲刺中'
@@ -174,7 +174,7 @@ class ReportControllerSpec extends Specification {
         issueIds.add(noDoneIssue.issueId)
 
         and: '设置冲刺开启对象'
-        SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO()
+        SprintUpdateVO sprintUpdateDTO = new SprintUpdateVO()
         sprintUpdateDTO.sprintId = sprintId
         sprintUpdateDTO.projectId = projectId
         sprintUpdateDTO.objectVersionNumber = sprintDetailDTO.objectVersionNumber
@@ -182,7 +182,7 @@ class ReportControllerSpec extends Specification {
         sprintUpdateDTO.endDate = endDate
 
         when: '将冲刺开启'
-        SprintDetailDTO startSprint = sprintService.startSprint(projectId, sprintUpdateDTO)
+        SprintDetailVO startSprint = sprintService.startSprint(projectId, sprintUpdateDTO)
 
         then: '验证冲刺是否开启成功'
         startSprint.statusCode == 'started'
@@ -268,7 +268,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<IssueListDTO> result = entity.body.content
+        List<IssueListVO> result = entity.body.content
 
         expect: '验证期望值'
         result.size() == expectSize

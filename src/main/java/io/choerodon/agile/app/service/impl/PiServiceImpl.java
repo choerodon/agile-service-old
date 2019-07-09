@@ -11,7 +11,7 @@ import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.PiE;
-import io.choerodon.agile.domain.agile.entity.SprintE;
+import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
@@ -251,7 +251,7 @@ public class PiServiceImpl implements PiService {
         Long interationWeeks = artDTO.getInterationWeeks();
         Date endDate = getSpecifyTimeByOneTime(startDate, interationWeeks.intValue() * 7);
         for (int i = 0; i < interationCount; i++) {
-            SprintE temp = sprintRepository.createSprint(new SprintE(programId, String.valueOf(System.currentTimeMillis()), startDate, endDate, "sprint_planning", piRes.getId()));
+            SprintConvertDTO temp = sprintService.create(new SprintConvertDTO(programId, String.valueOf(System.currentTimeMillis()), startDate, endDate, "sprint_planning", piRes.getId()));
             sprintIds.add(temp.getSprintId());
             startDate = endDate;
             endDate = getSpecifyTimeByOneTime(startDate, interationWeeks.intValue() * 7);
@@ -277,7 +277,7 @@ public class PiServiceImpl implements PiService {
             createSprintTemplate(programId, piRes, artDTO, sprintIds);
             startDate = piE.getEndDate();
         }
-        sprintRepository.updateSprintNameByBatch(programId, sprintIds);
+        sprintService.updateSprintNameByBatch(programId, sprintIds);
         updateArtPiCodeNumber(programId, artDTO.getId(), piCodeNumber, artDTO.getObjectVersionNumber());
     }
 
@@ -347,7 +347,7 @@ public class PiServiceImpl implements PiService {
         for (ProjectRelationshipVO projectRelationshipVO : projectRelationshipVOList) {
             Long projectId = projectRelationshipVO.getProjectId();
             for (SprintDTO sprint : sprintDTOList) {
-                sprintRepository.createSprint(new SprintE(projectId, sprint.getSprintName(), sprint.getStartDate(), sprint.getEndDate(), sprint.getStatusCode(), sprint.getPiId()));
+                sprintService.create(new SprintConvertDTO(projectId, sprint.getSprintName(), sprint.getStartDate(), sprint.getEndDate(), sprint.getStatusCode(), sprint.getPiId()));
             }
         }
     }
@@ -449,11 +449,11 @@ public class PiServiceImpl implements PiService {
             List<Long> sprintIds = sprintMapper.selectNotDoneByPiId(projectId, piId);
             if (sprintIds != null && !sprintIds.isEmpty()) {
                 for (Long sprintId : sprintIds) {
-                    SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
-                    sprintCompleteDTO.setProjectId(projectId);
-                    sprintCompleteDTO.setSprintId(sprintId);
-                    sprintCompleteDTO.setIncompleteIssuesDestination(0L);
-                    sprintService.completeSprint(projectId, sprintCompleteDTO);
+                    SprintCompleteVO sprintCompleteVO = new SprintCompleteVO();
+                    sprintCompleteVO.setProjectId(projectId);
+                    sprintCompleteVO.setSprintId(sprintId);
+                    sprintCompleteVO.setIncompleteIssuesDestination(0L);
+                    sprintService.completeSprint(projectId, sprintCompleteVO);
                 }
             }
         }
@@ -471,11 +471,11 @@ public class PiServiceImpl implements PiService {
             List<Long> sprintIds = sprintMapper.selectNotDoneByPiId(projectId, piId);
             SprintDTO newSprint = sprintMapper.selectFirstSprintByPiId(projectId, nextPiId);
             for (Long sprintId : sprintIds) {
-                SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
-                sprintCompleteDTO.setProjectId(projectId);
-                sprintCompleteDTO.setSprintId(sprintId);
-                sprintCompleteDTO.setIncompleteIssuesDestination(SPRINT_COMPLETE_SETTING_NEXT_SPRINT.equals(artDTO.getSprintCompleteSetting()) ? newSprint.getSprintId() : 0L);
-                sprintService.completeSprint(projectId, sprintCompleteDTO);
+                SprintCompleteVO sprintCompleteVO = new SprintCompleteVO();
+                sprintCompleteVO.setProjectId(projectId);
+                sprintCompleteVO.setSprintId(sprintId);
+                sprintCompleteVO.setIncompleteIssuesDestination(SPRINT_COMPLETE_SETTING_NEXT_SPRINT.equals(artDTO.getSprintCompleteSetting()) ? newSprint.getSprintId() : 0L);
+                sprintService.completeSprint(projectId, sprintCompleteVO);
             }
         }
     }
@@ -505,7 +505,7 @@ public class PiServiceImpl implements PiService {
                 createSprintTemplate(programId, piRes, artDTO, sprintIds);
                 startDate = piE.getEndDate();
             }
-            sprintRepository.updateSprintNameByBatch(programId, sprintIds);
+            sprintService.updateSprintNameByBatch(programId, sprintIds);
             updateArtPiCodeNumber(programId, artDTO.getId(), piCodeNumber, artDTO.getObjectVersionNumber());
         }
     }

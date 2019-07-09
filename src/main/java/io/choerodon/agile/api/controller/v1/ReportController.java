@@ -88,17 +88,17 @@ public class ReportController {
     @CustomPageRequest
     @ApiOperation(value = "根据状态查版本下issue列表")
     @GetMapping(value = "/{versionId}/issues")
-    public ResponseEntity<PageInfo<IssueListDTO>> queryIssueByOptions(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<IssueListVO>> queryIssueByOptions(@ApiParam(value = "项目id", required = true)
                                                                   @PathVariable(name = "project_id") Long projectId,
-                                                                  @ApiParam(value = "版本id", required = true)
+                                                                     @ApiParam(value = "版本id", required = true)
                                                                   @PathVariable Long versionId,
-                                                                  @ApiParam(value = "状态", required = true)
+                                                                     @ApiParam(value = "状态", required = true)
                                                                   @RequestParam String status,
-                                                                  @ApiParam(value = "组织id", required = true)
+                                                                     @ApiParam(value = "组织id", required = true)
                                                                   @RequestParam Long organizationId,
-                                                                  @ApiParam(value = "类型", required = true)
+                                                                     @ApiParam(value = "类型", required = true)
                                                                   @RequestParam String type,
-                                                                  @ApiParam(value = "分页信息", required = true)
+                                                                     @ApiParam(value = "分页信息", required = true)
                                                                   @SortDefault(value = "issue_id", direction = Sort.Direction.DESC)
                                                                   @ApiIgnore PageRequest pageRequest) {
         return Optional.ofNullable(reportService.queryIssueByOptions(projectId, versionId, status, type, pageRequest, organizationId))

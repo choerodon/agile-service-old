@@ -9,7 +9,7 @@ import java.util.Set;
  * @author dinghuang123@gmail.com
  * @since 2018/10/16
  */
-public class TimeZoneWorkCalendarRefDetailDTO {
+public class TimeZoneWorkCalendarRefDetailVO {
 
     @ApiModelProperty(value = "是否使用法定节假日")
     private Boolean useHoliday;

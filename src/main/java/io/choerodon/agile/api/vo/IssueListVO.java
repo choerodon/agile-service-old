@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author dinghuang123@gmail.com
  */
-public class IssueListDTO implements Serializable {
+public class IssueListVO implements Serializable {
 
     @ApiModelProperty(value = "问题主键id")
     private Long issueId;

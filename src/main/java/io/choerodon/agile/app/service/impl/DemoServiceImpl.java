@@ -292,13 +292,13 @@ public class DemoServiceImpl implements DemoService {
     }
 
     private void startSprint(Long projectId, Long sprintId, Long objectVersionNumber, Date startDate, Date endDate) {
-        SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO();
-        sprintUpdateDTO.setSprintId(sprintId);
-        sprintUpdateDTO.setObjectVersionNumber(objectVersionNumber);
-        sprintUpdateDTO.setProjectId(projectId);
-        sprintUpdateDTO.setStartDate(startDate);
-        sprintUpdateDTO.setEndDate(endDate);
-        sprintService.startSprint(projectId, sprintUpdateDTO);
+        SprintUpdateVO sprintUpdateVO = new SprintUpdateVO();
+        sprintUpdateVO.setSprintId(sprintId);
+        sprintUpdateVO.setObjectVersionNumber(objectVersionNumber);
+        sprintUpdateVO.setProjectId(projectId);
+        sprintUpdateVO.setStartDate(startDate);
+        sprintUpdateVO.setEndDate(endDate);
+        sprintService.startSprint(projectId, sprintUpdateVO);
     }
 
     /**
@@ -445,27 +445,27 @@ public class DemoServiceImpl implements DemoService {
         Long organizationId = projectDTO.getOrganizationId();
 
         // 创建第一个冲刺
-        SprintDetailDTO sprintDetailDTO = sprintService.createSprint(projectId);
-        Long sprintId1 = sprintDetailDTO.getSprintId();
+        SprintDetailVO sprintDetailVO = sprintService.createSprint(projectId);
+        Long sprintId1 = sprintDetailVO.getSprintId();
 
         // 创建第二个冲刺
-        SprintDetailDTO sprintDetailDTO2 = sprintService.createSprint(projectId);
-        Long sprintId2 = sprintDetailDTO2.getSprintId();
+        SprintDetailVO sprintDetailVO2 = sprintService.createSprint(projectId);
+        Long sprintId2 = sprintDetailVO2.getSprintId();
 
         // 更新冲刺名称
-        SprintUpdateDTO updateName1 = new SprintUpdateDTO();
+        SprintUpdateVO updateName1 = new SprintUpdateVO();
         updateName1.setProjectId(projectId);
-        updateName1.setSprintId(sprintDetailDTO.getSprintId());
-        updateName1.setObjectVersionNumber(sprintDetailDTO.getObjectVersionNumber());
+        updateName1.setSprintId(sprintDetailVO.getSprintId());
+        updateName1.setObjectVersionNumber(sprintDetailVO.getObjectVersionNumber());
         updateName1.setSprintName("Sprint 1");
-        sprintDetailDTO = sprintService.updateSprint(projectId, updateName1);
+        sprintDetailVO = sprintService.updateSprint(projectId, updateName1);
 
-        SprintUpdateDTO updateName2 = new SprintUpdateDTO();
+        SprintUpdateVO updateName2 = new SprintUpdateVO();
         updateName2.setProjectId(projectId);
-        updateName2.setSprintId(sprintDetailDTO2.getSprintId());
-        updateName2.setObjectVersionNumber(sprintDetailDTO2.getObjectVersionNumber());
+        updateName2.setSprintId(sprintDetailVO2.getSprintId());
+        updateName2.setObjectVersionNumber(sprintDetailVO2.getObjectVersionNumber());
         updateName2.setSprintName("Sprint 2");
-        sprintDetailDTO2 = sprintService.updateSprint(projectId, updateName2);
+        sprintDetailVO2 = sprintService.updateSprint(projectId, updateName2);
 
         // 创建版本
         ProductVersionCreateDTO productVersionCreateDTO = new ProductVersionCreateDTO();
@@ -807,17 +807,17 @@ public class DemoServiceImpl implements DemoService {
 
         // 开启冲刺1
         List<Date> workDays = getWorkDays(new Date());
-        startSprint(projectId, sprintId1, sprintDetailDTO.getObjectVersionNumber(), workDays.get(11), workDays.get(2));
+        startSprint(projectId, sprintId1, sprintDetailVO.getObjectVersionNumber(), workDays.get(11), workDays.get(2));
 
         // 更新fix版本时间
         versionIssueRelMapper.updateDemoVersionIssueTime(projectId, workDays.get(12));
 
         // 完成冲刺1
-        SprintCompleteDTO sprintCompleteDTO = new SprintCompleteDTO();
-        sprintCompleteDTO.setProjectId(projectId);
-        sprintCompleteDTO.setSprintId(sprintId1);
-        sprintCompleteDTO.setIncompleteIssuesDestination(0L);
-        sprintService.completeSprint(projectId, sprintCompleteDTO);
+        SprintCompleteVO sprintCompleteVO = new SprintCompleteVO();
+        sprintCompleteVO.setProjectId(projectId);
+        sprintCompleteVO.setSprintId(sprintId1);
+        sprintCompleteVO.setIncompleteIssuesDestination(0L);
+        sprintService.completeSprint(projectId, sprintCompleteVO);
 
 
         // 更新经办人
@@ -1086,7 +1086,7 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 开启冲刺2
-        startSprint(projectId, sprintId2, sprintDetailDTO2.getObjectVersionNumber(), dateAfters.get(0), dateAfters.get(9));
+        startSprint(projectId, sprintId2, sprintDetailVO2.getObjectVersionNumber(), dateAfters.get(0), dateAfters.get(9));
 
         // 发送saga到测试
         OrganizationRegisterEventPayload.TestData testData = new OrganizationRegisterEventPayload.TestData();

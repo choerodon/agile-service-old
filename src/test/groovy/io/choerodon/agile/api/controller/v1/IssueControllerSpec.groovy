@@ -427,7 +427,7 @@ class IssueControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueListDTO> issueListDTOList = entity.body.content
+        List<IssueListVO> issueListDTOList = entity.body.content
         expect: '设置期望值'
         issueListDTOList.size() > 0
 
@@ -741,7 +741,7 @@ class IssueControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueListDTO> issueListDTOList = entity.body.content
+        List<IssueListVO> issueListDTOList = entity.body.content
         expect: '设置期望值'
         issueListDTOList.size() > 0
 

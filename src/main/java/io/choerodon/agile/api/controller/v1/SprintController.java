@@ -48,7 +48,7 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "创建冲刺")
     @PostMapping
-    public ResponseEntity<SprintDetailDTO> createSprint(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<SprintDetailVO> createSprint(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(sprintService.createSprint(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -58,11 +58,11 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "更新冲刺部分字段")
     @PutMapping
-    public ResponseEntity<SprintDetailDTO> updateSprint(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<SprintDetailVO> updateSprint(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "冲刺DTO对象", required = true)
-                                                        @RequestBody @Valid SprintUpdateDTO sprintUpdateDTO) {
-        return Optional.ofNullable(sprintService.updateSprint(projectId, sprintUpdateDTO))
+                                                       @ApiParam(value = "冲刺DTO对象", required = true)
+                                                        @RequestBody @Valid SprintUpdateVO sprintUpdateVO) {
+        return Optional.ofNullable(sprintService.updateSprint(projectId, sprintUpdateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(UPDATE_ERROR));
     }
@@ -112,11 +112,11 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "开启冲刺")
     @PostMapping(value = "/start")
-    public ResponseEntity<SprintDetailDTO> startSprint(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<SprintDetailVO> startSprint(@ApiParam(value = "项目id", required = true)
                                                        @PathVariable(name = "project_id") Long projectId,
-                                                       @ApiParam(value = "冲刺DTO对象", required = true)
-                                                       @RequestBody @Valid SprintUpdateDTO sprintUpdateDTO) {
-        return Optional.ofNullable(sprintService.startSprint(projectId, sprintUpdateDTO))
+                                                      @ApiParam(value = "冲刺DTO对象", required = true)
+                                                       @RequestBody @Valid SprintUpdateVO sprintUpdateVO) {
+        return Optional.ofNullable(sprintService.startSprint(projectId, sprintUpdateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(OPEN_ERROR));
     }
@@ -127,8 +127,8 @@ public class SprintController {
     public ResponseEntity<Boolean> completeSprint(@ApiParam(value = "项目id", required = true)
                                                   @PathVariable(name = "project_id") Long projectId,
                                                   @ApiParam(value = "完成冲刺对象", required = true)
-                                                  @RequestBody @Valid SprintCompleteDTO sprintCompleteDTO) {
-        return Optional.ofNullable(sprintService.completeSprint(projectId, sprintCompleteDTO))
+                                                  @RequestBody @Valid SprintCompleteVO sprintCompleteVO) {
+        return Optional.ofNullable(sprintService.completeSprint(projectId, sprintCompleteVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(CLOSE_ERROR));
     }
@@ -136,9 +136,9 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "查询sprint名及issue统计信息")
     @GetMapping(value = "/{sprintId}/names")
-    public ResponseEntity<SprintCompleteMessageDTO> queryCompleteMessageBySprintId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<SprintCompleteMessageVO> queryCompleteMessageBySprintId(@ApiParam(value = "项目id", required = true)
                                                                                    @PathVariable(name = "project_id") Long projectId,
-                                                                                   @ApiParam(value = "冲刺id", required = true)
+                                                                                  @ApiParam(value = "冲刺id", required = true)
                                                                                    @PathVariable Long sprintId) {
         return Optional.ofNullable(sprintService.queryCompleteMessageBySprintId(projectId, sprintId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -148,9 +148,9 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "根据sprintId查询冲刺信息")
     @GetMapping(value = "/{sprintId}")
-    public ResponseEntity<SprintDetailDTO> querySprintById(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<SprintDetailVO> querySprintById(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
-                                                           @ApiParam(value = "冲刺id", required = true)
+                                                          @ApiParam(value = "冲刺id", required = true)
                                                            @PathVariable Long sprintId) {
         return Optional.ofNullable(sprintService.querySprintById(projectId, sprintId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -161,15 +161,15 @@ public class SprintController {
     @CustomPageRequest
     @ApiOperation(value = "根据状态查已完成冲刺issue信息")
     @GetMapping(value = "/{sprintId}/issues")
-    public ResponseEntity<PageInfo<IssueListDTO>> queryIssueByOptions(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<IssueListVO>> queryIssueByOptions(@ApiParam(value = "项目id", required = true)
                                                                   @PathVariable(name = "project_id") Long projectId,
-                                                                  @ApiParam(value = "冲刺id", required = true)
+                                                                     @ApiParam(value = "冲刺id", required = true)
                                                                   @PathVariable Long sprintId,
-                                                                  @ApiParam(value = "状态", required = true)
+                                                                     @ApiParam(value = "状态", required = true)
                                                                   @RequestParam String status,
-                                                                  @ApiParam(value = "组织id", required = true)
+                                                                     @ApiParam(value = "组织id", required = true)
                                                                   @RequestParam Long organizationId,
-                                                                  @ApiParam(value = "分页信息", required = true)
+                                                                     @ApiParam(value = "分页信息", required = true)
                                                                   @SortDefault(value = "issue_id", direction = Sort.Direction.DESC)
                                                                   @ApiIgnore PageRequest pageRequest) {
         return Optional.ofNullable(sprintService.queryIssueByOptions(projectId, sprintId, status, pageRequest, organizationId))
@@ -190,9 +190,9 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "根据项目id和冲刺名称创建冲刺")
     @PostMapping(value = "/create")
-    public ResponseEntity<SprintDetailDTO> createBySprintName(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<SprintDetailVO> createBySprintName(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId,
-                                                              @ApiParam(value = "冲刺名称", required = true)
+                                                             @ApiParam(value = "冲刺名称", required = true)
                                                               @RequestParam String sprintName) {
         return Optional.ofNullable(sprintService.createBySprintName(projectId, sprintName))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -202,7 +202,7 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "查询未关闭的冲刺")
     @GetMapping(value = "/unclosed")
-    public ResponseEntity<List<SprintUnClosedDTO>> queryUnClosedSprint(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<SprintUnClosedVO>> queryUnClosedSprint(@ApiParam(value = "项目id", required = true)
                                                                        @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(sprintService.queryUnClosedSprint(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -212,9 +212,9 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "查询活跃冲刺")
     @GetMapping(value = "/active/{organization_id}")
-    public ResponseEntity<ActiveSprintDTO> queryActiveSprint(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ActiveSprintVO> queryActiveSprint(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId,
-                                                             @ApiParam(value = "组织id", required = true)
+                                                            @ApiParam(value = "组织id", required = true)
                                                              @PathVariable(name = "organization_id") Long organizationId) {
         return Optional.ofNullable(sprintService.queryActiveSprint(projectId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -238,11 +238,11 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取冲刺有关于组织层时区设置")
     @GetMapping(value = "/time_zone_detail/{organization_id}")
-    public ResponseEntity<TimeZoneWorkCalendarRefDetailDTO> queryTimeZoneWorkCalendarDetail(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<TimeZoneWorkCalendarRefDetailVO> queryTimeZoneWorkCalendarDetail(@ApiParam(value = "项目id", required = true)
                                                                                             @PathVariable(name = "project_id") Long projectId,
-                                                                                            @ApiParam(value = "组织id", required = true)
+                                                                                           @ApiParam(value = "组织id", required = true)
                                                                                             @PathVariable(name = "organization_id") Long organizationId,
-                                                                                            @ApiParam(value = "组织id", required = true)
+                                                                                           @ApiParam(value = "组织id", required = true)
                                                                                             @RequestParam(name = "year") Integer year) {
         return Optional.ofNullable(timeZoneWorkCalendarService.queryTimeZoneWorkCalendarDetail(organizationId, year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
