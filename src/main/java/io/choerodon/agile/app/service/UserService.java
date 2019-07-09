@@ -1,4 +1,4 @@
-package io.choerodon.agile.infra.repository;
+package io.choerodon.agile.app.service;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.ProjectDTO;
@@ -15,7 +15,7 @@ import java.util.Map;
  * @author dinghuang123@gmail.com
  * @since 2018/5/28
  */
-public interface UserRepository {
+public interface UserService {
 
     /**
      * 查询

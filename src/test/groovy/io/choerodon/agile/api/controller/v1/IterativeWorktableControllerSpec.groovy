@@ -42,17 +42,17 @@ class IterativeWorktableControllerSpec extends Specification {
 
 //    @Autowired
 //    @Qualifier("mockUserRepository")
-//    private UserRepository userRepository
+//    private UserService userService
 
 //    def setup() {
 //        given:
 //        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
 //        UserMessageDO userMessageDO = new UserMessageDO("admin", "http://XXX.png", "admin@gmail.com")
 //        userMessageDOMap.put(1, userMessageDO)
-//        userRepository.queryUsersMap(*_) >> userMessageDOMap
+//        userService.queryUsersMap(*_) >> userMessageDOMap
 //        UserDO userDO = new UserDO()
 //        userDO.setRealName("admin")
-//        userRepository.queryUserNameByOption(*_) >> userDO
+//        userService.queryUserNameByOption(*_) >> userDO
 //    }
 
     def 'queryPriorityDistribute'() {

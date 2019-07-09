@@ -9,11 +9,11 @@ import io.choerodon.agile.api.vo.event.OrganizationCreateEventPayload
 import io.choerodon.agile.api.vo.event.ProjectCreateAgilePayload
 import io.choerodon.agile.api.vo.event.ProjectEvent
 import io.choerodon.agile.api.vo.event.StatusPayload
-import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.FileFeignClient
 import io.choerodon.agile.infra.mapper.*
+import io.choerodon.agile.app.service.UserService
 import io.choerodon.core.convertor.ApplicationContextHelper
 import io.choerodon.core.oauth.CustomUserDetails
 import io.choerodon.liquibase.LiquibaseConfig
@@ -109,8 +109,8 @@ class AgileTestConfiguration {
     @Autowired
     private ProductVersionMapper productVersionMapper
 
-    @MockBean(name = "userRepository")
-    private UserRepository userRepository
+    @MockBean(name = "userService")
+    private UserService userRepository
 
     @MockBean
     private SiteMsgUtil siteMsgUtil
@@ -305,7 +305,7 @@ class AgileTestConfiguration {
         story.rank = '0|c00000:'
         issueMapper.insert(story)
 
-        ProjectInfoDO projectInfoDO = projectInfoMapper.selectByPrimaryKey(1L)
+        ProjectInfoDTO projectInfoDO = projectInfoMapper.selectByPrimaryKey(1L)
         projectInfoDO.setIssueMaxNum(2)
         projectInfoMapper.updateByPrimaryKeySelective(projectInfoDO)
     }

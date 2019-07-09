@@ -18,7 +18,7 @@ import io.choerodon.agile.api.vo.WorkCalendarRefDTO
 import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDetailDTO
 import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.infra.repository.UserRepository
+import io.choerodon.agile.app.service.UserService
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.dataobject.SprintDTO
 import io.choerodon.agile.infra.mapper.DataLogMapper
@@ -88,8 +88,8 @@ class SprintControllerSpec extends Specification {
     private DataLogMapper dataLogMapper
 
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository
+    @Qualifier("userService")
+    private UserService userRepository
 
     @Shared
     def projectId = 1

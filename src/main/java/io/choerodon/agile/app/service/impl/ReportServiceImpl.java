@@ -12,7 +12,7 @@ import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.repository.DataLogRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -77,7 +77,7 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     @Autowired
     private IssueFeignClient issueFeignClient;
     @Autowired
@@ -967,10 +967,10 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private List<CumulativeFlowDiagramDTO> getCumulativeFlowDiagram(List<Long> allIssueIds, Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO) {
-        ProjectInfoDO query = new ProjectInfoDO();
+        ProjectInfoDTO query = new ProjectInfoDTO();
         query.setProjectId(projectId);
-        ProjectInfoDO projectInfoDO = projectInfoMapper.selectOne(query);
-        if (projectInfoDO == null) {
+        ProjectInfoDTO projectInfoDTO = projectInfoMapper.selectOne(query);
+        if (projectInfoDTO == null) {
             throw new CommonException("error.cumulativeFlow.projectInfoNotFound");
         }
         if (cumulativeFlowFilterDTO.getBoardId() == null) {
@@ -978,7 +978,7 @@ public class ReportServiceImpl implements ReportService {
         }
         List<Long> columnIds = boardColumnMapper.queryColumnIdsByBoardId(cumulativeFlowFilterDTO.getBoardId(), projectId);
         //设置时间区间
-        Date startDate = projectInfoDO.getCreationDate();
+        Date startDate = projectInfoDTO.getCreationDate();
         Date endDate = new Date();
         List<ColumnChangeDTO> result = new ArrayList<>();
         //所有在当前时间内创建的issue
@@ -1196,7 +1196,7 @@ public class ReportServiceImpl implements ReportService {
             List<Long> userIds = pieChartVOList.stream().filter(pieChartDTO ->
                     pieChartDTO.getTypeName() != null && !"0".equals(pieChartDTO.getTypeName())).map(pieChartDTO ->
                     Long.parseLong(pieChartDTO.getTypeName())).collect(Collectors.toList());
-            Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
+            Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(userIds, true);
             pieChartVOList.parallelStream().forEach(pieChartDTO -> {
                 JSONObject jsonObject = new JSONObject();
                 if (pieChartDTO.getTypeName() != null && usersMap.get(Long.parseLong(pieChartDTO.getTypeName())) != null) {

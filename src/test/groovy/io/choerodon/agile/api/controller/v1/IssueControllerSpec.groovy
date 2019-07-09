@@ -6,13 +6,13 @@ import io.choerodon.agile.api.vo.*
 import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.enums.SchemeApplyType
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
 import com.github.pagehelper.PageInfo
+import io.choerodon.agile.app.service.UserService
 import io.choerodon.base.domain.PageRequest
 import org.mockito.Matchers
 import org.mockito.Mockito
@@ -88,8 +88,8 @@ class IssueControllerSpec extends Specification {
     private DataLogMapper dataLogMapper
 
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository
+    @Qualifier("userService")
+    private UserService userRepository
 
     @Autowired
     private SiteMsgUtil siteMsgUtil
@@ -610,7 +610,7 @@ class IssueControllerSpec extends Specification {
 //
 //        then: '返回值'
 //        entity.statusCode.is2xxSuccessful()
-//        1 * userRepository.queryProject(_) >> projectDTO
+//        1 * userService.queryProject(_) >> projectDTO
 //
 //
 //        expect: '期待值比较'

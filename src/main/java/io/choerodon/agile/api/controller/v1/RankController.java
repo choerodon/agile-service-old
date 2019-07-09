@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.RankDTO;
+import io.choerodon.agile.api.vo.RankVO;
 import io.choerodon.agile.app.service.RankService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -29,8 +29,8 @@ public class RankController {
     public ResponseEntity epicAndFeatureRank(@ApiParam(value = "项目id", required = true)
                                              @PathVariable(name = "project_id") Long projectId,
                                              @ApiParam(value = "epic and feature rank DTO", required = true)
-                                             @RequestBody RankDTO rankDTO) {
-        rankService.epicAndFeatureRank(projectId, rankDTO);
+                                             @RequestBody RankVO rankVO) {
+        rankService.epicAndFeatureRank(projectId, rankVO);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 }

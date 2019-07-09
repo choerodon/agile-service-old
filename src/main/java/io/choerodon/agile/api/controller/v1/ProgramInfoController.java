@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.ProjectRelationshipDTO;
+import io.choerodon.agile.api.vo.ProjectRelationshipVO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -33,7 +33,7 @@ public class ProgramInfoController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取项目群关联的团队项目信息")
     @GetMapping(value = "/team")
-    public ResponseEntity<List<ProjectRelationshipDTO>> queryProgramTeamInfo(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<ProjectRelationshipVO>> queryProgramTeamInfo(@ApiParam(value = "项目id", required = true)
                                                                              @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(projectInfoService.queryProgramTeamInfo(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))

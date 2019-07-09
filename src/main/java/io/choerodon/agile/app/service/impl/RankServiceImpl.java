@@ -1,14 +1,14 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.ProjectDTO;
-import io.choerodon.agile.api.vo.RankDTO;
+import io.choerodon.agile.api.vo.RankVO;
 import io.choerodon.agile.api.validator.RankValidator;
 import io.choerodon.agile.app.service.RankService;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.dataobject.RankDO;
+import io.choerodon.agile.infra.dataobject.RankDTO;
 import io.choerodon.agile.infra.mapper.RankMapper;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.core.exception.CommonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +40,13 @@ public class RankServiceImpl implements RankService {
     private RankMapper rankMapper;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
 
     private List<Long> getEpicIds(Long projectId) {
         List<Long> epicIds = new ArrayList<>();
         // get program epic
-        ProjectDTO program = userRepository.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
+        ProjectDTO program = userService.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         if (program != null) {
             List<Long> programEpicIds = rankMapper.selectEpicIdsByProgram(program.getId());
             if (programEpicIds != null && !programEpicIds.isEmpty()) {
@@ -65,7 +65,7 @@ public class RankServiceImpl implements RankService {
     private List<Long> getFeatureIds(Long projectId) {
         List<Long> featureIds = new ArrayList<>();
         // get program feature
-        ProjectDTO program = userRepository.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
+        ProjectDTO program = userService.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         if (program != null) {
             List<Long> programFeatureIds = rankMapper.selectFeatureIdsByProgram(program.getId());
             if (programFeatureIds != null && !programFeatureIds.isEmpty()) {
@@ -82,10 +82,10 @@ public class RankServiceImpl implements RankService {
     }
 
     private void insertRankByBatch(Long projectId, List<Long> issueIds, String type) {
-        List<RankDO> insertRankList = new ArrayList<>();
+        List<RankDTO> insertRankList = new ArrayList<>();
         String rank = RankUtil.mid();
         for (Long issueId : issueIds) {
-            insertRankList.add(new RankDO(issueId, rank));
+            insertRankList.add(new RankDTO(issueId, rank));
             rank = RankUtil.genNext(rank);
         }
         if (!insertRankList.isEmpty()) {
@@ -94,9 +94,9 @@ public class RankServiceImpl implements RankService {
     }
 
     @Override
-    public RankDO getReferenceRank(Long projectId, String type, Long referenceIssueId) {
-        RankDO rankDO = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
-        if (rankDO == null) {
+    public RankDTO getReferenceRank(Long projectId, String type, Long referenceIssueId) {
+        RankDTO rankDTO = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
+        if (rankDTO == null) {
             switch (type) {
                 case RANK_TYPE_EPIC:
                     List<Long> epicIds = getEpicIds(projectId);
@@ -117,19 +117,19 @@ public class RankServiceImpl implements RankService {
                 default:
                     break;
             }
-            RankDO newRank = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
+            RankDTO newRank = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
             if (newRank == null) {
                 throw new CommonException("error.rank.get");
             }
             return newRank;
         } else {
-            return rankDO;
+            return rankDTO;
         }
     }
 
-    private RankDO getOrinitReferenceRank(Long projectId, String type, Long referenceIssueId, Long issueId) {
-        RankDO rankReference = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
-        RankDO rankCurrent = rankMapper.selectRankByIssueId(projectId, type, issueId);
+    private RankDTO getOrinitReferenceRank(Long projectId, String type, Long referenceIssueId, Long issueId) {
+        RankDTO rankReference = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
+        RankDTO rankCurrent = rankMapper.selectRankByIssueId(projectId, type, issueId);
         if (rankReference == null || rankCurrent == null) {
             switch (type) {
                 case RANK_TYPE_FEATURE:
@@ -151,7 +151,7 @@ public class RankServiceImpl implements RankService {
                 default:
                     break;
             }
-            RankDO newRank = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
+            RankDTO newRank = rankMapper.selectRankByIssueId(projectId, type, referenceIssueId);
             if (newRank == null) {
                 throw new CommonException("error.rank.get");
             }
@@ -162,22 +162,22 @@ public class RankServiceImpl implements RankService {
     }
 
     @Override
-    public void epicAndFeatureRank(Long projectId, RankDTO rankDTO) {
-        rankValidator.checkEpicAndFeatureRank(rankDTO);
-        Long referenceIssueId = rankDTO.getReferenceIssueId();
-        RankDO referenceRank = getOrinitReferenceRank(projectId, rankDTO.getType(), referenceIssueId, rankDTO.getIssueId());
-        if (rankDTO.getBefore()) {
-            String leftRank = rankMapper.selectLeftRank(projectId, rankDTO.getType(), referenceRank.getRank());
+    public void epicAndFeatureRank(Long projectId, RankVO rankVO) {
+        rankValidator.checkEpicAndFeatureRank(rankVO);
+        Long referenceIssueId = rankVO.getReferenceIssueId();
+        RankDTO referenceRank = getOrinitReferenceRank(projectId, rankVO.getType(), referenceIssueId, rankVO.getIssueId());
+        if (rankVO.getBefore()) {
+            String leftRank = rankMapper.selectLeftRank(projectId, rankVO.getType(), referenceRank.getRank());
             String rank = (leftRank == null ? RankUtil.genPre(referenceRank.getRank()) : RankUtil.between(leftRank, referenceRank.getRank()));
-            RankDO rankDO = rankMapper.selectRankByIssueId(projectId, rankDTO.getType(), rankDTO.getIssueId());
-            Long objectVersionNumber = rankDTO.getObjectVersionNumber() == null ? rankDO.getObjectVersionNumber() : rankDTO.getObjectVersionNumber();
-            rankMapper.updateByPrimaryKeySelective(new RankDO(rankDO.getId(), rank, objectVersionNumber));
+            RankDTO rankDTO = rankMapper.selectRankByIssueId(projectId, rankVO.getType(), rankVO.getIssueId());
+            Long objectVersionNumber = rankVO.getObjectVersionNumber() == null ? rankDTO.getObjectVersionNumber() : rankVO.getObjectVersionNumber();
+            rankMapper.updateByPrimaryKeySelective(new RankDTO(rankDTO.getId(), rank, objectVersionNumber));
         } else {
-            String rightRank = rankMapper.selectRightRank(projectId, rankDTO.getType(), referenceRank.getRank());
+            String rightRank = rankMapper.selectRightRank(projectId, rankVO.getType(), referenceRank.getRank());
             String rank = (rightRank == null ? RankUtil.genNext(referenceRank.getRank()) : RankUtil.between(referenceRank.getRank(), rightRank));
-            RankDO rankDO = rankMapper.selectRankByIssueId(projectId, rankDTO.getType(), rankDTO.getIssueId());
-            Long objectVersionNumber = rankDTO.getObjectVersionNumber() == null ? rankDO.getObjectVersionNumber() : rankDTO.getObjectVersionNumber();
-            rankMapper.updateByPrimaryKeySelective(new RankDO(rankDO.getId(), rank, objectVersionNumber));
+            RankDTO rankDTO = rankMapper.selectRankByIssueId(projectId, rankVO.getType(), rankVO.getIssueId());
+            Long objectVersionNumber = rankVO.getObjectVersionNumber() == null ? rankDTO.getObjectVersionNumber() : rankVO.getObjectVersionNumber();
+            rankMapper.updateByPrimaryKeySelective(new RankDTO(rankDTO.getId(), rank, objectVersionNumber));
         }
     }
 }

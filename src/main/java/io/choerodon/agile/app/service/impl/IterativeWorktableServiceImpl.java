@@ -17,7 +17,7 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IterativeWorktableValidator;
 import io.choerodon.agile.app.assembler.IterativeWorktableAssembler;
 import io.choerodon.agile.app.service.IterativeWorktableService;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
@@ -43,7 +43,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     private IterativeWorktableAssembler iterativeWorktableAssembler;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private DateUtil dateUtil;
@@ -153,7 +153,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         if (assigneeDistributeVOList != null && !assigneeDistributeVOList.isEmpty()) {
             List<Long> userIds = assigneeDistributeVOList.stream().filter(assigneeDistributeVO ->
                     assigneeDistributeVO.getAssigneeId() != null).map(assigneeDistributeVO -> (assigneeDistributeVO.getAssigneeId())).collect(Collectors.toList());
-            Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(userIds, true);
+            Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(userIds, true);
             assigneeDistributeVOList.parallelStream().forEach(assigneeDistributeVO -> {
                 if (assigneeDistributeVO.getAssigneeId() != null && usersMap.get(assigneeDistributeVO.getAssigneeId()) != null) {
                     assigneeDistributeVO.setAssigneeName(usersMap.get(assigneeDistributeVO.getAssigneeId()).getName());

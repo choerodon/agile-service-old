@@ -8,9 +8,9 @@ import io.choerodon.agile.api.vo.ProjectDTO
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.api.vo.event.ProjectConfig
 import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue
-import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.mapper.*
+import io.choerodon.agile.app.service.UserService
 import org.mockito.Matchers
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,8 +45,8 @@ class StateMachineControllerSpec extends Specification {
     @Autowired
     IssueMapper issueMapper
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository
+    @Qualifier("userService")
+    private UserService userRepository
     @Shared
     def baseUrl = '/v1/organizations/{organization_id}/state_machine'
     @Shared

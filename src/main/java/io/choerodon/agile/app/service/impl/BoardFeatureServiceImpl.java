@@ -189,9 +189,9 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         programBoardInfo.setFilterSprintList(modelMapper.map(sprints, new TypeToken<List<SprintVO>>() {
         }.getType()));
         //获取团队信息
-        List<ProjectRelationshipDTO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
+        List<ProjectRelationshipVO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
         List<TeamProjectDTO> filterTeamList = new ArrayList<>(projectRelationships.size());
-        for (ProjectRelationshipDTO rel : projectRelationships) {
+        for (ProjectRelationshipVO rel : projectRelationships) {
             TeamProjectDTO teamProjectDTO = new TeamProjectDTO();
             teamProjectDTO.setTeamProjectId(rel.getProjectId());
             teamProjectDTO.setName(rel.getProjName());
@@ -199,14 +199,14 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         }
         programBoardInfo.setFilterTeamList(filterTeamList);
         //获取依赖关系，只获取有效团队的依赖关系
-        List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId, projectRelationships.stream().map(ProjectRelationshipDTO::getProjectId).collect(Collectors.toList()));
+        List<BoardDependInfoDTO> boardDependInfos = boardDependMapper.queryInfoByPiId(programId, piId, projectRelationships.stream().map(ProjectRelationshipVO::getProjectId).collect(Collectors.toList()));
         //获取公告板特性信息
         List<BoardFeatureInfoDTO> boardFeatureInfos = boardFeatureMapper.queryInfoByPiId(programId, piId).stream().filter(x -> x.getIssueTypeId() != null).collect(Collectors.toList());
 
         Map<String, Object> result = handleBoardFilter(boardFilter, boardDependInfos, boardFeatureInfos, sprints, projectRelationships);
         boardFeatureInfos = (List<BoardFeatureInfoDTO>) result.get(BOARDFEATURES);
         sprints = (List<SprintDTO>) result.get(SPRINTS);
-        projectRelationships = (List<ProjectRelationshipDTO>) result.get(PROJECTRELATIONSHIPS);
+        projectRelationships = (List<ProjectRelationshipVO>) result.get(PROJECTRELATIONSHIPS);
 
         List<ProgramBoardSprintInfoDTO> sprintInfos = new ArrayList<>(sprints.size());
         for (SprintDTO sprint : sprints) {
@@ -241,7 +241,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
      * @param projectRelationships
      * @return
      */
-    private Map<String, Object> handleBoardFilter(ProgramBoardFilterDTO boardFilter, List<BoardDependInfoDTO> boardDependInfos, List<BoardFeatureInfoDTO> boardFeatureInfos, List<SprintDTO> sprints, List<ProjectRelationshipDTO> projectRelationships) {
+    private Map<String, Object> handleBoardFilter(ProgramBoardFilterDTO boardFilter, List<BoardDependInfoDTO> boardDependInfos, List<BoardFeatureInfoDTO> boardFeatureInfos, List<SprintDTO> sprints, List<ProjectRelationshipVO> projectRelationships) {
         Map<String, Object> result = new HashMap<>(3);
         //只显示有依赖关系的公告板特性
         if (boardFilter.getOnlyDependFeature()) {
@@ -270,10 +270,10 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         result.put(SPRINTS, sprints);
         //只筛选某些团队的公告板特性
         if (!boardFilter.getOnlyOtherTeamDependFeature() && !CollectionUtils.isEmpty(boardFilter.getTeamProjectIds())) {
-            Map<Long, ProjectRelationshipDTO> map = projectRelationships.stream().collect(Collectors.toMap(ProjectRelationshipDTO::getProjectId, x -> x));
+            Map<Long, ProjectRelationshipVO> map = projectRelationships.stream().collect(Collectors.toMap(ProjectRelationshipVO::getProjectId, x -> x));
             projectRelationships = new ArrayList<>(boardFilter.getTeamProjectIds().size());
             for (Long teamProjectId : boardFilter.getTeamProjectIds()) {
-                ProjectRelationshipDTO relationshipDTO = map.get(teamProjectId);
+                ProjectRelationshipVO relationshipDTO = map.get(teamProjectId);
                 if (relationshipDTO != null) {
                     projectRelationships.add(relationshipDTO);
                 } else {
@@ -311,7 +311,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
                 }
             }
             //计算出要展示的团队
-            Map<Long, ProjectRelationshipDTO> teamMap = projectRelationships.stream().collect(Collectors.toMap(ProjectRelationshipDTO::getProjectId, x -> x));
+            Map<Long, ProjectRelationshipVO> teamMap = projectRelationships.stream().collect(Collectors.toMap(ProjectRelationshipVO::getProjectId, x -> x));
             projectRelationships = new ArrayList<>();
             List<Long> sprintIds = sprints.stream().map(SprintDTO::getSprintId).collect(Collectors.toList());
             List<Long> projectIds = newFeatures.stream().filter(x -> sprintIds.contains(x.getSprintId())).map(BoardFeatureInfoDTO::getTeamProjectId).distinct().collect(Collectors.toList());
@@ -321,7 +321,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
                 }
             }
             for (Long teamProjectId : projectIds) {
-                ProjectRelationshipDTO relationshipDTO = teamMap.get(teamProjectId);
+                ProjectRelationshipVO relationshipDTO = teamMap.get(teamProjectId);
                 if (relationshipDTO != null) {
                     projectRelationships.add(relationshipDTO);
                 }
@@ -336,13 +336,13 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
      * 处理团队具体数据
      *
      * @param programId
-     * @param projectRelationshipDTOs
+     * @param projectRelationshipVOS
      * @param teamFeatureInfoMap
      * @param teamProjects
      */
-    private void handleTeamData(Long programId, List<ProjectRelationshipDTO> projectRelationshipDTOs, Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoDTO> teamProjects, List<SprintDTO> sprints) {
+    private void handleTeamData(Long programId, List<ProjectRelationshipVO> projectRelationshipVOS, Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoDTO> teamProjects, List<SprintDTO> sprints) {
         Map<Long, BoardTeamDO> teamMap = boardTeamRepository.queryByProgramId(programId).stream().collect(Collectors.toMap(BoardTeamDO::getTeamProjectId, x -> x));
-        for (ProjectRelationshipDTO relationshipDTO : projectRelationshipDTOs) {
+        for (ProjectRelationshipVO relationshipDTO : projectRelationshipVOS) {
             //判断boardTeam数据是否存在
             BoardTeamDO team = teamMap.get(relationshipDTO.getProjectId());
             if (team == null) {

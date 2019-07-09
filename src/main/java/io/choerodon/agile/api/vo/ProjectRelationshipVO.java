@@ -9,7 +9,7 @@ import java.util.Date;
  * Created by HuangFuqiang@choerodon.io on 2019/3/13.
  * Email: fuqianghuang01@gmail.com
  */
-public class ProjectRelationshipDTO {
+public class ProjectRelationshipVO {
 
     @ApiModelProperty(value = "主键id")
     private Long id;

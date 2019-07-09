@@ -8,16 +8,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Table(name = "agile_rank")
-public class RankDO extends BaseDTO {
+public class RankDTO extends BaseDTO {
 
-    public RankDO() {}
+    public RankDTO() {}
 
-    public RankDO(Long issueId, String rank) {
+    public RankDTO(Long issueId, String rank) {
         this.issueId = issueId;
         this.rank = rank;
     }
 
-    public RankDO(Long id, String rank, Long objectVersionNumber) {
+    public RankDTO(Long id, String rank, Long objectVersionNumber) {
         this.id = id;
         this.rank = rank;
         this.objectVersionNumber = objectVersionNumber;

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.RankMapper">
 
-    <select id="selectRankByIssueId" resultType="io.choerodon.agile.infra.dataobject.RankDO">
+    <select id="selectRankByIssueId" resultType="io.choerodon.agile.infra.dataobject.RankDTO">
         select ar.*
         from agile_rank ar
         where ar.project_id = #{projectId}

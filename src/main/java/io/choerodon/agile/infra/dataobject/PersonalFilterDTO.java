@@ -12,7 +12,7 @@ import javax.persistence.Table;
  * @since 2019/2/25
  */
 @Table(name = "agile_personal_filter")
-public class PersonalFilterDO extends BaseDTO {
+public class PersonalFilterDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

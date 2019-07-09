@@ -61,7 +61,7 @@ class BoardControllerSpec extends Specification {
 
 //    @Autowired
 //    @Qualifier("mockUserRepository")
-//    private UserRepository userRepository
+//    private UserService userService
 
 
     @Shared
@@ -80,7 +80,7 @@ class BoardControllerSpec extends Specification {
 //        projectDTO.code = "AG"
 //        projectDTO.name = "AG"
 //        projectDTO.organizationId = 1L
-//        userRepository.queryProject(*_) >> projectDTO
+//        userService.queryProject(*_) >> projectDTO
 
 //        and:
 //        UserDO userDO = new UserDO()
@@ -88,20 +88,20 @@ class BoardControllerSpec extends Specification {
 //        userDO.realName = "admin"
 //        List<UserDO> userDOList = new ArrayList<>()
 //        userDOList.add(userDO)
-//        userRepository.listUsersByIds(*_) >> userDOList
+//        userService.listUsersByIds(*_) >> userDOList
 //        List<RoleDTO> roles = new ArrayList<>()
 //        RoleDTO roleDTO = new RoleDTO()
 //        roleDTO.setCode("role/project/default/project-owner")
 //        roleDTO.setId(1L)
 //        roles.add(roleDTO)
-//        userRepository.listRolesWithUserCountOnProjectLevel(*_) >> roles
+//        userService.listRolesWithUserCountOnProjectLevel(*_) >> roles
 //        PageInfo<UserDTO> users = new PageInfo<>(new ArrayList<>())
 //        List<UserDTO> userDOList1 = new ArrayList<>()
 //        UserDTO u = new UserDTO()
 //        u.setId(6L)
 //        userDOList1.add(u)
 //        users.setContent(userDOList1)
-//        userRepository.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> users
+//        userService.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> users
 //    }
 
 

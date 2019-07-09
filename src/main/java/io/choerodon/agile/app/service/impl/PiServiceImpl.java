@@ -343,9 +343,9 @@ public class PiServiceImpl implements PiService {
         sprintDTO.setProjectId(programId);
         sprintDTO.setPiId(piId);
         List<SprintDTO> sprintDTOList = sprintMapper.select(sprintDTO);
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
-        for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
-            Long projectId = projectRelationshipDTO.getProjectId();
+        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        for (ProjectRelationshipVO projectRelationshipVO : projectRelationshipVOList) {
+            Long projectId = projectRelationshipVO.getProjectId();
             for (SprintDTO sprint : sprintDTOList) {
                 sprintRepository.createSprint(new SprintE(projectId, sprint.getSprintName(), sprint.getStartDate(), sprint.getEndDate(), sprint.getStatusCode(), sprint.getPiId()));
             }
@@ -440,12 +440,12 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public void completeProjectsSprints(Long programId, Long piId, Boolean onlySelectEnable) {
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, onlySelectEnable).getBody();
-        if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
+        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, onlySelectEnable).getBody();
+        if (projectRelationshipVOList == null || projectRelationshipVOList.isEmpty()) {
             return;
         }
-        for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
-            Long projectId = projectRelationshipDTO.getProjectId();
+        for (ProjectRelationshipVO projectRelationshipVO : projectRelationshipVOList) {
+            Long projectId = projectRelationshipVO.getProjectId();
             List<Long> sprintIds = sprintMapper.selectNotDoneByPiId(projectId, piId);
             if (sprintIds != null && !sprintIds.isEmpty()) {
                 for (Long sprintId : sprintIds) {
@@ -461,13 +461,13 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public void completeSprintsWithSelect(Long programId, Long piId, Long nextPiId, Long artId) {
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
-        if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
+        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        if (projectRelationshipVOList == null || projectRelationshipVOList.isEmpty()) {
             return;
         }
         ArtDTO artDTO = artMapper.selectByPrimaryKey(artId);
-        for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
-            Long projectId = projectRelationshipDTO.getProjectId();
+        for (ProjectRelationshipVO projectRelationshipVO : projectRelationshipVOList) {
+            Long projectId = projectRelationshipVO.getProjectId();
             List<Long> sprintIds = sprintMapper.selectNotDoneByPiId(projectId, piId);
             SprintDTO newSprint = sprintMapper.selectFirstSprintByPiId(projectId, nextPiId);
             for (Long sprintId : sprintIds) {

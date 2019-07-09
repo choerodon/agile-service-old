@@ -1,11 +1,11 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.RankDTO;
-import io.choerodon.agile.infra.dataobject.RankDO;
+import io.choerodon.agile.api.vo.RankVO;
+import io.choerodon.agile.infra.dataobject.RankDTO;
 
 public interface RankService {
 
-    RankDO getReferenceRank(Long projectId, String type, Long referenceIssueId);
+    RankDTO getReferenceRank(Long projectId, String type, Long referenceIssueId);
 
-    void epicAndFeatureRank(Long projectId, RankDTO rankDTO);
+    void epicAndFeatureRank(Long projectId, RankVO rankVO);
 }

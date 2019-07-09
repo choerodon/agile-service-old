@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.vo.ProjectInfoDTO;
+import io.choerodon.agile.api.vo.ProjectInfoVO;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.stereotype.Component;
 
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProjectInfoValidator {
 
-    public void verifyUpdateData(ProjectInfoDTO projectInfoDTO, Long projectId) {
-        projectInfoDTO.setProjectId(projectId);
-        if (projectInfoDTO.getInfoId() == null) {
+    public void verifyUpdateData(ProjectInfoVO projectInfoVO, Long projectId) {
+        projectInfoVO.setProjectId(projectId);
+        if (projectInfoVO.getInfoId() == null) {
             throw new CommonException("error.projectInfo.infoId");
         }
     }

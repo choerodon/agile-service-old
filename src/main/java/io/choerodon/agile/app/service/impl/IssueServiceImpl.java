@@ -122,7 +122,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private ProjectInfoRepository projectInfoRepository;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     @Autowired
     private LookupValueMapper lookupValueMapper;
     @Autowired
@@ -574,7 +574,7 @@ public class IssueServiceImpl implements IssueService {
         if (searchVO.getSearchArgs() != null && searchVO.getSearchArgs().get(ASSIGNEE) != null) {
             String userName = (String) searchVO.getSearchArgs().get(ASSIGNEE);
             if (userName != null && !"".equals(userName)) {
-                List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
+                List<UserDTO> userDTOS = userService.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
                     searchVO.getAdvancedSearchArgs().put("assigneeIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
                 } else {
@@ -585,7 +585,7 @@ public class IssueServiceImpl implements IssueService {
         if (searchVO.getSearchArgs() != null && searchVO.getSearchArgs().get(REPORTER) != null) {
             String userName = (String) searchVO.getSearchArgs().get(REPORTER);
             if (userName != null && !"".equals(userName)) {
-                List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
+                List<UserDTO> userDTOS = userService.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
                     searchVO.getAdvancedSearchArgs().put("reporterIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
                 } else {
@@ -728,7 +728,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<EpicDataVO> listEpic(Long projectId) {
         List<EpicDataVO> epicDataList = epicDataAssembler.toTargetList(issueMapper.queryEpicList(projectId), EpicDataVO.class);
-        ProjectDTO program = userRepository.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
+        ProjectDTO program = userService.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         List<EpicDataVO> programEpics = null;
         if (program != null) {
             programEpics = epicDataAssembler.toTargetList(issueMapper.selectEpicByProgram(program.getId(), projectId), EpicDataVO.class);
@@ -1051,7 +1051,7 @@ public class IssueServiceImpl implements IssueService {
 //            //如果移动冲刺不是活跃冲刺，则状态回到默认状态
 //            batchHandleIssueStatus(projectId, moveIssueIdsFilter, sprintId);
             List<Long> assigneeIds = issueSearchDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDTO::getAssigneeId).distinct().collect(Collectors.toList());
-            Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+            Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
             return issueSearchAssembler.doListToDTO(issueSearchDTOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
         } else {
             return new ArrayList<>();
@@ -1207,7 +1207,7 @@ public class IssueServiceImpl implements IssueService {
 //        }
 //        List<IssueSearchDTO> issueSearchDTOList = issueMapper.queryIssueByIssueIds(projectId, storyMapMoveDTO.getSprintIssueIds());
 //        List<Long> assigneeIds = issueSearchDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDTO::getAssigneeId).distinct().collect(Collectors.toList());
-//        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+//        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
 //        return issueSearchAssembler.doListToDTO(issueSearchDTOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
 //    }
 
@@ -1292,7 +1292,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueFeatureVO> listFeatureSelectData(Long projectId, Long organizationId, Long epicId) {
-        ProjectDTO program = userRepository.getGroupInfoByEnableProject(organizationId, projectId);
+        ProjectDTO program = userService.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
             return issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(), projectId, epicId), IssueFeatureVO.class);
         } else {
@@ -1318,7 +1318,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueFeatureVO> listFeature(Long projectId, Long organizationId) {
-        ProjectDTO program = userRepository.getGroupInfoByEnableProject(organizationId, projectId);
+        ProjectDTO program = userService.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
             List<IssueDTO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), projectId, null);
             List<IssueFeatureVO> issueFeatureVOList = issueAssembler.toTargetList(programFeatureList, IssueFeatureVO.class);
@@ -1673,15 +1673,15 @@ public class IssueServiceImpl implements IssueService {
         String[] fieldCodes = fieldMap.get(FIELD_CODES);
         String[] fieldNames = fieldMap.get(FIELD_NAMES);
 
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(projectId);
-        projectInfoDO = projectInfoMapper.selectOne(projectInfoDO);
-        String projectCode = projectInfoDO.getProjectCode();
-        ProjectDTO project = userRepository.queryProject(projectId);
+        ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
+        projectInfoDTO.setProjectId(projectId);
+        projectInfoDTO = projectInfoMapper.selectOne(projectInfoDTO);
+        String projectCode = projectInfoDTO.getProjectCode();
+        ProjectDTO project = userService.queryProject(projectId);
         if (project == null) {
             throw new CommonException(PROJECT_ERROR);
         }
-        project.setCode(projectInfoDO.getProjectCode());
+        project.setCode(projectInfoDTO.getProjectCode());
         Boolean condition = handleSearchUser(searchVO, projectId);
         if (condition) {
             String filterSql = null;
@@ -1726,7 +1726,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public void exportProgramIssues(Long programId, SearchVO searchVO, HttpServletRequest request, HttpServletResponse response, Long organizationId) {
-        ProjectDTO project = userRepository.queryProject(programId);
+        ProjectDTO project = userService.queryProject(programId);
         if (project == null) {
             throw new CommonException(PROJECT_ERROR);
         }
@@ -2464,9 +2464,9 @@ public class IssueServiceImpl implements IssueService {
         //获取初始状态
         Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
 
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(projectId);
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
+        projectInfoDTO.setProjectId(projectId);
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoE.class);
         if (projectInfoE == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }

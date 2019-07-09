@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.infra.repository.ProjectInfoRepository;
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
+import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -21,13 +21,13 @@ public class ProjectInfoRepositoryImpl implements ProjectInfoRepository {
 
     @Override
     public ProjectInfoE create(ProjectInfoE projectInfoE) {
-        ProjectInfoDO projectInfoDO = ConvertHelper.convert(projectInfoE, ProjectInfoDO.class);
-        int result = projectInfoMapper.insert(projectInfoDO);
+        ProjectInfoDTO projectInfoDTO = ConvertHelper.convert(projectInfoE, ProjectInfoDTO.class);
+        int result = projectInfoMapper.insert(projectInfoDTO);
         if (result != 1) {
             throw new CommonException("error.projectInfo.initializationProjectInfo");
         }
-        ProjectInfoDO query = new ProjectInfoDO();
-        query.setProjectId(projectInfoDO.getProjectId());
+        ProjectInfoDTO query = new ProjectInfoDTO();
+        query.setProjectId(projectInfoDTO.getProjectId());
         return ConvertHelper.convert(projectInfoMapper.selectOne(query), ProjectInfoE.class);
     }
 
@@ -44,12 +44,12 @@ public class ProjectInfoRepositoryImpl implements ProjectInfoRepository {
 
     @Override
     public ProjectInfoE update(ProjectInfoE projectInfoE) {
-        ProjectInfoDO projectInfoDO = ConvertHelper.convert(projectInfoE, ProjectInfoDO.class);
-        if (projectInfoMapper.updateByPrimaryKeySelective(projectInfoDO) != 1) {
+        ProjectInfoDTO projectInfoDTO = ConvertHelper.convert(projectInfoE, ProjectInfoDTO.class);
+        if (projectInfoMapper.updateByPrimaryKeySelective(projectInfoDTO) != 1) {
             throw new CommonException("error.projectInfo.update");
         }
-        ProjectInfoDO query = new ProjectInfoDO();
-        query.setProjectId(projectInfoDO.getProjectId());
+        ProjectInfoDTO query = new ProjectInfoDTO();
+        query.setProjectId(projectInfoDTO.getProjectId());
         return ConvertHelper.convert(projectInfoMapper.selectOne(query), ProjectInfoE.class);
     }
 }

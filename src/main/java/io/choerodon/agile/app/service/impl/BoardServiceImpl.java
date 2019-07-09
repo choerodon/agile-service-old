@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.BoardValidator;
-import io.choerodon.agile.app.service.BoardColumnService;
-import io.choerodon.agile.app.service.BoardService;
-import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.app.service.StateMachineService;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.common.annotation.DataLog;
@@ -88,7 +85,7 @@ public class BoardServiceImpl implements BoardService {
     private BoardColumnRepository boardColumnRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private QuickFilterMapper quickFilterMapper;
@@ -434,7 +431,7 @@ public class BoardServiceImpl implements BoardService {
         jsonObject.put("parentCompleted", sortAndJudgeCompleted(projectId, parentIds));
         jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
         jsonObject.put("allColumnNum", getAllColumnNum(projectId, boardId, activeSprintId));
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
         Comparator<IssueForBoardDO> comparator = Comparator.comparing(IssueForBoardDO::getRank, nullsFirst(naturalOrder()));
         columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> {
                     subStatus.getIssues().forEach(issueForBoardDO -> {

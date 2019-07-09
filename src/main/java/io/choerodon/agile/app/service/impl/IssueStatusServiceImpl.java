@@ -11,7 +11,7 @@ import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.repository.ColumnStatusRelRepository;
 import io.choerodon.agile.infra.repository.IssueStatusRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
@@ -65,7 +65,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     private IssueMapper issueMapper;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;

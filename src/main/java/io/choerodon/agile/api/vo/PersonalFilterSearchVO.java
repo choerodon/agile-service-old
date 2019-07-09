@@ -8,7 +8,7 @@ import java.util.List;
  * @author shinan.chen
  * @since 2019/2/25
  */
-public class PersonalFilterSearchDTO {
+public class PersonalFilterSearchVO {
 
     /**
      * 搜索参数

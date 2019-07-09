@@ -3,9 +3,9 @@ package io.choerodon.agile.api.controller.v1
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.DataLogCreateVO
 import io.choerodon.agile.api.vo.DataLogVO
-import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.DataLogMapper
+import io.choerodon.agile.app.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -32,7 +32,7 @@ class DataLogControllerSpec extends Specification {
     TestRestTemplate restTemplate
 
     @Autowired
-    UserRepository userRepository
+    UserService userRepository
 
     @Autowired
     private DataLogMapper dataLogMapper

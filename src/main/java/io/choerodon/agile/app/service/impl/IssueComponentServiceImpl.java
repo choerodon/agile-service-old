@@ -6,7 +6,7 @@ import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.repository.ComponentIssueRelRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
@@ -63,7 +63,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     private ComponentIssueRelMapper componentIssueRelMapper;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -161,7 +161,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
             if ((componentForListDTOPage.getList() != null) && !componentForListDTOPage.getList().isEmpty()) {
                 List<Long> assigneeIds = componentForListDTOPage.getList().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
                         && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
-                Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+                Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
                 componentForListDTOPage.getList().forEach(componentForListDTO -> {
                     UserMessageDO userMessageDO = usersMap.get(componentForListDTO.getManagerId());
                     String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
@@ -185,7 +185,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         if (searchVO.getSearchArgs() != null && searchVO.getSearchArgs().get(MANAGER) != null) {
             String userName = (String) searchVO.getSearchArgs().get(MANAGER);
             if (userName != null && !"".equals(userName)) {
-                List<UserDTO> userDTOS = userRepository.queryUsersByNameAndProjectId(projectId, userName);
+                List<UserDTO> userDTOS = userService.queryUsersByNameAndProjectId(projectId, userName);
                 if (userDTOS != null && !userDTOS.isEmpty()) {
                     searchVO.getAdvancedSearchArgs().put("managerId", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
                 } else {
@@ -207,7 +207,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
                 issueComponentMapper.queryComponentWithIssueNum(projectId, componentId, noIssueTest), ComponentForListDTO.class);
         List<Long> assigneeIds = componentForListDTOList.stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
                 && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
         componentForListDTOList.forEach(componentForListDTO -> {
             String assigneeName = usersMap.get(componentForListDTO.getManagerId()) != null ? usersMap.get(componentForListDTO.getManagerId()).getName() : null;
             String imageUrl = assigneeName != null ? usersMap.get(componentForListDTO.getManagerId()).getImageUrl() : null;

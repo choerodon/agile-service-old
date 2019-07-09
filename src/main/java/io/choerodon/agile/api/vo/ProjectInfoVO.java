@@ -9,7 +9,7 @@ import java.util.Date;
  * @author dinghuang123@gmail.com
  * @since 2018/6/15
  */
-public class ProjectInfoDTO {
+public class ProjectInfoVO {
 
     @ApiModelProperty(value = "主键id")
     private Long infoId;

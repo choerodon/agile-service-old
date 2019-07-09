@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.entity;
 
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
+import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.core.exception.CommonException;
 
 import java.util.Date;
@@ -119,7 +119,7 @@ public class SprintE {
         return piId;
     }
 
-    public void createSprint(ProjectInfoDO project) {
+    public void createSprint(ProjectInfoDTO project) {
         this.projectId = project.getProjectId();
         this.sprintName = project.getProjectCode().trim() + " 1";
         this.statusCode = STATUS_SPRINT_PLANNING_CODE;

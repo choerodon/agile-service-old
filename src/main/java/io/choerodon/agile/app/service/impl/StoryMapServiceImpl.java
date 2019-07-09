@@ -10,7 +10,7 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.StoryMapMapper;
 import io.choerodon.agile.infra.mapper.StoryMapWidthMapper;
 import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.repository.VersionIssueRelRepository;
 import io.choerodon.core.convertor.ConvertHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ public class StoryMapServiceImpl implements StoryMapService {
     private StoryMapWidthMapper storyMapWidthMapper;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private StoryMapAssembler storyMapAssembler;
@@ -77,7 +77,7 @@ public class StoryMapServiceImpl implements StoryMapService {
         JSONObject result = new JSONObject(true);
         List<Long> epicIds = new ArrayList<>();
         // get program epic
-        ProjectDTO program = userRepository.getGroupInfoByEnableProject(organizationId, projectId);
+        ProjectDTO program = userService.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
             List<Long> programEpicIds = storyMapMapper.selectEpicIdsByProgram(program.getId());
             if (programEpicIds != null && !programEpicIds.isEmpty()) {

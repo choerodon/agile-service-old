@@ -41,14 +41,14 @@ class NoticeControllerSpec extends Specification {
 
 //    @Autowired
 //    @Qualifier("mockUserRepository")
-//    private UserRepository userRepository
+//    private UserService userService
 
     @Shared
     def projectId = 1L
 
 //    def setup() {
-//        userRepository.listRolesWithUserCountOnProjectLevel(*_) >> new ArrayList<RoleDTO>()
-//        userRepository.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> new PageInfo<UserDTO>()
+//        userService.listRolesWithUserCountOnProjectLevel(*_) >> new ArrayList<RoleDTO>()
+//        userService.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> new PageInfo<UserDTO>()
 //    }
 
     def 'updateNotice'() {

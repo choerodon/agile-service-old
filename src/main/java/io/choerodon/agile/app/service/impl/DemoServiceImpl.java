@@ -7,7 +7,7 @@ import io.choerodon.agile.api.vo.event.OrganizationRegisterEventPayload;
 import io.choerodon.agile.infra.dataobject.BoardColumnDTO;
 import io.choerodon.agile.infra.dataobject.BoardDTO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
+import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
@@ -409,9 +409,9 @@ public class DemoServiceImpl implements DemoService {
      * @param projectId
      */
     private void updateProjectAndIssues(Long projectId, Date date1, Date date2) {
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(projectId);
-        ProjectInfoDO projectResult = projectInfoMapper.selectOne(projectInfoDO);
+        ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
+        projectInfoDTO.setProjectId(projectId);
+        ProjectInfoDTO projectResult = projectInfoMapper.selectOne(projectInfoDTO);
         if (projectResult == null) {
             throw new CommonException("error.project.get");
         }

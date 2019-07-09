@@ -89,7 +89,7 @@ public class IssueCreateVO {
 
     private Long relateIssueId;
 
-    private RankDTO rankDTO;
+    private RankVO rankVO;
 
     public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
         return issueLinkCreateDTOList;
@@ -299,12 +299,12 @@ public class IssueCreateVO {
         return relateIssueId;
     }
 
-    public void setRankDTO(RankDTO rankDTO) {
-        this.rankDTO = rankDTO;
+    public void setRankVO(RankVO rankVO) {
+        this.rankVO = rankVO;
     }
 
-    public RankDTO getRankDTO() {
-        return rankDTO;
+    public RankVO getRankVO() {
+        return rankVO;
     }
 
     @Override

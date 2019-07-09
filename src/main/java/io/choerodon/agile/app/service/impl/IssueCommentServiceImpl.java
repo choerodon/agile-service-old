@@ -6,11 +6,10 @@ import io.choerodon.agile.api.vo.IssueCommentVO;
 import io.choerodon.agile.api.vo.IssueCommentUpdateDTO;
 import io.choerodon.agile.app.assembler.IssueCommentAssembler;
 import io.choerodon.agile.app.service.IssueCommentService;
-import io.choerodon.agile.domain.agile.entity.IssueCommentE;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.IssueCommentDTO;
 import io.choerodon.agile.infra.repository.IssueCommentRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -47,7 +46,7 @@ public class IssueCommentServiceImpl implements IssueCommentService {
     @Autowired
     private IssueCommentMapper issueCommentMapper;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -110,8 +109,8 @@ public class IssueCommentServiceImpl implements IssueCommentService {
         issueCommentDTO.setProjectId(projectId);
         issueCommentDTO.setCommentId(commentId);
         IssueCommentVO issueCommentVO = ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDTO), IssueCommentVO.class);
-        issueCommentVO.setUserName(userRepository.queryUserNameByOption(issueCommentVO.getUserId(), true).getRealName());
-        issueCommentVO.setUserImageUrl(userRepository.queryUserNameByOption(issueCommentVO.getUserId(), true).getImageUrl());
+        issueCommentVO.setUserName(userService.queryUserNameByOption(issueCommentVO.getUserId(), true).getRealName());
+        issueCommentVO.setUserImageUrl(userService.queryUserNameByOption(issueCommentVO.getUserId(), true).getImageUrl());
         return ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDTO), IssueCommentVO.class);
     }
 

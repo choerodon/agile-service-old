@@ -2,7 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IdWithNameDTO;
 import io.choerodon.agile.api.vo.MessageVO;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.MessageDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
@@ -21,12 +21,12 @@ import java.util.Map;
 public class NoticeMessageAssembler {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
 
     public List<MessageVO> messageDOToIDTO(List<MessageDTO> messageDTOList, List<Long> ids) {
         List<MessageVO> messageVOList = new ArrayList<>(messageDTOList.size());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(ids, true);
+        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(ids, true);
         messageDTOList.forEach(messageDTO -> {
             List<IdWithNameDTO> idWithNameDTOList = new ArrayList<>();
             if (messageDTO.getEnable() && messageDTO.getUser() != null && messageDTO.getUser().length() != 0 && !"null".equals(messageDTO.getUser())) {

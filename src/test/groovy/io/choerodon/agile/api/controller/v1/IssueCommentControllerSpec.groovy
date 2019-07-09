@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.IssueCommentCreateVO
 import io.choerodon.agile.api.vo.IssueCommentVO
-import io.choerodon.agile.infra.repository.UserRepository
+import io.choerodon.agile.app.service.UserService
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueCommentMapper
@@ -45,8 +45,8 @@ class IssueCommentControllerSpec extends Specification {
     IssueCommentMapper issueCommentMapper
 
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository
+    @Qualifier("userService")
+    private UserService userRepository
 
     @Shared
     def projectId = 1

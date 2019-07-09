@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author shinan.chen
  * @since 2019/2/25
  */
-public class PersonalFilterDTO {
+public class PersonalFilterVO {
 
     @ApiModelProperty(value = "主键id")
     private Long filterId;
@@ -27,14 +27,14 @@ public class PersonalFilterDTO {
     private Long objectVersionNumber;
 
     @ApiModelProperty(value = "搜索条件")
-    private PersonalFilterSearchDTO personalFilterSearchDTO;
+    private PersonalFilterSearchVO personalFilterSearchVO;
 
-    public PersonalFilterSearchDTO getPersonalFilterSearchDTO() {
-        return personalFilterSearchDTO;
+    public PersonalFilterSearchVO getPersonalFilterSearchVO() {
+        return personalFilterSearchVO;
     }
 
-    public void setPersonalFilterSearchDTO(PersonalFilterSearchDTO personalFilterSearchDTO) {
-        this.personalFilterSearchDTO = personalFilterSearchDTO;
+    public void setPersonalFilterSearchVO(PersonalFilterSearchVO personalFilterSearchVO) {
+        this.personalFilterSearchVO = personalFilterSearchVO;
     }
 
     public Long getObjectVersionNumber() {

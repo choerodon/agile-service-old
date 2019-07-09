@@ -4,7 +4,7 @@ import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.assembler.NoticeMessageAssembler;
 import io.choerodon.agile.app.service.NoticeService;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.MessageDTO;
 import io.choerodon.agile.infra.dataobject.MessageDetailDO;
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper;
@@ -32,7 +32,7 @@ public class NoticeServiceImpl implements NoticeService {
     private NoticeDetailMapper noticeDetailMapper;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private NoticeMessageAssembler noticeMessageAssembler;
@@ -114,7 +114,7 @@ public class NoticeServiceImpl implements NoticeService {
         if (res.contains("project_owner")) {
             RoleAssignmentSearchDTO roleAssignmentSearchDTO = new RoleAssignmentSearchDTO();
             Long roleId = null;
-            List<RoleDTO> roleDTOS = userRepository.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO);
+            List<RoleDTO> roleDTOS = userService.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO);
             for (RoleDTO roleDTO : roleDTOS) {
                 if ("role/project/default/project-owner".equals(roleDTO.getCode())) {
                     roleId = roleDTO.getId();
@@ -122,7 +122,7 @@ public class NoticeServiceImpl implements NoticeService {
                 }
             }
             if (roleId != null) {
-                PageInfo<UserDTO> userDTOS = userRepository.pagingQueryUsersByRoleIdOnProjectLevel(0, 300,roleId, projectId, roleAssignmentSearchDTO);
+                PageInfo<UserDTO> userDTOS = userService.pagingQueryUsersByRoleIdOnProjectLevel(0, 300,roleId, projectId, roleAssignmentSearchDTO);
                 for (UserDTO userDTO : userDTOS.getList()) {
                     if (!result.contains(userDTO.getId())) {
                         result.add(userDTO.getId());

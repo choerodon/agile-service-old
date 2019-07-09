@@ -1,12 +1,12 @@
-package io.choerodon.agile.infra.repository.impl;
+package io.choerodon.agile.app.service.impl;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.ProjectDTO;
 import io.choerodon.agile.api.vo.RoleAssignmentSearchDTO;
 import io.choerodon.agile.api.vo.RoleDTO;
 import io.choerodon.agile.api.vo.UserDTO;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -26,12 +26,12 @@ import java.util.Map;
  * @since 2018/5/28
  */
 @Component
-public class UserRepositoryImpl implements UserRepository {
+public class UserServiceImpl implements UserService {
 
     private final UserFeignClient userFeignClient;
 
     @Autowired
-    public UserRepositoryImpl(UserFeignClient userFeignClient) {
+    public UserServiceImpl(UserFeignClient userFeignClient) {
         this.userFeignClient = userFeignClient;
     }
 

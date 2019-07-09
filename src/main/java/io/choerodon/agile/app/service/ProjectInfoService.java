@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.ProjectInfoDTO;
-import io.choerodon.agile.api.vo.ProjectRelationshipDTO;
+import io.choerodon.agile.api.vo.ProjectInfoVO;
+import io.choerodon.agile.api.vo.ProjectRelationshipVO;
 import io.choerodon.agile.api.vo.event.ProjectEvent;
 
 import java.util.List;
@@ -30,18 +30,18 @@ public interface ProjectInfoService {
     /**
      * 更新项目信息
      *
-     * @param projectInfoDTO projectInfoDTO
-     * @return ProjectInfoDTO
+     * @param projectInfoVO projectInfoVO
+     * @return ProjectInfoVO
      */
-    ProjectInfoDTO updateProjectInfo(ProjectInfoDTO projectInfoDTO);
+    ProjectInfoVO updateProjectInfo(ProjectInfoVO projectInfoVO);
 
     /**
      * 查询项目信息
      *
      * @param projectId projectId
-     * @return ProjectInfoDTO
+     * @return ProjectInfoVO
      */
-    ProjectInfoDTO queryProjectInfoByProjectId(Long projectId);
+    ProjectInfoVO queryProjectInfoByProjectId(Long projectId);
 
     /**
      * 获取项目群关联的团队项目信息
@@ -49,5 +49,5 @@ public interface ProjectInfoService {
      * @param projectId
      * @return
      */
-    List<ProjectRelationshipDTO> queryProgramTeamInfo(Long projectId);
+    List<ProjectRelationshipVO> queryProgramTeamInfo(Long projectId);
 }

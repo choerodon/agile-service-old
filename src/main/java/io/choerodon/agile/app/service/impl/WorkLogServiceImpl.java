@@ -6,7 +6,7 @@ import io.choerodon.agile.app.service.WorkLogService;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.domain.agile.entity.WorkLogE;
 import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.repository.WorkLogRepository;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
@@ -51,7 +51,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     private IssueMapper issueMapper;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     private void setTo(Long issueId, BigDecimal predictionTime) {
         IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
@@ -126,7 +126,7 @@ public class WorkLogServiceImpl implements WorkLogService {
         workLogDO.setProjectId(projectId);
         workLogDO.setLogId(logId);
         WorkLogDTO workLogDTO = ConvertHelper.convert(workLogMapper.selectOne(workLogDO), WorkLogDTO.class);
-        workLogDTO.setUserName(userRepository.queryUserNameByOption(workLogDTO.getUserId(), true).getRealName());
+        workLogDTO.setUserName(userService.queryUserNameByOption(workLogDTO.getUserId(), true).getRealName());
         return workLogDTO;
     }
 
@@ -134,7 +134,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     public List<WorkLogDTO> queryWorkLogListByIssueId(Long projectId, Long issueId) {
         List<WorkLogDTO> workLogDTOList = ConvertHelper.convertList(workLogMapper.queryByIssueId(issueId, projectId), WorkLogDTO.class);
         List<Long> assigneeIds = workLogDTOList.stream().filter(workLogDTO -> workLogDTO.getUserId() != null && !Objects.equals(workLogDTO.getUserId(), 0L)).map(WorkLogDTO::getUserId).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
         workLogDTOList.forEach(workLogDTO -> {
             String assigneeName = usersMap.get(workLogDTO.getUserId()) != null ? usersMap.get(workLogDTO.getUserId()).getName() : null;
             workLogDTO.setUserName(assigneeName);

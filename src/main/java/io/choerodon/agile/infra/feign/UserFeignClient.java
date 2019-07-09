@@ -72,16 +72,16 @@ public interface UserFeignClient {
     ResponseEntity<OrganizationDTO> query(@PathVariable(name = "organization_id") Long id);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/project_relations/{parent_id}")
-    ResponseEntity<List<ProjectRelationshipDTO>> getProjUnderGroup(@PathVariable(name = "organization_id") Long orgId,
-                                                                   @PathVariable(name = "parent_id") Long id,
-                                                                   @RequestParam(name = "only_select_enable") Boolean onlySelectEnable);
+    ResponseEntity<List<ProjectRelationshipVO>> getProjUnderGroup(@PathVariable(name = "organization_id") Long orgId,
+                                                                  @PathVariable(name = "parent_id") Long id,
+                                                                  @RequestParam(name = "only_select_enable") Boolean onlySelectEnable);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/projects/{project_id}/program")
     ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(@PathVariable(name = "organization_id") Long organizationId,
                                                            @PathVariable(name = "project_id") Long projectId);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/roles")
-    ResponseEntity<PageInfo<UserWithRoleDTO>> pagingQueryUsersWithProjectLevelRoles(
+    ResponseEntity<PageInfo<UserWithRoleVO>> pagingQueryUsersWithProjectLevelRoles(
             @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size,
             @PathVariable(name = "project_id") Long sourceId,

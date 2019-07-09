@@ -4,7 +4,7 @@ import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
@@ -48,7 +48,7 @@ public class SendMsgUtil {
     private NoticeService noticeService;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;
@@ -76,7 +76,7 @@ public class SendMsgUtil {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
-            ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            ProjectDTO projectDTO = userService.queryProject(projectId);
             if (projectDTO == null) {
                 throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
@@ -100,7 +100,7 @@ public class SendMsgUtil {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", issueVO);
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
-            ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            ProjectDTO projectDTO = userService.queryProject(projectId);
             if (projectDTO == null) {
                 throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
@@ -121,7 +121,7 @@ public class SendMsgUtil {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_assigneed", result);
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getAssigneeName();
-            ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            ProjectDTO projectDTO = userService.queryProject(projectId);
             if (projectDTO == null) {
                 throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
@@ -141,7 +141,7 @@ public class SendMsgUtil {
         Boolean completed = issueStatusMapper.selectByStatusId(projectId, result.getStatusId()).getCompleted();
         if (fieldList.contains(STATUS_ID) && completed != null && completed && result.getAssigneeId() != null && SchemeApplyType.AGILE.equals(result.getApplyType())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
-            ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            ProjectDTO projectDTO = userService.queryProject(projectId);
             if (projectDTO == null) {
                 throw new CommonException(ERROR_PROJECT_NOTEXIST);
             }
@@ -167,16 +167,16 @@ public class SendMsgUtil {
         Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueMoveVO.getStatusId()).getCompleted();
         if (completed != null && completed && issueDTO.getAssigneeId() != null && SchemeApplyType.AGILE.equals(issueDTO.getApplyType())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDTO, IssueVO.class));
-            ProjectDTO projectDTO = userRepository.queryProject(projectId);
+            ProjectDTO projectDTO = userService.queryProject(projectId);
             if (projectDTO == null) {
                 throw new CommonException("error.project.notExist");
             }
             StringBuilder url = new StringBuilder();
             String projectName = convertProjectName(projectDTO);
-            ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-            projectInfoDO.setProjectId(projectId);
-            List<ProjectInfoDO> pioList = projectInfoMapper.select(projectInfoDO);
-            ProjectInfoDO pio = null;
+            ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
+            projectInfoDTO.setProjectId(projectId);
+            List<ProjectInfoDTO> pioList = projectInfoMapper.select(projectInfoDTO);
+            ProjectInfoDTO pio = null;
             if (pioList != null && !pioList.isEmpty()) {
                 pio = pioList.get(0);
             }
@@ -189,7 +189,7 @@ public class SendMsgUtil {
             String summary = pioCode + "-" + issueDTO.getIssueNum() + "-" + issueDTO.getSummary();
             Long[] ids = new Long[1];
             ids[0] = issueDTO.getAssigneeId();
-            List<UserDO> userDOList = userRepository.listUsersByIds(ids);
+            List<UserDO> userDOList = userService.listUsersByIds(ids);
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
             siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDTO.getAssigneeId(), projectId);
         }
@@ -199,7 +199,7 @@ public class SendMsgUtil {
         RoleAssignmentSearchDTO roleAssignmentSearchDTO = new RoleAssignmentSearchDTO();
         for (Long projectId : projectIds) {
             Long roleId = null;
-            List<RoleDTO> roleDTOS = userRepository.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO);
+            List<RoleDTO> roleDTOS = userService.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO);
             for (RoleDTO roleDTO : roleDTOS) {
                 if ("role/project/default/project-owner".equals(roleDTO.getCode())) {
                     roleId = roleDTO.getId();
@@ -207,7 +207,7 @@ public class SendMsgUtil {
                 }
             }
             if (roleId != null) {
-                PageInfo<UserDTO> userDTOS = userRepository.pagingQueryUsersByRoleIdOnProjectLevel(0, 300, roleId, projectId, roleAssignmentSearchDTO);
+                PageInfo<UserDTO> userDTOS = userService.pagingQueryUsersByRoleIdOnProjectLevel(0, 300, roleId, projectId, roleAssignmentSearchDTO);
                 for (UserDTO userDTO : userDTOS.getList()) {
                     if (!result.contains(userDTO.getId())) {
                         result.add(userDTO.getId());
@@ -220,12 +220,12 @@ public class SendMsgUtil {
     @Async
     public void sendPmAndEmailAfterPiComplete(Long programId, PiDTO piDTO) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
-        List<Long> projectIds = (projectRelationshipDTOList != null && !projectRelationshipDTOList.isEmpty() ? projectRelationshipDTOList.stream().map(ProjectRelationshipDTO::getProjectId).collect(Collectors.toList()) : null);
+        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        List<Long> projectIds = (projectRelationshipVOList != null && !projectRelationshipVOList.isEmpty() ? projectRelationshipVOList.stream().map(ProjectRelationshipVO::getProjectId).collect(Collectors.toList()) : null);
         if (projectIds == null) {
             return;
         }
-        ProjectDTO projectDTO = userRepository.queryProject(programId);
+        ProjectDTO projectDTO = userService.queryProject(programId);
         if (projectDTO == null) {
             throw new CommonException(ERROR_PROJECT_NOTEXIST);
         }

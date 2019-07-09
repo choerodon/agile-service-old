@@ -20,7 +20,7 @@ import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.repository.SprintRepository;
 import io.choerodon.agile.infra.repository.SprintWorkCalendarRefRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -65,7 +65,7 @@ public class SprintServiceImpl implements SprintService {
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     @Autowired
     private IssueAssembler issueAssembler;
     @Autowired
@@ -113,7 +113,7 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     public synchronized SprintDetailDTO createSprint(Long projectId) {
-        ProjectInfoDO projectInfo = new ProjectInfoDO();
+        ProjectInfoDTO projectInfo = new ProjectInfoDTO();
         projectInfo.setProjectId(projectId);
         projectInfo = projectInfoMapper.selectOne(projectInfo);
         if (projectInfo == null) {
@@ -242,7 +242,7 @@ public class SprintServiceImpl implements SprintService {
     private void handleSprintNoIssue(List<SprintSearchDTO> sprintSearches, Long projectId) {
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         Set<Long> assigneeIds = sprintMapper.queryBacklogSprintAssigneeIds(projectId);
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(new ArrayList<>(assigneeIds), true);
+        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(new ArrayList<>(assigneeIds), true);
         if (sprintSearchDO != null) {
             List<AssigneeIssueDTO> assigneeIssueDTOS = sprintMapper.queryAssigneeIssueByActiveSprintId(projectId, sprintSearchDO.getSprintId());
             if (assigneeIssueDTOS != null && !assigneeIssueDTOS.isEmpty()) {
@@ -262,7 +262,7 @@ public class SprintServiceImpl implements SprintService {
         List<Long> allIssueIds = issueIdSprintIdDTOs.stream().map(IssueIdSprintIdDTO::getIssueId).collect(Collectors.toList());
         //查询出所有经办人用户id
         Set<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(projectId, allIssueIds);
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(new ArrayList<>(assigneeIds), true);
+        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(new ArrayList<>(assigneeIds), true);
         SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDO != null) {
             List<Long> activeSprintIssueIds = issueIdSprintIdDTOs.stream().filter(x -> sprintSearchDO.getSprintId().equals(x.getSprintId())).map(IssueIdSprintIdDTO::getIssueId).collect(Collectors.toList());
@@ -509,7 +509,7 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     public String queryCurrentSprintCreateName(Long projectId) {
-        ProjectInfoDO projectInfo = new ProjectInfoDO();
+        ProjectInfoDTO projectInfo = new ProjectInfoDTO();
         projectInfo.setProjectId(projectId);
         projectInfo = projectInfoMapper.selectOne(projectInfo);
         if (projectInfo == null) {

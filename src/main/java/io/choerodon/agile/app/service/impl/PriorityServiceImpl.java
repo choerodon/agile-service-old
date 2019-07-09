@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.PriorityService;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -18,6 +19,8 @@ public class PriorityServiceImpl implements PriorityService {
     IssueMapper issueMapper;
     @Autowired
     IssueRepository issueRepository;
+    @Autowired
+    private IssueAccessDataService issueAccessDataService;
 
     @Override
     public Long checkPriorityDelete(Long organizationId, Long priorityId, List<Long> projectIds) {
@@ -31,7 +34,7 @@ public class PriorityServiceImpl implements PriorityService {
     @Override
     public void batchChangeIssuePriority(Long organizationId, Long priorityId, Long changePriorityId, Long userId, List<Long> projectIds) {
         if (projectIds != null && !projectIds.isEmpty()) {
-            issueRepository.batchUpdateIssuePriority(organizationId, priorityId, changePriorityId, userId, projectIds);
+            issueAccessDataService.batchUpdateIssuePriority(organizationId, priorityId, changePriorityId, userId, projectIds);
         }
     }
 }

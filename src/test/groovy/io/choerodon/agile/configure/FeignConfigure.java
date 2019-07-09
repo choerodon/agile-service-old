@@ -48,8 +48,8 @@ public class FeignConfigure {
         projectDTO.setName("test");
         projectDTO.setOrganizationId(1L);
         Mockito.when(userFeignClient.queryProject(Matchers.anyLong())).thenReturn(new ResponseEntity<>(projectDTO, HttpStatus.OK));
-        List<ProjectRelationshipDTO> rel = new ArrayList<>(2);
-        ProjectRelationshipDTO rel1 = new ProjectRelationshipDTO();
+        List<ProjectRelationshipVO> rel = new ArrayList<>(2);
+        ProjectRelationshipVO rel1 = new ProjectRelationshipVO();
         rel1.setProjectId(2L);
         rel1.setUserCount(2);
         rel1.setParentId(1L);
@@ -57,7 +57,7 @@ public class FeignConfigure {
         rel1.setProgramId(1L);
         rel1.setProjCode("test1");
         rel1.setProjName("敏捷项目1");
-        ProjectRelationshipDTO rel2 = new ProjectRelationshipDTO();
+        ProjectRelationshipVO rel2 = new ProjectRelationshipVO();
         rel2.setProjectId(3L);
         rel2.setUserCount(2);
         rel2.setParentId(1L);

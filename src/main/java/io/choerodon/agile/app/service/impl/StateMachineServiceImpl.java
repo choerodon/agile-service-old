@@ -22,8 +22,8 @@ import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
-import io.choerodon.agile.infra.dataobject.RankDO;
+import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
+import io.choerodon.agile.infra.dataobject.RankDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -110,40 +110,40 @@ public class StateMachineServiceImpl implements StateMachineService {
     @Autowired
     private IssueValidator issueValidator;
 
-    private void insertRank(Long projectId, Long issueId, String type, RankDTO rankDTO) {
-        List<RankDO> rankDOList = new ArrayList<>();
+    private void insertRank(Long projectId, Long issueId, String type, RankVO rankVO) {
+        List<RankDTO> rankDTOList = new ArrayList<>();
         String rank = null;
-        if (rankDTO == null) {
+        if (rankVO == null) {
             String minRank = rankMapper.selectMinRank(projectId, type);
             rank = (minRank == null ? RankUtil.mid() : RankUtil.genPre(minRank));
         } else {
-            RankDO referenceRank = rankService.getReferenceRank(projectId, rankDTO.getType(), rankDTO.getReferenceIssueId());
-            if (rankDTO.getBefore()) {
-                String leftRank = rankMapper.selectLeftRank(projectId, rankDTO.getType(), referenceRank.getRank());
+            RankDTO referenceRank = rankService.getReferenceRank(projectId, rankVO.getType(), rankVO.getReferenceIssueId());
+            if (rankVO.getBefore()) {
+                String leftRank = rankMapper.selectLeftRank(projectId, rankVO.getType(), referenceRank.getRank());
                 rank = (leftRank == null ? RankUtil.genPre(referenceRank.getRank()) : RankUtil.between(leftRank, referenceRank.getRank()));
             } else {
-                String rightRank = rankMapper.selectRightRank(projectId, rankDTO.getType(), referenceRank.getRank());
+                String rightRank = rankMapper.selectRightRank(projectId, rankVO.getType(), referenceRank.getRank());
                 rank = (rightRank == null ? RankUtil.genNext(referenceRank.getRank()) : RankUtil.between(referenceRank.getRank(), rightRank));
             }
         }
-        RankDO rankDO = new RankDO();
-        rankDO.setIssueId(issueId);
-        rankDO.setRank(rank);
-        rankDOList.add(rankDO);
-        rankMapper.batchInsertRank(projectId, type, rankDOList);
+        RankDTO rankDTO = new RankDTO();
+        rankDTO.setIssueId(issueId);
+        rankDTO.setRank(rank);
+        rankDTOList.add(rankDTO);
+        rankMapper.batchInsertRank(projectId, type, rankDTOList);
     }
 
     private void initRank(IssueCreateVO issueCreateVO, Long issueId, String type) {
         if (issueCreateVO.getProgramId() != null) {
-            List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(issueCreateVO.getProgramId()), issueCreateVO.getProgramId(), true).getBody();
-            if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
+            List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(issueCreateVO.getProgramId()), issueCreateVO.getProgramId(), true).getBody();
+            if (projectRelationshipVOList == null || projectRelationshipVOList.isEmpty()) {
                 return;
             }
-            for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
-                insertRank(projectRelationshipDTO.getProjectId(), issueId, type, issueCreateVO.getRankDTO());
+            for (ProjectRelationshipVO projectRelationshipVO : projectRelationshipVOList) {
+                insertRank(projectRelationshipVO.getProjectId(), issueId, type, issueCreateVO.getRankVO());
             }
         } else if (issueCreateVO.getProjectId() != null) {
-            insertRank(issueCreateVO.getProjectId(), issueId, type, issueCreateVO.getRankDTO());
+            insertRank(issueCreateVO.getProjectId(), issueId, type, issueCreateVO.getRankVO());
         }
     }
 
@@ -172,9 +172,9 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
         //获取项目信息
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(projectId);
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
+        projectInfoDTO.setProjectId(projectId);
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoE.class);
         if (projectInfoE == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }
@@ -232,9 +232,9 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
         //获取项目信息
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(subIssueConvertDTO.getProjectId());
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
+        ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
+        projectInfoDTO.setProjectId(subIssueConvertDTO.getProjectId());
+        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoE.class);
         if (projectInfoE == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }

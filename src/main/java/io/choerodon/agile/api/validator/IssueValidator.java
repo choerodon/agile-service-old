@@ -376,18 +376,18 @@ public class IssueValidator {
         if (SchemeApplyType.AGILE.equals(applyType) && issueCreateVO.getEpicName() != null && issueService.checkEpicName(issueCreateVO.getProjectId(), issueCreateVO.getEpicName())) {
             throw new CommonException("error.epicName.exist");
         }
-        if (issueCreateVO.getRankDTO() != null) {
-            RankDTO rankDTO = issueCreateVO.getRankDTO();
-            if (rankDTO.getReferenceIssueId() == null) {
+        if (issueCreateVO.getRankVO() != null) {
+            RankVO rankVO = issueCreateVO.getRankVO();
+            if (rankVO.getReferenceIssueId() == null) {
                 throw new CommonException("error.referenceIssueId.isNull");
             }
-            if (rankDTO.getBefore() == null) {
+            if (rankVO.getBefore() == null) {
                 throw new CommonException("error.before.isNull");
             }
-            if (rankDTO.getType() == null) {
+            if (rankVO.getType() == null) {
                 throw new CommonException("error.type.isNull");
             }
-            if (rankDTO.getProjectId() == null) {
+            if (rankVO.getProjectId() == null) {
                 throw new CommonException("error.projectId.isNull");
             }
         }

@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.ProjectInfoDTO;
+import io.choerodon.agile.api.vo.ProjectInfoVO;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
+import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,47 +12,47 @@ import org.springframework.stereotype.Component;
  * @since 2018/6/15
  */
 @Component
-public class ProjectInfoConverter implements ConvertorI<ProjectInfoE, ProjectInfoDO, ProjectInfoDTO> {
+public class ProjectInfoConverter implements ConvertorI<ProjectInfoE, ProjectInfoDTO, ProjectInfoVO> {
 
     @Override
-    public ProjectInfoE dtoToEntity(ProjectInfoDTO projectInfoDTO) {
+    public ProjectInfoE dtoToEntity(ProjectInfoVO projectInfoVO) {
+        ProjectInfoE projectInfoE = new ProjectInfoE();
+        BeanUtils.copyProperties(projectInfoVO, projectInfoE);
+        return projectInfoE;
+    }
+
+    @Override
+    public ProjectInfoE doToEntity(ProjectInfoDTO projectInfoDTO) {
         ProjectInfoE projectInfoE = new ProjectInfoE();
         BeanUtils.copyProperties(projectInfoDTO, projectInfoE);
         return projectInfoE;
     }
 
     @Override
-    public ProjectInfoE doToEntity(ProjectInfoDO projectInfoDO) {
-        ProjectInfoE projectInfoE = new ProjectInfoE();
-        BeanUtils.copyProperties(projectInfoDO, projectInfoE);
-        return projectInfoE;
+    public ProjectInfoVO entityToDto(ProjectInfoE projectInfoE) {
+        ProjectInfoVO projectInfoVO = new ProjectInfoVO();
+        BeanUtils.copyProperties(projectInfoE, projectInfoVO);
+        return projectInfoVO;
     }
 
     @Override
-    public ProjectInfoDTO entityToDto(ProjectInfoE projectInfoE) {
+    public ProjectInfoDTO entityToDo(ProjectInfoE projectInfoE) {
         ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
         BeanUtils.copyProperties(projectInfoE, projectInfoDTO);
         return projectInfoDTO;
     }
 
     @Override
-    public ProjectInfoDO entityToDo(ProjectInfoE projectInfoE) {
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        BeanUtils.copyProperties(projectInfoE, projectInfoDO);
-        return projectInfoDO;
+    public ProjectInfoVO doToDto(ProjectInfoDTO projectInfoDTO) {
+        ProjectInfoVO projectInfoVO = new ProjectInfoVO();
+        BeanUtils.copyProperties(projectInfoDTO, projectInfoVO);
+        return projectInfoVO;
     }
 
     @Override
-    public ProjectInfoDTO doToDto(ProjectInfoDO projectInfoDO) {
+    public ProjectInfoDTO dtoToDo(ProjectInfoVO projectInfoVO) {
         ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
-        BeanUtils.copyProperties(projectInfoDO, projectInfoDTO);
+        BeanUtils.copyProperties(projectInfoVO, projectInfoDTO);
         return projectInfoDTO;
-    }
-
-    @Override
-    public ProjectInfoDO dtoToDo(ProjectInfoDTO projectInfoDTO) {
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        BeanUtils.copyProperties(projectInfoDTO, projectInfoDO);
-        return projectInfoDO;
     }
 }

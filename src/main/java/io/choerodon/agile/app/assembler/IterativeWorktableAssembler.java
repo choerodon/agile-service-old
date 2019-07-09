@@ -2,7 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.AssigneeIssueVO;
 import io.choerodon.agile.infra.dataobject.AssigneeIssueDTO;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +22,14 @@ import java.util.stream.Collectors;
 public class IterativeWorktableAssembler {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     public List<AssigneeIssueVO> assigneeIssueDOToDTO(List<AssigneeIssueDTO> assigneeIssueDTOList) {
         List<AssigneeIssueVO> assigneeIssueVOList = new ArrayList<>(assigneeIssueDTOList.size());
         List<Long> assigneeIds = assigneeIssueDTOList.stream().
                 filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).
                 map(AssigneeIssueDTO::getAssigneeId).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
         assigneeIssueDTOList.forEach(assigneeIssueDO -> {
             String assigneeName = usersMap.get(assigneeIssueDO.getAssigneeId()) != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getName() : null;
             String imageUrl = assigneeName != null ? usersMap.get(assigneeIssueDO.getAssigneeId()).getImageUrl() : null;

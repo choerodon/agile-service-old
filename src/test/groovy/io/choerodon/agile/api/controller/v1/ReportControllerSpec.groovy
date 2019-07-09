@@ -7,11 +7,11 @@ import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.mapper.*
 import com.github.pagehelper.PageInfo
+import io.choerodon.agile.app.service.UserService
 import org.mockito.Matchers
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -42,8 +42,8 @@ import static org.mockito.Matchers.anyString
 class ReportControllerSpec extends Specification {
 
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository
+    @Qualifier("userService")
+    private UserService userRepository
 
     @Autowired
     private TestRestTemplate restTemplate

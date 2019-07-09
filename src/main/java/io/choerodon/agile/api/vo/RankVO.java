@@ -4,7 +4,7 @@ package io.choerodon.agile.api.vo;
  * Created by HuangFuqiang@choerodon.io on 2019/6/24.
  * Email: fuqianghuang01@gmail.com
  */
-public class RankDTO {
+public class RankVO {
 
     private Long projectId;
 

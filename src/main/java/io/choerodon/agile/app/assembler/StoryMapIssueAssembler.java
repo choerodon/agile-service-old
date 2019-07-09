@@ -5,7 +5,7 @@
 //import io.choerodon.agile.api.vo.StatusMapVO;
 //import io.choerodon.agile.api.vo.StoryMapIssueDTO;
 //import io.choerodon.agile.infra.dataobject.LookupValueDTO;
-//import io.choerodon.agile.infra.repository.UserRepository;
+//import io.choerodon.agile.app.service.UserService;
 //import io.choerodon.agile.infra.common.utils.ColorUtil;
 //import io.choerodon.agile.infra.dataobject.StoryMapIssueDO;
 //import io.choerodon.agile.infra.dataobject.UserMessageDO;
@@ -28,7 +28,7 @@
 //public class StoryMapIssueAssembler {
 //
 //    @Autowired
-//    private UserRepository userRepository;
+//    private UserService userRepository;
 //
 //    @Autowired
 //    private LookupValueMapper lookupValueMapper;

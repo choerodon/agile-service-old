@@ -12,7 +12,7 @@ import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.agile.infra.repository.DataLogRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -41,7 +41,7 @@ public class DataLogServiceImpl implements DataLogService {
     @Autowired
     private DataLogMapper dataLogMapper;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     @Autowired
     private FoundationFeignClient foundationFeignClient;
 
@@ -87,7 +87,7 @@ public class DataLogServiceImpl implements DataLogService {
     private void fillUserAndStatus(Long projectId, List<DataLogVO> dataLogVOS) {
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<Long> createByIds = dataLogVOS.stream().filter(dataLogDTO -> dataLogDTO.getCreatedBy() != null && !Objects.equals(dataLogDTO.getCreatedBy(), 0L)).map(DataLogVO::getCreatedBy).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(createByIds, true);
+        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(createByIds, true);
         for (DataLogVO dto : dataLogVOS) {
             UserMessageDO userMessageDO = usersMap.get(dto.getCreatedBy());
             String name = userMessageDO != null ? userMessageDO.getName() : null;

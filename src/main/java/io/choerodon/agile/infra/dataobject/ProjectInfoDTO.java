@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @since 2018/5/30
  */
 @Table(name = "agile_project_info")
-public class ProjectInfoDO extends BaseDTO {
+public class ProjectInfoDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

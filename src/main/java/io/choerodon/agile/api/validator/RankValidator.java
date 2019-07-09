@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.vo.RankDTO;
+import io.choerodon.agile.api.vo.RankVO;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.stereotype.Component;
 
@@ -11,20 +11,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class RankValidator {
 
-    public void checkEpicAndFeatureRank(RankDTO rankDTO) {
-        if (rankDTO.getReferenceIssueId() == null) {
+    public void checkEpicAndFeatureRank(RankVO rankVO) {
+        if (rankVO.getReferenceIssueId() == null) {
             throw new CommonException("error.referenceIssueId.isNull");
         }
-        if (rankDTO.getProjectId() == null) {
+        if (rankVO.getProjectId() == null) {
             throw new CommonException("error.projectId.isNull");
         }
-        if (rankDTO.getType() == null) {
+        if (rankVO.getType() == null) {
             throw new CommonException("error.type.isNull");
         }
-        if (rankDTO.getBefore() == null) {
+        if (rankVO.getBefore() == null) {
             throw new CommonException("error.before.isNull");
         }
-        if (rankDTO.getIssueId() == null) {
+        if (rankVO.getIssueId() == null) {
             throw new CommonException("error.issueId.isNull");
         }
     }

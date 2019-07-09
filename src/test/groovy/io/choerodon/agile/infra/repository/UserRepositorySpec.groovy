@@ -28,12 +28,12 @@ package io.choerodon.agile.infra.repository
 //class UserRepositorySpec extends Specification {
 //
 //    @Autowired
-//    UserRepository userRepository
+//    UserService userService
 //
 //    def 'queryUserNameByOption'() {
 //        given: 'mockFeign'
 //        def userFeignClient = Mock(UserFeignClient)
-//        userRepository = new UserRepositoryImpl(userFeignClient)
+//        userService = new UserRepositoryImpl(userFeignClient)
 //
 //        and: '给定返回参数'
 //        UserDO mock = new UserDO()
@@ -42,7 +42,7 @@ package io.choerodon.agile.infra.repository
 //        ResponseEntity<UserDO> responseEntity = new ResponseEntity<>(mock, HttpStatus.OK)
 //
 //        when: '根据参数查询用户信息'
-//        UserDO userDO = userRepository.queryUserNameByOption(userId, withId)
+//        UserDO userDO = userService.queryUserNameByOption(userId, withId)
 //
 //        then: '判断mock交互并且设置返回值'
 //        if (userId != 0) {
@@ -63,7 +63,7 @@ package io.choerodon.agile.infra.repository
 //    def 'queryUsersMap'() {
 //        given: 'mockFeign'
 //        def userFeignClient = Mock(UserFeignClient)
-//        userRepository = new UserRepositoryImpl(userFeignClient)
+//        userService = new UserRepositoryImpl(userFeignClient)
 //
 //        and: '给定返回参数'
 //        List<UserDO> mock = new ArrayList<>()
@@ -79,7 +79,7 @@ package io.choerodon.agile.infra.repository
 //        assigneeIdList.add(1L)
 //
 //        when: '根据用户id列表查询用户信息'
-//        Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(assigneeIdList, withLoginName)
+//        Map<Long, UserMessageDO> userMessageDOMap = userService.queryUsersMap(assigneeIdList, withLoginName)
 //
 //        then: '判断mock交互并且设置返回值'
 //        1 * userFeignClient.listUsersByIds(*_) >> responseEntity
@@ -95,7 +95,7 @@ package io.choerodon.agile.infra.repository
 //    def 'queryProject'() {
 //        given: 'mockFeign'
 //        def userFeignClient = Mock(UserFeignClient)
-//        userRepository = new UserRepositoryImpl(userFeignClient)
+//        userService = new UserRepositoryImpl(userFeignClient)
 //
 //        and: '给定返回参数'
 //        ProjectDTO mock = new ProjectDTO()
@@ -107,7 +107,7 @@ package io.choerodon.agile.infra.repository
 //        assigneeIdList.add(1L)
 //
 //        when: '根据用户id列表查询用户信息'
-//        ProjectDTO projectDTO = userRepository.queryProject(1)
+//        ProjectDTO projectDTO = userService.queryProject(1)
 //
 //        then: '判断mock交互并且设置返回值'
 //        1 * userFeignClient.queryProject(_) >> responseEntity
