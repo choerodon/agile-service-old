@@ -14,7 +14,7 @@ import javax.persistence.Table;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_issue_attachment")
-public class IssueAttachmentDO extends BaseDTO {
+public class IssueAttachmentDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

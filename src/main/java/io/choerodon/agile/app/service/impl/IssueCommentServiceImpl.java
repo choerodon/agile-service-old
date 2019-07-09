@@ -1,24 +1,29 @@
 package io.choerodon.agile.app.service.impl;
 
 
-import io.choerodon.agile.api.vo.IssueCommentCreateDTO;
-import io.choerodon.agile.api.vo.IssueCommentDTO;
+import io.choerodon.agile.api.vo.IssueCommentCreateVO;
+import io.choerodon.agile.api.vo.IssueCommentVO;
 import io.choerodon.agile.api.vo.IssueCommentUpdateDTO;
 import io.choerodon.agile.app.assembler.IssueCommentAssembler;
 import io.choerodon.agile.app.service.IssueCommentService;
 import io.choerodon.agile.domain.agile.entity.IssueCommentE;
+import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.dataobject.IssueCommentDTO;
 import io.choerodon.agile.infra.repository.IssueCommentRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
-import io.choerodon.agile.infra.dataobject.IssueCommentDO;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
+import io.choerodon.mybatis.entity.Criteria;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -31,6 +36,10 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class IssueCommentServiceImpl implements IssueCommentService {
 
+    private static final String UPDATE_ERROR = "error.IssueComment.update";
+    private static final String INSERT_ERROR = "error.IssueComment.insert";
+    private static final String DELETE_ERROR = "error.IssueComment.delete";
+
     @Autowired
     private IssueCommentRepository issueCommentRepository;
     @Autowired
@@ -40,62 +49,96 @@ public class IssueCommentServiceImpl implements IssueCommentService {
     @Autowired
     private UserRepository userRepository;
 
-    @Override
-    public IssueCommentDTO createIssueComment(Long projectId, IssueCommentCreateDTO issueCommentCreateDTO) {
-        IssueCommentE issueCommentE = issueCommentAssembler.toTarget(issueCommentCreateDTO, IssueCommentE.class);
-        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        issueCommentE.setUserId(customUserDetails.getUserId());
-        issueCommentE.setProjectId(projectId);
-        return queryByProjectIdAndCommentId(projectId, issueCommentRepository.create(issueCommentE).getCommentId());
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
     @Override
-    public IssueCommentDTO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList, Long projectId) {
+    public IssueCommentVO createIssueComment(Long projectId, IssueCommentCreateVO issueCommentCreateVO) {
+        IssueCommentDTO issueCommentDTO = issueCommentAssembler.toTarget(issueCommentCreateVO, IssueCommentDTO.class);
+        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
+        issueCommentDTO.setUserId(customUserDetails.getUserId());
+        issueCommentDTO.setProjectId(projectId);
+        return queryByProjectIdAndCommentId(projectId, create(issueCommentDTO).getCommentId());
+    }
+
+    @Override
+    public IssueCommentVO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList, Long projectId) {
         if (fieldList != null && !fieldList.isEmpty()) {
-            IssueCommentE issueCommentE = issueCommentAssembler.toTarget(issueCommentUpdateDTO, IssueCommentE.class);
-            issueCommentRepository.update(issueCommentE, fieldList.toArray(new String[fieldList.size()]));
-            return queryByProjectIdAndCommentId(projectId, issueCommentE.getCommentId());
+            IssueCommentDTO issueCommentDTO = issueCommentAssembler.toTarget(issueCommentUpdateDTO, IssueCommentDTO.class);
+            update(issueCommentDTO, fieldList.toArray(new String[fieldList.size()]));
+            return queryByProjectIdAndCommentId(projectId, issueCommentDTO.getCommentId());
         } else {
             return null;
         }
     }
 
     @Override
-    public List<IssueCommentDTO> queryIssueCommentList(Long projectId, Long issueId) {
-        return ConvertHelper.convertList(issueCommentMapper.queryIssueCommentList(projectId, issueId), IssueCommentDTO.class);
+    public List<IssueCommentVO> queryIssueCommentList(Long projectId, Long issueId) {
+        return ConvertHelper.convertList(issueCommentMapper.queryIssueCommentList(projectId, issueId), IssueCommentVO.class);
     }
 
-    private IssueCommentDO getCommentById(Long projectId, Long commentId) {
-        IssueCommentDO issueCommentDO = new IssueCommentDO();
-        issueCommentDO.setProjectId(projectId);
-        issueCommentDO.setCommentId(commentId);
-        issueCommentDO = issueCommentMapper.selectOne(issueCommentDO);
-        if (issueCommentDO == null) {
+    private IssueCommentDTO getCommentById(Long projectId, Long commentId) {
+        IssueCommentDTO issueCommentDTO = new IssueCommentDTO();
+        issueCommentDTO.setProjectId(projectId);
+        issueCommentDTO.setCommentId(commentId);
+        issueCommentDTO = issueCommentMapper.selectOne(issueCommentDTO);
+        if (issueCommentDTO == null) {
             throw new CommonException("error.comment.get");
         }
-        return issueCommentDO;
+        return issueCommentDTO;
     }
 
     @Override
     public int deleteIssueComment(Long projectId, Long commentId) {
-        IssueCommentDO issueCommentDO = getCommentById(projectId, commentId);
-        return issueCommentRepository.delete(issueCommentDO);
+        IssueCommentDTO issueCommentDTO = getCommentById(projectId, commentId);
+        return delete(issueCommentDTO);
     }
 
     @Override
     public int deleteByIssueId(Long issueId) {
-        IssueCommentDO issueCommentDO = new IssueCommentDO();
-        issueCommentDO.setIssueId(issueId);
-        return issueCommentMapper.delete(issueCommentDO);
+        IssueCommentDTO issueCommentDTO = new IssueCommentDTO();
+        issueCommentDTO.setIssueId(issueId);
+        return issueCommentMapper.delete(issueCommentDTO);
     }
 
-    private IssueCommentDTO queryByProjectIdAndCommentId(Long projectId, Long commentId) {
-        IssueCommentDO issueCommentDO = new IssueCommentDO();
-        issueCommentDO.setProjectId(projectId);
-        issueCommentDO.setCommentId(commentId);
-        IssueCommentDTO issueCommentDTO = ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDO), IssueCommentDTO.class);
-        issueCommentDTO.setUserName(userRepository.queryUserNameByOption(issueCommentDTO.getUserId(), true).getRealName());
-        issueCommentDTO.setUserImageUrl(userRepository.queryUserNameByOption(issueCommentDTO.getUserId(), true).getImageUrl());
-        return ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDO), IssueCommentDTO.class);
+    private IssueCommentVO queryByProjectIdAndCommentId(Long projectId, Long commentId) {
+        IssueCommentDTO issueCommentDTO = new IssueCommentDTO();
+        issueCommentDTO.setProjectId(projectId);
+        issueCommentDTO.setCommentId(commentId);
+        IssueCommentVO issueCommentVO = ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDTO), IssueCommentVO.class);
+        issueCommentVO.setUserName(userRepository.queryUserNameByOption(issueCommentVO.getUserId(), true).getRealName());
+        issueCommentVO.setUserImageUrl(userRepository.queryUserNameByOption(issueCommentVO.getUserId(), true).getImageUrl());
+        return ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDTO), IssueCommentVO.class);
+    }
+
+    @DataLog(type = "createComment")
+    public IssueCommentDTO create(IssueCommentDTO issueCommentDTO) {
+        if (issueCommentMapper.insert(issueCommentDTO) != 1) {
+            throw new CommonException(INSERT_ERROR);
+        }
+        return modelMapper.map(issueCommentMapper.selectByPrimaryKey(issueCommentDTO.getCommentId()), IssueCommentDTO.class);
+    }
+
+    @DataLog(type = "updateComment")
+    public IssueCommentDTO update(IssueCommentDTO issueCommentDTO, String[] fieldList) {
+        Criteria criteria = new Criteria();
+        criteria.update(fieldList);
+        if (issueCommentMapper.updateByPrimaryKeyOptions(issueCommentDTO, criteria) != 1) {
+            throw new CommonException(UPDATE_ERROR);
+        }
+        return modelMapper.map(issueCommentMapper.selectByPrimaryKey(issueCommentDTO.getCommentId()), IssueCommentDTO.class);
+    }
+
+    @DataLog(type = "deleteComment")
+    public int delete(IssueCommentDTO issueCommentDTO) {
+        int isDelete = issueCommentMapper.delete(issueCommentDTO);
+        if (isDelete != 1) {
+            throw new CommonException(DELETE_ERROR);
+        }
+        return isDelete;
     }
 }

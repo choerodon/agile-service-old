@@ -44,8 +44,8 @@ public class IssueAssembler extends AbstractAssembler {
         issueVO.setClosePi(sprintNameAssembler.toTargetList(issueDetailDO.getClosePi(), PiNameVO.class));
         issueVO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueVO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
-        issueVO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
-        issueVO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
+        issueVO.setIssueAttachmentVOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDTOList(), IssueAttachmentVO.class));
+        issueVO.setIssueCommentVOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDTOList(), IssueCommentVO.class));
         issueVO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDTOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
         issueVO.setSubBugDTOList(issueDoToSubIssueDto(issueDetailDO.getSubBugDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
         issueVO.setPriorityDTO(priorityDTOMap.get(issueVO.getPriorityId()));
@@ -55,9 +55,9 @@ public class IssueAssembler extends AbstractAssembler {
         assigneeIdList.add(issueDetailDO.getAssigneeId());
         assigneeIdList.add(issueDetailDO.getReporterId());
         assigneeIdList.add(issueDetailDO.getCreatedBy());
-        Boolean issueCommentCondition = issueVO.getIssueCommentDTOList() != null && !issueVO.getIssueCommentDTOList().isEmpty();
+        Boolean issueCommentCondition = issueVO.getIssueCommentVOList() != null && !issueVO.getIssueCommentVOList().isEmpty();
         if (issueCommentCondition) {
-            assigneeIdList.addAll(issueVO.getIssueCommentDTOList().stream().map(IssueCommentDTO::getUserId).collect(Collectors.toList()));
+            assigneeIdList.addAll(issueVO.getIssueCommentVOList().stream().map(IssueCommentVO::getUserId).collect(Collectors.toList()));
         }
         Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
                 assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
@@ -82,7 +82,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueVO.setReporterLoginName(reporterLoginName);
         issueVO.setReporterRealName(reporterRealName);
         if (issueCommentCondition) {
-            issueVO.getIssueCommentDTOList().forEach(issueCommentDTO -> {
+            issueVO.getIssueCommentVOList().forEach(issueCommentDTO -> {
                 issueCommentDTO.setUserName(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getName() : null);
                 issueCommentDTO.setUserImageUrl(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getImageUrl() : null);
             });
@@ -223,15 +223,15 @@ public class IssueAssembler extends AbstractAssembler {
         issueSubDTO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDO.getActiveSprint(), SprintNameDTO.class));
         issueSubDTO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDO.getCloseSprint(), SprintNameDTO.class));
         issueSubDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
-        issueSubDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
-        issueSubDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
+        issueSubDTO.setIssueAttachmentVOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDTOList(), IssueAttachmentVO.class));
+        issueSubDTO.setIssueCommentVOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDTOList(), IssueCommentVO.class));
         List<Long> assigneeIdList = new ArrayList<>();
         assigneeIdList.add(issueDetailDO.getAssigneeId());
         assigneeIdList.add(issueDetailDO.getReporterId());
         assigneeIdList.add(issueDetailDO.getCreatedBy());
-        Boolean issueCommentCondition = issueSubDTO.getIssueCommentDTOList() != null && !issueSubDTO.getIssueCommentDTOList().isEmpty();
+        Boolean issueCommentCondition = issueSubDTO.getIssueCommentVOList() != null && !issueSubDTO.getIssueCommentVOList().isEmpty();
         if (issueCommentCondition) {
-            assigneeIdList.addAll(issueSubDTO.getIssueCommentDTOList().stream().map(IssueCommentDTO::getUserId).collect(Collectors.toList()));
+            assigneeIdList.addAll(issueSubDTO.getIssueCommentVOList().stream().map(IssueCommentVO::getUserId).collect(Collectors.toList()));
         }
         Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
                 assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
@@ -246,7 +246,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueSubDTO.setCreaterName(createrName);
         issueSubDTO.setCreaterImageUrl(createrName != null ? userMessageDOMap.get(issueSubDTO.getCreatedBy()).getImageUrl() : null);
         if (issueCommentCondition) {
-            issueSubDTO.getIssueCommentDTOList().forEach(issueCommentDTO -> {
+            issueSubDTO.getIssueCommentVOList().forEach(issueCommentDTO -> {
                 issueCommentDTO.setUserName(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getName() : null);
                 issueCommentDTO.setUserImageUrl(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getImageUrl() : null);
             });

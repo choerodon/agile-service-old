@@ -568,9 +568,9 @@ public class DataLogAspect {
             }
         }
         if (issueCommentE != null) {
-            IssueCommentDO issueCommentDO = issueCommentMapper.selectByPrimaryKey(issueCommentE.getCommentId());
-            createDataLog(issueCommentDO.getProjectId(), issueCommentDO.getIssueId(), FIELD_COMMENT,
-                    issueCommentDO.getCommentText(), issueCommentE.getCommentText(), issueCommentE.getCommentId().toString(),
+            IssueCommentDTO issueCommentDTO = issueCommentMapper.selectByPrimaryKey(issueCommentE.getCommentId());
+            createDataLog(issueCommentDTO.getProjectId(), issueCommentDTO.getIssueId(), FIELD_COMMENT,
+                    issueCommentDTO.getCommentText(), issueCommentE.getCommentText(), issueCommentE.getCommentId().toString(),
                     issueCommentE.getCommentId().toString());
 
         }
@@ -643,15 +643,15 @@ public class DataLogAspect {
     }
 
     private void handleDeleteCommentDataLog(Object[] args) {
-        IssueCommentDO issueCommentDO = null;
+        IssueCommentDTO issueCommentDTO = null;
         for (Object arg : args) {
-            if (arg instanceof IssueCommentDO) {
-                issueCommentDO = (IssueCommentDO) arg;
+            if (arg instanceof IssueCommentDTO) {
+                issueCommentDTO = (IssueCommentDTO) arg;
             }
         }
-        if (issueCommentDO != null) {
-            createDataLog(issueCommentDO.getProjectId(), issueCommentDO.getIssueId(), FIELD_COMMENT,
-                    issueCommentDO.getCommentText(), null, issueCommentDO.getCommentId().toString(), null);
+        if (issueCommentDTO != null) {
+            createDataLog(issueCommentDTO.getProjectId(), issueCommentDTO.getIssueId(), FIELD_COMMENT,
+                    issueCommentDTO.getCommentText(), null, issueCommentDTO.getCommentId().toString(), null);
         }
     }
 
@@ -684,26 +684,26 @@ public class DataLogAspect {
             }
         }
         if (attachmentId != null) {
-            IssueAttachmentDO issueAttachmentDO = issueAttachmentMapper.selectByPrimaryKey(attachmentId);
-            createDataLog(issueAttachmentDO.getProjectId(), issueAttachmentDO.getIssueId(), FIELD_ATTACHMENT,
-                    issueAttachmentDO.getUrl(), null, issueAttachmentDO.getAttachmentId().toString(), null);
+            IssueAttachmentDTO issueAttachmentDTO = issueAttachmentMapper.selectByPrimaryKey(attachmentId);
+            createDataLog(issueAttachmentDTO.getProjectId(), issueAttachmentDTO.getIssueId(), FIELD_ATTACHMENT,
+                    issueAttachmentDTO.getUrl(), null, issueAttachmentDTO.getAttachmentId().toString(), null);
         }
     }
 
     private Object handleCreateAttachmentDataLog(Object[] args, ProceedingJoinPoint pjp) {
-        IssueAttachmentE issueAttachmentE = null;
+        IssueAttachmentDTO issueAttachmentDTO = null;
         Object result = null;
         for (Object arg : args) {
             if (arg instanceof IssueAttachmentE) {
-                issueAttachmentE = (IssueAttachmentE) arg;
+                issueAttachmentDTO = (IssueAttachmentDTO) arg;
             }
         }
-        if (issueAttachmentE != null) {
+        if (issueAttachmentDTO != null) {
             try {
                 result = pjp.proceed();
-                issueAttachmentE = (IssueAttachmentE) result;
-                createDataLog(issueAttachmentE.getProjectId(), issueAttachmentE.getIssueId(), FIELD_ATTACHMENT,
-                        null, issueAttachmentE.getUrl(), null, issueAttachmentE.getAttachmentId().toString());
+                issueAttachmentDTO = (IssueAttachmentDTO) result;
+                createDataLog(issueAttachmentDTO.getProjectId(), issueAttachmentDTO.getIssueId(), FIELD_ATTACHMENT,
+                        null, issueAttachmentDTO.getUrl(), null, issueAttachmentDTO.getAttachmentId().toString());
             } catch (Throwable throwable) {
                 throw new CommonException(ERROR_METHOD_EXECUTE, throwable);
             }

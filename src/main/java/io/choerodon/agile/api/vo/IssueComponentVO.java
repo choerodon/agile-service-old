@@ -1,32 +1,37 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
 
-import io.choerodon.mybatis.entity.BaseDTO;
+import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
  */
-@Table(name = "agile_issue_component")
-public class IssueComponentDO extends BaseDTO {
+public class IssueComponentVO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(value = "主键id")
     private Long componentId;
 
+    @ApiModelProperty(value = "项目id")
+    @NotNull(message = "项目id不能为空")
     private Long projectId;
 
+    @ApiModelProperty(value = "模块名称")
     private String name;
 
+    @ApiModelProperty(value = "模块描述")
     private String description;
 
+    @ApiModelProperty(value = "负责人id")
     private Long managerId;
 
+    @ApiModelProperty(value = "默认经办人")
     private String defaultAssigneeRole;
+
+    @ApiModelProperty(value = "版本号")
+    private Long objectVersionNumber;
 
     public void setComponentId(Long componentId) {
         this.componentId = componentId;
@@ -74,5 +79,18 @@ public class IssueComponentDO extends BaseDTO {
 
     public String getDefaultAssigneeRole() {
         return defaultAssigneeRole;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtil.getToString(this);
     }
 }

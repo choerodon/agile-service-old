@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 /**
  * @author dinghuang123@gmail.com
  */
-public class IssueCommentCreateDTO {
+public class IssueCommentCreateVO {
 
     @ApiModelProperty(value = "问题id")
     private Long issueId;

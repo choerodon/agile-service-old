@@ -13,15 +13,15 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:59:45
  */
-public interface IssueCommentMapper extends Mapper<IssueCommentDO> {
+public interface IssueCommentMapper extends Mapper<IssueCommentDTO> {
 
     /**
      * 根据issueId查询评论
      *
      * @param issueId   issueId
      * @param projectId projectId
-     * @return IssueCommentDO
+     * @return IssueCommentDTO
      */
-    List<IssueCommentDO> queryIssueCommentList(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+    List<IssueCommentDTO> queryIssueCommentList(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
 }

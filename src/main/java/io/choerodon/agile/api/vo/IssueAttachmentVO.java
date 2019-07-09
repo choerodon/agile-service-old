@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/5/16.
  * Email: fuqianghuang01@gmail.com
  */
-public class IssueAttachmentDTO {
+public class IssueAttachmentVO {
 
     @ApiModelProperty(value = "附件主键id")
     private Long attachmentId;

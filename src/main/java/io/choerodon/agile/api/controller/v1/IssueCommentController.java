@@ -39,12 +39,12 @@ public class IssueCommentController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue评论")
     @PostMapping
-    public ResponseEntity<IssueCommentDTO> createIssueComment(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueCommentVO> createIssueComment(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId,
-                                                              @ApiParam(value = "创建issue评论对象", required = true)
-                                                              @RequestBody IssueCommentCreateDTO issueCommentCreateDTO) {
-        issueCommentValidator.verifyCreateData(issueCommentCreateDTO);
-        return Optional.ofNullable(issueCommentService.createIssueComment(projectId, issueCommentCreateDTO))
+                                                             @ApiParam(value = "创建issue评论对象", required = true)
+                                                              @RequestBody IssueCommentCreateVO issueCommentCreateVO) {
+        issueCommentValidator.verifyCreateData(issueCommentCreateVO);
+        return Optional.ofNullable(issueCommentService.createIssueComment(projectId, issueCommentCreateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.IssueComment.createIssueComment"));
     }
@@ -52,9 +52,9 @@ public class IssueCommentController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新issue评论")
     @PostMapping(value = "/update")
-    public ResponseEntity<IssueCommentDTO> updateIssueComment(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueCommentVO> updateIssueComment(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId,
-                                                              @ApiParam(value = "更新issue对象", required = true)
+                                                             @ApiParam(value = "更新issue对象", required = true)
                                                               @RequestBody JSONObject issueCommentUpdate) {
         issueCommentValidator.verifyUpdateData(projectId, issueCommentUpdate);
         IssueCommentUpdateDTO issueCommentUpdateDTO = new IssueCommentUpdateDTO();
@@ -67,9 +67,9 @@ public class IssueCommentController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("通过issueId查询issue评论列表")
     @GetMapping(value = "/{issueId}")
-    public ResponseEntity<List<IssueCommentDTO>> queryIssueCommentList(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<IssueCommentVO>> queryIssueCommentList(@ApiParam(value = "项目id", required = true)
                                                                        @PathVariable(name = "project_id") Long projectId,
-                                                                       @ApiParam(value = "issueId", required = true)
+                                                                      @ApiParam(value = "issueId", required = true)
                                                                        @PathVariable Long issueId) {
         return Optional.ofNullable(issueCommentService.queryIssueCommentList(projectId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

@@ -70,7 +70,7 @@ public class IssueUpdateDTO {
     private List<IssueLinkDTO> issueLinkDTOList;
 
     @ApiModelProperty(value = "关联的附件列表")
-    private List<IssueAttachmentDTO> issueAttachmentDTOList;
+    private List<IssueAttachmentVO> issueAttachmentVOList;
 
     @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
@@ -238,12 +238,12 @@ public class IssueUpdateDTO {
         this.issueLinkDTOList = issueLinkDTOList;
     }
 
-    public List<IssueAttachmentDTO> getIssueAttachmentDTOList() {
-        return issueAttachmentDTOList;
+    public List<IssueAttachmentVO> getIssueAttachmentVOList() {
+        return issueAttachmentVOList;
     }
 
-    public void setIssueAttachmentDTOList(List<IssueAttachmentDTO> issueAttachmentDTOList) {
-        this.issueAttachmentDTOList = issueAttachmentDTOList;
+    public void setIssueAttachmentVOList(List<IssueAttachmentVO> issueAttachmentVOList) {
+        this.issueAttachmentVOList = issueAttachmentVOList;
     }
 
     public Long getObjectVersionNumber() {

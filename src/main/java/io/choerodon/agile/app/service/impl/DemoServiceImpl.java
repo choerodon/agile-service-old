@@ -394,13 +394,13 @@ public class DemoServiceImpl implements DemoService {
         return result;
     }
 
-    private IssueComponentDTO createComponent(Long projectId, String name) {
-        IssueComponentDTO issueComponentDTO = new IssueComponentDTO();
-        issueComponentDTO.setProjectId(projectId);
-        issueComponentDTO.setManagerId(0L);
-        issueComponentDTO.setName(name);
-        issueComponentDTO.setDefaultAssigneeRole("无");
-        return issueComponentService.create(projectId, issueComponentDTO);
+    private IssueComponentVO createComponent(Long projectId, String name) {
+        IssueComponentVO issueComponentVO = new IssueComponentVO();
+        issueComponentVO.setProjectId(projectId);
+        issueComponentVO.setManagerId(0L);
+        issueComponentVO.setName(name);
+        issueComponentVO.setDefaultAssigneeRole("无");
+        return issueComponentService.create(projectId, issueComponentVO);
     }
 
     /**
@@ -761,27 +761,27 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 创建模块与关联模块
-        IssueComponentDTO issueComponentDTO1 = createComponent(projectId, "用户模块");
-        IssueComponentDTO issueComponentDTO2 = createComponent(projectId, "订单模块");
-        IssueComponentDTO issueComponentDTO3 = createComponent(projectId, "商品模块");
-        IssueComponentDTO issueComponentDTO4 = createComponent(projectId, "设计模块");
-        IssueComponentDTO issueComponentDTO5 = createComponent(projectId, "环境");
-        IssueComponentDTO issueComponentDTO6 = createComponent(projectId, "购买模块");
-        IssueComponentDTO issueComponentDTO7 = createComponent(projectId, "支付模块");
-        IssueComponentDTO issueComponentDTO8 = createComponent(projectId, "售后");
-        updateComponent(projectId, story1.getIssueId(), issueComponentDTO1.getComponentId());
-        updateComponent(projectId, story5.getIssueId(), issueComponentDTO1.getComponentId());
-        updateComponent(projectId, story4.getIssueId(), issueComponentDTO2.getComponentId());
-        updateComponent(projectId, story2.getIssueId(), issueComponentDTO3.getComponentId());
-        updateComponent(projectId, story6.getIssueId(), issueComponentDTO3.getComponentId());
-        updateComponent(projectId, task1.getIssueId(), issueComponentDTO4.getComponentId());
-        updateComponent(projectId, task3.getIssueId(), issueComponentDTO5.getComponentId());
-        updateComponent(projectId, story7.getIssueId(), issueComponentDTO6.getComponentId());
-        updateComponent(projectId, story8.getIssueId(), issueComponentDTO7.getComponentId());
-        updateComponent(projectId, story9.getIssueId(), issueComponentDTO7.getComponentId());
-        updateComponent(projectId, story10.getIssueId(), issueComponentDTO7.getComponentId());
-        updateComponent(projectId, story11.getIssueId(), issueComponentDTO8.getComponentId());
-        updateComponent(projectId, story12.getIssueId(), issueComponentDTO1.getComponentId());
+        IssueComponentVO issueComponentVO1 = createComponent(projectId, "用户模块");
+        IssueComponentVO issueComponentVO2 = createComponent(projectId, "订单模块");
+        IssueComponentVO issueComponentVO3 = createComponent(projectId, "商品模块");
+        IssueComponentVO issueComponentVO4 = createComponent(projectId, "设计模块");
+        IssueComponentVO issueComponentVO5 = createComponent(projectId, "环境");
+        IssueComponentVO issueComponentVO6 = createComponent(projectId, "购买模块");
+        IssueComponentVO issueComponentVO7 = createComponent(projectId, "支付模块");
+        IssueComponentVO issueComponentVO8 = createComponent(projectId, "售后");
+        updateComponent(projectId, story1.getIssueId(), issueComponentVO1.getComponentId());
+        updateComponent(projectId, story5.getIssueId(), issueComponentVO1.getComponentId());
+        updateComponent(projectId, story4.getIssueId(), issueComponentVO2.getComponentId());
+        updateComponent(projectId, story2.getIssueId(), issueComponentVO3.getComponentId());
+        updateComponent(projectId, story6.getIssueId(), issueComponentVO3.getComponentId());
+        updateComponent(projectId, task1.getIssueId(), issueComponentVO4.getComponentId());
+        updateComponent(projectId, task3.getIssueId(), issueComponentVO5.getComponentId());
+        updateComponent(projectId, story7.getIssueId(), issueComponentVO6.getComponentId());
+        updateComponent(projectId, story8.getIssueId(), issueComponentVO7.getComponentId());
+        updateComponent(projectId, story9.getIssueId(), issueComponentVO7.getComponentId());
+        updateComponent(projectId, story10.getIssueId(), issueComponentVO7.getComponentId());
+        updateComponent(projectId, story11.getIssueId(), issueComponentVO8.getComponentId());
+        updateComponent(projectId, story12.getIssueId(), issueComponentVO1.getComponentId());
 
         // 创建及关联标签
         updateLabel(projectId, subtask1.getIssueId(), "后端");

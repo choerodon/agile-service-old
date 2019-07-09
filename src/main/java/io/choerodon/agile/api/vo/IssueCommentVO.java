@@ -13,7 +13,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:59:45
  */
-public class IssueCommentDTO {
+public class IssueCommentVO {
 
     @ApiModelProperty(value = "主键id")
     private Long commentId;
@@ -43,7 +43,7 @@ public class IssueCommentDTO {
     private Date lastUpdateDate;
 
     @ApiModelProperty(value = "附件列表")
-    private List<IssueAttachmentDTO> issueAttachmentDTOList;
+    private List<IssueAttachmentVO> issueAttachmentVOList;
 
     public Long getCommentId() {
         return commentId;
@@ -93,12 +93,12 @@ public class IssueCommentDTO {
         this.projectId = projectId;
     }
 
-    public List<IssueAttachmentDTO> getIssueAttachmentDTOList() {
-        return issueAttachmentDTOList;
+    public List<IssueAttachmentVO> getIssueAttachmentVOList() {
+        return issueAttachmentVOList;
     }
 
-    public void setIssueAttachmentDTOList(List<IssueAttachmentDTO> issueAttachmentDTOList) {
-        this.issueAttachmentDTOList = issueAttachmentDTOList;
+    public void setIssueAttachmentVOList(List<IssueAttachmentVO> issueAttachmentVOList) {
+        this.issueAttachmentVOList = issueAttachmentVOList;
     }
 
     public String getUserName() {

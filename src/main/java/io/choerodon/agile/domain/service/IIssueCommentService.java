@@ -1,7 +1,5 @@
 package io.choerodon.agile.domain.service;
 
-import io.choerodon.agile.infra.dataobject.IssueCommentDO;
-
 
 /**
  * 敏捷开发Issue评论

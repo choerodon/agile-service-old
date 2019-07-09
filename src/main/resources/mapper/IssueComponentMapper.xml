@@ -111,7 +111,7 @@
         order by aic.component_id desc
     </select>
 
-    <select id="selectByProjectId" resultType="io.choerodon.agile.infra.dataobject.IssueComponentDO">
+    <select id="selectByProjectId" resultType="io.choerodon.agile.infra.dataobject.IssueComponentDTO">
         select
         aic.component_id,
         aic.name

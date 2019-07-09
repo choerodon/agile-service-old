@@ -4,6 +4,7 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueComponentValidator;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.infra.common.utils.PageUtil;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.repository.ComponentIssueRelRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
@@ -18,17 +19,20 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.IssueComponentService;
 import io.choerodon.agile.domain.agile.entity.IssueComponentE;
 import io.choerodon.agile.infra.repository.IssueComponentRepository;
-import io.choerodon.agile.infra.dataobject.IssueComponentDO;
+import io.choerodon.agile.infra.dataobject.IssueComponentDTO;
 import io.choerodon.agile.infra.mapper.IssueComponentMapper;
 
 import com.github.pagehelper.PageHelper;
 
 import io.choerodon.base.domain.PageRequest;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +46,10 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class IssueComponentServiceImpl implements IssueComponentService {
+
+    private static final String AGILE = "Agile:";
+    private static final String PIECHART = AGILE + "PieChart";
+    private static final String CPMPONENT = "component";
 
     @Autowired
     private IssueComponentRepository issueComponentRepository;
@@ -58,38 +66,49 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
+
     private static final String MANAGER = "manager";
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     @Override
-    public IssueComponentDTO create(Long projectId, IssueComponentDTO issueComponentDTO) {
-        if (checkComponentName(projectId, issueComponentDTO.getName())) {
+    public IssueComponentVO create(Long projectId, IssueComponentVO issueComponentVO) {
+        if (checkComponentName(projectId, issueComponentVO.getName())) {
             throw new CommonException("error.componentName.exist");
         }
-        IssueComponentValidator.checkCreateComponent(projectId, issueComponentDTO);
-        IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentDTO, IssueComponentE.class);
-        return ConvertHelper.convert(issueComponentRepository.create(issueComponentE), IssueComponentDTO.class);
+        IssueComponentValidator.checkCreateComponent(projectId, issueComponentVO);
+        IssueComponentDTO issueComponentDTO = modelMapper.map(issueComponentVO, IssueComponentDTO.class);
+        return ConvertHelper.convert(insertComponent(issueComponentDTO), IssueComponentVO.class);
     }
 
     private Boolean checkNameUpdate(Long projectId, Long componentId, String componentName) {
-        IssueComponentDO issueComponentDO = issueComponentMapper.selectByPrimaryKey(componentId);
-        if (componentName.equals(issueComponentDO.getName())) {
+        IssueComponentDTO issueComponentDTO = issueComponentMapper.selectByPrimaryKey(componentId);
+        if (componentName.equals(issueComponentDTO.getName())) {
             return false;
         }
-        IssueComponentDO check = new IssueComponentDO();
+        IssueComponentDTO check = new IssueComponentDTO();
         check.setProjectId(projectId);
         check.setName(componentName);
-        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.select(check);
-        return issueComponentDOList != null && !issueComponentDOList.isEmpty();
+        List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.select(check);
+        return issueComponentDTOList != null && !issueComponentDTOList.isEmpty();
     }
 
     @Override
-    public IssueComponentDTO update(Long projectId, Long id, IssueComponentDTO issueComponentDTO) {
-        if (checkNameUpdate(projectId, id, issueComponentDTO.getName())) {
+    public IssueComponentVO update(Long projectId, Long id, IssueComponentVO issueComponentVO) {
+        if (checkNameUpdate(projectId, id, issueComponentVO.getName())) {
             throw new CommonException("error.componentName.exist");
         }
-        issueComponentDTO.setComponentId(id);
-        IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentDTO, IssueComponentE.class);
-        return ConvertHelper.convert(issueComponentRepository.update(issueComponentE), IssueComponentDTO.class);
+        issueComponentVO.setComponentId(id);
+        IssueComponentDTO issueComponentDTO = modelMapper.map(issueComponentVO, IssueComponentDTO.class);
+        return modelMapper.map(updateComponent(issueComponentDTO), IssueComponentVO.class);
     }
 
     private void unRelateIssueWithComponent(Long projectId, Long id) {
@@ -118,16 +137,16 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         } else {
             reRelateIssueWithComponent(projectId, id, relateComponentId);
         }
-        issueComponentRepository.delete(id);
+        deleteComponent(id);
     }
 
     @Override
-    public IssueComponentDTO queryComponentsById(Long projectId, Long id) {
-        IssueComponentDO issueComponentDO = issueComponentMapper.selectByPrimaryKey(id);
-        if (issueComponentDO == null) {
+    public IssueComponentVO queryComponentsById(Long projectId, Long id) {
+        IssueComponentDTO issueComponentDTO = issueComponentMapper.selectByPrimaryKey(id);
+        if (issueComponentDTO == null) {
             throw new CommonException("error.component.get");
         }
-        return ConvertHelper.convert(issueComponentDO, IssueComponentDTO.class);
+        return ConvertHelper.convert(issueComponentDTO, IssueComponentVO.class);
     }
 
     @Override
@@ -201,10 +220,37 @@ public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Override
     public Boolean checkComponentName(Long projectId, String componentName) {
-        IssueComponentDO issueComponentDO = new IssueComponentDO();
-        issueComponentDO.setProjectId(projectId);
-        issueComponentDO.setName(componentName);
-        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.select(issueComponentDO);
-        return issueComponentDOList != null && !issueComponentDOList.isEmpty();
+        IssueComponentDTO issueComponentDTO = new IssueComponentDTO();
+        issueComponentDTO.setProjectId(projectId);
+        issueComponentDTO.setName(componentName);
+        List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.select(issueComponentDTO);
+        return issueComponentDTOList != null && !issueComponentDTOList.isEmpty();
+    }
+
+    public IssueComponentDTO insertComponent(IssueComponentDTO issueComponentDTO) {
+        if (issueComponentMapper.insert(issueComponentDTO) != 1) {
+            throw new CommonException("error.scrum_issue_component.insert");
+        }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentDTO.getProjectId() + ':' + CPMPONENT + "*"});
+        return modelMapper.map(issueComponentMapper.selectByPrimaryKey(issueComponentDTO.getComponentId()), IssueComponentDTO.class);
+    }
+
+    public IssueComponentDTO updateComponent(IssueComponentDTO issueComponentDTO) {
+        if (issueComponentMapper.updateByPrimaryKeySelective(issueComponentDTO) != 1) {
+            throw new CommonException("error.scrum_issue_component.update");
+        }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentDTO.getProjectId() + ':' + CPMPONENT + "*"});
+        return modelMapper.map(issueComponentMapper.selectByPrimaryKey(issueComponentDTO.getComponentId()), IssueComponentDTO.class);
+    }
+
+    public void deleteComponent(Long id) {
+        IssueComponentDTO issueComponentDTO = issueComponentMapper.selectByPrimaryKey(id);
+        if (issueComponentDTO == null) {
+            throw new CommonException("error.component.get");
+        }
+        if (issueComponentMapper.delete(issueComponentDTO) != 1) {
+            throw new CommonException("error.component.delete");
+        }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentDTO.getProjectId() + ':' + CPMPONENT + "*"});
     }
 }

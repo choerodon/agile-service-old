@@ -15,7 +15,7 @@ import java.util.List;
  * @since 2018-05-14 21:59:45
  */
 @Table(name = "agile_issue_comment")
-public class IssueCommentDO extends BaseDTO {
+public class IssueCommentDTO extends BaseDTO {
 
     /***/
     @Id
@@ -41,11 +41,11 @@ public class IssueCommentDO extends BaseDTO {
     /**
      * 项目id
      */
-    @NotNull(message = "error.IssueCommentDO.projectIdNotNull")
+    @NotNull(message = "error.IssueCommentDTO.projectIdNotNull")
     private Long projectId;
 
     @Transient
-    private List<IssueAttachmentDO> issueAttachmentDOList;
+    private List<IssueAttachmentDTO> issueAttachmentDTOList;
 
     public Long getCommentId() {
         return commentId;
@@ -87,12 +87,12 @@ public class IssueCommentDO extends BaseDTO {
         this.projectId = projectId;
     }
 
-    public List<IssueAttachmentDO> getIssueAttachmentDOList() {
-        return issueAttachmentDOList;
+    public List<IssueAttachmentDTO> getIssueAttachmentDTOList() {
+        return issueAttachmentDTOList;
     }
 
-    public void setIssueAttachmentDOList(List<IssueAttachmentDO> issueAttachmentDOList) {
-        this.issueAttachmentDOList = issueAttachmentDOList;
+    public void setIssueAttachmentDTOList(List<IssueAttachmentDTO> issueAttachmentDTOList) {
+        this.issueAttachmentDTOList = issueAttachmentDTOList;
     }
 
     @Override

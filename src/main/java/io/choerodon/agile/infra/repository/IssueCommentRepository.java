@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository;
 
 import io.choerodon.agile.domain.agile.entity.IssueCommentE;
-import io.choerodon.agile.infra.dataobject.IssueCommentDO;
+import io.choerodon.agile.infra.dataobject.IssueCommentDTO;
 
 
 /**
@@ -32,8 +32,8 @@ public interface IssueCommentRepository {
     /**
      * 根据参数删除敏捷开发Issue评论
      *
-     * @param issueCommentDO issueCommentDO
+     * @param issueCommentDTO issueCommentDTO
      * @return int
      */
-    int delete(IssueCommentDO issueCommentDO);
+    int delete(IssueCommentDTO issueCommentDTO);
 }

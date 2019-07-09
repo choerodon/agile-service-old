@@ -1332,7 +1332,7 @@ class IssueControllerSpec extends Specification {
 
     def "deleteData"() {
         given: '刪除模块&版本'
-        IssueComponentDO issueComponentDO = new IssueComponentDO()
+        IssueComponentDTO issueComponentDO = new IssueComponentDTO()
         issueComponentDO.name = '测试模块2'
         ProductVersionDO productVersionDO = new ProductVersionDO()
         productVersionDO.name = '测试版本'
@@ -1340,7 +1340,7 @@ class IssueControllerSpec extends Specification {
         productVersionDO1.name = '测试版本2'
 
         and: '查询模块DO&版本DO'
-        IssueComponentDO queryComponent = new IssueComponentDO()
+        IssueComponentDTO queryComponent = new IssueComponentDTO()
         queryComponent.name = '测试模块2'
         ProductVersionDO queryVersion = new ProductVersionDO()
         queryVersion.name = '测试版本'

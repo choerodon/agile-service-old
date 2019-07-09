@@ -3,7 +3,7 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.vo.IssueAttachmentDTO;
+import io.choerodon.agile.api.vo.IssueAttachmentVO;
 import io.choerodon.agile.app.service.IssueAttachmentService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.swagger.annotations.ApiOperation;
@@ -31,11 +31,11 @@ public class IssueAttachmentController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("上传附件")
     @PostMapping
-    public ResponseEntity<List<IssueAttachmentDTO>> uploadAttachment(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<IssueAttachmentVO>> uploadAttachment(@ApiParam(value = "项目id", required = true)
                                                                       @PathVariable(name = "project_id") Long projectId,
-                                                                      @ApiParam(value = "issue id", required = true)
+                                                                    @ApiParam(value = "issue id", required = true)
                                                                       @RequestParam Long issueId,
-                                                                      HttpServletRequest request) {
+                                                                    HttpServletRequest request) {
         return Optional.ofNullable(issueAttachmentService.create(projectId, issueId, request))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.attachment.upload"));

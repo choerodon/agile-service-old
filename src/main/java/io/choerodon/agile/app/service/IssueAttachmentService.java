@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.IssueAttachmentDTO;
+import io.choerodon.agile.api.vo.IssueAttachmentVO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface IssueAttachmentService {
 
-    List<IssueAttachmentDTO> create(Long projectId, Long issueId, HttpServletRequest request);
+    List<IssueAttachmentVO> create(Long projectId, Long issueId, HttpServletRequest request);
 
     Boolean delete(Long projectId, Long issueAttachmentId);
 

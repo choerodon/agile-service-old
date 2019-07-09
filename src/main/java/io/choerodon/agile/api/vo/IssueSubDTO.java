@@ -59,10 +59,10 @@ public class IssueSubDTO {
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
     @ApiModelProperty(value = "评论列表")
-    private List<IssueCommentDTO> issueCommentDTOList;
+    private List<IssueCommentVO> issueCommentVOList;
 
     @ApiModelProperty(value = "关联的问题链接列表")
-    private List<IssueAttachmentDTO> issueAttachmentDTOList;
+    private List<IssueAttachmentVO> issueAttachmentVOList;
 
     @ApiModelProperty(value = "关联的模块列表")
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
@@ -327,20 +327,20 @@ public class IssueSubDTO {
         this.labelIssueRelDTOList = labelIssueRelDTOList;
     }
 
-    public List<IssueCommentDTO> getIssueCommentDTOList() {
-        return issueCommentDTOList;
+    public List<IssueCommentVO> getIssueCommentVOList() {
+        return issueCommentVOList;
     }
 
-    public void setIssueCommentDTOList(List<IssueCommentDTO> issueCommentDTOList) {
-        this.issueCommentDTOList = issueCommentDTOList;
+    public void setIssueCommentVOList(List<IssueCommentVO> issueCommentVOList) {
+        this.issueCommentVOList = issueCommentVOList;
     }
 
-    public List<IssueAttachmentDTO> getIssueAttachmentDTOList() {
-        return issueAttachmentDTOList;
+    public List<IssueAttachmentVO> getIssueAttachmentVOList() {
+        return issueAttachmentVOList;
     }
 
-    public void setIssueAttachmentDTOList(List<IssueAttachmentDTO> issueAttachmentDTOList) {
-        this.issueAttachmentDTOList = issueAttachmentDTOList;
+    public void setIssueAttachmentVOList(List<IssueAttachmentVO> issueAttachmentVOList) {
+        this.issueAttachmentVOList = issueAttachmentVOList;
     }
 
     public Long getObjectVersionNumber() {

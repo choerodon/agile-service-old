@@ -2,10 +2,10 @@ package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.ComponentForListDTO
-import io.choerodon.agile.api.vo.IssueComponentDTO
+import io.choerodon.agile.api.vo.IssueComponentVO
 import io.choerodon.agile.api.vo.IssueVO
 import io.choerodon.agile.infra.repository.UserRepository
-import io.choerodon.agile.infra.dataobject.IssueComponentDO
+import io.choerodon.agile.infra.dataobject.IssueComponentDTO
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueComponentMapper
@@ -68,7 +68,7 @@ class IssueComponentControllerSpec extends Specification {
 
     def 'createComponent'() {
         given: '准备IssueCommentCreateDTO'
-        IssueComponentDTO issueComponentDTO = new IssueComponentDTO()
+        IssueComponentVO issueComponentDTO = new IssueComponentVO()
         issueComponentDTO.projectId = 1L
         issueComponentDTO.name = 'test_component'
         issueComponentDTO.description = 'this is a description'
@@ -76,13 +76,13 @@ class IssueComponentControllerSpec extends Specification {
         issueComponentDTO.defaultAssigneeRole = 'this is a defaultAssigneeRole'
 
         when: '发送创建component请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/component', issueComponentDTO, IssueComponentDTO, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/component', issueComponentDTO, IssueComponentVO, projectId)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        IssueComponentDTO resultIssueComponentDTO = entity.body
+        IssueComponentVO resultIssueComponentDTO = entity.body
 
         expect: '设置期望值'
         resultIssueComponentDTO.projectId == issueComponentDTO.projectId
@@ -121,10 +121,10 @@ class IssueComponentControllerSpec extends Specification {
 
     def 'updateComponent'() {
         given: '修改component'
-        List<IssueComponentDO> list = issueComponentMapper.selectAll()
-        IssueComponentDO issueComponentDO = list.get(1)
+        List<IssueComponentDTO> list = issueComponentMapper.selectAll()
+        IssueComponentDTO issueComponentDO = list.get(1)
         componentId = issueComponentDO.componentId
-        IssueComponentDTO issueComponentDTO = new IssueComponentDTO()
+        IssueComponentVO issueComponentDTO = new IssueComponentVO()
         issueComponentDTO.projectId = issueComponentDO.projectId
         issueComponentDTO.name = issueComponentDO.name
         issueComponentDTO.managerId = issueComponentDO.managerId
@@ -133,11 +133,11 @@ class IssueComponentControllerSpec extends Specification {
         issueComponentDTO.defaultAssigneeRole = "this is a defaultAssigneeRole for update"
 
         when: '发送更新component请求'
-        HttpEntity<IssueComponentDTO> requestEntity = new HttpEntity<IssueComponentDTO>(issueComponentDTO, null)
+        HttpEntity<IssueComponentVO> requestEntity = new HttpEntity<IssueComponentVO>(issueComponentDTO, null)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/component/{id}",
                 HttpMethod.PUT,
                 requestEntity,
-                IssueComponentDTO,
+                IssueComponentVO,
                 projectId,
                 componentId
         )
@@ -146,7 +146,7 @@ class IssueComponentControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        IssueComponentDTO resultIssueComponentDTO = entity.body
+        IssueComponentVO resultIssueComponentDTO = entity.body
 
         expect: '设置期望值'
         resultIssueComponentDTO.projectId == issueComponentDO.projectId
@@ -159,14 +159,14 @@ class IssueComponentControllerSpec extends Specification {
 
     def 'queryComponentById'() {
         when: '发送查询component请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/component/{id}', IssueComponentDTO, projectId, componentId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/component/{id}', IssueComponentVO, projectId, componentId)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
 
         and: '设置值'
-        IssueComponentDTO result = entity.body
+        IssueComponentVO result = entity.body
 
         expect: "设置期望值"
         result.componentId == componentId

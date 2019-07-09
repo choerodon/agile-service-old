@@ -5,7 +5,6 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.ExcelService;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.domain.agile.entity.FileOperationHistoryE;
 import io.choerodon.agile.infra.repository.FileOperationHistoryRepository;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
@@ -105,7 +104,7 @@ public class ExcelServiceImpl implements ExcelService {
         List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
         List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
         List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
-        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.selectByProjectId(projectId);
+        List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
         List<SprintDO> sprintDOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> priorityList = new ArrayList<>();
         for (PriorityDTO priorityDTO : priorityDTOList) {
@@ -126,8 +125,8 @@ public class ExcelServiceImpl implements ExcelService {
             }
         }
         List<String> componentList = new ArrayList<>();
-        for (IssueComponentDO issueComponentDO : issueComponentDOList) {
-            componentList.add(issueComponentDO.getName());
+        for (IssueComponentDTO issueComponentDTO : issueComponentDTOList) {
+            componentList.add(issueComponentDTO.getName());
         }
         List<String> sprintList = new ArrayList<>();
         for (SprintDO sprintDO : sprintDOList) {
@@ -474,7 +473,7 @@ public class ExcelServiceImpl implements ExcelService {
         Map<String, Long> componentMap = new HashMap<>();
         Map<String, Long> sprintMap = new HashMap<>();
         List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
-        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.selectByProjectId(projectId);
+        List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
         List<SprintDO> sprintDOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> versionList = new ArrayList<>();
         for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
@@ -484,9 +483,9 @@ public class ExcelServiceImpl implements ExcelService {
             }
         }
         List<String> componentList = new ArrayList<>();
-        for (IssueComponentDO issueComponentDO : issueComponentDOList) {
-            componentList.add(issueComponentDO.getName());
-            componentMap.put(issueComponentDO.getName(), issueComponentDO.getComponentId());
+        for (IssueComponentDTO issueComponentDTO : issueComponentDTOList) {
+            componentList.add(issueComponentDTO.getName());
+            componentMap.put(issueComponentDTO.getName(), issueComponentDTO.getComponentId());
         }
         List<String> sprintList = new ArrayList<>();
         for (SprintDO sprintDO : sprintDOList) {

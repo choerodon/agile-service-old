@@ -5,7 +5,7 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueCommentE;
 import io.choerodon.agile.infra.repository.IssueCommentRepository;
-import io.choerodon.agile.infra.dataobject.IssueCommentDO;
+import io.choerodon.agile.infra.dataobject.IssueCommentDTO;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
 import io.choerodon.mybatis.entity.Criteria;
 
@@ -32,29 +32,29 @@ public class IssueCommentRepositoryImpl implements IssueCommentRepository {
     @Override
     @DataLog(type = "updateComment")
     public IssueCommentE update(IssueCommentE issueCommentE, String[] fieldList) {
-        IssueCommentDO issueCommentDO = ConvertHelper.convert(issueCommentE, IssueCommentDO.class);
+        IssueCommentDTO issueCommentDTO = ConvertHelper.convert(issueCommentE, IssueCommentDTO.class);
         Criteria criteria = new Criteria();
         criteria.update(fieldList);
-        if (issueCommentMapper.updateByPrimaryKeyOptions(issueCommentDO, criteria) != 1) {
+        if (issueCommentMapper.updateByPrimaryKeyOptions(issueCommentDTO, criteria) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        return ConvertHelper.convert(issueCommentMapper.selectByPrimaryKey(issueCommentDO.getCommentId()), IssueCommentE.class);
+        return ConvertHelper.convert(issueCommentMapper.selectByPrimaryKey(issueCommentDTO.getCommentId()), IssueCommentE.class);
     }
 
     @Override
     @DataLog(type = "createComment")
     public IssueCommentE create(IssueCommentE issueCommentE) {
-        IssueCommentDO issueCommentDO = ConvertHelper.convert(issueCommentE, IssueCommentDO.class);
-        if (issueCommentMapper.insert(issueCommentDO) != 1) {
+        IssueCommentDTO issueCommentDTO = ConvertHelper.convert(issueCommentE, IssueCommentDTO.class);
+        if (issueCommentMapper.insert(issueCommentDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        return ConvertHelper.convert(issueCommentMapper.selectByPrimaryKey(issueCommentDO.getCommentId()), IssueCommentE.class);
+        return ConvertHelper.convert(issueCommentMapper.selectByPrimaryKey(issueCommentDTO.getCommentId()), IssueCommentE.class);
     }
 
     @Override
     @DataLog(type = "deleteComment")
-    public int delete(IssueCommentDO issueCommentDO) {
-        int isDelete = issueCommentMapper.delete(issueCommentDO);
+    public int delete(IssueCommentDTO issueCommentDTO) {
+        int isDelete = issueCommentMapper.delete(issueCommentDTO);
         if (isDelete != 1) {
             throw new CommonException(DELETE_ERROR);
         }

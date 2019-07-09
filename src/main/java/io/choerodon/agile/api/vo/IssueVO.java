@@ -80,10 +80,10 @@ public class IssueVO {
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
     @ApiModelProperty(value = "评论列表")
-    private List<IssueCommentDTO> issueCommentDTOList;
+    private List<IssueCommentVO> issueCommentVOList;
 
     @ApiModelProperty(value = "附件列表")
-    private List<IssueAttachmentDTO> issueAttachmentDTOList;
+    private List<IssueAttachmentVO> issueAttachmentVOList;
 
     @ApiModelProperty(value = "子任务列表")
     private List<IssueSubListDTO> subIssueDTOList;
@@ -363,20 +363,20 @@ public class IssueVO {
         this.componentIssueRelDTOList = componentIssueRelDTOList;
     }
 
-    public List<IssueCommentDTO> getIssueCommentDTOList() {
-        return issueCommentDTOList;
+    public List<IssueCommentVO> getIssueCommentVOList() {
+        return issueCommentVOList;
     }
 
-    public void setIssueCommentDTOList(List<IssueCommentDTO> issueCommentDTOList) {
-        this.issueCommentDTOList = issueCommentDTOList;
+    public void setIssueCommentVOList(List<IssueCommentVO> issueCommentVOList) {
+        this.issueCommentVOList = issueCommentVOList;
     }
 
-    public List<IssueAttachmentDTO> getIssueAttachmentDTOList() {
-        return issueAttachmentDTOList;
+    public List<IssueAttachmentVO> getIssueAttachmentVOList() {
+        return issueAttachmentVOList;
     }
 
-    public void setIssueAttachmentDTOList(List<IssueAttachmentDTO> issueAttachmentDTOList) {
-        this.issueAttachmentDTOList = issueAttachmentDTOList;
+    public void setIssueAttachmentVOList(List<IssueAttachmentVO> issueAttachmentVOList) {
+        this.issueAttachmentVOList = issueAttachmentVOList;
     }
 
     public List<IssueSubListDTO> getSubIssueDTOList() {

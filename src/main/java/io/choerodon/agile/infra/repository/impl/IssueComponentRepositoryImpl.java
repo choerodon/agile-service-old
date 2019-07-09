@@ -5,7 +5,7 @@ import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueComponentE;
 import io.choerodon.agile.infra.repository.IssueComponentRepository;
-import io.choerodon.agile.infra.dataobject.IssueComponentDO;
+import io.choerodon.agile.infra.dataobject.IssueComponentDTO;
 import io.choerodon.agile.infra.mapper.IssueComponentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,33 +28,33 @@ public class IssueComponentRepositoryImpl implements IssueComponentRepository {
 
     @Override
     public IssueComponentE create(IssueComponentE issueComponentE) {
-        IssueComponentDO issueComponentDO = ConvertHelper.convert(issueComponentE, IssueComponentDO.class);
-        if (issueComponentMapper.insert(issueComponentDO) != 1) {
+        IssueComponentDTO issueComponentDTO = ConvertHelper.convert(issueComponentE, IssueComponentDTO.class);
+        if (issueComponentMapper.insert(issueComponentDTO) != 1) {
             throw new CommonException("error.scrum_issue_component.insert");
         }
         redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + CPMPONENT + "*"});
-        return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDO.getComponentId()), IssueComponentE.class);
+        return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDTO.getComponentId()), IssueComponentE.class);
     }
 
     @Override
     public IssueComponentE update(IssueComponentE issueComponentE) {
-        IssueComponentDO issueComponentDO = ConvertHelper.convert(issueComponentE, IssueComponentDO.class);
-        if (issueComponentMapper.updateByPrimaryKeySelective(issueComponentDO) != 1) {
+        IssueComponentDTO issueComponentDTO = ConvertHelper.convert(issueComponentE, IssueComponentDTO.class);
+        if (issueComponentMapper.updateByPrimaryKeySelective(issueComponentDTO) != 1) {
             throw new CommonException("error.scrum_issue_component.update");
         }
         redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentE.getProjectId() + ':' + CPMPONENT + "*"});
-        return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDO.getComponentId()), IssueComponentE.class);
+        return ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(issueComponentDTO.getComponentId()), IssueComponentE.class);
     }
 
     @Override
     public void delete(Long id) {
-        IssueComponentDO issueComponentDO = issueComponentMapper.selectByPrimaryKey(id);
-        if (issueComponentDO == null) {
+        IssueComponentDTO issueComponentDTO = issueComponentMapper.selectByPrimaryKey(id);
+        if (issueComponentDTO == null) {
             throw new CommonException("error.component.get");
         }
-        if (issueComponentMapper.delete(issueComponentDO) != 1) {
+        if (issueComponentMapper.delete(issueComponentDTO) != 1) {
             throw new CommonException("error.component.delete");
         }
-        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentDO.getProjectId() + ':' + CPMPONENT + "*"});
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueComponentDTO.getProjectId() + ':' + CPMPONENT + "*"});
     }
 }

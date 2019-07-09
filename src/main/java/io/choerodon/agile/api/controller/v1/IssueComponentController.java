@@ -7,7 +7,7 @@ import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.vo.IssueComponentDTO;
+import io.choerodon.agile.api.vo.IssueComponentVO;
 import io.choerodon.agile.app.service.IssueComponentService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.choerodon.mybatis.annotation.SortDefault;
@@ -39,11 +39,11 @@ public class IssueComponentController {
     @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("创建component")
     @PostMapping
-    public ResponseEntity<IssueComponentDTO> createComponent(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueComponentVO> createComponent(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId,
-                                                             @ApiParam(value = "components对象", required = true)
-                                                             @RequestBody IssueComponentDTO issueComponentDTO) {
-        return Optional.ofNullable(issueComponentService.create(projectId, issueComponentDTO))
+                                                            @ApiParam(value = "components对象", required = true)
+                                                             @RequestBody IssueComponentVO issueComponentVO) {
+        return Optional.ofNullable(issueComponentService.create(projectId, issueComponentVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.component.create"));
     }
@@ -51,13 +51,13 @@ public class IssueComponentController {
     @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("修改component")
     @PutMapping(value = "/{id}")
-    public ResponseEntity<IssueComponentDTO> updateComponent(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueComponentVO> updateComponent(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId,
-                                                             @ApiParam(value = "component id", required = true)
+                                                            @ApiParam(value = "component id", required = true)
                                                              @PathVariable Long id,
-                                                             @ApiParam(value = "components对象", required = true)
-                                                             @RequestBody IssueComponentDTO issueComponentDTO) {
-        return Optional.ofNullable(issueComponentService.update(projectId, id, issueComponentDTO))
+                                                            @ApiParam(value = "components对象", required = true)
+                                                             @RequestBody IssueComponentVO issueComponentVO) {
+        return Optional.ofNullable(issueComponentService.update(projectId, id, issueComponentVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.component.update"));
     }
@@ -78,9 +78,9 @@ public class IssueComponentController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询component")
     @GetMapping(value = "/{id}")
-    public ResponseEntity<IssueComponentDTO> queryComponentById(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueComponentVO> queryComponentById(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
-                                                                @ApiParam(value = "component id", required = true)
+                                                               @ApiParam(value = "component id", required = true)
                                                                 @PathVariable Long id) {
         return Optional.ofNullable(issueComponentService.queryComponentsById(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

@@ -344,8 +344,8 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueVO queryIssueCreate(Long projectId, Long issueId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
-        if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
-            issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        if (issue.getIssueAttachmentDTOList() != null && !issue.getIssueAttachmentDTOList().isEmpty()) {
+            issue.getIssueAttachmentDTOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
@@ -382,8 +382,8 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueVO queryIssue(Long projectId, Long issueId, Long organizationId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
-        if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
-            issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        if (issue.getIssueAttachmentDTOList() != null && !issue.getIssueAttachmentDTOList().isEmpty()) {
+            issue.getIssueAttachmentDTOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         if (ISSUE_TYPE_FEATURE.equals(issue.getTypeCode())) {
             FeatureDO featureDO = new FeatureDO();
@@ -407,8 +407,8 @@ public class IssueServiceImpl implements IssueService {
 
     private IssueVO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
-        if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
-            issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        if (issue.getIssueAttachmentDTOList() != null && !issue.getIssueAttachmentDTOList().isEmpty()) {
+            issue.getIssueAttachmentDTOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         if (STORY_TYPE.equals(issue.getTypeCode()) && issue.getFeatureId() != null) {
             IssueDTO issueInfo = issueMapper.selectByPrimaryKey(issue.getFeatureId());
@@ -1337,8 +1337,8 @@ public class IssueServiceImpl implements IssueService {
         issue.setPriorityDTO(getPriorityById(organizationId, issue.getPriorityId()));
         issue.setIssueTypeDTO(getIssueTypeById(organizationId, issue.getIssueTypeId()));
         issue.setStatusMapDTO(getStatusById(organizationId, issue.getStatusId()));
-        if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
-            issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        if (issue.getIssueAttachmentDTOList() != null && !issue.getIssueAttachmentDTOList().isEmpty()) {
+            issue.getIssueAttachmentDTOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         return issueAssembler.issueDetailDoToIssueSubDto(issue);
     }
@@ -1346,8 +1346,8 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueSubDTO queryIssueSubByCreate(Long projectId, Long issueId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
-        if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
-            issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
+        if (issue.getIssueAttachmentDTOList() != null && !issue.getIssueAttachmentDTOList().isEmpty()) {
+            issue.getIssueAttachmentDTOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         IssueSubDTO result = issueAssembler.issueDetailDoToIssueSubDto(issue);
         sendMsgUtil.sendMsgBySubIssueCreate(projectId, result);

@@ -46,10 +46,10 @@
         <collection property="componentIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryComponentIssueRelByIssueId"/>
-        <collection property="issueCommentDOList" column="issue_id"
+        <collection property="issueCommentDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryIssueCommentByIssueId"/>
-        <collection property="issueAttachmentDOList" column="issue_id"
+        <collection property="issueAttachmentDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDO"
                     select="queryIssueAttachmentByIssueId"/>
         <collection property="subIssueDTOList" column="issue_id"
@@ -286,13 +286,13 @@
         WHERE acir.issue_id = #{issueId}
     </select>
 
-    <select id="queryIssueCommentByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueCommentDO">
+    <select id="queryIssueCommentByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueCommentDTO">
         SELECT *
         FROM agile_issue_comment
         WHERE issue_id = #{issueId} order by creation_date desc
     </select>
 
-    <select id="queryIssueAttachmentByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueAttachmentDO">
+    <select id="queryIssueAttachmentByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueAttachmentDTO">
         SELECT *
         FROM agile_issue_attachment
         WHERE issue_id = #{issueId}

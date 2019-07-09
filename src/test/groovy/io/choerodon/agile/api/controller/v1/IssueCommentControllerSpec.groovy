@@ -2,8 +2,8 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.IssueCommentCreateDTO
-import io.choerodon.agile.api.vo.IssueCommentDTO
+import io.choerodon.agile.api.vo.IssueCommentCreateVO
+import io.choerodon.agile.api.vo.IssueCommentVO
 import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
@@ -70,19 +70,19 @@ class IssueCommentControllerSpec extends Specification {
     def 'createIssueComment'() {
         given: '准备IssueCommentCreateDTO'
         resultTest=issueMapper.selectAll().get(0).issueId
-        IssueCommentCreateDTO issueCommentCreateDTO = new IssueCommentCreateDTO()
+        IssueCommentCreateVO issueCommentCreateDTO = new IssueCommentCreateVO()
         issueCommentCreateDTO.issueId = resultTest
         issueCommentCreateDTO.commentText = '这是一条测试评论'
 
 
         when: '发送创建issue评论请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_comment', issueCommentCreateDTO, IssueCommentDTO, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_comment', issueCommentCreateDTO, IssueCommentVO, projectId)
         print(entity.body)
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        IssueCommentDTO issueCommentDTO = entity.body
+        IssueCommentVO issueCommentDTO = entity.body
 
         expect: '设置期望值'
         issueCommentDTO.commentText == issueCommentCreateDTO.commentText
@@ -99,13 +99,13 @@ class IssueCommentControllerSpec extends Specification {
         issueCommentUpdate.put("objectVersionNumber", 1L)
 
         when: '发送更新issue评论请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_comment/update', issueCommentUpdate, IssueCommentDTO, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_comment/update', issueCommentUpdate, IssueCommentVO, projectId)
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        IssueCommentDTO issueCommentDTO = entity.body
+        IssueCommentVO issueCommentDTO = entity.body
 
         expect: '设置期望值'
         issueCommentDTO.commentText == "这是一条更新评论"
@@ -118,7 +118,7 @@ class IssueCommentControllerSpec extends Specification {
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
-        List<IssueCommentDTO> result = entity.body
+        List<IssueCommentVO> result = entity.body
 
 
         and: '设置值'

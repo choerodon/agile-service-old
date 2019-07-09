@@ -60,9 +60,9 @@ public class IssueDetailDO {
 
     private List<PiNameDTO> closePi;
 
-    private List<IssueCommentDO> issueCommentDOList;
+    private List<IssueCommentDTO> issueCommentDTOList;
 
-    private List<IssueAttachmentDO> issueAttachmentDOList;
+    private List<IssueAttachmentDTO> issueAttachmentDTOList;
 
     private List<IssueDTO> subIssueDTOList;
 
@@ -262,20 +262,20 @@ public class IssueDetailDO {
         this.issueLinkDOList = issueLinkDOList;
     }
 
-    public List<IssueCommentDO> getIssueCommentDOList() {
-        return issueCommentDOList;
+    public List<IssueCommentDTO> getIssueCommentDTOList() {
+        return issueCommentDTOList;
     }
 
-    public void setIssueCommentDOList(List<IssueCommentDO> issueCommentDOList) {
-        this.issueCommentDOList = issueCommentDOList;
+    public void setIssueCommentDTOList(List<IssueCommentDTO> issueCommentDTOList) {
+        this.issueCommentDTOList = issueCommentDTOList;
     }
 
-    public List<IssueAttachmentDO> getIssueAttachmentDOList() {
-        return issueAttachmentDOList;
+    public List<IssueAttachmentDTO> getIssueAttachmentDTOList() {
+        return issueAttachmentDTOList;
     }
 
-    public void setIssueAttachmentDOList(List<IssueAttachmentDO> issueAttachmentDOList) {
-        this.issueAttachmentDOList = issueAttachmentDOList;
+    public void setIssueAttachmentDTOList(List<IssueAttachmentDTO> issueAttachmentDTOList) {
+        this.issueAttachmentDTOList = issueAttachmentDTOList;
     }
 
     public List<IssueDTO> getSubIssueDTOList() {

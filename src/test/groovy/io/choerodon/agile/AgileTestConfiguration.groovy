@@ -211,7 +211,7 @@ class AgileTestConfiguration {
     }
 
     private void initComponent() {
-        IssueComponentDO issueComponentDO = new IssueComponentDO()
+        IssueComponentDTO issueComponentDO = new IssueComponentDTO()
         issueComponentDO.projectId = 1L
         issueComponentDO.name = "测试模块"
         issueComponentDO.description = "测试模块描述"

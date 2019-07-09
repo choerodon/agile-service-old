@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service;
 
 
-import io.choerodon.agile.api.vo.IssueCommentCreateDTO;
-import io.choerodon.agile.api.vo.IssueCommentDTO;
+import io.choerodon.agile.api.vo.IssueCommentCreateVO;
+import io.choerodon.agile.api.vo.IssueCommentVO;
 import io.choerodon.agile.api.vo.IssueCommentUpdateDTO;
 
 import java.util.List;
@@ -19,10 +19,10 @@ public interface IssueCommentService {
      * 创建issue评论
      *
      * @param projectId             projectId
-     * @param issueCommentCreateDTO issueCommentCreateDTO
-     * @return IssueCommentDTO
+     * @param issueCommentCreateVO issueCommentCreateVO
+     * @return IssueCommentVO
      */
-    IssueCommentDTO createIssueComment(Long projectId, IssueCommentCreateDTO issueCommentCreateDTO);
+    IssueCommentVO createIssueComment(Long projectId, IssueCommentCreateVO issueCommentCreateVO);
 
     /**
      * 更新issue评论
@@ -30,18 +30,18 @@ public interface IssueCommentService {
      * @param issueCommentUpdateDTO issueCommentUpdateDTO
      * @param fieldList             fieldList
      * @param projectId             projectId
-     * @return IssueCommentDTO
+     * @return IssueCommentVO
      */
-    IssueCommentDTO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList,Long projectId);
+    IssueCommentVO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList, Long projectId);
 
     /**
      * 根据issueId和项目id查询IssueComment列表
      *
      * @param projectId projectId
      * @param issueId   issueId
-     * @return IssueCommentDTO
+     * @return IssueCommentVO
      */
-    List<IssueCommentDTO> queryIssueCommentList(Long projectId, Long issueId);
+    List<IssueCommentVO> queryIssueCommentList(Long projectId, Long issueId);
 
     /**
      * 删除issueComment
