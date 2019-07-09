@@ -145,8 +145,8 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     public BoardFeatureInfoDTO queryInfoById(Long projectId, Long boardFeatureId) {
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         BoardFeatureInfoDTO info = boardFeatureRepository.queryInfoById(projectId, boardFeatureId);
-        Map<Long, IssueTypeDTO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        info.setIssueTypeDTO(issueTypeMap.get(info.getIssueTypeId()));
+        Map<Long, IssueTypeVO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        info.setIssueTypeVO(issueTypeMap.get(info.getIssueTypeId()));
         return info;
     }
 
@@ -217,9 +217,9 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             sprintInfo.setColumnWidth(columnWidth);
             sprintInfos.add(sprintInfo);
         }
-        Map<Long, IssueTypeDTO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         for (BoardFeatureInfoDTO boardFeatureInfo : boardFeatureInfos) {
-            boardFeatureInfo.setIssueTypeDTO(issueTypeMap.get(boardFeatureInfo.getIssueTypeId()));
+            boardFeatureInfo.setIssueTypeVO(issueTypeMap.get(boardFeatureInfo.getIssueTypeId()));
         }
         Map<Long, Map<Long, List<BoardFeatureInfoDTO>>> teamFeatureInfoMap = boardFeatureInfos.stream().collect(Collectors.groupingBy(BoardFeatureInfoDTO::getTeamProjectId, Collectors.groupingBy(BoardFeatureInfoDTO::getSprintId)));
         List<ProgramBoardTeamInfoDTO> teamProjects = new ArrayList<>(projectRelationships.size());

@@ -48,14 +48,14 @@ public class IssueBurnDownReportDTO {
     private StatusMapVO statusMapVO;
 
     @ApiModelProperty(value = "问题类型DTO")
-    private IssueTypeDTO issueTypeDTO;
+    private IssueTypeVO issueTypeVO;
 
-    public IssueTypeDTO getIssueTypeDTO() {
-        return issueTypeDTO;
+    public IssueTypeVO getIssueTypeVO() {
+        return issueTypeVO;
     }
 
-    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
-        this.issueTypeDTO = issueTypeDTO;
+    public void setIssueTypeVO(IssueTypeVO issueTypeVO) {
+        this.issueTypeVO = issueTypeVO;
     }
 
     public Long getIssueId() {

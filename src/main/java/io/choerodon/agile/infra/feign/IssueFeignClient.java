@@ -29,11 +29,11 @@ public interface IssueFeignClient {
 
 
     @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/type_map")
-    ResponseEntity<Map<Long, IssueTypeDTO>> listIssueTypeMap(@PathVariable("organization_id") Long organizationId);
+    ResponseEntity<Map<Long, IssueTypeVO>> listIssueTypeMap(@PathVariable("organization_id") Long organizationId);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/{id}")
-    ResponseEntity<IssueTypeDTO> queryIssueTypeById(@PathVariable("organization_id") Long organizationId,
-                                                    @PathVariable("id") Long issueTypeId);
+    ResponseEntity<IssueTypeVO> queryIssueTypeById(@PathVariable("organization_id") Long organizationId,
+                                                   @PathVariable("id") Long issueTypeId);
 
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_state_machine_id")
     ResponseEntity<Long> queryStateMachineId(@PathVariable("project_id") Long projectId,
@@ -41,7 +41,7 @@ public interface IssueFeignClient {
                                              @RequestParam("issue_type_id") Long issueTypeId);
 
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_issue_types")
-    ResponseEntity<List<IssueTypeDTO>> queryIssueTypesByProjectId(@PathVariable("project_id") Long projectId, @RequestParam("apply_type") String applyType);
+    ResponseEntity<List<IssueTypeVO>> queryIssueTypesByProjectId(@PathVariable("project_id") Long projectId, @RequestParam("apply_type") String applyType);
 
     @PostMapping(value = "/v1/projects/{project_id}/schemes/create_status_for_agile")
     ResponseEntity<StatusInfoVO> createStatusForAgile(@PathVariable("project_id") Long projectId,
@@ -81,5 +81,5 @@ public interface IssueFeignClient {
                                                                 @PathVariable("organization_id") Long organizationId);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/issue_type/types")
-    ResponseEntity<List<IssueTypeDTO>> queryByOrgId(@PathVariable("organization_id") Long organizationId);
+    ResponseEntity<List<IssueTypeVO>> queryByOrgId(@PathVariable("organization_id") Long organizationId);
 }

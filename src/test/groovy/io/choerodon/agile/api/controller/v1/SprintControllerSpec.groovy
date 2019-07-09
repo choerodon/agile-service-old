@@ -4,7 +4,7 @@ package io.choerodon.agile.api.controller.v1
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.ActiveSprintDTO
 import io.choerodon.agile.api.vo.BackLogIssueDTO
-import io.choerodon.agile.api.vo.IssueCreateDTO
+import io.choerodon.agile.api.vo.IssueCreateVO
 import io.choerodon.agile.api.vo.IssueListDTO
 import io.choerodon.agile.api.vo.IssueVO
 import io.choerodon.agile.api.vo.ProjectDTO
@@ -131,7 +131,7 @@ class SprintControllerSpec extends Specification {
 
     def 'initIssueToSprint'() {
         given: 'Issue加入到冲刺中'
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        IssueCreateVO issueCreateDTO = new IssueCreateVO()
         issueCreateDTO.projectId = projectId
         issueCreateDTO.sprintId = sprintIds[0]
         issueCreateDTO.summary = '加入冲刺issue'
@@ -209,9 +209,9 @@ class SprintControllerSpec extends Specification {
         searchDTOList.get(0).sprintName == '测试冲刺1'
         searchDTOList.get(0).statusCode == 'sprint_planning'
         searchDTOList.get(0).issueCount == 1
-        searchDTOList.get(0).issueSearchDTOList.size() == 1
-        searchDTOList.get(0).issueSearchDTOList.get(0).issueTypeDTO.typeCode == 'story'
-        searchDTOList.get(0).issueSearchDTOList.get(0).summary == '加入冲刺issue'
+        searchDTOList.get(0).issueSearchVOList.size() == 1
+        searchDTOList.get(0).issueSearchVOList.get(0).issueTypeVO.typeCode == 'story'
+        searchDTOList.get(0).issueSearchVOList.get(0).summary == '加入冲刺issue'
         searchDTOList.get(0).assigneeIssues.size() == 1
         searchDTOList.get(0).assigneeIssues.get(0).sprintId == sprintIds[0]
         searchDTOList.get(0).assigneeIssues.get(0).assigneeId == 0

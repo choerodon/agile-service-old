@@ -50,7 +50,7 @@ public interface SprintMapper extends Mapper<SprintDTO> {
 
     List<Long> queryIssueIdOrderByRankDesc(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<IssueNumDO> queryParentsDoneUnfinishedSubtasks(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+    List<IssueNumDTO> queryParentsDoneUnfinishedSubtasks(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     List<Long> queryIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
@@ -58,7 +58,7 @@ public interface SprintMapper extends Mapper<SprintDTO> {
 
     Set<Long> queryAssigneeIdsByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    List<IssueSearchDO> queryBacklogIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<IssueSearchDTO> queryBacklogIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     SprintSearchDO queryActiveSprintNoIssueIds(@Param("projectId") Long projectId);
 
@@ -103,9 +103,9 @@ public interface SprintMapper extends Mapper<SprintDTO> {
      *
      * @param sprintId sprintId
      * @param issueIds issueIds
-     * @return IssueSearchDO
+     * @return IssueSearchDTO
      */
-    List<IssueSearchDO> queryActiveSprintIssueSearchByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("sprintId") Long sprintId);
+    List<IssueSearchDTO> queryActiveSprintIssueSearchByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("sprintId") Long sprintId);
 
     /**
      * 查询待办事项的所有冲刺中的所有用户

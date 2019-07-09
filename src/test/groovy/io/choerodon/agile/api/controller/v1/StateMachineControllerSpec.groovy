@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1
 
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.IssueCreateDTO
+import io.choerodon.agile.api.vo.IssueCreateVO
 import io.choerodon.agile.api.vo.IssueVO
 import io.choerodon.agile.api.vo.ProjectDTO
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
@@ -80,7 +80,7 @@ class StateMachineControllerSpec extends Specification {
         Long testOrganizationId = 1L
 
         and: '插入符合条件的issue'
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        IssueCreateVO issueCreateDTO = new IssueCreateVO()
         issueCreateDTO.projectId = 1L
         issueCreateDTO.sprintId = 1L
         issueCreateDTO.summary = 'issue'
@@ -138,7 +138,7 @@ class StateMachineControllerSpec extends Specification {
         Long testOrganizationId = 1L
 
         and: '插入符合条件的issue'
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        IssueCreateVO issueCreateDTO = new IssueCreateVO()
         issueCreateDTO.projectId = 1L
         issueCreateDTO.sprintId = 1L
         issueCreateDTO.summary = 'issue'

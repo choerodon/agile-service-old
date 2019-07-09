@@ -103,11 +103,11 @@ public class ProductVersionController {
     public ResponseEntity<PageInfo<ProductVersionPageDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
                                                                      @ApiParam(value = "查询参数")
-                                                                     @RequestBody(required = false) SearchDTO searchDTO,
+                                                                     @RequestBody(required = false) SearchVO searchVO,
                                                                      @ApiParam(value = "分页信息", required = true)
                                                                      @SortDefault(value = "sequence", direction = Sort.Direction.DESC)
                                                                      @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(productVersionService.queryByProjectId(projectId, pageRequest, searchDTO))
+        return Optional.ofNullable(productVersionService.queryByProjectId(projectId, pageRequest, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
     }
@@ -167,10 +167,10 @@ public class ProductVersionController {
                                                                             @PathVariable Long versionId,
                                                                             @ApiParam(value = "组织id", required = true)
                                                                             @RequestParam Long organizationId,
-                                                                            @RequestBody SearchDTO searchDTO,
+                                                                            @RequestBody SearchVO searchVO,
                                                                             @ApiParam(value = "issue状态码")
                                                                             @RequestParam(required = false) String statusCode) {
-        return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, organizationId, searchDTO))
+        return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, organizationId, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ISSUE_ERROR));
     }

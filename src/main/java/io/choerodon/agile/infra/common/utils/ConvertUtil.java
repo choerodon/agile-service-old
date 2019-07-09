@@ -30,9 +30,9 @@ public class ConvertUtil {
      * @param projectId projectId
      * @return IssueTypeMap
      */
-    public static Map<Long, IssueTypeDTO> getIssueTypeMap(Long projectId, String applyType) {
-        List<IssueTypeDTO> issueTypeDTOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesByProjectId(projectId, applyType).getBody();
-        return issueTypeDTOS.stream().collect(Collectors.toMap(IssueTypeDTO::getId, Function.identity()));
+    public static Map<Long, IssueTypeVO> getIssueTypeMap(Long projectId, String applyType) {
+        List<IssueTypeVO> issueTypeVOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesByProjectId(projectId, applyType).getBody();
+        return issueTypeVOS.stream().collect(Collectors.toMap(IssueTypeVO::getId, Function.identity()));
     }
 
     /**

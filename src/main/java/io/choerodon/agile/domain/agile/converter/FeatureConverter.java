@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.FeatureDTO;
+import io.choerodon.agile.api.vo.FeatureVO;
 import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.infra.dataobject.FeatureDO;
 import io.choerodon.core.convertor.ConvertorI;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class FeatureConverter implements ConvertorI<FeatureE, FeatureDTO, FeatureDO> {
+public class FeatureConverter implements ConvertorI<FeatureE, FeatureVO, FeatureDO> {
 
     @Override
     public FeatureE dtoToEntity(FeatureDO featureDO) {
@@ -29,30 +29,30 @@ public class FeatureConverter implements ConvertorI<FeatureE, FeatureDTO, Featur
     }
 
     @Override
-    public FeatureE doToEntity(FeatureDTO featureDTO) {
+    public FeatureE doToEntity(FeatureVO featureVO) {
         FeatureE featureE = new FeatureE();
-        BeanUtils.copyProperties(featureDTO, featureE);
+        BeanUtils.copyProperties(featureVO, featureE);
         return featureE;
     }
 
     @Override
-    public FeatureDTO entityToDo(FeatureE featureE) {
-        FeatureDTO featureDTO = new FeatureDTO();
-        BeanUtils.copyProperties(featureE, featureDTO);
-        return featureDTO;
+    public FeatureVO entityToDo(FeatureE featureE) {
+        FeatureVO featureVO = new FeatureVO();
+        BeanUtils.copyProperties(featureE, featureVO);
+        return featureVO;
     }
 
     @Override
-    public FeatureDO doToDto(FeatureDTO featureDTO) {
+    public FeatureDO doToDto(FeatureVO featureVO) {
         FeatureDO featureDO = new FeatureDO();
-        BeanUtils.copyProperties(featureDTO, featureDO);
+        BeanUtils.copyProperties(featureVO, featureDO);
         return featureDO;
     }
 
     @Override
-    public FeatureDTO dtoToDo(FeatureDO featureDO) {
-        FeatureDTO featureDTO = new FeatureDTO();
-        BeanUtils.copyProperties(featureDO, featureDTO);
-        return featureDTO;
+    public FeatureVO dtoToDo(FeatureDO featureDO) {
+        FeatureVO featureVO = new FeatureVO();
+        BeanUtils.copyProperties(featureDO, featureVO);
+        return featureVO;
     }
 }

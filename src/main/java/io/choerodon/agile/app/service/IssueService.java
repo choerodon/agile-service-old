@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.alibaba.fastjson.JSONObject;
 
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -26,11 +26,11 @@ public interface IssueService {
 
     IssueVO queryIssueCreate(Long projectId, Long issueId);
 
-    void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE);
+    void handleInitIssue(IssueConvertDTO issueConvertDTO, Long statusId, ProjectInfoE projectInfoE);
 
-    void afterCreateIssue(Long issueId, IssueE issueE, IssueCreateDTO issueCreateDTO, ProjectInfoE projectInfoE);
+    void afterCreateIssue(Long issueId, IssueConvertDTO issueConvertDTO, IssueCreateVO issueCreateVO, ProjectInfoE projectInfoE);
 
-    void afterCreateSubIssue(Long issueId, IssueE subIssueE, IssueSubCreateDTO issueSubCreateDTO, ProjectInfoE projectInfoE);
+    void afterCreateSubIssue(Long issueId, IssueConvertDTO subIssueConvertDTO, IssueSubCreateVO issueSubCreateVO, ProjectInfoE projectInfoE);
 
     /**
      * 查询单个issue
@@ -45,27 +45,27 @@ public interface IssueService {
      * 分页过滤查询issueList（包含子任务）
      *
      * @param projectId   projectId
-     * @param searchDTO   searchDTO
+     * @param searchVO   searchVO
      * @param pageRequest pageRequest
      * @return IssueListDTO
      */
-    PageInfo<IssueListFieldKVDTO> listIssueWithSub(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListFieldKVVO> listIssueWithSub(Long projectId, SearchVO searchVO, PageRequest pageRequest, Long organizationId);
 
-    List<EpicDataDTO> listEpic(Long projectId);
+    List<EpicDataVO> listEpic(Long projectId);
 
-    List<EpicDataDTO> listProgramEpic(Long programId);
+    List<EpicDataVO> listProgramEpic(Long programId);
 
-    List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Long organizationId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
+//    List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Long organizationId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds);
 
     /**
      * 更新issue
      *
      * @param projectId      projectId
-     * @param issueUpdateDTO issueUpdateDTO
+     * @param issueUpdateVO issueUpdateVO
      * @param fieldList      fieldList
      * @return IssueVO
      */
-    IssueVO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList);
+    IssueVO updateIssue(Long projectId, IssueUpdateVO issueUpdateVO, List<String> fieldList);
 
     /**
      * 更新issue的状态
@@ -80,11 +80,11 @@ public interface IssueService {
     /**
      * 更新issue自己的字段
      *
-     * @param issueUpdateDTO
+     * @param issueUpdateVO
      * @param fieldList
      * @param projectId
      */
-    void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId);
+    void handleUpdateIssue(IssueUpdateVO issueUpdateVO, List<String> fieldList, Long projectId);
 
     /**
      * 删除issue
@@ -99,117 +99,117 @@ public interface IssueService {
 
     void batchDeleteIssuesAgile(Long projectId, List<Long> issueIds);
 
-    void handleInitSubIssue(IssueE subIssueE, Long statusId, ProjectInfoE projectInfoE);
+    void handleInitSubIssue(IssueConvertDTO subIssueConvertDTO, Long statusId, ProjectInfoE projectInfoE);
 
-    IssueSubDTO queryIssueSubByCreate(Long projectId, Long issueId);
+    IssueSubVO queryIssueSubByCreate(Long projectId, Long issueId);
 
-    List<IssueSearchDTO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
+    List<IssueSearchVO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds);
 
     void batchIssueToVersionTest(Long projectId, Long versionId, List<Long> issueIds);
 
-    void batchToVersionInStoryMap(Long projectId, Long versionId, StoryMapMoveDTO storyMapMoveDTO);
+//    void batchToVersionInStoryMap(Long projectId, Long versionId, StoryMapMoveDTO storyMapMoveDTO);
 
-    List<IssueSearchDTO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
+    List<IssueSearchVO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
 
     void batchStoryToFeature(Long projectId, Long featureId, List<Long> issueIds);
 
-    List<IssueSearchDTO> batchIssueToEpicInStoryMap(Long projectId, Long epicId, StoryMapMoveDTO storyMapMoveDTO);
+//    List<IssueSearchVO> batchIssueToEpicInStoryMap(Long projectId, Long epicId, StoryMapMoveDTO storyMapMoveDTO);
 
-    List<IssueSearchDTO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueVO moveIssueVO);
+    List<IssueSearchVO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueVO moveIssueVO);
 
-    List<IssueSearchDTO> batchIssueToSprintInStoryMap(Long projectId, Long sprintId, StoryMapMoveDTO storyMapMoveDTO);
+//    List<IssueSearchVO> batchIssueToSprintInStoryMap(Long projectId, Long sprintId, StoryMapMoveDTO storyMapMoveDTO);
 
     /**
      * 根据项目id查询epic
      *
      * @param projectId projectId
-     * @return IssueEpicDTO
+     * @return IssueEpicVO
      */
-    List<IssueEpicDTO> listEpicSelectData(Long projectId);
+    List<IssueEpicVO> listEpicSelectData(Long projectId);
 
-    List<IssueFeatureDTO> listFeatureSelectData(Long projectId, Long organizationId, Long epicId);
+    List<IssueFeatureVO> listFeatureSelectData(Long projectId, Long organizationId, Long epicId);
 
-    List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId);
+    List<IssueFeatureVO> listFeature(Long projectId, Long organizationId);
 
-    List<IssueEpicDTO> listEpicSelectProgramData(Long programId);
+    List<IssueEpicVO> listEpicSelectProgramData(Long programId);
 
     /**
      * 查询单个子任务信息
      *
      * @param projectId projectId
      * @param issueId   issueId
-     * @return IssueSubDTO
+     * @return IssueSubVO
      */
-    IssueSubDTO queryIssueSub(Long projectId, Long organizationId, Long issueId);
+    IssueSubVO queryIssueSub(Long projectId, Long organizationId, Long issueId);
 
     /**
      * 更改issue类型
      *
-     * @param issueE             issueE
+     * @param issueConvertDTO             issueConvertDTO
      * @param issueUpdateTypeDTO issueUpdateTypeDTO
      * @return IssueVO
      */
-    IssueVO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO, Long organizationId);
+    IssueVO updateIssueTypeCode(IssueConvertDTO issueConvertDTO, IssueUpdateTypeDTO issueUpdateTypeDTO, Long organizationId);
 
     /**
      * 通过项目id和issueId查询issueE
      *
      * @param projectId projectId
      * @param issueId   issueId
-     * @return IssueE
+     * @return IssueConvertDTO
      */
-    IssueE queryIssueByProjectIdAndIssueId(Long projectId, Long issueId);
+    IssueConvertDTO queryIssueByProjectIdAndIssueId(Long projectId, Long issueId);
 
-    PageInfo<IssueNumDTO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest);
+    PageInfo<IssueNumVO> queryIssueByOption(Long projectId, Long issueId, String issueNum, Boolean onlyActiveSprint, Boolean self, String content, PageRequest pageRequest);
 
-    void exportIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId);
+    void exportIssues(Long projectId, SearchVO searchVO, HttpServletRequest request, HttpServletResponse response, Long organizationId);
 
-    void exportProgramIssues(Long projectId, SearchDTO searchDTO, HttpServletRequest request, HttpServletResponse response, Long organizationId);
+    void exportProgramIssues(Long projectId, SearchVO searchVO, HttpServletRequest request, HttpServletResponse response, Long organizationId);
 
     /**
      * 根据issueId复制一个issue
      *
      * @param projectId        projectId
      * @param issueId          issueId
-     * @param copyConditionDTO copyConditionDTO
+     * @param copyConditionVO copyConditionVO
      * @return IssueVO
      */
-    IssueVO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId, String applyType);
+    IssueVO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionVO copyConditionVO, Long organizationId, String applyType);
 
     /**
      * 根据issueId转换为子任务
      *
      * @param projectId             projectId
      * @param issueTransformSubTask issueTransformSubTask
-     * @return IssueSubDTO
+     * @return IssueSubVO
      */
-    IssueSubDTO transformedSubTask(Long projectId, Long organizationId, IssueTransformSubTask issueTransformSubTask);
+    IssueSubVO transformedSubTask(Long projectId, Long organizationId, IssueTransformSubTask issueTransformSubTask);
 
     /**
      * 子任务转换为任务
      *
-     * @param issueE
+     * @param issueConvertDTO
      * @param issueTransformTask
      * @param organizationId
      * @return
      */
-    IssueVO transformedTask(IssueE issueE, IssueTransformTask issueTransformTask, Long organizationId);
+    IssueVO transformedTask(IssueConvertDTO issueConvertDTO, IssueTransformTask issueTransformTask, Long organizationId);
 
-    List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds);
+    List<IssueInfoVO> listByIssueIds(Long projectId, List<Long> issueIds);
 
     /**
      * 参数查询issueList提供给测试模块
      *
      * @param projectId   projectId
-     * @param searchDTO   searchDTO
+     * @param searchVO   searchVO
      * @param pageRequest pageRequest
      * @return IssueListDTO
      */
-    PageInfo<IssueListTestDTO> listIssueWithoutSubToTestComponent(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListTestVO> listIssueWithoutSubToTestComponent(Long projectId, SearchVO searchVO, PageRequest pageRequest, Long organizationId);
 
-    PageInfo<IssueListTestWithSprintVersionDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId);
+    PageInfo<IssueListTestWithSprintVersionVO> listIssueWithLinkedIssues(Long projectId, SearchVO searchVO, PageRequest pageRequest, Long organizationId);
 
-    List<IssueCreationNumDTO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot);
+    List<IssueCreationNumVO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot);
 
     /**
      * 参数查询issue列表，不对外开放
@@ -220,19 +220,19 @@ public interface IssueService {
      * @param self        self
      * @param content     content
      * @param pageRequest pageRequest
-     * @return IssueNumDTO
+     * @return IssueNumVO
      */
-    PageInfo<IssueNumDTO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum,
-                                                 Boolean self, String content, PageRequest pageRequest);
+    PageInfo<IssueNumVO> queryIssueByOptionForAgile(Long projectId, Long issueId, String issueNum,
+                                                    Boolean self, String content, PageRequest pageRequest);
 
     /**
      * 拖动epic
      *
      * @param projectId       projectId
      * @param epicSequenceDTO epicSequenceDTO
-     * @return EpicDataDTO
+     * @return EpicDataVO
      */
-    EpicDataDTO dragEpic(Long projectId, EpicSequenceDTO epicSequenceDTO);
+    EpicDataVO dragEpic(Long projectId, EpicSequenceDTO epicSequenceDTO);
 
     /**
      * 查询issue统计信息
@@ -240,31 +240,31 @@ public interface IssueService {
      * @param projectId  projectId
      * @param type       type
      * @param issueTypes issueTypes要排除的issue类型
-     * @return PieChartDTO
+     * @return PieChartVO
      */
-    List<PieChartDTO> issueStatistic(Long projectId, String type, List<String> issueTypes);
+    List<PieChartVO> issueStatistic(Long projectId, String type, List<String> issueTypes);
 
     /**
      * 测试模块查询issue详情列表
      *
      * @param projectId   projectId
-     * @param searchDTO   searchDTO
+     * @param searchVO   searchVO
      * @param pageRequest pageRequest
      * @return IssueComponentDetailTO
      */
-    PageInfo<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchDTO searchDTO, PageRequest pageRequest);
+    PageInfo<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchVO searchVO, PageRequest pageRequest);
 
-    List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds);
+//    List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds);
 
-    IssueVO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO);
+    IssueVO issueParentIdUpdate(Long projectId, IssueUpdateParentIdVO issueUpdateParentIdVO);
 
-    void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO);
+//    void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO);
 
     JSONObject countUnResolveByProjectId(Long projectId);
 
-    List<Long> queryIssueIdsByOptions(Long projectId, SearchDTO searchDTO);
+    List<Long> queryIssueIdsByOptions(Long projectId, SearchVO searchVO);
 
-    PageInfo<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest);
+    PageInfo<UndistributedIssueVO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest);
 
     List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId, Long assigneeId);
 
@@ -291,9 +291,9 @@ public interface IssueService {
     /**
      * 根据项目分组测试类型issue
      *
-     * @return IssueProjectDTO
+     * @return IssueProjectVO
      */
-    List<IssueProjectDTO> queryIssueTestGroupByProject();
+    List<IssueProjectVO> queryIssueTestGroupByProject();
 
     /**
      * 批量把issue根据冲刺判断更新为初始状态
@@ -307,14 +307,14 @@ public interface IssueService {
     /**
      * 处理高级搜索中的用户搜索
      *
-     * @param searchDTO searchDTO
+     * @param searchVO searchVO
      * @param projectId projectId
      */
-    Boolean handleSearchUser(SearchDTO searchDTO, Long projectId);
+    Boolean handleSearchUser(SearchVO searchVO, Long projectId);
 
     Boolean checkEpicName(Long projectId, String epicName);
 
-    PageInfo<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO);
+    PageInfo<FeatureCommonVO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchVO searchVO);
 
-    List<FeatureCommonDTO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId);
+    List<FeatureCommonVO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId);
 }

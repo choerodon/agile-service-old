@@ -226,36 +226,36 @@
                 #{filterStatusId}
             </foreach>
         </if>
-        <if test='searchDTO.searchArgs != null'>
-            <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
-                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.summary}) ,'%')
+        <if test='searchVO.searchArgs != null'>
+            <if test='searchVO.searchArgs.summary != null and searchVO.searchArgs.summary != "" '>
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchVO.searchArgs.summary}) ,'%')
             </if>
         </if>
-        <if test='searchDTO.advancedSearchArgs != null'>
-            <if test='searchDTO.advancedSearchArgs.issueTypeId != null and searchDTO.advancedSearchArgs.issueTypeId.size > 0'>
+        <if test='searchVO.advancedSearchArgs != null'>
+            <if test='searchVO.advancedSearchArgs.issueTypeId != null and searchVO.advancedSearchArgs.issueTypeId.size > 0'>
                 AND ai.issue_type_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator=","
+                <foreach collection="searchVO.advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator=","
                          close=")">
                     #{issueTypeId}
                 </foreach>
             </if>
-            <if test='searchDTO.advancedSearchArgs.assigneeIds != null and searchDTO.advancedSearchArgs.assigneeIds.size > 0'>
+            <if test='searchVO.advancedSearchArgs.assigneeIds != null and searchVO.advancedSearchArgs.assigneeIds.size > 0'>
                 AND ai.assignee_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.assigneeIds" item="assigneeId" open="(" separator=","
+                <foreach collection="searchVO.advancedSearchArgs.assigneeIds" item="assigneeId" open="(" separator=","
                          close=")">
                     #{assigneeId}
                 </foreach>
             </if>
-            <if test='searchDTO.advancedSearchArgs.priorityId != null and searchDTO.advancedSearchArgs.priorityId.size > 0'>
+            <if test='searchVO.advancedSearchArgs.priorityId != null and searchVO.advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
+                <foreach collection="searchVO.advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
                          close=")">
                     #{priorityId}
                 </foreach>
             </if>
-            <if test='searchDTO.advancedSearchArgs.statusId != null and searchDTO.advancedSearchArgs.statusId.size > 0'>
+            <if test='searchVO.advancedSearchArgs.statusId != null and searchVO.advancedSearchArgs.statusId.size > 0'>
                 and ai.status_id in
-                <foreach collection="searchDTO.advancedSearchArgs.statusId" item="statusId" open="(" separator=","
+                <foreach collection="searchVO.advancedSearchArgs.statusId" item="statusId" open="(" separator=","
                          close=")">
                     #{statusId}
                 </foreach>
@@ -263,13 +263,13 @@
         </if>
         )search
         where 1=1
-        <if test='searchDTO.searchArgs != null'>
-            <if test='searchDTO.searchArgs.issueNum != null and searchDTO.searchArgs.issueNum != ""'>
-                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.issueNum}) ,'%')
+        <if test='searchVO.searchArgs != null'>
+            <if test='searchVO.searchArgs.issueNum != null and searchVO.searchArgs.issueNum != ""'>
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchVO.searchArgs.issueNum}) ,'%')
             </if>
         </if>
-        <if test='searchDTO.contents != null and searchDTO.contents.size != 0'>
-            <foreach collection="searchDTO.contents" item="content" index="index">
+        <if test='searchVO.contents != null and searchVO.contents.size != 0'>
+            <foreach collection="searchVO.contents" item="content" index="index">
                 AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE
                 CONCAT(CONCAT('%',
                 #{content}), '%'))

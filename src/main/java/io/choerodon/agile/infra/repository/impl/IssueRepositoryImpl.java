@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.repository.IssueRepository;
@@ -50,26 +50,26 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Override
     @DataLog(type = "issue")
-    public IssueE update(IssueE issueE, String[] fieldList) {
-        IssueDTO issueDTO = ConvertHelper.convert(issueE, IssueDTO.class);
+    public IssueConvertDTO update(IssueConvertDTO issueConvertDTO, String[] fieldList) {
+        IssueDTO issueDTO = ConvertHelper.convert(issueConvertDTO, IssueDTO.class);
         Criteria criteria = new Criteria();
         criteria.update(fieldList);
         if (issueMapper.updateByPrimaryKeyOptions(issueDTO, criteria) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueE.class);
+        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueConvertDTO.class);
     }
 
     @Override
     @DataLog(type = "issueCreate")
-    public IssueE create(IssueE issueE) {
+    public IssueConvertDTO create(IssueConvertDTO issueConvertDTO) {
         //临时存个优先级code
-        issueE.setPriorityCode("priority-" + issueE.getPriorityId());
-        IssueDTO issueDTO = ConvertHelper.convert(issueE, IssueDTO.class);
+        issueConvertDTO.setPriorityCode("priority-" + issueConvertDTO.getPriorityId());
+        IssueDTO issueDTO = ConvertHelper.convert(issueConvertDTO, IssueDTO.class);
         if (issueMapper.insert(issueDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueE.class);
+        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueConvertDTO.class);
     }
 
     @Override
@@ -176,12 +176,12 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public IssueE updateSelective(IssueE issueE) {
-        IssueDTO issueDTO = ConvertHelper.convert(issueE, IssueDTO.class);
+    public IssueConvertDTO updateSelective(IssueConvertDTO issueConvertDTO) {
+        IssueDTO issueDTO = ConvertHelper.convert(issueConvertDTO, IssueDTO.class);
         if (issueMapper.updateByPrimaryKeySelective(issueDTO) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueE.class);
+        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueConvertDTO.class);
 
     }
 

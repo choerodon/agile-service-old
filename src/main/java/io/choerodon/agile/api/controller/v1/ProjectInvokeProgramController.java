@@ -114,8 +114,8 @@ public class ProjectInvokeProgramController {
                                                               @ApiParam(value = "组织id", required = true)
                                                               @PathVariable(name = "organization_id") Long organizationId,
                                                               @ApiParam(name = "search DTO", required = false)
-                                                              @RequestBody SearchDTO searchDTO) {
-        return Optional.ofNullable(boardService.queryByOptionsInProgram(programId, boardId, organizationId, searchDTO))
+                                                              @RequestBody SearchVO searchVO) {
+        return Optional.ofNullable(boardService.queryByOptionsInProgram(programId, boardId, organizationId, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.programBoard.get"));
     }

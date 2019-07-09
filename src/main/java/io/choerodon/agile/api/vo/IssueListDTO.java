@@ -89,7 +89,7 @@ public class IssueListDTO implements Serializable {
     private StatusMapVO statusMapVO;
 
     @ApiModelProperty(value = "问题类型DTO")
-    private IssueTypeDTO issueTypeDTO;
+    private IssueTypeVO issueTypeVO;
 
     @ApiModelProperty(value = "最后更新时间")
     private Date lastUpdateDate;
@@ -307,12 +307,12 @@ public class IssueListDTO implements Serializable {
         return statusMapVO;
     }
 
-    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
-        this.issueTypeDTO = issueTypeDTO;
+    public void setIssueTypeVO(IssueTypeVO issueTypeVO) {
+        this.issueTypeVO = issueTypeVO;
     }
 
-    public IssueTypeDTO getIssueTypeDTO() {
-        return issueTypeDTO;
+    public IssueTypeVO getIssueTypeVO() {
+        return issueTypeVO;
     }
 
     public String getAssigneeLoginName() {

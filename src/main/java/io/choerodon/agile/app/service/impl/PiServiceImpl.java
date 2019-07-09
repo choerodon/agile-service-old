@@ -313,7 +313,7 @@ public class PiServiceImpl implements PiService {
         Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         // set status completed
         setStatusIsCompleted(programId, statusMapDTOMap);
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         // query backlog with all feature
         List<SubFeatureDTO> backlogFeatures = piMapper.selectBacklogNoPiList(programId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
         result.put("backlogAllFeatures", backlogFeatures != null && !backlogFeatures.isEmpty() ? piAssembler.subFeatureDOTODTO(backlogFeatures, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
@@ -415,10 +415,10 @@ public class PiServiceImpl implements PiService {
         Long organizationId = ConvertUtil.getOrganizationId(programId);
         //获取状态机id
         Long issueTypeId = null;
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(programId, "program").getBody();
-        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if ("feature".equals(issueTypeDTO.getTypeCode())) {
-                issueTypeId = issueTypeDTO.getId();
+        List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(programId, "program").getBody();
+        for (IssueTypeVO issueTypeVO : issueTypeVOList) {
+            if ("feature".equals(issueTypeVO.getTypeCode())) {
+                issueTypeId = issueTypeVO.getId();
                 break;
             }
         }
@@ -674,7 +674,7 @@ public class PiServiceImpl implements PiService {
         if (piWithFeatureDTOList != null && !piWithFeatureDTOList.isEmpty()) {
             Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             setStatusIsCompleted(programId, statusMapDTOMap);
-            Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             return piAssembler.piWithFeatureDOTODTO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap);
         } else {
             return new ArrayList<>();

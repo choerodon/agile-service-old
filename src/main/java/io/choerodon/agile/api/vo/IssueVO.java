@@ -146,7 +146,7 @@ public class IssueVO {
     private PriorityDTO priorityDTO;
 
     @ApiModelProperty(value = "问题类型DTO")
-    private IssueTypeDTO issueTypeDTO;
+    private IssueTypeVO issueTypeVO;
 
     @ApiModelProperty(value = "状态DTO")
     private StatusMapVO statusMapVO;
@@ -160,8 +160,8 @@ public class IssueVO {
     @ApiModelProperty(value = "创建人邮箱")
     private String createrEmail;
 
-    @ApiModelProperty(value = "featureDTO")
-    private FeatureDTO featureDTO;
+    @ApiModelProperty(value = "featureVO")
+    private FeatureVO featureVO;
 
     @ApiModelProperty(value = "featureId")
     private Long featureId;
@@ -531,12 +531,12 @@ public class IssueVO {
         return priorityId;
     }
 
-    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
-        this.issueTypeDTO = issueTypeDTO;
+    public void setIssueTypeVO(IssueTypeVO issueTypeVO) {
+        this.issueTypeVO = issueTypeVO;
     }
 
-    public IssueTypeDTO getIssueTypeDTO() {
-        return issueTypeDTO;
+    public IssueTypeVO getIssueTypeVO() {
+        return issueTypeVO;
     }
 
     public void setCreatedBy(Long createdBy) {
@@ -547,12 +547,12 @@ public class IssueVO {
         return createdBy;
     }
 
-    public void setFeatureDTO(FeatureDTO featureDTO) {
-        this.featureDTO = featureDTO;
+    public void setFeatureVO(FeatureVO featureVO) {
+        this.featureVO = featureVO;
     }
 
-    public FeatureDTO getFeatureDTO() {
-        return featureDTO;
+    public FeatureVO getFeatureVO() {
+        return featureVO;
     }
 
     public String getFeatureName() {

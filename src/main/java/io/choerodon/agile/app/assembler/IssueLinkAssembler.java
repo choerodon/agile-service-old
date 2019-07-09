@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IssueLinkDTO;
-import io.choerodon.agile.api.vo.IssueTypeDTO;
+import io.choerodon.agile.api.vo.IssueTypeVO;
 import io.choerodon.agile.api.vo.PriorityDTO;
 import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.repository.UserRepository;
@@ -36,8 +36,8 @@ public class IssueLinkAssembler extends AbstractAssembler {
     public List<IssueLinkDTO> issueLinkDoToDto(Long projectId, List<IssueLinkDO> issueLinkDOList) {
         List<IssueLinkDTO> issueLinkDTOList = new ArrayList<>(issueLinkDOList.size());
         if (!issueLinkDOList.isEmpty()) {
-            Map<Long, IssueTypeDTO> testIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
-            Map<Long, IssueTypeDTO> agileIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
+            Map<Long, IssueTypeVO> testIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
+            Map<Long, IssueTypeVO> agileIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
             Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             List<Long> assigneeIds = issueLinkDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueLinkDO::getAssigneeId).distinct().collect(Collectors.toList());
@@ -48,9 +48,9 @@ public class IssueLinkAssembler extends AbstractAssembler {
                 IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
                 BeanUtils.copyProperties(issueLinkDO, issueLinkDTO);
                 if (issueLinkDO.getApplyType().equals(SchemeApplyType.TEST)) {
-                    issueLinkDTO.setIssueTypeDTO(testIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
+                    issueLinkDTO.setIssueTypeVO(testIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
                 } else {
-                    issueLinkDTO.setIssueTypeDTO(agileIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
+                    issueLinkDTO.setIssueTypeVO(agileIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
                 }
                 issueLinkDTO.setStatusMapVO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
                 issueLinkDTO.setPriorityDTO(priorityDTOMap.get(issueLinkDO.getPriorityId()));

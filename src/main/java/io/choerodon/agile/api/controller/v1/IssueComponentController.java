@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.vo.ComponentForListDTO;
 import io.choerodon.agile.api.vo.IssueVO;
-import io.choerodon.agile.api.vo.SearchDTO;
+import io.choerodon.agile.api.vo.SearchVO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import com.github.pagehelper.PageInfo;
@@ -98,11 +98,11 @@ public class IssueComponentController {
                                                                      @ApiParam(value = "是否包含测试")
                                                                      @RequestParam(required = false, name = "no_issue_test", defaultValue = "false") Boolean noIssueTest,
                                                                      @ApiParam(value = "查询参数")
-                                                                     @RequestBody(required = false) SearchDTO searchDTO,
+                                                                     @RequestBody(required = false) SearchVO searchVO,
                                                                      @ApiParam(value = "分页信息", required = true)
                                                                      @SortDefault(value = "component_id", direction = Sort.Direction.DESC)
                                                                      @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest, searchDTO, pageRequest))
+        return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest, searchVO, pageRequest))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.componentList.get"));
     }

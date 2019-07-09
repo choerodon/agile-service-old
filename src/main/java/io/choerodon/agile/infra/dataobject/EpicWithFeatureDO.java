@@ -20,7 +20,7 @@ public class EpicWithFeatureDO {
 
     private Long epicRankObjectVersionNumber;
 
-    private List<FeatureCommonDO> featureCommonDOList;
+    private List<FeatureCommonDTO> featureCommonDTOList;
 
     public Long getIssueId() {
         return issueId;
@@ -62,12 +62,12 @@ public class EpicWithFeatureDO {
         return epicName;
     }
 
-    public List<FeatureCommonDO> getFeatureCommonDOList() {
-        return featureCommonDOList;
+    public List<FeatureCommonDTO> getFeatureCommonDTOList() {
+        return featureCommonDTOList;
     }
 
-    public void setFeatureCommonDOList(List<FeatureCommonDO> featureCommonDOList) {
-        this.featureCommonDOList = featureCommonDOList;
+    public void setFeatureCommonDTOList(List<FeatureCommonDTO> featureCommonDTOList) {
+        this.featureCommonDTOList = featureCommonDTOList;
     }
 
     public void setProgramId(Long programId) {

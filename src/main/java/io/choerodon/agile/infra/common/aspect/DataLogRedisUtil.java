@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.common.aspect;
 
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
@@ -115,14 +115,14 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleStatus(IssueE issueE, IssueDTO originIssueDTO, Boolean condition) {
+    public void deleteByHandleStatus(IssueConvertDTO issueConvertDTO, IssueDTO originIssueDTO, Boolean condition) {
         redisUtil.deleteRedisCache(new String[]{CUMULATIVE_FLOW_DIAGRAM + originIssueDTO.getProjectId() + COLON + POINTER
                 , PIE_CHART + originIssueDTO.getProjectId() + COLON + FIELD_STATUS + POINTER});
         if (condition) {
-            deleteEpicChartCache(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId(), POINTER);
-            deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId());
-            deleteBurnDownCoordinateByVersion(originIssueDTO.getProjectId(), issueE.getIssueId());
-            deleteBurnDownCache(issueE.getSprintId(), originIssueDTO.getProjectId(), issueE.getIssueId(), POINTER);
+            deleteEpicChartCache(issueConvertDTO.getEpicId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId(), POINTER);
+            deleteBurnDownCoordinateByTypeEpic(issueConvertDTO.getEpicId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId());
+            deleteBurnDownCoordinateByVersion(originIssueDTO.getProjectId(), issueConvertDTO.getIssueId());
+            deleteBurnDownCache(issueConvertDTO.getSprintId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId(), POINTER);
             redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDTO.getProjectId() + COLON + POINTER});
             deleteVersionCache(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), POINTER);
         }
@@ -145,47 +145,47 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleStoryPoints(IssueE issueE, IssueDTO originIssueDTO) {
-        deleteEpicChartCache(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId(), STORY_POINT);
-        deleteBurnDownCache(issueE.getSprintId(), originIssueDTO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
+    public void deleteByHandleStoryPoints(IssueConvertDTO issueConvertDTO, IssueDTO originIssueDTO) {
+        deleteEpicChartCache(issueConvertDTO.getEpicId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId(), STORY_POINT);
+        deleteBurnDownCache(issueConvertDTO.getSprintId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId(), STORY_POINTS_FIELD);
         redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDTO.getProjectId() + COLON + STORY_POINT,
                 BURN_DOWN_COORDINATE_BY_TYPE + originIssueDTO.getProjectId() + COLON + POINTER});
         deleteVersionCache(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), STORY_POINT);
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleCalculateRemainData(IssueE issueE, IssueDTO originIssueDTO) {
-        deleteEpicChartCache(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId(), REMAIN_TIME);
-        deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId());
-        deleteBurnDownCache(issueE.getSprintId(), originIssueDTO.getProjectId(), issueE.getIssueId(), REMAINING_ESTIMATED_TIME);
+    public void deleteByHandleCalculateRemainData(IssueConvertDTO issueConvertDTO, IssueDTO originIssueDTO) {
+        deleteEpicChartCache(issueConvertDTO.getEpicId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId(), REMAIN_TIME);
+        deleteBurnDownCoordinateByTypeEpic(issueConvertDTO.getEpicId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId());
+        deleteBurnDownCache(issueConvertDTO.getSprintId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId(), REMAINING_ESTIMATED_TIME);
         redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDTO.getProjectId() + COLON + REMAIN_TIME});
         deleteVersionCache(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), REMAIN_TIME);
-        deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), POINTER);
+        deleteVersionCache(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId(), POINTER);
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleType(IssueE issueE, IssueDTO originIssueDTO) {
-        deleteBurnDownCache(issueE.getSprintId(), originIssueDTO.getProjectId(), issueE.getIssueId(), POINTER);
-        deleteEpicChartCache(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId(), POINTER);
-        deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId());
-        deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), POINTER);
+    public void deleteByHandleType(IssueConvertDTO issueConvertDTO, IssueDTO originIssueDTO) {
+        deleteBurnDownCache(issueConvertDTO.getSprintId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId(), POINTER);
+        deleteEpicChartCache(issueConvertDTO.getEpicId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId(), POINTER);
+        deleteBurnDownCoordinateByTypeEpic(issueConvertDTO.getEpicId(), originIssueDTO.getProjectId(), issueConvertDTO.getIssueId());
+        deleteVersionCache(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId(), POINTER);
         redisUtil.deleteRedisCache(new String[]{CUMULATIVE_FLOW_DIAGRAM + originIssueDTO.getProjectId() + COLON + POINTER,
                 VELOCITY_CHART + originIssueDTO.getProjectId() + COLON + POINTER,
-                PIE_CHART + issueE.getProjectId() + COLON + ISSUE_TYPE + POINTER,
-                PIE_CHART + issueE.getProjectId() + COLON + FIELD_STATUS + POINTER,
-                PIE_CHART + issueE.getProjectId() + COLON + EPIC_FIELD + POINTER
+                PIE_CHART + issueConvertDTO.getProjectId() + COLON + ISSUE_TYPE + POINTER,
+                PIE_CHART + issueConvertDTO.getProjectId() + COLON + FIELD_STATUS + POINTER,
+                PIE_CHART + issueConvertDTO.getProjectId() + COLON + EPIC_FIELD + POINTER
         });
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleIssueCreateDataLog(IssueE issueE, Boolean condition) {
-        redisUtil.deleteRedisCache(new String[]{PIE_CHART + issueE.getProjectId() + COLON + POINTER});
+    public void deleteByHandleIssueCreateDataLog(IssueConvertDTO issueConvertDTO, Boolean condition) {
+        redisUtil.deleteRedisCache(new String[]{PIE_CHART + issueConvertDTO.getProjectId() + COLON + POINTER});
         if (condition) {
-            deleteBurnDownCache(issueE.getSprintId(), issueE.getProjectId(), issueE.getIssueId(), POINTER);
-            deleteEpicChartCache(issueE.getEpicId(), issueE.getProjectId(), issueE.getIssueId(), POINTER);
-            redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + issueE.getProjectId() + COLON + POINTER,
-                    BURN_DOWN_COORDINATE_BY_TYPE + issueE.getProjectId() + COLON + POINTER});
-            deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), POINTER);
+            deleteBurnDownCache(issueConvertDTO.getSprintId(), issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId(), POINTER);
+            deleteEpicChartCache(issueConvertDTO.getEpicId(), issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId(), POINTER);
+            redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + issueConvertDTO.getProjectId() + COLON + POINTER,
+                    BURN_DOWN_COORDINATE_BY_TYPE + issueConvertDTO.getProjectId() + COLON + POINTER});
+            deleteVersionCache(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId(), POINTER);
         }
     }
 

@@ -397,22 +397,22 @@
             WHERE ai1.type_code = 'feature'
                   AND ai1.issue_id = af.issue_id
                   AND ai1.program_id = #{projectId}
-            <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+            <if test="searchVO.advancedSearchArgs.featureTypeList != null and searchVO.advancedSearchArgs.featureTypeList.size > 0">
                   AND ai1.issue_id in (
                   select af.issue_id from agile_feature af where af.program_id = #{projectId} and af.feature_type in
-                  <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="("
+                  <foreach collection="searchVO.advancedSearchArgs.featureTypeList" item="featureType" open="("
                            separator=","
                            close=")">
                       #{featureType}
                   </foreach>
                   )
             </if>
-            <if test="searchDTO.advancedSearchArgs.completeList != null and searchDTO.advancedSearchArgs.completeList.size > 0">
+            <if test="searchVO.advancedSearchArgs.completeList != null and searchVO.advancedSearchArgs.completeList.size > 0">
                 AND ai1.status_id in (
                     select ais.status_id
                     from agile_issue_status ais
                     where ais.project_id = #{projectId} and ais.is_completed in (
-                    <foreach collection="searchDTO.advancedSearchArgs.completeList" item="complete" open="("
+                    <foreach collection="searchVO.advancedSearchArgs.completeList" item="complete" open="("
                              separator=","
                              close=")">
                             #{complete}
@@ -480,22 +480,22 @@
                 AND ai1.type_code = 'feature'
                 AND ai1.issue_id = af.issue_id
                 AND ai1.program_id = #{projectId}
-            <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+            <if test="searchVO.advancedSearchArgs.featureTypeList != null and searchVO.advancedSearchArgs.featureTypeList.size > 0">
                 AND ai1.issue_id in (
                 select af.issue_id from agile_feature af where af.program_id = #{projectId} and af.feature_type in
-                <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="("
+                <foreach collection="searchVO.advancedSearchArgs.featureTypeList" item="featureType" open="("
                          separator=","
                          close=")">
                     #{featureType}
                 </foreach>
                 )
             </if>
-            <if test="searchDTO.advancedSearchArgs.completeList != null and searchDTO.advancedSearchArgs.completeList.size > 0">
+            <if test="searchVO.advancedSearchArgs.completeList != null and searchVO.advancedSearchArgs.completeList.size > 0">
                 AND ai1.status_id in (
                     select ais.status_id
                     from agile_issue_status ais
                     where ais.project_id = #{projectId} and ais.is_completed in (
-                    <foreach collection="searchDTO.advancedSearchArgs.completeList" item="complete" open="("
+                    <foreach collection="searchVO.advancedSearchArgs.completeList" item="complete" open="("
                              separator=","
                              close=")">
                         #{complete}

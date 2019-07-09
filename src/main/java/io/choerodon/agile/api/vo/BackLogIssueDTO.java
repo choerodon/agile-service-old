@@ -13,11 +13,11 @@ public class BackLogIssueDTO {
     private Integer backlogIssueCount;
 
     @ApiModelProperty(value = "待办问题列表")
-    private List<IssueSearchDTO> backLogIssue;
+    private List<IssueSearchVO> backLogIssue;
 
     public BackLogIssueDTO(){}
 
-    public BackLogIssueDTO(Integer backlogIssueCount, List<IssueSearchDTO> backLogIssue) {
+    public BackLogIssueDTO(Integer backlogIssueCount, List<IssueSearchVO> backLogIssue) {
         this.backlogIssueCount = backlogIssueCount;
         this.backLogIssue = backLogIssue;
     }
@@ -30,11 +30,11 @@ public class BackLogIssueDTO {
         this.backlogIssueCount = backlogIssueCount;
     }
 
-    public List<IssueSearchDTO> getBackLogIssue() {
+    public List<IssueSearchVO> getBackLogIssue() {
         return backLogIssue;
     }
 
-    public void setBackLogIssue(List<IssueSearchDTO> backLogIssue) {
+    public void setBackLogIssue(List<IssueSearchVO> backLogIssue) {
         this.backLogIssue = backLogIssue;
     }
 }

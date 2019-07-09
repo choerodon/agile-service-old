@@ -2,11 +2,11 @@ package io.choerodon.agile.domain.agile.converter;
 
 
 import io.choerodon.agile.api.vo.IssueVO;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.BeanUtils;
-import io.choerodon.agile.domain.agile.entity.IssueE;
 
 /**
  * 敏捷开发Issue
@@ -15,33 +15,33 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
  * @since 2018-05-14 20:30:48
  */
 @Component
-public class IssueConverter implements ConvertorI<IssueE, IssueDTO, IssueVO> {
+public class IssueConverter implements ConvertorI<IssueConvertDTO, IssueDTO, IssueVO> {
 
     @Override
-    public IssueE dtoToEntity(IssueVO issueVO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueVO, issueE);
-        return issueE;
+    public IssueConvertDTO dtoToEntity(IssueVO issueVO) {
+        IssueConvertDTO issueConvertDTO = new IssueConvertDTO();
+        BeanUtils.copyProperties(issueVO, issueConvertDTO);
+        return issueConvertDTO;
     }
 
     @Override
-    public IssueE doToEntity(IssueDTO issueDTO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueDTO, issueE);
-        return issueE;
+    public IssueConvertDTO doToEntity(IssueDTO issueDTO) {
+        IssueConvertDTO issueConvertDTO = new IssueConvertDTO();
+        BeanUtils.copyProperties(issueDTO, issueConvertDTO);
+        return issueConvertDTO;
     }
 
     @Override
-    public IssueVO entityToDto(IssueE issueE) {
+    public IssueVO entityToDto(IssueConvertDTO issueConvertDTO) {
         IssueVO issueVO = new IssueVO();
-        BeanUtils.copyProperties(issueE, issueVO);
+        BeanUtils.copyProperties(issueConvertDTO, issueVO);
         return issueVO;
     }
 
     @Override
-    public IssueDTO entityToDo(IssueE issueE) {
+    public IssueDTO entityToDo(IssueConvertDTO issueConvertDTO) {
         IssueDTO issueDTO = new IssueDTO();
-        BeanUtils.copyProperties(issueE, issueDTO);
+        BeanUtils.copyProperties(issueConvertDTO, issueDTO);
         return issueDTO;
     }
 

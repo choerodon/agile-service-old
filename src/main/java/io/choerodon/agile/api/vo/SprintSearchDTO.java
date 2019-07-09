@@ -18,7 +18,7 @@ public class SprintSearchDTO {
     private BigDecimal todoStoryPoint;
     private BigDecimal doingStoryPoint;
     private BigDecimal doneStoryPoint;
-    private List<IssueSearchDTO> issueSearchDTOList;
+    private List<IssueSearchVO> issueSearchVOList;
     private List<AssigneeIssueVO> assigneeIssues;
     private String objectVersionNumber;
     private Long piId;
@@ -79,12 +79,12 @@ public class SprintSearchDTO {
         this.issueCount = issueCount;
     }
 
-    public List<IssueSearchDTO> getIssueSearchDTOList() {
-        return issueSearchDTOList;
+    public List<IssueSearchVO> getIssueSearchVOList() {
+        return issueSearchVOList;
     }
 
-    public void setIssueSearchDTOList(List<IssueSearchDTO> issueSearchDTOList) {
-        this.issueSearchDTOList = issueSearchDTOList;
+    public void setIssueSearchVOList(List<IssueSearchVO> issueSearchVOList) {
+        this.issueSearchVOList = issueSearchVOList;
     }
 
     public List<AssigneeIssueVO> getAssigneeIssues() {

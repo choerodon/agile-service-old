@@ -92,7 +92,7 @@ public class SendMsgUtil {
     }
 
     @Async
-    public void sendMsgBySubIssueCreate(Long projectId, IssueSubDTO result) {
+    public void sendMsgBySubIssueCreate(Long projectId, IssueSubVO result) {
         // 发送消息
         if (SchemeApplyType.AGILE.equals(result.getApplyType())) {
             IssueVO issueVO = new IssueVO();

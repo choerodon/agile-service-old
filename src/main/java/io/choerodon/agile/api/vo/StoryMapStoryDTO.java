@@ -24,7 +24,7 @@ public class StoryMapStoryDTO {
 
     private Long statusId;
 
-    private IssueTypeDTO issueTypeDTO;
+    private IssueTypeVO issueTypeVO;
 
     private StatusMapVO statusMapVO;
 
@@ -94,12 +94,12 @@ public class StoryMapStoryDTO {
         this.statusId = statusId;
     }
 
-    public IssueTypeDTO getIssueTypeDTO() {
-        return issueTypeDTO;
+    public IssueTypeVO getIssueTypeVO() {
+        return issueTypeVO;
     }
 
-    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
-        this.issueTypeDTO = issueTypeDTO;
+    public void setIssueTypeVO(IssueTypeVO issueTypeVO) {
+        this.issueTypeVO = issueTypeVO;
     }
 
     public StatusMapVO getStatusMapVO() {

@@ -194,12 +194,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public PageInfo<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchDTO searchDTO) {
+    public PageInfo<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchVO searchVO) {
         //过滤查询和排序
         PageInfo<Long> versionIds = PageHelper.startPage(pageRequest.getPage(),
                 pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> productVersionMapper.
-                queryVersionIdsByProjectId(projectId, searchDTO.getSearchArgs(),
-                        searchDTO.getAdvancedSearchArgs(), searchDTO.getContents()));
+                queryVersionIdsByProjectId(projectId, searchVO.getSearchArgs(),
+                        searchVO.getAdvancedSearchArgs(), searchVO.getContents()));
         if ((versionIds.getList() != null) && !versionIds.getList().isEmpty()) {
             return PageUtil.buildPageInfoWithPageInfoList(versionIds, productVersionPageAssembler.toTargetList(productVersionMapper.
                     queryVersionByIds(projectId, versionIds.getList()), ProductVersionPageDTO.class));
@@ -253,13 +253,13 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId, SearchDTO searchDTO) {
+    public List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId, SearchVO searchVO) {
         //处理用户搜索
-        Boolean condition = issueService.handleSearchUser(searchDTO, projectId);
+        Boolean condition = issueService.handleSearchUser(searchVO, projectId);
         if (condition) {
             Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
             Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-            Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             List<Long> filterStatusIds = new ArrayList<>();
             if (statusCode != null) {
                 for (Long key : statusMapDTOMap.keySet()) {
@@ -268,7 +268,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
                     }
                 }
             }
-            return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, filterStatusIds, searchDTO), priorityMap, statusMapDTOMap, issueTypeDTOMap);
+            return issueAssembler.issueDoToIssueListDto(productVersionMapper.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, filterStatusIds, searchVO), priorityMap, statusMapDTOMap, issueTypeDTOMap);
         } else {
             return new ArrayList<>();
 

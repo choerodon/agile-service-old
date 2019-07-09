@@ -3,7 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.vo.WorkLogDTO;
 import io.choerodon.agile.api.validator.WorkLogValidator;
 import io.choerodon.agile.app.service.WorkLogService;
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.domain.agile.entity.WorkLogE;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
@@ -54,29 +54,29 @@ public class WorkLogServiceImpl implements WorkLogService {
     private UserRepository userRepository;
 
     private void setTo(Long issueId, BigDecimal predictionTime) {
-        IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
-        issueE.setRemainingTime(predictionTime);
-        issueRepository.update(issueE, new String[]{REMAINING_TIME_FIELD});
+        IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
+        issueConvertDTO.setRemainingTime(predictionTime);
+        issueRepository.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
     }
 
-    private BigDecimal getRemainTime(IssueE issueE, BigDecimal theTime) {
+    private BigDecimal getRemainTime(IssueConvertDTO issueConvertDTO, BigDecimal theTime) {
         BigDecimal zero = new BigDecimal(0);
-        return issueE.getRemainingTime().subtract(theTime).compareTo(zero) < 0 ? zero : issueE.getRemainingTime().subtract(theTime);
+        return issueConvertDTO.getRemainingTime().subtract(theTime).compareTo(zero) < 0 ? zero : issueConvertDTO.getRemainingTime().subtract(theTime);
     }
 
     private void reducePrediction(Long issueId, BigDecimal predictionTime) {
-        IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
-        if (issueE.getRemainingTime() != null) {
-            issueE.setRemainingTime(getRemainTime(issueE, predictionTime));
-            issueRepository.update(issueE, new String[]{REMAINING_TIME_FIELD});
+        IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
+        if (issueConvertDTO.getRemainingTime() != null) {
+            issueConvertDTO.setRemainingTime(getRemainTime(issueConvertDTO, predictionTime));
+            issueRepository.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
         }
     }
 
     private void selfAdjustment(Long issueId, BigDecimal workTime) {
-        IssueE issueE = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueE.class);
-        if (issueE.getRemainingTime() != null) {
-            issueE.setRemainingTime(getRemainTime(issueE, workTime));
-            issueRepository.update(issueE, new String[]{REMAINING_TIME_FIELD});
+        IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
+        if (issueConvertDTO.getRemainingTime() != null) {
+            issueConvertDTO.setRemainingTime(getRemainTime(issueConvertDTO, workTime));
+            issueRepository.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
         }
     }
 

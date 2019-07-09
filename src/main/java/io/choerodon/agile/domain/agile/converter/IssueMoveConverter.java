@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 import io.choerodon.agile.api.vo.IssueMoveVO;
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class IssueMoveConverter implements ConvertorI<IssueE, Object, IssueMoveVO> {
+public class IssueMoveConverter implements ConvertorI<IssueConvertDTO, Object, IssueMoveVO> {
 
     @Override
-    public IssueE dtoToEntity(IssueMoveVO issueMoveVO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueMoveVO, issueE);
-        return issueE;
+    public IssueConvertDTO dtoToEntity(IssueMoveVO issueMoveVO) {
+        IssueConvertDTO issueConvertDTO = new IssueConvertDTO();
+        BeanUtils.copyProperties(issueMoveVO, issueConvertDTO);
+        return issueConvertDTO;
     }
 
     @Override
-    public IssueMoveVO entityToDto(IssueE issueE) {
+    public IssueMoveVO entityToDto(IssueConvertDTO issueConvertDTO) {
         IssueMoveVO issueMoveVO = new IssueMoveVO();
-        BeanUtils.copyProperties(issueE, issueMoveVO);
+        BeanUtils.copyProperties(issueConvertDTO, issueMoveVO);
         return issueMoveVO;
     }
 

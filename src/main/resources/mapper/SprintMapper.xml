@@ -21,7 +21,7 @@
             <result property="remainingTime" column="remaining_time"/>
             <result property="remainingIssueCount" column="remaining_issue_count"/>
         </collection>
-        <collection property="issueSearchDOList" resultMap="issueSearch">
+        <collection property="issueSearchDTOList" resultMap="issueSearch">
         </collection>
     </resultMap>
 
@@ -46,7 +46,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="issueSearch" type="io.choerodon.agile.infra.dataobject.IssueSearchDO">
+    <resultMap id="issueSearch" type="io.choerodon.agile.infra.dataobject.IssueSearchDTO">
         <id property="issueId" column="issue_id"/>
         <id property="issueNum" column="issue_num"/>
         <id property="typeCode" column="type_code"/>
@@ -783,7 +783,7 @@
         ORDER BY rank DESC
     </select>
 
-    <select id="queryParentsDoneUnfinishedSubtasks" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
+    <select id="queryParentsDoneUnfinishedSubtasks" resultType="io.choerodon.agile.infra.dataobject.IssueNumDTO">
         SELECT ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num, ai.project_id
         FROM agile_issue ai
               LEFT JOIN agile_project_info api ON ai.project_id = api.project_id,

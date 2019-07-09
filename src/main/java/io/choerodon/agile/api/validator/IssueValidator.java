@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -70,27 +70,27 @@ public class IssueValidator {
     private IssueFeignClient issueFeignClient;
 
 
-    public void verifyCreateData(IssueCreateDTO issueCreateDTO, Long projectId, String applyType) {
-        issueCreateDTO.setProjectId(projectId);
-        if (issueCreateDTO.getTypeCode() == null) {
+    public void verifyCreateData(IssueCreateVO issueCreateVO, Long projectId, String applyType) {
+        issueCreateVO.setProjectId(projectId);
+        if (issueCreateVO.getTypeCode() == null) {
             throw new CommonException("error.IssueRule.typeCode");
         }
-        if (issueCreateDTO.getSummary() == null) {
+        if (issueCreateVO.getSummary() == null) {
             throw new CommonException("error.IssueRule.Summary");
         }
-        if (issueCreateDTO.getPriorityCode() == null) {
+        if (issueCreateVO.getPriorityCode() == null) {
             throw new CommonException("error.IssueRule.PriorityCode");
         }
-        if (issueCreateDTO.getProjectId() == null) {
+        if (issueCreateVO.getProjectId() == null) {
             throw new CommonException("error.IssueRule.ProjectId");
         }
-        if (issueCreateDTO.getEpicName() != null && !ISSUE_EPIC.equals(issueCreateDTO.getTypeCode())) {
+        if (issueCreateVO.getEpicName() != null && !ISSUE_EPIC.equals(issueCreateVO.getTypeCode())) {
             throw new CommonException("error.IssueRule.EpicName");
         }
-        if (issueCreateDTO.getPriorityId() == null) {
+        if (issueCreateVO.getPriorityId() == null) {
             throw new CommonException("error.priorityId.isNull");
         }
-        if (issueCreateDTO.getIssueTypeId() == null) {
+        if (issueCreateVO.getIssueTypeId() == null) {
             throw new CommonException("error.issueTypeId.isNull");
         }
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
@@ -165,16 +165,16 @@ public class IssueValidator {
 
     }
 
-    public void verifySubCreateData(IssueSubCreateDTO issueSubCreateDTO, Long projectId) {
-        if (issueSubCreateDTO.getParentIssueId() == null) {
+    public void verifySubCreateData(IssueSubCreateVO issueSubCreateVO, Long projectId) {
+        if (issueSubCreateVO.getParentIssueId() == null) {
             throw new CommonException("error.IssueRule.ParentIssueId");
         }
         IssueDTO issueDTO = new IssueDTO();
         issueDTO.setProjectId(projectId);
-        issueDTO.setIssueId(issueSubCreateDTO.getParentIssueId());
+        issueDTO.setIssueId(issueSubCreateVO.getParentIssueId());
         IssueDTO query = issueMapper.selectOne(issueDTO);
         if (query != null) {
-            issueSubCreateDTO.setProjectId(projectId);
+            issueSubCreateVO.setProjectId(projectId);
         } else {
             throw new CommonException("error.IssueRule.issueNoFound");
         }
@@ -219,7 +219,7 @@ public class IssueValidator {
         }
     }
 
-    public IssueE verifyUpdateTypeData(Long projectId, IssueUpdateTypeDTO issueUpdateTypeDTO) {
+    public IssueConvertDTO verifyUpdateTypeData(Long projectId, IssueUpdateTypeDTO issueUpdateTypeDTO) {
         if (issueUpdateTypeDTO.getIssueId() == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
@@ -232,17 +232,17 @@ public class IssueValidator {
         if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC) && issueUpdateTypeDTO.getEpicName() == null) {
             throw new CommonException("error.IssueRule.epicName");
         }
-        IssueE issueE = issueService.queryIssueByProjectIdAndIssueId(projectId, issueUpdateTypeDTO.getIssueId());
-        if (issueE == null) {
+        IssueConvertDTO issueConvertDTO = issueService.queryIssueByProjectIdAndIssueId(projectId, issueUpdateTypeDTO.getIssueId());
+        if (issueConvertDTO == null) {
             throw new CommonException("error.IssueUpdateTypeDTO.issueDO");
         }
         if (issueUpdateTypeDTO.getTypeCode().equals(SUB_TASK)) {
             throw new CommonException("error.IssueRule.subTask");
         }
-        if (issueUpdateTypeDTO.getTypeCode().equals(issueE.getTypeCode())) {
+        if (issueUpdateTypeDTO.getTypeCode().equals(issueConvertDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
         }
-        Long originStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueE.getIssueTypeId()).getBody();
+        Long originStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueConvertDTO.getIssueTypeId()).getBody();
         Long currentStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueUpdateTypeDTO.getIssueTypeId()).getBody();
         if (originStateMachineId == null || currentStateMachineId == null) {
             throw new CommonException("error.IssueRule.stateMachineId");
@@ -250,7 +250,7 @@ public class IssueValidator {
         if (!originStateMachineId.equals(currentStateMachineId)) {
             throw new CommonException("error.IssueRule.stateMachineId");
         }
-        return issueE;
+        return issueConvertDTO;
     }
 
     public Boolean existVersionIssueRel(VersionIssueRelE versionIssueRelE) {
@@ -287,7 +287,7 @@ public class IssueValidator {
         }
     }
 
-    public IssueE verifyTransformedTask(Long projectId, IssueTransformTask issueTransformTask) {
+    public IssueConvertDTO verifyTransformedTask(Long projectId, IssueTransformTask issueTransformTask) {
         if (issueTransformTask.getIssueId() == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
@@ -300,17 +300,17 @@ public class IssueValidator {
         if (issueTransformTask.getTypeCode().equals(ISSUE_EPIC) && issueTransformTask.getEpicName() == null) {
             throw new CommonException("error.IssueRule.epicName");
         }
-        IssueE issueE = issueService.queryIssueByProjectIdAndIssueId(projectId, issueTransformTask.getIssueId());
-        if (issueE == null) {
+        IssueConvertDTO issueConvertDTO = issueService.queryIssueByProjectIdAndIssueId(projectId, issueTransformTask.getIssueId());
+        if (issueConvertDTO == null) {
             throw new CommonException("error.IssueUpdateTypeDTO.issueDO");
         }
         if (issueTransformTask.getTypeCode().equals(SUB_TASK)) {
             throw new CommonException("error.IssueRule.subTask");
         }
-        if (issueTransformTask.getTypeCode().equals(issueE.getTypeCode())) {
+        if (issueTransformTask.getTypeCode().equals(issueConvertDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
         }
-        return issueE;
+        return issueConvertDTO;
     }
 
     public void verifySubTask(Long parentIssueId) {
@@ -324,8 +324,8 @@ public class IssueValidator {
         }
     }
 
-    public void verifyStoryPoints(IssueE issueE) {
-        if (issueE.getStoryPoints() != null && !(STORY.equals(issueE.getTypeCode()) || "feature".equals(issueE.getTypeCode()))) {
+    public void verifyStoryPoints(IssueConvertDTO issueConvertDTO) {
+        if (issueConvertDTO.getStoryPoints() != null && !(STORY.equals(issueConvertDTO.getTypeCode()) || "feature".equals(issueConvertDTO.getTypeCode()))) {
             throw new CommonException("error.IssueRule.onlyStory");
         }
     }
@@ -369,15 +369,15 @@ public class IssueValidator {
         }
     }
 
-    public void checkIssueCreate(IssueCreateDTO issueCreateDTO, String applyType) {
+    public void checkIssueCreate(IssueCreateVO issueCreateVO, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
         }
-        if (SchemeApplyType.AGILE.equals(applyType) && issueCreateDTO.getEpicName() != null && issueService.checkEpicName(issueCreateDTO.getProjectId(), issueCreateDTO.getEpicName())) {
+        if (SchemeApplyType.AGILE.equals(applyType) && issueCreateVO.getEpicName() != null && issueService.checkEpicName(issueCreateVO.getProjectId(), issueCreateVO.getEpicName())) {
             throw new CommonException("error.epicName.exist");
         }
-        if (issueCreateDTO.getRankDTO() != null) {
-            RankDTO rankDTO = issueCreateDTO.getRankDTO();
+        if (issueCreateVO.getRankDTO() != null) {
+            RankDTO rankDTO = issueCreateVO.getRankDTO();
             if (rankDTO.getReferenceIssueId() == null) {
                 throw new CommonException("error.referenceIssueId.isNull");
             }

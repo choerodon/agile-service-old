@@ -236,7 +236,7 @@ public class BoardServiceImpl implements BoardService {
         return columnsData;
     }
 
-    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Map<Long, PriorityDTO> priorityMap, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, List<Long>> parentWithSubs) {
+    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Map<Long, PriorityDTO> priorityMap, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, List<Long>> parentWithSubs) {
         if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
             parentIds.add(issue.getParentIssueId());
         } else if (issue.getRelateIssueId() != null && issue.getRelateIssueId() != 0 && !parentIds.contains(issue.getRelateIssueId())) {
@@ -268,7 +268,7 @@ public class BoardServiceImpl implements BoardService {
             parentWithSubs.put(issue.getRelateIssueId(), subBugIds);
         }
         issue.setPriorityDTO(priorityMap.get(issue.getPriorityId()));
-        issue.setIssueTypeDTO(issueTypeDTOMap.get(issue.getIssueTypeId()));
+        issue.setIssueTypeVO(issueTypeDTOMap.get(issue.getIssueTypeId()));
         if (issue.getStayDate() != null) {
             issue.setStayDay(DateUtil.differentDaysByMillisecond(issue.getStayDate(), new Date()));
         } else {
@@ -276,12 +276,12 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId, Map<Long, List<Long>> parentWithSubs, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId, Map<Long, List<Long>> parentWithSubs, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap, issueTypeDTOMap, parentWithSubs)));
     }
 
-    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId, Map<Long, List<Long>> parentWithSubss, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId, Map<Long, List<Long>> parentWithSubss, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<Long> issueIds = new ArrayList<>();
         for (ColumnAndIssueDO column : columns) {
             List<SubStatus> subStatuses = column.getSubStatuses();
@@ -385,14 +385,14 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private List<ParentIssueDO> getParentIssues(Long projectId, List<Long> parentIds, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+    private List<ParentIssueDO> getParentIssues(Long projectId, List<Long> parentIds, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         if (parentIds == null || parentIds.isEmpty()) {
             return new ArrayList<>();
         }
         List<ParentIssueDO> parentIssueDOList = boardColumnMapper.queryParentIssuesByIds(projectId, parentIds);
         for (ParentIssueDO parentIssueDO : parentIssueDOList) {
             parentIssueDO.setStatusMapVO(statusMap.get(parentIssueDO.getStatusId()));
-            parentIssueDO.setIssueTypeDTO(issueTypeDTOMap.get(parentIssueDO.getIssueTypeId()));
+            parentIssueDO.setIssueTypeVO(issueTypeDTOMap.get(parentIssueDO.getIssueTypeId()));
         }
         return parentIssueDOList;
     }
@@ -425,7 +425,7 @@ public class BoardServiceImpl implements BoardService {
         Boolean condition = assigneeId != null && onlyStory;
         Map<Long, List<Long>> parentWithSubs = new HashMap<>();
         Map<Long, StatusMapVO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition, organizationId, parentWithSubs, statusMap, issueTypeDTOMap);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("parentIssues", getParentIssues(projectId, parentIds, statusMap, issueTypeDTOMap));
@@ -689,14 +689,14 @@ public class BoardServiceImpl implements BoardService {
         boardColumnService.initBoardColumnsByProgram(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
-    private void setColumnDeatil(List<ColumnAndIssueDO> columns, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+    private void setColumnDeatil(List<ColumnAndIssueDO> columns, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         for (ColumnAndIssueDO column : columns) {
             List<SubStatus> subStatuses = column.getSubStatuses();
             fillStatusData(subStatuses, statusMap);
             for (SubStatus subStatus : subStatuses) {
                 List<IssueForBoardDO> issueForBoardDOS = subStatus.getIssues();
                 for (IssueForBoardDO issueForBoardDO : issueForBoardDOS) {
-                    issueForBoardDO.setIssueTypeDTO(issueTypeDTOMap.get(issueForBoardDO.getIssueTypeId()));
+                    issueForBoardDO.setIssueTypeVO(issueTypeDTOMap.get(issueForBoardDO.getIssueTypeId()));
                 }
             }
             Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
@@ -704,7 +704,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId, SearchDTO searchDTO) {
+    public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId, SearchVO searchVO) {
         JSONObject result = new JSONObject(true);
         ArtDTO activeArtDTO = artMapper.selectActiveArt(projectId);
         PiDTO piDTO = null;
@@ -716,7 +716,7 @@ public class BoardServiceImpl implements BoardService {
             activePiId = piDTO.getId();
         }
         List<Long> epicIds = new ArrayList<>();
-        List<ColumnAndIssueDO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId, searchDTO);
+        List<ColumnAndIssueDO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId, searchVO);
         columns.forEach(columnAndIssueDO -> {
             columnAndIssueDO.getSubStatuses().forEach(subStatus -> {
                 subStatus.getIssues().forEach(issueForBoardDO -> {
@@ -728,7 +728,7 @@ public class BoardServiceImpl implements BoardService {
         });
         // get status map from organization
         Map<Long, StatusMapVO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         // reset status info
         setColumnDeatil(columns, statusMap, issueTypeDTOMap);
         columns.sort(Comparator.comparing(ColumnAndIssueDO::getSequence));

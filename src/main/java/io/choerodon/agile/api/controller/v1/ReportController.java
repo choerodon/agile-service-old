@@ -135,20 +135,20 @@ public class ReportController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询饼图")
     @GetMapping(value = "/pie_chart")
-    public ResponseEntity<List<PieChartDTO>> queryPieChart(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<PieChartVO>> queryPieChart(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
-                                                           @ApiParam(value = "字段名称:assignee、component、typeCode、" +
+                                                          @ApiParam(value = "字段名称:assignee、component、typeCode、" +
                                                                    "version、priorityCode、statusCode、sprint、epic、resolution、label", required = true)
                                                            @RequestParam String fieldName,
-                                                           @ApiParam(value = "组织id", required = true)
+                                                          @ApiParam(value = "组织id", required = true)
                                                            @RequestParam Long organizationId,
-                                                           @ApiParam(value = "开始时间 yyyy-MM-dd HH:mm:ss")
+                                                          @ApiParam(value = "开始时间 yyyy-MM-dd HH:mm:ss")
                                                            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date startDate,
-                                                           @ApiParam(value = "结束时间 yyyy-MM-dd HH:mm:ss")
+                                                          @ApiParam(value = "结束时间 yyyy-MM-dd HH:mm:ss")
                                                            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date endDate,
-                                                           @ApiParam(value = "冲刺id")
+                                                          @ApiParam(value = "冲刺id")
                                                            @RequestParam(required = false) Long sprintId,
-                                                           @ApiParam(value = "版本id")
+                                                          @ApiParam(value = "版本id")
                                                            @RequestParam(required = false) Long versionId) {
         return Optional.ofNullable(reportService.queryPieChart(projectId, fieldName, organizationId, startDate, endDate, sprintId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

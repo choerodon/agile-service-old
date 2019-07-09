@@ -23,7 +23,7 @@ public interface ProductVersionService {
 
     ProductVersionDetailDTO updateVersion(Long projectId, Long versionId, ProductVersionUpdateDTO versionUpdateDTO, List<String> fieldList);
 
-    PageInfo<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchDTO searchDTO);
+    PageInfo<ProductVersionPageDTO> queryByProjectId(Long projectId, PageRequest pageRequest, SearchVO searchVO);
 
     Boolean repeatName(Long projectId, String name);
 
@@ -31,7 +31,7 @@ public interface ProductVersionService {
 
     ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(Long projectId, Long versionId);
 
-    List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId, SearchDTO searchDTO);
+    List<IssueListDTO> queryIssueByVersionIdAndStatusCode(Long projectId, Long versionId, String statusCode, Long organizationId, SearchVO searchVO);
 
     VersionMessageDTO queryReleaseMessageByVersionId(Long projectId, Long versionId);
 

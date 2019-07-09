@@ -102,7 +102,7 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
         List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
+        List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
         List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
         List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
         List<SprintDTO> sprintDTOList = sprintMapper.selectNotDoneByProjectId(projectId);
@@ -113,9 +113,9 @@ public class ExcelServiceImpl implements ExcelService {
             }
         }
         List<String> issueTypeList = new ArrayList<>();
-        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode()) && !FEATURE.equals(issueTypeDTO.getTypeCode())) {
-                issueTypeList.add(issueTypeDTO.getName());
+        for (IssueTypeVO issueTypeVO : issueTypeVOList) {
+            if (!SUB_TASK.equals(issueTypeVO.getTypeCode()) && !FEATURE.equals(issueTypeVO.getTypeCode())) {
+                issueTypeList.add(issueTypeVO.getName());
             }
         }
         List<String> versionList = new ArrayList<>();
@@ -165,7 +165,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
     }
 
-    private Boolean setIssueCreateInfo(IssueCreateDTO issueCreateDTO, Long projectId, Row row, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, Map<String, Long> versionMap, Long userId, Map<String, Long> componentMap, Map<String, Long> sprintMap) {
+    private Boolean setIssueCreateInfo(IssueCreateVO issueCreateVO, Long projectId, Row row, Map<String, IssueTypeVO> issueTypeMap, Map<String, Long> priorityMap, Map<String, Long> versionMap, Long userId, Map<String, Long> componentMap, Map<String, Long> sprintMap) {
         String summary = row.getCell(0).toString();
         if (summary == null) {
             throw new CommonException("error.summary.null");
@@ -215,23 +215,23 @@ public class ExcelServiceImpl implements ExcelService {
             versionIssueRelDTOList.add(versionIssueRelDTO);
         }
         String typeCode = issueTypeMap.get(typeName).getTypeCode();
-        issueCreateDTO.setProjectId(projectId);
-        issueCreateDTO.setSummary(summary);
+        issueCreateVO.setProjectId(projectId);
+        issueCreateVO.setSummary(summary);
         if (description != null) {
-            issueCreateDTO.setDescription("[{\"insert\":\"" + StringUtil.replaceChar(description) + "\\n\"}]");
+            issueCreateVO.setDescription("[{\"insert\":\"" + StringUtil.replaceChar(description) + "\\n\"}]");
         }
-        issueCreateDTO.setPriorityCode("priority" + priorityMap.get(priorityName));
-        issueCreateDTO.setPriorityId(priorityMap.get(priorityName));
-        issueCreateDTO.setIssueTypeId(issueTypeMap.get(typeName).getId());
-        issueCreateDTO.setTypeCode(typeCode);
+        issueCreateVO.setPriorityCode("priority" + priorityMap.get(priorityName));
+        issueCreateVO.setPriorityId(priorityMap.get(priorityName));
+        issueCreateVO.setIssueTypeId(issueTypeMap.get(typeName).getId());
+        issueCreateVO.setTypeCode(typeCode);
         // 当问题类型为故事，设置故事点
         if (STORY.equals(typeCode)) {
-            issueCreateDTO.setStoryPoints(storyPoint);
+            issueCreateVO.setStoryPoints(storyPoint);
         }
         // 当问题类型为史诗，默认史诗名称与概要相同
         if (ISSUE_EPIC.equals(typeCode)) {
-            issueCreateDTO.setEpicName(summary);
-            issueCreateDTO.setEpicName(epicName);
+            issueCreateVO.setEpicName(summary);
+            issueCreateVO.setEpicName(epicName);
         }
         List<ComponentIssueRelDTO> componentIssueRelDTOList = null;
         if (!(componentName == null || "".equals(componentName))) {
@@ -241,12 +241,12 @@ public class ExcelServiceImpl implements ExcelService {
             componentIssueRelDTOList.add(componentIssueRelDTO);
         }
         if (sprintName != null) {
-            issueCreateDTO.setSprintId(sprintMap.get(sprintName));
+            issueCreateVO.setSprintId(sprintMap.get(sprintName));
         }
-        issueCreateDTO.setComponentIssueRelDTOList(componentIssueRelDTOList);
-        issueCreateDTO.setRemainingTime(remainTime);
-        issueCreateDTO.setVersionIssueRelDTOList(versionIssueRelDTOList);
-        issueCreateDTO.setReporterId(userId);
+        issueCreateVO.setComponentIssueRelDTOList(componentIssueRelDTOList);
+        issueCreateVO.setRemainingTime(remainTime);
+        issueCreateVO.setVersionIssueRelDTOList(versionIssueRelDTOList);
+        issueCreateVO.setReporterId(userId);
         return true;
     }
 
@@ -266,19 +266,19 @@ public class ExcelServiceImpl implements ExcelService {
         sendProcess(result, result.getUserId(), 1.0);
     }
 
-    private void setIssueTypeAndPriorityMap(Long organizationId, Long projectId, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
+    private void setIssueTypeAndPriorityMap(Long organizationId, Long projectId, Map<String, IssueTypeVO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
         List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
+        List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
         for (PriorityDTO priorityDTO : priorityDTOList) {
             if (priorityDTO.getEnable()) {
                 priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
                 priorityList.add(priorityDTO.getName());
             }
         }
-        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode()) && !FEATURE.equals(issueTypeDTO.getTypeCode())) {
-                issueTypeMap.put(issueTypeDTO.getName(), issueTypeDTO);
-                issueTypeList.add(issueTypeDTO.getName());
+        for (IssueTypeVO issueTypeVO : issueTypeVOList) {
+            if (!SUB_TASK.equals(issueTypeVO.getTypeCode()) && !FEATURE.equals(issueTypeVO.getTypeCode())) {
+                issueTypeMap.put(issueTypeVO.getName(), issueTypeVO);
+                issueTypeList.add(issueTypeVO.getName());
             }
         }
     }
@@ -305,7 +305,7 @@ public class ExcelServiceImpl implements ExcelService {
         return issueDTOList == null || issueDTOList.isEmpty();
     }
 
-    private Map<Integer, String> checkRule(Long projectId, Row row, List<String> issueTypeList, List<String> priorityList, List<String> versionList, Map<String, IssueTypeDTO> issueTypeMap, List<String> componentList, List<String> sprintList) {
+    private Map<Integer, String> checkRule(Long projectId, Row row, List<String> issueTypeList, List<String> priorityList, List<String> versionList, Map<String, IssueTypeVO> issueTypeMap, List<String> componentList, List<String> sprintList) {
         Map<Integer, String> errorMessage = new HashMap<>();
         // check summary
         if (row.getCell(0)==null || row.getCell(0).toString().equals("") || row.getCell(0).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
@@ -459,7 +459,7 @@ public class ExcelServiceImpl implements ExcelService {
         // 获取所有非空行
         Integer allRowCount = getRealRowCount(sheet);
         // 查询组织下的优先级与问题类型
-        Map<String, IssueTypeDTO> issueTypeMap = new HashMap<>();
+        Map<String, IssueTypeVO> issueTypeMap = new HashMap<>();
         Map<String, Long> priorityMap = new HashMap<>();
         List<String> issueTypeList = new ArrayList<>();
         List<String> priorityList = new ArrayList<>();
@@ -542,12 +542,12 @@ public class ExcelServiceImpl implements ExcelService {
                 sendProcess(res, userId, processNum * 1.0 / allRowCount);
                 continue;
             }
-            IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
+            IssueCreateVO issueCreateVO = new IssueCreateVO();
 
-            Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap, versionMap, userId, componentMap, sprintMap);
+            Boolean ok = setIssueCreateInfo(issueCreateVO, projectId, row, issueTypeMap, priorityMap, versionMap, userId, componentMap, sprintMap);
             IssueVO result = null;
             if (ok) {
-                result = stateMachineService.createIssue(issueCreateDTO, APPLY_TYPE_AGILE);
+                result = stateMachineService.createIssue(issueCreateVO, APPLY_TYPE_AGILE);
             }
             if (result == null) {
                 failCount++;

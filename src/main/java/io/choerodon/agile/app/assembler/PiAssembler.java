@@ -1,8 +1,9 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.vo.IssueTypeDTO;
+import io.choerodon.agile.api.vo.IssueTypeVO;
 import io.choerodon.agile.api.vo.PiWithFeatureVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.api.vo.SubFeatureVO;
 import io.choerodon.agile.infra.dataobject.PiWithFeatureDTO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
 import org.springframework.beans.BeanUtils;
@@ -19,32 +20,32 @@ import java.util.Map;
 @Component
 public class PiAssembler {
 
-    public List<io.choerodon.agile.api.vo.SubFeatureDTO> subFeatureDOTODTO(List<SubFeatureDTO> subFeatureDOList,
-                                                                           Map<Long, StatusMapVO> statusMapDTOMap,
-                                                                           Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        List<io.choerodon.agile.api.vo.SubFeatureDTO> subFeatureDTOList = new ArrayList<>();
+    public List<SubFeatureVO> subFeatureDOTODTO(List<SubFeatureDTO> subFeatureDOList,
+                                                Map<Long, StatusMapVO> statusMapDTOMap,
+                                                Map<Long, IssueTypeVO> issueTypeDTOMap) {
+        List<SubFeatureVO> subFeatureVOList = new ArrayList<>();
         subFeatureDOList.forEach(subFeatureDO -> {
-            io.choerodon.agile.api.vo.SubFeatureDTO subFeatureDTO = new io.choerodon.agile.api.vo.SubFeatureDTO();
-            BeanUtils.copyProperties(subFeatureDO, subFeatureDTO);
-            subFeatureDTO.setStatusMapVO(statusMapDTOMap.get(subFeatureDO.getStatusId()));
-            subFeatureDTO.setIssueTypeDTO(issueTypeDTOMap.get(subFeatureDO.getIssueTypeId()));
-            subFeatureDTOList.add(subFeatureDTO);
+            SubFeatureVO subFeatureVO = new SubFeatureVO();
+            BeanUtils.copyProperties(subFeatureDO, subFeatureVO);
+            subFeatureVO.setStatusMapVO(statusMapDTOMap.get(subFeatureDO.getStatusId()));
+            subFeatureVO.setIssueTypeVO(issueTypeDTOMap.get(subFeatureDO.getIssueTypeId()));
+            subFeatureVOList.add(subFeatureVO);
         });
-        return subFeatureDTOList;
+        return subFeatureVOList;
     }
 
     public List<PiWithFeatureVO> piWithFeatureDOTODTO(List<PiWithFeatureDTO> piWithFeatureDTOList,
                                                       Map<Long, StatusMapVO> statusMapDTOMap,
-                                                      Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+                                                      Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<PiWithFeatureVO> piWithFeatureVOList = new ArrayList<>();
         piWithFeatureDTOList.forEach(piWithFeatureDTO -> {
             PiWithFeatureVO piWithFeatureVO = new PiWithFeatureVO();
             BeanUtils.copyProperties(piWithFeatureDTO, piWithFeatureVO);
             if (piWithFeatureDTO.getSubFeatureDTOList() != null && !piWithFeatureDTO.getSubFeatureDTOList().isEmpty()) {
                 List<SubFeatureDTO> subFeatureDTOList = piWithFeatureDTO.getSubFeatureDTOList();
-                piWithFeatureVO.setSubFeatureDTOList(subFeatureDOTODTO(subFeatureDTOList, statusMapDTOMap, issueTypeDTOMap));
+                piWithFeatureVO.setSubFeatureVOList(subFeatureDOTODTO(subFeatureDTOList, statusMapDTOMap, issueTypeDTOMap));
             } else {
-                piWithFeatureVO.setSubFeatureDTOList(new ArrayList<>());
+                piWithFeatureVO.setSubFeatureVOList(new ArrayList<>());
             }
             piWithFeatureVOList.add(piWithFeatureVO);
         });

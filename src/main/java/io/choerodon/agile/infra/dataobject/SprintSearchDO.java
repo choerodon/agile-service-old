@@ -16,14 +16,14 @@ public class SprintSearchDO {
     private List<AssigneeIssueDTO> assigneeIssueDTOList;
     private String objectVersionNumber;
     private Long piId;
-    private List<IssueSearchDO> issueSearchDOList;
+    private List<IssueSearchDTO> issueSearchDTOList;
 
-    public List<IssueSearchDO> getIssueSearchDOList() {
-        return issueSearchDOList;
+    public List<IssueSearchDTO> getIssueSearchDTOList() {
+        return issueSearchDTOList;
     }
 
-    public void setIssueSearchDOList(List<IssueSearchDO> issueSearchDOList) {
-        this.issueSearchDOList = issueSearchDOList;
+    public void setIssueSearchDTOList(List<IssueSearchDTO> issueSearchDTOList) {
+        this.issueSearchDTOList = issueSearchDTOList;
     }
 
     public List<AssigneeIssueDTO> getAssigneeIssueDTOList() {

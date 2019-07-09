@@ -2,7 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.dataobject.AssigneeIssueDTO;
-import io.choerodon.agile.infra.dataobject.IssueSearchDO;
+import io.choerodon.agile.infra.dataobject.IssueSearchDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -17,10 +17,10 @@ import java.util.Map;
 @Component
 public class IssueSearchAssembler extends AbstractAssembler {
 
-    public List<IssueSearchDTO> doListToDTO(List<IssueSearchDO> issueSearchDOList, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        if (issueSearchDOList != null && !issueSearchDOList.isEmpty()) {
-            List<IssueSearchDTO> issueSearchDTOList = new ArrayList<>(issueSearchDOList.size());
-            issueSearchDOList.forEach(issueSearch -> {
+    public List<IssueSearchVO> doListToDTO(List<IssueSearchDTO> issueSearchDTOList, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+        if (issueSearchDTOList != null && !issueSearchDTOList.isEmpty()) {
+            List<IssueSearchVO> issueSearchVOList = new ArrayList<>(issueSearchDTOList.size());
+            issueSearchDTOList.forEach(issueSearch -> {
                 UserMessageDO userMessageDO = usersMap.get(issueSearch.getAssigneeId());
                 String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
                 String imageUrl = assigneeName != null ? userMessageDO.getImageUrl() : null;
@@ -32,10 +32,10 @@ public class IssueSearchAssembler extends AbstractAssembler {
                 issueSearch.setAssigneeRealName(assigneeRealName);
                 issueSearch.setPriorityDTO(priorityMap.get(issueSearch.getPriorityId()));
                 issueSearch.setStatusMapVO(statusMapDTOMap.get(issueSearch.getStatusId()));
-                issueSearch.setIssueTypeDTO(issueTypeDTOMap.get(issueSearch.getIssueTypeId()));
-                issueSearchDTOList.add(toTarget(issueSearch, IssueSearchDTO.class));
+                issueSearch.setIssueTypeVO(issueTypeDTOMap.get(issueSearch.getIssueTypeId()));
+                issueSearchVOList.add(toTarget(issueSearch, IssueSearchVO.class));
             });
-            return issueSearchDTOList;
+            return issueSearchVOList;
         } else {
             return new ArrayList<>();
         }

@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.vo.event;
 
-import io.choerodon.agile.api.vo.IssueSubCreateDTO;
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.api.vo.IssueSubCreateVO;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 
 /**
@@ -9,30 +9,30 @@ import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
  * @date 2018/11/7
  */
 public class CreateSubIssuePayload {
-    IssueSubCreateDTO issueSubCreateDTO;
-    IssueE issueE;
+    IssueSubCreateVO issueSubCreateVO;
+    IssueConvertDTO issueConvertDTO;
     ProjectInfoE projectInfoE;
 
-    public CreateSubIssuePayload(IssueSubCreateDTO issueSubCreateDTO, IssueE issueE, ProjectInfoE projectInfoE) {
-        this.issueSubCreateDTO = issueSubCreateDTO;
-        this.issueE = issueE;
+    public CreateSubIssuePayload(IssueSubCreateVO issueSubCreateVO, IssueConvertDTO issueConvertDTO, ProjectInfoE projectInfoE) {
+        this.issueSubCreateVO = issueSubCreateVO;
+        this.issueConvertDTO = issueConvertDTO;
         this.projectInfoE = projectInfoE;
     }
 
-    public IssueSubCreateDTO getIssueSubCreateDTO() {
-        return issueSubCreateDTO;
+    public IssueSubCreateVO getIssueSubCreateVO() {
+        return issueSubCreateVO;
     }
 
-    public void setIssueSubCreateDTO(IssueSubCreateDTO issueSubCreateDTO) {
-        this.issueSubCreateDTO = issueSubCreateDTO;
+    public void setIssueSubCreateVO(IssueSubCreateVO issueSubCreateVO) {
+        this.issueSubCreateVO = issueSubCreateVO;
     }
 
-    public IssueE getIssueE() {
-        return issueE;
+    public IssueConvertDTO getIssueConvertDTO() {
+        return issueConvertDTO;
     }
 
-    public void setIssueE(IssueE issueE) {
-        this.issueE = issueE;
+    public void setIssueConvertDTO(IssueConvertDTO issueConvertDTO) {
+        this.issueConvertDTO = issueConvertDTO;
     }
 
     public ProjectInfoE getProjectInfoE() {

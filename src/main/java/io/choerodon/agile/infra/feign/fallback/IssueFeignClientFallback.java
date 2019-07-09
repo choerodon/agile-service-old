@@ -28,12 +28,12 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<Map<Long, IssueTypeDTO>> listIssueTypeMap(Long organizationId) {
+    public ResponseEntity<Map<Long, IssueTypeVO>> listIssueTypeMap(Long organizationId) {
         throw new CommonException("error.issueTypeMap.get");
     }
 
     @Override
-    public ResponseEntity<IssueTypeDTO> queryIssueTypeById(Long organizationId, Long issueTypeId) {
+    public ResponseEntity<IssueTypeVO> queryIssueTypeById(Long organizationId, Long issueTypeId) {
         throw new CommonException("error.issueType.get");
     }
 
@@ -43,7 +43,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<List<IssueTypeDTO>> queryIssueTypesByProjectId(Long projectId, String applyType) {
+    public ResponseEntity<List<IssueTypeVO>> queryIssueTypesByProjectId(Long projectId, String applyType) {
         throw new CommonException("error.queryIssueTypesByProjectId.get");
     }
 
@@ -88,7 +88,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<List<IssueTypeDTO>> queryByOrgId(Long organizationId) {
+    public ResponseEntity<List<IssueTypeVO>> queryByOrgId(Long organizationId) {
         throw new CommonException("error.issueTypeList.get");
     }
 }

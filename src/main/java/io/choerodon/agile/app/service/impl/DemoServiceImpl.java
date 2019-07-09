@@ -96,81 +96,81 @@ public class DemoServiceImpl implements DemoService {
     }
 
     private IssueVO createEpic(Long projectId, String epicName, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long reporterId) {
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
-        issueCreateDTO.setProjectId(projectId);
-        issueCreateDTO.setEpicName(epicName);
-        issueCreateDTO.setSummary(summary);
-        issueCreateDTO.setIssueTypeId(agileIssueTypeMap.get("issue_epic").getId());
-        issueCreateDTO.setPriorityId(defaultPriority.getId());
-        issueCreateDTO.setPriorityCode("priority-" + defaultPriority.getId());
-        issueCreateDTO.setTypeCode(agileIssueTypeMap.get("issue_epic").getTypeCode());
-        issueCreateDTO.setReporterId(reporterId);
-        return stateMachineService.createIssue(issueCreateDTO, AGILE_APPLYTYPE);
+        IssueCreateVO issueCreateVO = new IssueCreateVO();
+        issueCreateVO.setProjectId(projectId);
+        issueCreateVO.setEpicName(epicName);
+        issueCreateVO.setSummary(summary);
+        issueCreateVO.setIssueTypeId(agileIssueTypeMap.get("issue_epic").getId());
+        issueCreateVO.setPriorityId(defaultPriority.getId());
+        issueCreateVO.setPriorityCode("priority-" + defaultPriority.getId());
+        issueCreateVO.setTypeCode(agileIssueTypeMap.get("issue_epic").getTypeCode());
+        issueCreateVO.setReporterId(reporterId);
+        return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
     private IssueVO createStory(Long projectId, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, BigDecimal storyPoint, Long epicId, Long reporterId) {
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
-        issueCreateDTO.setProjectId(projectId);
-        issueCreateDTO.setSummary(summary);
-        issueCreateDTO.setIssueTypeId(agileIssueTypeMap.get("story").getId());
-        issueCreateDTO.setPriorityId(defaultPriority.getId());
-        issueCreateDTO.setPriorityCode("priority-" + defaultPriority.getId());
-        issueCreateDTO.setTypeCode(agileIssueTypeMap.get("story").getTypeCode());
-        issueCreateDTO.setSprintId(sprintId);
-        issueCreateDTO.setStoryPoints(storyPoint);
-        issueCreateDTO.setEpicId(epicId);
-        issueCreateDTO.setReporterId(reporterId);
-        return stateMachineService.createIssue(issueCreateDTO, AGILE_APPLYTYPE);
+        IssueCreateVO issueCreateVO = new IssueCreateVO();
+        issueCreateVO.setProjectId(projectId);
+        issueCreateVO.setSummary(summary);
+        issueCreateVO.setIssueTypeId(agileIssueTypeMap.get("story").getId());
+        issueCreateVO.setPriorityId(defaultPriority.getId());
+        issueCreateVO.setPriorityCode("priority-" + defaultPriority.getId());
+        issueCreateVO.setTypeCode(agileIssueTypeMap.get("story").getTypeCode());
+        issueCreateVO.setSprintId(sprintId);
+        issueCreateVO.setStoryPoints(storyPoint);
+        issueCreateVO.setEpicId(epicId);
+        issueCreateVO.setReporterId(reporterId);
+        return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
     private IssueVO createTask(Long projectId, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, Long reporterId) {
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
-        issueCreateDTO.setProjectId(projectId);
-        issueCreateDTO.setSummary(summary);
-        issueCreateDTO.setIssueTypeId(agileIssueTypeMap.get("task").getId());
-        issueCreateDTO.setPriorityId(defaultPriority.getId());
-        issueCreateDTO.setPriorityCode("priority-" + defaultPriority.getId());
-        issueCreateDTO.setTypeCode(agileIssueTypeMap.get("task").getTypeCode());
-        issueCreateDTO.setSprintId(sprintId);
-        issueCreateDTO.setReporterId(reporterId);
-        return stateMachineService.createIssue(issueCreateDTO, AGILE_APPLYTYPE);
+        IssueCreateVO issueCreateVO = new IssueCreateVO();
+        issueCreateVO.setProjectId(projectId);
+        issueCreateVO.setSummary(summary);
+        issueCreateVO.setIssueTypeId(agileIssueTypeMap.get("task").getId());
+        issueCreateVO.setPriorityId(defaultPriority.getId());
+        issueCreateVO.setPriorityCode("priority-" + defaultPriority.getId());
+        issueCreateVO.setTypeCode(agileIssueTypeMap.get("task").getTypeCode());
+        issueCreateVO.setSprintId(sprintId);
+        issueCreateVO.setReporterId(reporterId);
+        return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
     private IssueVO createBug(Long projectId, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, Long reporterId) {
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
-        issueCreateDTO.setProjectId(projectId);
-        issueCreateDTO.setSummary(summary);
-        issueCreateDTO.setIssueTypeId(agileIssueTypeMap.get("bug").getId());
-        issueCreateDTO.setPriorityId(defaultPriority.getId());
-        issueCreateDTO.setPriorityCode("priority-" + defaultPriority.getId());
-        issueCreateDTO.setTypeCode(agileIssueTypeMap.get("bug").getTypeCode());
-        issueCreateDTO.setSprintId(sprintId);
-        issueCreateDTO.setReporterId(reporterId);
-        return stateMachineService.createIssue(issueCreateDTO, AGILE_APPLYTYPE);
+        IssueCreateVO issueCreateVO = new IssueCreateVO();
+        issueCreateVO.setProjectId(projectId);
+        issueCreateVO.setSummary(summary);
+        issueCreateVO.setIssueTypeId(agileIssueTypeMap.get("bug").getId());
+        issueCreateVO.setPriorityId(defaultPriority.getId());
+        issueCreateVO.setPriorityCode("priority-" + defaultPriority.getId());
+        issueCreateVO.setTypeCode(agileIssueTypeMap.get("bug").getTypeCode());
+        issueCreateVO.setSprintId(sprintId);
+        issueCreateVO.setReporterId(reporterId);
+        return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
     private IssueVO createTest(Long projectId, String summary, PriorityDTO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> testIssueTypeMap) {
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
-        issueCreateDTO.setProjectId(projectId);
-        issueCreateDTO.setSummary(summary);
-        issueCreateDTO.setIssueTypeId(testIssueTypeMap.get("issue_test").getId());
-        issueCreateDTO.setPriorityId(defaultPriority.getId());
-        issueCreateDTO.setPriorityCode("priority-" + defaultPriority.getId());
-        issueCreateDTO.setTypeCode(testIssueTypeMap.get("issue_test").getTypeCode());
-        return stateMachineService.createIssue(issueCreateDTO, TEST_APPLYTYPE);
+        IssueCreateVO issueCreateVO = new IssueCreateVO();
+        issueCreateVO.setProjectId(projectId);
+        issueCreateVO.setSummary(summary);
+        issueCreateVO.setIssueTypeId(testIssueTypeMap.get("issue_test").getId());
+        issueCreateVO.setPriorityId(defaultPriority.getId());
+        issueCreateVO.setPriorityCode("priority-" + defaultPriority.getId());
+        issueCreateVO.setTypeCode(testIssueTypeMap.get("issue_test").getTypeCode());
+        return stateMachineService.createIssue(issueCreateVO, TEST_APPLYTYPE);
     }
 
-    private IssueSubDTO createSubTask(Long projectId, String summary, PriorityDTO defaultPriority, Long sprintId, Long parentIssueId, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long reporterId) {
-        IssueSubCreateDTO issueSubCreateDTO = new IssueSubCreateDTO();
-        issueSubCreateDTO.setProjectId(projectId);
-        issueSubCreateDTO.setSummary(summary);
-        issueSubCreateDTO.setPriorityId(defaultPriority.getId());
-        issueSubCreateDTO.setPriorityCode("priority-" + defaultPriority.getId());
-        issueSubCreateDTO.setSprintId(sprintId);
-        issueSubCreateDTO.setParentIssueId(parentIssueId);
-        issueSubCreateDTO.setIssueTypeId(agileIssueTypeMap.get("sub_task").getId());
-        issueSubCreateDTO.setReporterId(reporterId);
-        return stateMachineService.createSubIssue(issueSubCreateDTO);
+    private IssueSubVO createSubTask(Long projectId, String summary, PriorityDTO defaultPriority, Long sprintId, Long parentIssueId, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long reporterId) {
+        IssueSubCreateVO issueSubCreateVO = new IssueSubCreateVO();
+        issueSubCreateVO.setProjectId(projectId);
+        issueSubCreateVO.setSummary(summary);
+        issueSubCreateVO.setPriorityId(defaultPriority.getId());
+        issueSubCreateVO.setPriorityCode("priority-" + defaultPriority.getId());
+        issueSubCreateVO.setSprintId(sprintId);
+        issueSubCreateVO.setParentIssueId(parentIssueId);
+        issueSubCreateVO.setIssueTypeId(agileIssueTypeMap.get("sub_task").getId());
+        issueSubCreateVO.setReporterId(reporterId);
+        return stateMachineService.createSubIssue(issueSubCreateVO);
     }
 
     private Date getSpecifyTimeByOneTime(Date date, int amount) {
@@ -189,63 +189,63 @@ public class DemoServiceImpl implements DemoService {
     }
 
     private void updateFixVersion(Long projectId, Long issueId, Long versionId) {
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
-        issueUpdateDTO.setIssueId(issueId);
-        issueUpdateDTO.setVersionType("fix");
+        IssueUpdateVO issueUpdateVO = new IssueUpdateVO();
+        issueUpdateVO.setIssueId(issueId);
+        issueUpdateVO.setVersionType("fix");
         List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>();
         VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
         versionIssueRelDTO.setVersionId(versionId);
         versionIssueRelDTOList.add(versionIssueRelDTO);
-        issueUpdateDTO.setVersionIssueRelDTOList(versionIssueRelDTOList);
+        issueUpdateVO.setVersionIssueRelDTOList(versionIssueRelDTOList);
         List<String> fieldList = new ArrayList<>();
-        issueService.updateIssue(projectId, issueUpdateDTO, fieldList);
+        issueService.updateIssue(projectId, issueUpdateVO, fieldList);
     }
 
     private void updateComponent(Long projectId, Long issueId, Long componentId) {
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
-        issueUpdateDTO.setIssueId(issueId);
+        IssueUpdateVO issueUpdateVO = new IssueUpdateVO();
+        issueUpdateVO.setIssueId(issueId);
         List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>();
         ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
         componentIssueRelDTO.setIssueId(issueId);
         componentIssueRelDTO.setComponentId(componentId);
         componentIssueRelDTO.setProjectId(projectId);
         componentIssueRelDTOList.add(componentIssueRelDTO);
-        issueUpdateDTO.setComponentIssueRelDTOList(componentIssueRelDTOList);
+        issueUpdateVO.setComponentIssueRelDTOList(componentIssueRelDTOList);
         List<String> fieldList = new ArrayList<>();
-        issueService.updateIssue(projectId, issueUpdateDTO, fieldList);
+        issueService.updateIssue(projectId, issueUpdateVO, fieldList);
     }
 
     private void updateLabel(Long projectId, Long issueId, String labelName) {
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
-        issueUpdateDTO.setIssueId(issueId);
+        IssueUpdateVO issueUpdateVO = new IssueUpdateVO();
+        issueUpdateVO.setIssueId(issueId);
         List<LabelIssueRelDTO> labelIssueRelDTOList = new ArrayList<>();
         LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
         labelIssueRelDTO.setProjectId(projectId);
         labelIssueRelDTO.setLabelName(labelName);
         labelIssueRelDTOList.add(labelIssueRelDTO);
-        issueUpdateDTO.setLabelIssueRelDTOList(labelIssueRelDTOList);
+        issueUpdateVO.setLabelIssueRelDTOList(labelIssueRelDTOList);
         List<String> fieldList = new ArrayList<>();
-        issueService.updateIssue(projectId, issueUpdateDTO, fieldList);
+        issueService.updateIssue(projectId, issueUpdateVO, fieldList);
     }
 
     private void updateRemainTime(Long projectId, Long issueId, BigDecimal remainingTime, Long objectVersionNumber) {
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
-        issueUpdateDTO.setIssueId(issueId);
-        issueUpdateDTO.setRemainingTime(remainingTime);
-        issueUpdateDTO.setObjectVersionNumber(objectVersionNumber);
+        IssueUpdateVO issueUpdateVO = new IssueUpdateVO();
+        issueUpdateVO.setIssueId(issueId);
+        issueUpdateVO.setRemainingTime(remainingTime);
+        issueUpdateVO.setObjectVersionNumber(objectVersionNumber);
         List<String> fieldList = new ArrayList<>();
         fieldList.add("remainingTime");
-        issueService.updateIssue(projectId, issueUpdateDTO, fieldList);
+        issueService.updateIssue(projectId, issueUpdateVO, fieldList);
     }
 
     private void updatePriority(Long projectId, Long issueId, Long priorityId, Long objectVersionNumber) {
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
-        issueUpdateDTO.setIssueId(issueId);
-        issueUpdateDTO.setPriorityId(priorityId);
-        issueUpdateDTO.setObjectVersionNumber(objectVersionNumber);
+        IssueUpdateVO issueUpdateVO = new IssueUpdateVO();
+        issueUpdateVO.setIssueId(issueId);
+        issueUpdateVO.setPriorityId(priorityId);
+        issueUpdateVO.setObjectVersionNumber(objectVersionNumber);
         List<String> fieldList = new ArrayList<>();
         fieldList.add("priorityId");
-        issueService.updateIssue(projectId, issueUpdateDTO, fieldList);
+        issueService.updateIssue(projectId, issueUpdateVO, fieldList);
     }
 
     /**
@@ -500,40 +500,40 @@ public class DemoServiceImpl implements DemoService {
 
         // 创建故事及子任务
         IssueVO story1 = createStory(projectId, "账户登录", defaultPriority, agileIssueTypeMap, sprintId1, new BigDecimal(2), epic1.getIssueId(), userId1);
-        IssueSubDTO subtask1 = createSubTask(projectId, "账户登录后端接口编写", defaultPriority, sprintId1, story1.getIssueId(), agileIssueTypeMap, userId1);
-        IssueSubDTO subtask2 = createSubTask(projectId, "登录页面开发", defaultPriority, sprintId1, story1.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask1 = createSubTask(projectId, "账户登录后端接口编写", defaultPriority, sprintId1, story1.getIssueId(), agileIssueTypeMap, userId1);
+        IssueSubVO subtask2 = createSubTask(projectId, "登录页面开发", defaultPriority, sprintId1, story1.getIssueId(), agileIssueTypeMap, userId2);
 
         IssueVO story2 = createStory(projectId, "商品列表", defaultPriority, agileIssueTypeMap, sprintId1, new BigDecimal(4), epic2.getIssueId(), userId1);
-        IssueSubDTO subtask3 = createSubTask(projectId, "商品列表查询接口实现", defaultPriority, sprintId1, story2.getIssueId(), agileIssueTypeMap, userId1);
-        IssueSubDTO subtask4 = createSubTask(projectId, "商品列表页面开发", defaultPriority, sprintId1, story2.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask3 = createSubTask(projectId, "商品列表查询接口实现", defaultPriority, sprintId1, story2.getIssueId(), agileIssueTypeMap, userId1);
+        IssueSubVO subtask4 = createSubTask(projectId, "商品列表页面开发", defaultPriority, sprintId1, story2.getIssueId(), agileIssueTypeMap, userId2);
 
         IssueVO story3 = createStory(projectId, "商品详情查看", defaultPriority, agileIssueTypeMap, sprintId1, new BigDecimal(5), epic2.getIssueId(), userId1);
-        IssueSubDTO subtask5 = createSubTask(projectId, "商品详情页面开发", defaultPriority, sprintId1, story3.getIssueId(), agileIssueTypeMap, userId2);
-        IssueSubDTO subtask6 = createSubTask(projectId, "根据商品id查询商品详情接口", defaultPriority, sprintId1, story3.getIssueId(), agileIssueTypeMap, userId1);
+        IssueSubVO subtask5 = createSubTask(projectId, "商品详情页面开发", defaultPriority, sprintId1, story3.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask6 = createSubTask(projectId, "根据商品id查询商品详情接口", defaultPriority, sprintId1, story3.getIssueId(), agileIssueTypeMap, userId1);
 
         IssueVO story4 = createStory(projectId, "提交订单", defaultPriority, agileIssueTypeMap, sprintId1, new BigDecimal(10), epic3.getIssueId(), userId2);
-        IssueSubDTO subtask7 = createSubTask(projectId, "提交订单逻辑实现", defaultPriority, sprintId1, story4.getIssueId(), agileIssueTypeMap, userId1);
-        IssueSubDTO subtask8 = createSubTask(projectId, "商品订单提交页面开发", defaultPriority, sprintId1, story4.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask7 = createSubTask(projectId, "提交订单逻辑实现", defaultPriority, sprintId1, story4.getIssueId(), agileIssueTypeMap, userId1);
+        IssueSubVO subtask8 = createSubTask(projectId, "商品订单提交页面开发", defaultPriority, sprintId1, story4.getIssueId(), agileIssueTypeMap, userId2);
 
         IssueVO story5 = createStory(projectId, "维护配送信息", defaultPriority, agileIssueTypeMap, sprintId1, new BigDecimal(1), epic1.getIssueId(), userId2);
-        IssueSubDTO subtask9 = createSubTask(projectId, "维护配送查询接口实现", defaultPriority, sprintId1, story5.getIssueId(), agileIssueTypeMap, userId1);
-        IssueSubDTO subtask10 = createSubTask(projectId, "配送信息展示页面开发", defaultPriority, sprintId1, story5.getIssueId(), agileIssueTypeMap, userId2);
-        IssueSubDTO subtask11 = createSubTask(projectId, "配送信息维护页面开发", defaultPriority, sprintId1, story5.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask9 = createSubTask(projectId, "维护配送查询接口实现", defaultPriority, sprintId1, story5.getIssueId(), agileIssueTypeMap, userId1);
+        IssueSubVO subtask10 = createSubTask(projectId, "配送信息展示页面开发", defaultPriority, sprintId1, story5.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask11 = createSubTask(projectId, "配送信息维护页面开发", defaultPriority, sprintId1, story5.getIssueId(), agileIssueTypeMap, userId2);
 
         // 创建bug
         IssueVO bug1 = createBug(projectId, "提交订单后台空指针报错修复", defaultPriority, agileIssueTypeMap, sprintId1, userId1);
 
         IssueVO story6 = createStory(projectId, "商品搜索", defaultPriority, agileIssueTypeMap, sprintId2, new BigDecimal(3), epic2.getIssueId(), userId1);
-        IssueSubDTO subtask16 = createSubTask(projectId, "后端-商品搜索接口实现", defaultPriority, sprintId2, story6.getIssueId(), agileIssueTypeMap, userId1);
-        IssueSubDTO subtask17 = createSubTask(projectId, "前端-增加商品搜索功能", defaultPriority, sprintId2, story6.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask16 = createSubTask(projectId, "后端-商品搜索接口实现", defaultPriority, sprintId2, story6.getIssueId(), agileIssueTypeMap, userId1);
+        IssueSubVO subtask17 = createSubTask(projectId, "前端-增加商品搜索功能", defaultPriority, sprintId2, story6.getIssueId(), agileIssueTypeMap, userId2);
 
         IssueVO story7 = createStory(projectId, "添加商品到购物车", defaultPriority, agileIssueTypeMap, sprintId2, new BigDecimal(3), epic3.getIssueId(), userId2);
-        IssueSubDTO subtask18 = createSubTask(projectId, "后端-商品添加到购物车接口实现", defaultPriority, sprintId2, story7.getIssueId(), agileIssueTypeMap, userId1);
-        IssueSubDTO subtask19 = createSubTask(projectId, "前端-商品添加到购物车功能", defaultPriority, sprintId2, story7.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask18 = createSubTask(projectId, "后端-商品添加到购物车接口实现", defaultPriority, sprintId2, story7.getIssueId(), agileIssueTypeMap, userId1);
+        IssueSubVO subtask19 = createSubTask(projectId, "前端-商品添加到购物车功能", defaultPriority, sprintId2, story7.getIssueId(), agileIssueTypeMap, userId2);
 
         IssueVO story8 = createStory(projectId, "支付宝支付", defaultPriority, agileIssueTypeMap, sprintId2, new BigDecimal(5), epic4.getIssueId(), userId2);
-        IssueSubDTO subtask20 = createSubTask(projectId, "后端-支付页面增加支付宝支付", defaultPriority, sprintId2, story8.getIssueId(), agileIssueTypeMap, userId1);
-        IssueSubDTO subtask21 = createSubTask(projectId, "前端-支付页面增加支付宝支付", defaultPriority, sprintId2, story8.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask20 = createSubTask(projectId, "后端-支付页面增加支付宝支付", defaultPriority, sprintId2, story8.getIssueId(), agileIssueTypeMap, userId1);
+        IssueSubVO subtask21 = createSubTask(projectId, "前端-支付页面增加支付宝支付", defaultPriority, sprintId2, story8.getIssueId(), agileIssueTypeMap, userId2);
 
         IssueVO story9 = createStory(projectId, "支持微信支付", defaultPriority, agileIssueTypeMap, 0L, null, epic4.getIssueId(), userId1);
         IssueVO story10 = createStory(projectId, "支持信用卡支付", defaultPriority, agileIssueTypeMap, 0L, null, epic4.getIssueId(), userId1);
@@ -546,10 +546,10 @@ public class DemoServiceImpl implements DemoService {
         IssueVO task3 = createTask(projectId, "环境准备", defaultPriority, agileIssueTypeMap, sprintId1, userId1);
 
         IssueVO task1 = createTask(projectId, "UI设计", defaultPriority, agileIssueTypeMap, sprintId1, userId2);
-        IssueSubDTO subtask12 = createSubTask(projectId, "UI-购物车页面", defaultPriority, sprintId1, task1.getIssueId(), agileIssueTypeMap, userId2);
-        IssueSubDTO subtask13 = createSubTask(projectId, "UI-支付页面", defaultPriority, sprintId1, task1.getIssueId(), agileIssueTypeMap, userId2);
-        IssueSubDTO subtask14 = createSubTask(projectId, "UI-商品搜索页面", defaultPriority, sprintId1, task1.getIssueId(), agileIssueTypeMap, userId2);
-        IssueSubDTO subtask15 = createSubTask(projectId, "UI-收货地址选择页面", defaultPriority, sprintId1, task1.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask12 = createSubTask(projectId, "UI-购物车页面", defaultPriority, sprintId1, task1.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask13 = createSubTask(projectId, "UI-支付页面", defaultPriority, sprintId1, task1.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask14 = createSubTask(projectId, "UI-商品搜索页面", defaultPriority, sprintId1, task1.getIssueId(), agileIssueTypeMap, userId2);
+        IssueSubVO subtask15 = createSubTask(projectId, "UI-收货地址选择页面", defaultPriority, sprintId1, task1.getIssueId(), agileIssueTypeMap, userId2);
 
 
         // 创建测试问题

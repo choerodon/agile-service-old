@@ -9,7 +9,7 @@ public class SprintCompleteMessageDTO {
     private Integer incompleteIssues;
     private Integer partiallyCompleteIssues;
     private List<SprintNameDTO> sprintNames;
-    private List<IssueNumDTO> parentsDoneUnfinishedSubtasks;
+    private List<IssueNumVO> parentsDoneUnfinishedSubtasks;
 
     public Integer getIncompleteIssues() {
         return incompleteIssues;
@@ -35,11 +35,11 @@ public class SprintCompleteMessageDTO {
         this.sprintNames = sprintNames;
     }
 
-    public List<IssueNumDTO> getParentsDoneUnfinishedSubtasks() {
+    public List<IssueNumVO> getParentsDoneUnfinishedSubtasks() {
         return parentsDoneUnfinishedSubtasks;
     }
 
-    public void setParentsDoneUnfinishedSubtasks(List<IssueNumDTO> parentsDoneUnfinishedSubtasks) {
+    public void setParentsDoneUnfinishedSubtasks(List<IssueNumVO> parentsDoneUnfinishedSubtasks) {
         this.parentsDoneUnfinishedSubtasks = parentsDoneUnfinishedSubtasks;
     }
 }

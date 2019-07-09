@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.vo.SearchDTO;
+import io.choerodon.agile.api.vo.SearchVO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -28,7 +28,7 @@ public interface ProductVersionMapper extends Mapper<ProductVersionDO> {
 
     ProductVersionStatisticsDO queryVersionStatisticsByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<IssueDTO> queryIssueByVersionIdAndStatusCode(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("statusCode") String statusCode, @Param("filterStatusIds") List<Long> filterStatusIds, @Param("searchDTO") SearchDTO searchDTO);
+    List<IssueDTO> queryIssueByVersionIdAndStatusCode(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("statusCode") String statusCode, @Param("filterStatusIds") List<Long> filterStatusIds, @Param("searchVO") SearchVO searchVO);
 
     /**
      * 根据版本名称和项目id返回版本id

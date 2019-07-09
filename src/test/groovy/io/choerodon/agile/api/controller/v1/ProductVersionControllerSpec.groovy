@@ -592,8 +592,8 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'queryByVersionIdAndStatusCode'() {
         given:
-        SearchDTO searchDTO = new SearchDTO()
-        HttpEntity<SearchDTO> requestEntity = new HttpEntity<>(searchDTO)
+        SearchVO searchDTO = new SearchVO()
+        HttpEntity<SearchVO> requestEntity = new HttpEntity<>(searchDTO)
 
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/issues?organizationId={organizationId}&statusCode={statusCode}",

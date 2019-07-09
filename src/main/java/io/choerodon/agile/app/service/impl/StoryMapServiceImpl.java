@@ -48,10 +48,10 @@ public class StoryMapServiceImpl implements StoryMapService {
     private StoryMapAssembler storyMapAssembler;
 
 
-    private List<FeatureCommonDO> setFeatureWithoutEpicByProgram(Long programId, Long projectId, List<Long> featureIds) {
-        List<FeatureCommonDO> result = new ArrayList<>();
-        List<FeatureCommonDO> programFeatureList = storyMapMapper.selectFeatureByNoEpicByProgram(programId, projectId);
-        List<FeatureCommonDO> projectFeatureList = storyMapMapper.selectFeatureByNoEpicByProject(projectId);
+    private List<FeatureCommonDTO> setFeatureWithoutEpicByProgram(Long programId, Long projectId, List<Long> featureIds) {
+        List<FeatureCommonDTO> result = new ArrayList<>();
+        List<FeatureCommonDTO> programFeatureList = storyMapMapper.selectFeatureByNoEpicByProgram(programId, projectId);
+        List<FeatureCommonDTO> projectFeatureList = storyMapMapper.selectFeatureByNoEpicByProject(projectId);
         if (programFeatureList != null && !programFeatureList.isEmpty()) {
             result.addAll(programFeatureList);
         }
@@ -59,7 +59,7 @@ public class StoryMapServiceImpl implements StoryMapService {
             result.addAll(projectFeatureList);
         }
         Collections.sort(result, (o1, o2) -> o2.getIssueId().compareTo(o1.getIssueId()));
-        featureIds.addAll(result.stream().map(FeatureCommonDO::getIssueId).collect(Collectors.toList()));
+        featureIds.addAll(result.stream().map(FeatureCommonDTO::getIssueId).collect(Collectors.toList()));
         return result;
     }
 
@@ -73,7 +73,7 @@ public class StoryMapServiceImpl implements StoryMapService {
     }
 
     @Override
-    public JSONObject queryStoryMap(Long projectId, Long organizationId, SearchDTO searchDTO) {
+    public JSONObject queryStoryMap(Long projectId, Long organizationId, SearchVO searchVO) {
         JSONObject result = new JSONObject(true);
         List<Long> epicIds = new ArrayList<>();
         // get program epic
@@ -97,27 +97,27 @@ public class StoryMapServiceImpl implements StoryMapService {
             List<EpicWithFeatureDO> epicWithFeatureDOList = storyMapMapper.selectEpicWithFeatureList(projectId, epicIds);
             result.put("epicWithFeature", epicWithFeatureDOList);
             epicWithFeatureDOList.forEach(epicWithFeatureDO -> {
-                List<FeatureCommonDO> featureCommonDOList = epicWithFeatureDO.getFeatureCommonDOList();
-                featureIds.addAll(featureCommonDOList.stream().map(FeatureCommonDO::getIssueId).collect(Collectors.toList()));
+                List<FeatureCommonDTO> featureCommonDTOList = epicWithFeatureDO.getFeatureCommonDTOList();
+                featureIds.addAll(featureCommonDTOList.stream().map(FeatureCommonDTO::getIssueId).collect(Collectors.toList()));
             });
         }
         if (program != null) {
             result.put("featureWithoutEpic", setFeatureWithoutEpicByProgram(program.getId(), projectId, featureIds));
         } else {
-            List<FeatureCommonDO> featureCommonDOList = storyMapMapper.selectFeatureByNoEpicByProject(projectId);
-            featureIds.addAll(featureCommonDOList.stream().map(FeatureCommonDO::getIssueId).collect(Collectors.toList()));
-            result.put("featureWithoutEpic", featureCommonDOList);
+            List<FeatureCommonDTO> featureCommonDTOList = storyMapMapper.selectFeatureByNoEpicByProject(projectId);
+            featureIds.addAll(featureCommonDTOList.stream().map(FeatureCommonDTO::getIssueId).collect(Collectors.toList()));
+            result.put("featureWithoutEpic", featureCommonDTOList);
         }
 
-        result.put("storyList", !epicIds.isEmpty() || !featureIds.isEmpty() ? storyMapMapper.selectStoryList(projectId, epicIds, featureIds, searchDTO) : new ArrayList<>());
+        result.put("storyList", !epicIds.isEmpty() || !featureIds.isEmpty() ? storyMapMapper.selectStoryList(projectId, epicIds, featureIds, searchVO) : new ArrayList<>());
         result.put("storyMapWidth", setStoryMapWidth(projectId));
         return result;
     }
 
     @Override
-    public JSONObject queryStoryMapDemand(Long projectId, SearchDTO searchDTO) {
+    public JSONObject queryStoryMapDemand(Long projectId, SearchVO searchVO) {
         JSONObject result = new JSONObject(true);
-        List<StoryMapStoryDO> storyMapStoryDOList = storyMapMapper.selectDemandStoryList(projectId, searchDTO);
+        List<StoryMapStoryDO> storyMapStoryDOList = storyMapMapper.selectDemandStoryList(projectId, searchVO);
         result.put("demandStoryList", storyMapAssembler.storyMapStoryDOToDTO(projectId, storyMapStoryDOList));
         return result;
     }

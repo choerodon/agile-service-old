@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository;
 
 import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
-import io.choerodon.agile.domain.agile.entity.IssueE;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
@@ -23,19 +23,19 @@ public interface IssueRepository {
     /**
      * 按照字段更新敏捷开发Issue部分字段
      *
-     * @param issueE    issueE
+     * @param issueConvertDTO    issueConvertDTO
      * @param fieldList fieldList
-     * @return IssueE
+     * @return IssueConvertDTO
      */
-    IssueE update(IssueE issueE, String[] fieldList);
+    IssueConvertDTO update(IssueConvertDTO issueConvertDTO, String[] fieldList);
 
     /**
      * 添加一个敏捷开发Issue
      *
-     * @param issueE issueE
-     * @return IssueE
+     * @param issueConvertDTO issueConvertDTO
+     * @return IssueConvertDTO
      */
-    IssueE create(IssueE issueE);
+    IssueConvertDTO create(IssueConvertDTO issueConvertDTO);
 
     /**
      * 根据id删除敏捷开发Issue
@@ -92,7 +92,7 @@ public interface IssueRepository {
      */
     int batchUpdateSequence(Integer sequence, Long projectId, Integer add, Long issueId);
 
-    IssueE updateSelective(IssueE issueE);
+    IssueConvertDTO updateSelective(IssueConvertDTO issueConvertDTO);
 
     int issueToDestinationByIdsCloseSprint(Long projectId, Long targetSprintId, List<Long> issueIds, Date date, Long userId);
 

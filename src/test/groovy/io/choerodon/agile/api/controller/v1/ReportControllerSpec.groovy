@@ -141,7 +141,7 @@ class ReportControllerSpec extends Specification {
         sprintId = sprintDetailDTO.sprintId
 
         and: '将issue加入到冲刺中'
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        IssueCreateVO issueCreateDTO = new IssueCreateVO()
         issueCreateDTO.projectId = projectId
         issueCreateDTO.sprintId = sprintId
         issueCreateDTO.summary = '加入冲刺issue'
@@ -154,14 +154,14 @@ class ReportControllerSpec extends Specification {
         issueIds.add(issueDTO.issueId)
 
         and: '将issue设置为done状态'
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
+        IssueUpdateVO issueUpdateDTO = new IssueUpdateVO()
         issueUpdateDTO.statusId = 3
         issueUpdateDTO.issueId = issueIds[0]
         issueUpdateDTO.objectVersionNumber = issueDTO.objectVersionNumber
         issueService.updateIssue(projectId, issueUpdateDTO, ["statusId"])
 
         and: '创建不为done的issue'
-        IssueCreateDTO noDone = new IssueCreateDTO()
+        IssueCreateVO noDone = new IssueCreateVO()
         noDone.projectId = projectId
         noDone.sprintId = sprintId
         noDone.summary = '加入冲刺issue'
@@ -289,7 +289,7 @@ class ReportControllerSpec extends Specification {
 
     def 'queryBurnDownCoordinateByType'() {
         given: 'issue加入到版本和epic中'
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
+        IssueUpdateVO issueUpdateDTO = new IssueUpdateVO()
         issueUpdateDTO.issueId = issueIds[0]
         issueUpdateDTO.setObjectVersionNumber(issueMapper.selectByPrimaryKey(issueIds[0]).getObjectVersionNumber())
         if (type == 'Epic') {
@@ -418,7 +418,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<PieChartDTO> pieChartDTOList = entity.body
+        List<PieChartVO> pieChartDTOList = entity.body
 
         expect: '验证期望值'
         pieChartDTOList.size() == expectSize

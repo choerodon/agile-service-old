@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.vo.IssueIdSprintIdDTO;
-import io.choerodon.agile.api.vo.SearchDTO;
+import io.choerodon.agile.api.vo.SearchVO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -26,13 +26,13 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      *
      * @param projectId projectId
      * @param issueId   issueId
-     * @return IssueDetailDO
+     * @return IssueDetailDTO
      */
-    IssueDetailDO queryIssueDetail(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+    IssueDetailDTO queryIssueDetail(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
-    List<EpicDataDO> queryEpicList(@Param("projectId") Long projectId);
+    List<EpicDataDTO> queryEpicList(@Param("projectId") Long projectId);
 
-    List<EpicDataDO> queryProgramEpicList(@Param("programId") Long programid);
+    List<EpicDataDTO> queryProgramEpicList(@Param("programId") Long programid);
 
     int batchIssueToVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
@@ -40,7 +40,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     int batchStoryToFeature(@Param("projectId") Long projectId, @Param("featureId") Long featureId, @Param("issueIds") List<Long> issueIds, @Param("updateEpicId") Long updateEpicId);
 
-    List<IssueSearchDO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<IssueSearchDTO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     List<Long> filterStoryIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -165,13 +165,13 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      * @param issueNum  issueNum
      * @param self      self
      * @param content   content
-     * @return IssueNumDO
+     * @return IssueNumDTO
      */
-    List<IssueNumDO> queryIssueByOptionForAgile(@Param("projectId") Long projectId,
-                                                @Param("issueId") Long issueId,
-                                                @Param("issueNum") String issueNum,
-                                                @Param("self") Boolean self,
-                                                @Param("content") String content);
+    List<IssueNumDTO> queryIssueByOptionForAgile(@Param("projectId") Long projectId,
+                                                 @Param("issueId") Long issueId,
+                                                 @Param("issueNum") String issueNum,
+                                                 @Param("self") Boolean self,
+                                                 @Param("content") String content);
 
     List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("projectCode") String projectCode);
 
@@ -194,7 +194,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      */
     List<IssueDTO> queryIssueEpicInfoByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    IssueNumDO queryIssueByIssueNumOrIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("issueNum") String issueNum);
+    IssueNumDTO queryIssueByIssueNumOrIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("issueNum") String issueNum);
 
     List<IssueInfoDO> listByIssueIds(@Param("projectId") Long prjectId, @Param("issueIds") List<Long> issueIds);
 
@@ -239,9 +239,9 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      *
      * @param issueId   issueId
      * @param projectId projectId
-     * @return EpicDataDO
+     * @return EpicDataDTO
      */
-    EpicDataDO queryEpicListByEpic(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
+    EpicDataDTO queryEpicListByEpic(@Param("issueId") Long issueId, @Param("projectId") Long projectId);
 
     /**
      * 批量更新epic的排序
@@ -316,35 +316,35 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      */
     List<IssueIdSprintIdDTO> querySprintAllIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
-    List<StoryMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId,
-                                                      @Param("pageType") String pageType,
-                                                      @Param("assigneeId") Long assigneeId,
-                                                      @Param("onlyStory") Boolean onlyStory,
-                                                      @Param("filterSql") String filterSql,
-                                                      @Param("doneIds") List<Long> doneIds,
-                                                      @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
+//    List<StoryMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId,
+//                                                      @Param("pageType") String pageType,
+//                                                      @Param("assigneeId") Long assigneeId,
+//                                                      @Param("onlyStory") Boolean onlyStory,
+//                                                      @Param("filterSql") String filterSql,
+//                                                      @Param("doneIds") List<Long> doneIds,
+//                                                      @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
+//
+//    List<StoryMapIssueDO> listIssuesByProjectIdVersion(@Param("projectId") Long projectId,
+//                                                       @Param("pageType") String pageType,
+//                                                       @Param("assigneeId") Long assigneeId,
+//                                                       @Param("onlyStory") Boolean onlyStory,
+//                                                       @Param("filterSql") String filterSql,
+//                                                       @Param("doneIds") List<Long> doneIds,
+//                                                       @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
+//
+//    List<StoryMapIssueDO> listIssuesByProjectIdNone(@Param("projectId") Long projectId,
+//                                                    @Param("pageType") String pageType,
+//                                                    @Param("assigneeId") Long assigneeId,
+//                                                    @Param("onlyStory") Boolean onlyStory,
+//                                                    @Param("filterSql") String filterSql,
+//                                                    @Param("doneIds") List<Long> doneIds,
+//                                                    @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
-    List<StoryMapIssueDO> listIssuesByProjectIdVersion(@Param("projectId") Long projectId,
-                                                       @Param("pageType") String pageType,
-                                                       @Param("assigneeId") Long assigneeId,
-                                                       @Param("onlyStory") Boolean onlyStory,
-                                                       @Param("filterSql") String filterSql,
-                                                       @Param("doneIds") List<Long> doneIds,
-                                                       @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
-
-    List<StoryMapIssueDO> listIssuesByProjectIdNone(@Param("projectId") Long projectId,
-                                                    @Param("pageType") String pageType,
-                                                    @Param("assigneeId") Long assigneeId,
-                                                    @Param("onlyStory") Boolean onlyStory,
-                                                    @Param("filterSql") String filterSql,
-                                                    @Param("doneIds") List<Long> doneIds,
-                                                    @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
-
-    List<StoryMapEpicDO> queryStoryMapEpicList(@Param("projectId") Long projectId,
-                                               @Param("showDoneEpic") Boolean showDoneEpic,
-                                               @Param("assigneeId") Long assigneeId,
-                                               @Param("onlyStory") Boolean onlyStory,
-                                               @Param("filterSql") String filterSql);
+//    List<StoryMapEpicDO> queryStoryMapEpicList(@Param("projectId") Long projectId,
+//                                               @Param("showDoneEpic") Boolean showDoneEpic,
+//                                               @Param("assigneeId") Long assigneeId,
+//                                               @Param("onlyStory") Boolean onlyStory,
+//                                               @Param("filterSql") String filterSql);
 
     Integer countUnResolveByProjectId(Long projectId);
 
@@ -355,7 +355,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
                                       @Param("otherArgs") Map<String, Object> otherArgs,
                                       @Param("contents") List<String> contents);
 
-    List<UndistributedIssueDO> queryUnDistributedIssues(Long projectId);
+    List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId);
 
     List<UnfinishedIssueDO> queryUnfinishedIssues(@Param("projectId") Long projectId,
                                                   @Param("assigneeId") Long assigneeId);
@@ -394,7 +394,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      * @param issueIds  issueIds
      * @return IssueDTO
      */
-    List<IssueDetailDO> queryByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<IssueDetailDTO> queryByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     String selectMinRankByProjectId(@Param("projectId") Long projectId);
 
@@ -435,9 +435,9 @@ public interface IssueMapper extends Mapper<IssueDTO> {
     /**
      * 根据项目分组测试类型issue
      *
-     * @return IssueProjectDO
+     * @return IssueProjectDTO
      */
-    List<IssueProjectDO> queryIssueTestGroupByProject();
+    List<IssueProjectDTO> queryIssueTestGroupByProject();
 
     List<IssueDTO> selectAllPriority();
 
@@ -448,7 +448,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
     void batchUpdateIssueType(@Param("issueDTOForTypeList") List<IssueDTO> issueDTOForTypeList);
 
     List<Long> queryIssueIdsListWithSub(@Param("projectId") Long projectId,
-                                        @Param("searchDTO") SearchDTO searchDTO,
+                                        @Param("searchVO") SearchVO searchVO,
                                         @Param("filterSql") String filterSql,
                                         @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
@@ -533,9 +533,9 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     void batchFeatureToEpic(@Param("programId") Long programId, @Param("epicId") Long epicId, @Param("featureIds") List<Long> featureIds);
 
-    List<FeatureCommonDO> selectFeatureList(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
+    List<FeatureCommonDTO> selectFeatureList(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 
-    List<Long> selectFeatureIdsByPage(@Param("programId") Long programId, @Param("searchDTO") SearchDTO searchDTO);
+    List<Long> selectFeatureIdsByPage(@Param("programId") Long programId, @Param("searchVO") SearchVO searchVO);
 
     List<IssueDTO> selectFeatureByMoveIssueIds(@Param("programId") Long programId, @Param("moveIssueIdsFilter") List<Long> moveIssueIdsFilter, @Param("categoryCode") String categoryCode, @Param("piId") Long piId);
 
@@ -555,7 +555,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
                              @Param("lastUpdatedBy") Long lastUpdatedBy,
                              @Param("lastUpdateDate") Date lastUpdateDate);
 
-    List<Long> selectExportIssueIdsInProgram(@Param("programId") Long programId, @Param("searchDTO") SearchDTO searchDTO);
+    List<Long> selectExportIssueIdsInProgram(@Param("programId") Long programId, @Param("searchVO") SearchVO searchVO);
 
     List<FeatureExportDO> selectExportIssuesInProgram(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 
@@ -567,7 +567,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<Long> querySubBugIdsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
-    List<FeatureCommonDO> selectFeatureByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
+    List<FeatureCommonDTO> selectFeatureByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
 
     void updateEpicIdOfStoryByFeature(@Param("featureId") Long featureId, @Param("updateEpicId") Long updateEpicId);
 
@@ -577,5 +577,5 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<IssueDTO> selectByFeatureIds(@Param("featureIds") List<Long> featureIds);
 
-    List<EpicDataDO> selectEpicByProgram(@Param("programId") Long programId, @Param("projectId") Long projectId);
+    List<EpicDataDTO> selectEpicByProgram(@Param("programId") Long programId, @Param("projectId") Long projectId);
 }

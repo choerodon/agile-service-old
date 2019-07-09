@@ -151,51 +151,51 @@ public class FeignConfigure {
     @Primary
     IssueFeignClient issueFeignClient() {
         IssueFeignClient issueFeignClient = Mockito.mock(IssueFeignClientFallback.class);
-        List<IssueTypeDTO> issueTypeDTOS = new ArrayList<>(3);
-        IssueTypeDTO story = new IssueTypeDTO();
+        List<IssueTypeVO> issueTypeVOS = new ArrayList<>(3);
+        IssueTypeVO story = new IssueTypeVO();
         story.setIcon("icon");
         story.setId(1L);
         story.setName("XX");
         story.setOrganizationId(1L);
         story.setTypeCode("story");
-        issueTypeDTOS.add(story);
-        IssueTypeDTO task = new IssueTypeDTO();
+        issueTypeVOS.add(story);
+        IssueTypeVO task = new IssueTypeVO();
         task.setIcon("icon");
         task.setId(2L);
         task.setName("XX");
         task.setOrganizationId(1L);
         task.setTypeCode("task");
-        issueTypeDTOS.add(task);
-        IssueTypeDTO bug = new IssueTypeDTO();
+        issueTypeVOS.add(task);
+        IssueTypeVO bug = new IssueTypeVO();
         bug.setIcon("icon");
         bug.setId(3L);
         bug.setName("XX");
         bug.setOrganizationId(1L);
         bug.setTypeCode("bug");
-        issueTypeDTOS.add(bug);
-        IssueTypeDTO epic = new IssueTypeDTO();
+        issueTypeVOS.add(bug);
+        IssueTypeVO epic = new IssueTypeVO();
         epic.setIcon("icon");
         epic.setId(4L);
         epic.setName("XX");
         epic.setOrganizationId(1L);
         epic.setTypeCode("issue_epic");
-        issueTypeDTOS.add(epic);
-        IssueTypeDTO subTask = new IssueTypeDTO();
+        issueTypeVOS.add(epic);
+        IssueTypeVO subTask = new IssueTypeVO();
         subTask.setIcon("icon");
         subTask.setId(5L);
         subTask.setName("XX");
         subTask.setOrganizationId(1L);
         subTask.setTypeCode("sub_task");
-        issueTypeDTOS.add(subTask);
-        IssueTypeDTO issueTest = new IssueTypeDTO();
+        issueTypeVOS.add(subTask);
+        IssueTypeVO issueTest = new IssueTypeVO();
         issueTest.setIcon("icon");
         issueTest.setId(6L);
         issueTest.setName("XX");
         issueTest.setOrganizationId(1L);
         issueTest.setTypeCode("issue_test");
-        issueTypeDTOS.add(issueTest);
+        issueTypeVOS.add(issueTest);
         Mockito.when(issueFeignClient.queryStateMachineId(Matchers.anyLong(), Matchers.anyString(), Matchers.anyLong())).thenReturn(new ResponseEntity<>(1L, HttpStatus.OK));
-        Mockito.when(issueFeignClient.queryIssueTypesByProjectId(Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(issueTypeDTOS, HttpStatus.OK));
+        Mockito.when(issueFeignClient.queryIssueTypesByProjectId(Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(issueTypeVOS, HttpStatus.OK));
         Map<Long, PriorityDTO> priorityDTOMap = new HashMap<>(3);
         PriorityDTO low = new PriorityDTO();
         low.setId(1L);
@@ -231,10 +231,10 @@ public class FeignConfigure {
         Mockito.when(issueFeignClient.queryIssueTypeById(Matchers.anyLong(), Matchers.eq(4L))).thenReturn(new ResponseEntity<>(epic, HttpStatus.OK));
         Mockito.when(issueFeignClient.queryIssueTypeById(Matchers.anyLong(), Matchers.eq(5L))).thenReturn(new ResponseEntity<>(subTask, HttpStatus.OK));
         Mockito.when(issueFeignClient.queryIssueTypeById(Matchers.anyLong(), Matchers.eq(6L))).thenReturn(new ResponseEntity<>(issueTest, HttpStatus.OK));
-        Mockito.when(issueFeignClient.listIssueTypeMap(Matchers.anyLong())).thenReturn(new ResponseEntity<>(issueTypeDTOS.stream().collect(Collectors.toMap(IssueTypeDTO::getId,
+        Mockito.when(issueFeignClient.listIssueTypeMap(Matchers.anyLong())).thenReturn(new ResponseEntity<>(issueTypeVOS.stream().collect(Collectors.toMap(IssueTypeVO::getId,
                 Function.identity())), HttpStatus.OK));
         List<IssueTypeWithStateMachineIdDTO> issueTypeWithStateMachineIdDTOS = new ArrayList<>();
-        issueTypeDTOS.forEach(issueTypeDTO -> {
+        issueTypeVOS.forEach(issueTypeDTO -> {
             IssueTypeWithStateMachineIdDTO issueTypeWithStateMachineIdDTO = new IssueTypeWithStateMachineIdDTO();
             BeanUtils.copyProperties(issueTypeDTO, issueTypeWithStateMachineIdDTO);
             issueTypeWithStateMachineIdDTO.setInitStatusId(1L);
