@@ -380,7 +380,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public PageInfo<IssueListVO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId) {
-        ProductVersionDO versionDO = new ProductVersionDO();
+        ProductVersionDTO versionDO = new ProductVersionDTO();
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
         versionDO = versionMapper.selectOne(versionDO);
@@ -401,7 +401,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Map<String, Object> queryVersionLineChart(Long projectId, Long versionId, String type) {
         Map<String, Object> versionReportMap = new HashMap<>();
-        ProductVersionDO versionDO = new ProductVersionDO();
+        ProductVersionDTO versionDO = new ProductVersionDTO();
         versionDO.setProjectId(projectId);
         versionDO.setVersionId(versionId);
         versionDO = versionMapper.selectOne(versionDO);
@@ -1441,13 +1441,13 @@ public class ReportServiceImpl implements ReportService {
                 throw new CommonException(EPIC_OR_VERSION_NOT_FOUND_ERROR);
             }
         } else {
-            ProductVersionDO query = new ProductVersionDO();
+            ProductVersionDTO query = new ProductVersionDTO();
             query.setProjectId(projectId);
             query.setVersionId(id);
-            ProductVersionDO productVersionDO = versionMapper.selectOne(query);
-            if (productVersionDO != null) {
-                startDate = productVersionDO.getStartDate() == null ? productVersionDO.getCreationDate() : productVersionDO.getStartDate();
-                sprintDTOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, productVersionDO.getReleaseDate());
+            ProductVersionDTO productVersionDTO = versionMapper.selectOne(query);
+            if (productVersionDTO != null) {
+                startDate = productVersionDTO.getStartDate() == null ? productVersionDTO.getCreationDate() : productVersionDTO.getStartDate();
+                sprintDTOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, productVersionDTO.getReleaseDate());
             } else {
                 throw new CommonException(EPIC_OR_VERSION_NOT_FOUND_ERROR);
             }
@@ -1529,14 +1529,14 @@ public class ReportServiceImpl implements ReportService {
             burnDownReportDTO.getJsonObject().put("issueNum", issueDTO.getIssueNum());
             burnDownReportDTO.getJsonObject().put("issueId", issueDTO.getIssueId());
         } else {
-            ProductVersionDO query = new ProductVersionDO();
+            ProductVersionDTO query = new ProductVersionDTO();
             query.setVersionId(id);
             query.setProjectId(projectId);
-            ProductVersionDO productVersionDO = versionMapper.selectByPrimaryKey(query);
-            burnDownReportDTO.getJsonObject().put("name", productVersionDO.getName());
-            burnDownReportDTO.getJsonObject().put("versionId", productVersionDO.getVersionId());
-            burnDownReportDTO.getJsonObject().put(START_DATE, productVersionDO.getStartDate());
-            burnDownReportDTO.getJsonObject().put("releaseDate", productVersionDO.getReleaseDate());
+            ProductVersionDTO productVersionDTO = versionMapper.selectByPrimaryKey(query);
+            burnDownReportDTO.getJsonObject().put("name", productVersionDTO.getName());
+            burnDownReportDTO.getJsonObject().put("versionId", productVersionDTO.getVersionId());
+            burnDownReportDTO.getJsonObject().put(START_DATE, productVersionDTO.getStartDate());
+            burnDownReportDTO.getJsonObject().put("releaseDate", productVersionDTO.getReleaseDate());
         }
     }
 

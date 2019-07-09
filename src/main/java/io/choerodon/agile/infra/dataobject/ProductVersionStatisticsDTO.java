@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by jian_zhang02@163.com on 2018/5/18.
  */
-public class ProductVersionStatisticsDO {
+public class ProductVersionStatisticsDTO {
     private Long versionId;
     private String name;
     private String description;

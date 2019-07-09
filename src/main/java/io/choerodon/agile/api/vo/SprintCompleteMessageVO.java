@@ -8,7 +8,7 @@ import java.util.List;
 public class SprintCompleteMessageVO {
     private Integer incompleteIssues;
     private Integer partiallyCompleteIssues;
-    private List<SprintNameDTO> sprintNames;
+    private List<SprintNameVO> sprintNames;
     private List<IssueNumVO> parentsDoneUnfinishedSubtasks;
 
     public Integer getIncompleteIssues() {
@@ -27,11 +27,11 @@ public class SprintCompleteMessageVO {
         this.partiallyCompleteIssues = partiallyCompleteIssues;
     }
 
-    public List<SprintNameDTO> getSprintNames() {
+    public List<SprintNameVO> getSprintNames() {
         return sprintNames;
     }
 
-    public void setSprintNames(List<SprintNameDTO> sprintNames) {
+    public void setSprintNames(List<SprintNameVO> sprintNames) {
         this.sprintNames = sprintNames;
     }
 

@@ -311,8 +311,8 @@ public class SprintServiceImpl implements SprintService {
     }
 
     @Override
-    public List<SprintNameDTO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes) {
-        return sprintNameAssembler.toTargetList(sprintMapper.queryNameByOptions(projectId, sprintStatusCodes), SprintNameDTO.class);
+    public List<SprintNameVO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes) {
+        return sprintNameAssembler.toTargetList(sprintMapper.queryNameByOptions(projectId, sprintStatusCodes), SprintNameVO.class);
     }
 
     @Override
@@ -406,7 +406,7 @@ public class SprintServiceImpl implements SprintService {
     @Override
     public SprintCompleteMessageVO queryCompleteMessageBySprintId(Long projectId, Long sprintId) {
         SprintCompleteMessageVO sprintCompleteMessage = new SprintCompleteMessageVO();
-        sprintCompleteMessage.setSprintNames(sprintNameAssembler.toTargetList(sprintMapper.queryPlanSprintName(projectId), SprintNameDTO.class));
+        sprintCompleteMessage.setSprintNames(sprintNameAssembler.toTargetList(sprintMapper.queryPlanSprintName(projectId), SprintNameVO.class));
         sprintCompleteMessage.setParentsDoneUnfinishedSubtasks(issueAssembler.toTargetList(sprintMapper.queryParentsDoneUnfinishedSubtasks(projectId, sprintId), IssueNumVO.class));
         sprintCompleteMessage.setIncompleteIssues(sprintMapper.queryNotDoneIssueCount(projectId, sprintId));
         sprintCompleteMessage.setPartiallyCompleteIssues(sprintMapper.queryDoneIssueCount(projectId, sprintId));

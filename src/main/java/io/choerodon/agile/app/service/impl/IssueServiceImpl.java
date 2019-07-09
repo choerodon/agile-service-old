@@ -86,7 +86,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private LabelIssueRelMapper labelIssueRelMapper;
     @Autowired
-    private VersionIssueRelRepository versionIssueRelRepository;
+    private VersionIssueRelService versionIssueRelService;
     @Autowired
     private IssueAssembler issueAssembler;
     @Autowired
@@ -832,7 +832,7 @@ public class IssueServiceImpl implements IssueService {
         //删除模块关联
         componentIssueRelRepository.deleteByIssueId(issueConvertDTO.getIssueId());
         //删除版本关联
-        versionIssueRelRepository.deleteByIssueId(issueConvertDTO.getIssueId());
+        versionIssueRelService.deleteByIssueId(issueConvertDTO.getIssueId());
         //删除冲刺关联
         issueAccessDataService.deleteIssueFromSprintByIssueId(projectId, issueId);
         //删除评论信息
@@ -997,7 +997,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void dataLogRank(Long projectId, MoveIssueVO moveIssueVO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueVO.getIssueIds()) {
-            SprintNameDTO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId), SprintNameDTO.class);
+            SprintNameVO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId), SprintNameVO.class);
             Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()));
             if (condition) {
@@ -1213,7 +1213,7 @@ public class IssueServiceImpl implements IssueService {
 
 //    private void dataLogRankInStoryMap(Long projectId, StoryMapMoveDTO storyMapMoveDTO, String rankStr, Long sprintId) {
 //        for (Long issueId : storyMapMoveDTO.getIssueIds()) {
-//            SprintNameDTO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId), SprintNameDTO.class);
+//            SprintNameVO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId), SprintNameVO.class);
 //            Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
 //                    && sprintId.equals(activeSprintName.getSprintId()));
 //            if (condition) {
@@ -1455,9 +1455,9 @@ public class IssueServiceImpl implements IssueService {
                         return;
                     }
                 } else {
-                    ProductVersionCreateDTO productVersionCreateDTO = issueAssembler.toTarget(productVersionE, ProductVersionCreateDTO.class);
-                    ProductVersionDetailDTO productVersionDetailDTO = productVersionService.createVersion(projectId, productVersionCreateDTO);
-                    versionIssueRelE.setVersionId(productVersionDetailDTO.getVersionId());
+                    ProductVersionCreateVO productVersionCreateVO = issueAssembler.toTarget(productVersionE, ProductVersionCreateVO.class);
+                    ProductVersionDetailVO productVersionDetailVO = productVersionService.createVersion(projectId, productVersionCreateVO);
+                    versionIssueRelE.setVersionId(productVersionDetailVO.getVersionId());
                 }
             }
             handleVersionIssueRelCreate(versionIssueRelE);
@@ -1466,7 +1466,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleVersionIssueRelCreate(VersionIssueRelE versionIssueRelE) {
         if (issueValidator.existVersionIssueRel(versionIssueRelE)) {
-            versionIssueRelRepository.create(versionIssueRelE);
+            versionIssueRelService.create(versionIssueRelE);
         }
     }
 
@@ -1573,7 +1573,7 @@ public class IssueServiceImpl implements IssueService {
                         versionIssueRelDO.setVersionId(id);
                         versionIssueRelDO.setRelationType(versionType);
                         versionIssueRelDO.setProjectId(projectId);
-                        versionIssueRelRepository.delete(versionIssueRelDO);
+                        versionIssueRelService.delete(versionIssueRelDO);
                     }
                 });
                 versionIssueRelES.forEach(rel -> rel.setRelationType(versionType));
@@ -1581,7 +1581,7 @@ public class IssueServiceImpl implements IssueService {
             } else {
                 VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
                 versionIssueRelE.createBatchDeleteVersionIssueRel(projectId, issueId, versionType);
-                versionIssueRelRepository.batchDeleteByIssueIdAndTypeArchivedExceptInfluence(versionIssueRelE);
+                versionIssueRelService.batchDeleteByIssueIdAndTypeArchivedExceptInfluence(versionIssueRelE);
             }
         }
 
@@ -1693,14 +1693,14 @@ public class IssueServiceImpl implements IssueService {
             List<Long> issueIds = issueMapper.queryIssueIdsListWithSub(projectId, searchVO, searchSql, searchVO.getAssigneeFilterIds());
             List<ExportIssuesDTO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, issueIds, projectCode), projectId);
             if (!issueIds.isEmpty()) {
-                Map<Long, List<SprintNameDO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDO::getIssueId));
+                Map<Long, List<SprintNameDTO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDTO::getIssueId));
                 Map<Long, List<VersionIssueRelDO>> fixVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, FIX_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
                 Map<Long, List<VersionIssueRelDO>> influenceVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, INFLUENCE_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
                 Map<Long, List<LabelIssueRelDO>> labelNames = issueMapper.queryLabelIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(LabelIssueRelDO::getIssueId));
                 Map<Long, List<ComponentIssueRelDO>> componentMap = issueMapper.queryComponentIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(ComponentIssueRelDO::getIssueId));
                 Map<Long, Map<String, String>> foundationCodeValue = foundationFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIds).getBody();
                 exportIssues.forEach(exportIssue -> {
-                    String closeSprintName = closeSprintNames.get(exportIssue.getIssueId()) != null ? closeSprintNames.get(exportIssue.getIssueId()).stream().map(SprintNameDO::getSprintName).collect(Collectors.joining(",")) : "";
+                    String closeSprintName = closeSprintNames.get(exportIssue.getIssueId()) != null ? closeSprintNames.get(exportIssue.getIssueId()).stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(",")) : "";
                     String fixVersionName = fixVersionNames.get(exportIssue.getIssueId()) != null ? fixVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
                     String influenceVersionName = influenceVersionNames.get(exportIssue.getIssueId()) != null ? influenceVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
                     String labelName = labelNames.get(exportIssue.getIssueId()) != null ? labelNames.get(exportIssue.getIssueId()).stream().map(LabelIssueRelDO::getLabelName).collect(Collectors.joining(",")) : "";
@@ -2151,9 +2151,9 @@ public class IssueServiceImpl implements IssueService {
 
     private PageInfo<IssueListTestWithSprintVersionVO> handleILTDTOToILTWSVDTO(Long projectId, PageInfo<IssueListTestVO> issueListTestDTOSPage) {
 
-//        Map<Long, ProductVersionDataDTO> versionIssueRelDTOMap = productVersionService
+//        Map<Long, ProductVersionDataVO> versionIssueRelDTOMap = productVersionService
 //                .queryVersionByProjectId(projectId).stream().collect(
-//                        Collectors.toMap(ProductVersionDataDTO::getVersionId, x-> x));
+//                        Collectors.toMap(ProductVersionDataVO::getVersionId, x-> x));
 
         Map<Long, SprintDTO> sprintDoMap = sprintMapper.getSprintByProjectId(projectId).stream().collect(
                 Collectors.toMap(SprintDTO::getSprintId, x -> x));

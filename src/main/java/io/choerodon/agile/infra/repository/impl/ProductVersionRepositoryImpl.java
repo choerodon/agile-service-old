@@ -2,12 +2,12 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.dataobject.VersionIssueDO;
+import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
+import io.choerodon.agile.infra.dataobject.VersionIssueDTO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.infra.repository.ProductVersionRepository;
-import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.mybatis.entity.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
 
     @Override
     public ProductVersionE createVersion(ProductVersionE versionE) {
-        ProductVersionDO version = versionConverter.entityToDo(versionE);
+        ProductVersionDTO version = versionConverter.entityToDo(versionE);
         if (versionMapper.insertSelective(version) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
@@ -49,7 +49,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
     @Override
     @DataLog(type = "batchDeleteVersionByVersion", single = false)
     public Boolean deleteVersion(ProductVersionE versionE) {
-        ProductVersionDO version = versionConverter.entityToDo(versionE);
+        ProductVersionDTO version = versionConverter.entityToDo(versionE);
         if (versionMapper.delete(version) != 1) {
             throw new CommonException(DELETE_ERROR);
         }
@@ -58,7 +58,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
 
     @Override
     public ProductVersionE updateVersion(ProductVersionE versionE, List<String> fieldList) {
-        ProductVersionDO version = versionConverter.entityToDo(versionE);
+        ProductVersionDTO version = versionConverter.entityToDo(versionE);
         Criteria criteria = new Criteria();
         criteria.update(fieldList.toArray(new String[0]));
         if (versionMapper.updateByPrimaryKeyOptions(version,criteria) != 1) {
@@ -70,7 +70,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
 
     @Override
     @DataLog(type = "batchMoveVersion", single = false)
-    public Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> versionIssues, Date date, Long userId) {
+    public Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDTO> versionIssues, Date date, Long userId) {
         versionMapper.issueToDestination(projectId, targetVersionId, versionIssues, date, userId);
         return true;
     }
@@ -83,7 +83,7 @@ public class ProductVersionRepositoryImpl implements ProductVersionRepository {
 
     @Override
     public ProductVersionE updateVersion(ProductVersionE versionE) {
-        ProductVersionDO version = versionConverter.entityToDo(versionE);
+        ProductVersionDTO version = versionConverter.entityToDo(versionE);
         if (versionMapper.updateByPrimaryKeySelective(version) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }

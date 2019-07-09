@@ -468,12 +468,12 @@ public class DemoServiceImpl implements DemoService {
         sprintDetailVO2 = sprintService.updateSprint(projectId, updateName2);
 
         // 创建版本
-        ProductVersionCreateDTO productVersionCreateDTO = new ProductVersionCreateDTO();
-        productVersionCreateDTO.setName("v1.0");
-        productVersionCreateDTO.setProjectId(projectId);
-        productVersionCreateDTO.setStartDate(new Date());
-        productVersionCreateDTO.setExpectReleaseDate(getNewDate(new Date()));
-        ProductVersionDetailDTO productVersionDetailDTO = productVersionService.createVersion(projectId, productVersionCreateDTO);
+        ProductVersionCreateVO productVersionCreateVO = new ProductVersionCreateVO();
+        productVersionCreateVO.setName("v1.0");
+        productVersionCreateVO.setProjectId(projectId);
+        productVersionCreateVO.setStartDate(new Date());
+        productVersionCreateVO.setExpectReleaseDate(getNewDate(new Date()));
+        ProductVersionDetailVO productVersionDetailVO = productVersionService.createVersion(projectId, productVersionCreateVO);
 
 
         // 查询issue type类型
@@ -602,41 +602,41 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 更新版本
-        updateFixVersion(projectId, task2.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, story1.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, story2.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, story3.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, story4.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, story5.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, story6.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, story7.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, story8.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, task3.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask1.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask2.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask3.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask4.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask5.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask6.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask7.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask8.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask9.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask10.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask11.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask12.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask13.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask14.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask15.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask16.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask17.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask18.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask19.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask20.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, subtask21.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, test1.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, test2.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, test3.getIssueId(), productVersionDetailDTO.getVersionId());
-        updateFixVersion(projectId, test4.getIssueId(), productVersionDetailDTO.getVersionId());
+        updateFixVersion(projectId, task2.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, story1.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, story2.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, story3.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, story4.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, story5.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, story6.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, story7.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, story8.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, task3.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask1.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask2.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask3.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask4.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask5.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask6.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask7.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask8.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask9.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask10.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask11.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask12.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask13.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask14.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask15.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask16.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask17.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask18.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask19.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask20.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, subtask21.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, test1.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, test2.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, test3.getIssueId(), productVersionDetailVO.getVersionId());
+        updateFixVersion(projectId, test4.getIssueId(), productVersionDetailVO.getVersionId());
 
         // 创建issueLink
         List<IssueLinkCreateDTO> issueLinkCreateDTOList = new ArrayList<>();
@@ -1097,7 +1097,7 @@ public class DemoServiceImpl implements DemoService {
         testIssueIds.add(test3.getIssueId());
         testIssueIds.add(test4.getIssueId());
         testData.setTestIssueIds(testIssueIds);
-        testData.setVersionId(productVersionDetailDTO.getVersionId());
+        testData.setVersionId(productVersionDetailVO.getVersionId());
         testData.setDateOne(workDays.get(6));
         testData.setDateTwo(workDays.get(4));
         testData.setDateThree(workDays.get(2));

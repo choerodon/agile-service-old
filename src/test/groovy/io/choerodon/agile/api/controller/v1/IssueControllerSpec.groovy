@@ -1079,7 +1079,7 @@ class IssueControllerSpec extends Specification {
 
 //    def "batchIssueToVersionTest"() {
 //        given: '准备数据'
-//        ProductVersionDO productVersionDO = new ProductVersionDO()
+//        ProductVersionDTO productVersionDO = new ProductVersionDTO()
 //        productVersionDO.name = 'v1.0.0'
 //        productVersionId = productVersionMapper.selectOne(productVersionDO).versionId
 //
@@ -1334,17 +1334,17 @@ class IssueControllerSpec extends Specification {
         given: '刪除模块&版本'
         IssueComponentDTO issueComponentDO = new IssueComponentDTO()
         issueComponentDO.name = '测试模块2'
-        ProductVersionDO productVersionDO = new ProductVersionDO()
+        ProductVersionDTO productVersionDO = new ProductVersionDTO()
         productVersionDO.name = '测试版本'
-        ProductVersionDO productVersionDO1 = new ProductVersionDO()
+        ProductVersionDTO productVersionDO1 = new ProductVersionDTO()
         productVersionDO1.name = '测试版本2'
 
         and: '查询模块DO&版本DO'
         IssueComponentDTO queryComponent = new IssueComponentDTO()
         queryComponent.name = '测试模块2'
-        ProductVersionDO queryVersion = new ProductVersionDO()
+        ProductVersionDTO queryVersion = new ProductVersionDTO()
         queryVersion.name = '测试版本'
-        ProductVersionDO queryVersion1 = new ProductVersionDO()
+        ProductVersionDTO queryVersion1 = new ProductVersionDTO()
         queryVersion1.name = '测试版本'
 
         when: '执行方法'

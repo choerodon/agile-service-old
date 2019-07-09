@@ -144,9 +144,9 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     int deleteIssueFromSprintByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
-    SprintNameDO queryActiveSprintNameByIssueId(@Param("issueId") Long issueId);
+    SprintNameDTO queryActiveSprintNameByIssueId(@Param("issueId") Long issueId);
 
-    List<SprintNameDO> querySprintNameByIssueId(@Param("issueId") Long issueId);
+    List<SprintNameDTO> querySprintNameByIssueId(@Param("issueId") Long issueId);
 
     IssueDTO queryIssueSprintNotClosed(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
@@ -175,7 +175,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("projectCode") String projectCode);
 
-    List<SprintNameDO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<SprintNameDTO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     List<VersionIssueRelDO> queryVersionIssueRelByIssueId(@Param("issueId") Long issueId);
 

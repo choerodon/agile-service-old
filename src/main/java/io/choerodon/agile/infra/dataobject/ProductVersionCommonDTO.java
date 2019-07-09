@@ -6,7 +6,7 @@ import java.util.Date;
  * Created by HuangFuqiang@choerodon.io on 2018/6/20.
  * Email: fuqianghuang01@gmail.com
  */
-public class ProductVersionCommonDO {
+public class ProductVersionCommonDTO {
 
     private Long versionId;
 

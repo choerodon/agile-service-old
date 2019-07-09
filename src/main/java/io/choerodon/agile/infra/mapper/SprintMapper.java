@@ -13,7 +13,7 @@ import java.util.Set;
  * Created by jian_zhang02@163.com on 2018/5/15.
  */
 public interface SprintMapper extends Mapper<SprintDTO> {
-    List<SprintNameDO> queryNameByOptions(@Param("projectId") Long projectId, @Param("sprintStatusCodes") List<String> sprintStatusCodes);
+    List<SprintNameDTO> queryNameByOptions(@Param("projectId") Long projectId, @Param("sprintStatusCodes") List<String> sprintStatusCodes);
 
     /**
      * 根据项目id和冲刺id查询冲刺
@@ -42,7 +42,7 @@ public interface SprintMapper extends Mapper<SprintDTO> {
 
     SprintDTO queryLastSprint(@Param("projectId") Long projectId);
 
-    List<SprintNameDO> queryPlanSprintName(@Param("projectId") Long projectId);
+    List<SprintNameDTO> queryPlanSprintName(@Param("projectId") Long projectId);
 
     int queryDoneIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 

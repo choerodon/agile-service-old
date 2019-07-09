@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 import io.choerodon.agile.domain.agile.entity.ProductVersionE;
-import io.choerodon.agile.infra.dataobject.ProductVersionDO;
+import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ProductVersionConverter {
-    public ProductVersionDO entityToDo(ProductVersionE versionE) {
-        ProductVersionDO versionDO = new ProductVersionDO();
+    public ProductVersionDTO entityToDo(ProductVersionE versionE) {
+        ProductVersionDTO versionDO = new ProductVersionDTO();
         BeanUtils.copyProperties(versionE, versionDO);
         return versionDO;
     }
 
-    public ProductVersionE doToEntity(ProductVersionDO versionDO) {
+    public ProductVersionE doToEntity(ProductVersionDTO versionDO) {
         ProductVersionE versionE = new ProductVersionE();
         BeanUtils.copyProperties(versionDO, versionE);
         return versionE;

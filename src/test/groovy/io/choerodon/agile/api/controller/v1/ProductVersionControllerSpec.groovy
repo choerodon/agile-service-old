@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.*
 import io.choerodon.agile.app.service.ProductVersionService
-import io.choerodon.agile.infra.dataobject.ProductVersionDO
+import io.choerodon.agile.infra.dataobject.ProductVersionDTO
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.ProductVersionMapper
@@ -60,13 +60,13 @@ class ProductVersionControllerSpec extends Specification {
     def projectId = 1L
 
     @Shared
-    ProductVersionDO result
+    ProductVersionDTO result
 
     @Shared
-    ProductVersionDO result2
+    ProductVersionDTO result2
 
     @Shared
-    ProductVersionDO result3
+    ProductVersionDTO result3
 
     private Date StringToDate(String str) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -75,18 +75,18 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'createVersion'() {
         given:
-        ProductVersionCreateDTO productVersionCreateDTO = new ProductVersionCreateDTO()
+        ProductVersionCreateVO productVersionCreateDTO = new ProductVersionCreateVO()
         productVersionCreateDTO.projectId = projectId
         productVersionCreateDTO.name = name
         productVersionCreateDTO.startDate = startDate
         productVersionCreateDTO.expectReleaseDate = expectReleaseDate
 
         when:
-        HttpEntity<ProductVersionCreateDTO> productVersionCreateDTOHttpEntity = new HttpEntity<>(productVersionCreateDTO);
+        HttpEntity<ProductVersionCreateVO> productVersionCreateDTOHttpEntity = new HttpEntity<>(productVersionCreateDTO);
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version",
                 HttpMethod.POST,
                 productVersionCreateDTOHttpEntity,
-                ProductVersionDetailDTO.class,
+                ProductVersionDetailVO.class,
                 projectId)
 
         then:
@@ -107,7 +107,7 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'select product version'() {
         given:
-        ProductVersionDO productVersionDO = new ProductVersionDO()
+        ProductVersionDTO productVersionDO = new ProductVersionDTO()
         productVersionDO.name = versionName
         productVersionDO.projectId = projectId
         result = productVersionMapper.selectOne(productVersionDO)
@@ -141,7 +141,7 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/update/{versionId}",
                 HttpMethod.PUT,
                 jsonObjectHttpEntity,
-                ProductVersionDetailDTO.class,
+                ProductVersionDetailVO.class,
                 projectId,
                 result.getVersionId())
 
@@ -204,13 +204,13 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/detail",
                 HttpMethod.GET,
                 new HttpEntity<>(),
-                ProductVersionDetailDTO.class,
+                ProductVersionDetailVO.class,
                 projectId,
                 result.versionId)
         def entityNull = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/detail",
                 HttpMethod.GET,
                 new HttpEntity<>(),
-                ProductVersionDetailDTO.class,
+                ProductVersionDetailVO.class,
                 projectId,
                 0L)
 
@@ -222,18 +222,18 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'releaseVersion'() {
         given:
-        ProductVersionReleaseDTO productVersionReleaseDTO = new ProductVersionReleaseDTO()
+        ProductVersionReleaseVO productVersionReleaseDTO = new ProductVersionReleaseVO()
         productVersionReleaseDTO.projectId = projectId
         productVersionReleaseDTO.releaseDate = new Date()
         productVersionReleaseDTO.versionId = result.versionId
         productVersionReleaseDTO.targetVersionId = result2.versionId
 
         when:
-        HttpEntity<ProductVersionReleaseDTO> httpEntity = new HttpEntity<>(productVersionReleaseDTO)
+        HttpEntity<ProductVersionReleaseVO> httpEntity = new HttpEntity<>(productVersionReleaseDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/release",
                 HttpMethod.POST,
                 httpEntity,
-                ProductVersionDetailDTO.class,
+                ProductVersionDetailVO.class,
                 projectId)
         and:
         // 设置查询versionIssueRel条件
@@ -254,13 +254,13 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'releaseVersion unSuccess'() {
         given:
-        ProductVersionReleaseDTO productVersionReleaseDTO = new ProductVersionReleaseDTO()
+        ProductVersionReleaseVO productVersionReleaseDTO = new ProductVersionReleaseVO()
         productVersionReleaseDTO.projectId = projectId
         productVersionReleaseDTO.releaseDate = new Date()
         productVersionReleaseDTO.versionId = result2.versionId
 
         when:
-        HttpEntity<ProductVersionReleaseDTO> httpEntity = new HttpEntity<>(productVersionReleaseDTO)
+        HttpEntity<ProductVersionReleaseVO> httpEntity = new HttpEntity<>(productVersionReleaseDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/release",
                 HttpMethod.POST,
                 httpEntity,
@@ -279,7 +279,7 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/revoke_release",
                 HttpMethod.POST,
                 new HttpEntity<>(),
-                ProductVersionDetailDTO.class,
+                ProductVersionDetailVO.class,
                 projectId,
                 result.versionId)
         then:
@@ -307,7 +307,7 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/archived",
                 HttpMethod.POST,
                 new HttpEntity<>(),
-                ProductVersionDetailDTO.class,
+                ProductVersionDetailVO.class,
                 projectId,
                 result.versionId)
         then:
@@ -335,7 +335,7 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/revoke_archived",
                 HttpMethod.POST,
                 new HttpEntity<>(),
-                ProductVersionDetailDTO.class,
+                ProductVersionDetailVO.class,
                 projectId,
                 result.versionId)
         then:
@@ -345,14 +345,14 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'mergeVersion'() {
         given:
-        ProductVersionMergeDTO productVersionMergeDTO = new ProductVersionMergeDTO()
+        ProductVersionMergeVO productVersionMergeDTO = new ProductVersionMergeVO()
         List<Long> sourceVersionIds = new ArrayList<>()
         sourceVersionIds.add(result2.versionId)
         productVersionMergeDTO.sourceVersionIds = sourceVersionIds
         productVersionMergeDTO.targetVersionId = result3.versionId
 
         when:
-        HttpEntity<ProductVersionMergeDTO> productVersionMergeDTOHttpEntity = new HttpEntity<>(productVersionMergeDTO)
+        HttpEntity<ProductVersionMergeVO> productVersionMergeDTOHttpEntity = new HttpEntity<>(productVersionMergeDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/merge",
                 HttpMethod.POST,
                 productVersionMergeDTOHttpEntity,
@@ -397,7 +397,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        List<ProductVersionPageDTO> list = entity.body.getList()
+        List<ProductVersionPageVO> list = entity.body.getList()
 
         expect: "设置期望值"
         list.size() > 0
@@ -408,7 +408,7 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}",
                 HttpMethod.GET,
                 null,
-                ProductVersionStatisticsDTO.class,
+                ProductVersionStatisticsVO.class,
                 projectId,
                 versionId)
 
@@ -416,7 +416,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        ProductVersionStatisticsDTO productVersionStatisticsDTO = entity.body
+        ProductVersionStatisticsVO productVersionStatisticsDTO = entity.body
 
         expect: "设置期望值"
         productVersionStatisticsDTO.projectId == projectId
@@ -433,7 +433,7 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/plan_names",
                 HttpMethod.GET,
                 null,
-                VersionMessageDTO.class,
+                VersionMessageVO.class,
                 projectId,
                 1)
 
@@ -441,7 +441,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        VersionMessageDTO versionMessageDTO = entity.body
+        VersionMessageVO versionMessageDTO = entity.body
 
         expect: "设置期望值"
         versionMessageDTO.fixIssueCount > 0
@@ -454,7 +454,7 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/names",
                 HttpMethod.GET,
                 null,
-                VersionMessageDTO.class,
+                VersionMessageVO.class,
                 projectId,
                 1)
 
@@ -462,7 +462,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        VersionMessageDTO VersionMessageDTO = entity.body
+        VersionMessageVO VersionMessageDTO = entity.body
 
         expect: "设置期望值"
         VersionMessageDTO.agileIssueCount > 0
@@ -487,7 +487,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        List<ProductVersionNameDTO> listresult = entity.body
+        List<ProductVersionNameVO> listresult = entity.body
 
         expect: "设置期望值"
         listresult.size() == expectCount
@@ -511,7 +511,7 @@ class ProductVersionControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        List<ProductVersionDTO> result = entity.body
+        List<ProductVersionVO> result = entity.body
 
         expect: "设置期望值"
         result.size() == expectCount
@@ -562,14 +562,14 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/drag",
                 HttpMethod.PUT,
                 requestEntity,
-                ProductVersionPageDTO,
+                ProductVersionPageVO,
                 projectId)
 
         then:
         entity.statusCode.is2xxSuccessful()
 
         and:
-        ProductVersionPageDTO productVersionPageDTO = entity.body
+        ProductVersionPageVO productVersionPageDTO = entity.body
 
         expect: "设置期望值"
         productVersionPageDTO.statusCode == "version_planning"
@@ -581,7 +581,7 @@ class ProductVersionControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/{versionId}/issue_count",
                 HttpMethod.GET,
                 null,
-                VersionIssueCountDTO,
+                VersionIssueCountVO,
                 projectId,
                 1)
 
@@ -634,7 +634,7 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'deleteVersion'() {
         given:
-        ProductVersionDO productVersionDO = new ProductVersionDO()
+        ProductVersionDTO productVersionDO = new ProductVersionDTO()
         productVersionDO.name = versionMergeName
         productVersionDO.projectId = projectId
         VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO()
@@ -652,7 +652,7 @@ class ProductVersionControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        ProductVersionDO deleteDO = productVersionMapper.selectOne(productVersionDO)
+        ProductVersionDTO deleteDO = productVersionMapper.selectOne(productVersionDO)
         deleteDO == null
         versionIssueRelMapper.selectAll().size() == 1
     }

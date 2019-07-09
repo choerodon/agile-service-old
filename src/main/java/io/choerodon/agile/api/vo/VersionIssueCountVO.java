@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/8/27.
  * Email: fuqianghuang01@gmail.com
  */
-public class VersionIssueCountDTO {
+public class VersionIssueCountVO {
 
     @ApiModelProperty(value = "版本id")
     private Long versionId;

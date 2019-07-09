@@ -22,7 +22,7 @@ public interface SprintService {
 
     Map<String, Object> queryByProjectId(Long projectId, Map<String, Object> searchParamMap, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds);
 
-    List<SprintNameDTO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes);
+    List<SprintNameVO> queryNameByOptions(Long projectId, List<String> sprintStatusCodes);
 
     SprintDetailVO startSprint(Long projectId, SprintUpdateVO sprintUpdateVO);
 

@@ -1,41 +1,36 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.choerodon.mybatis.entity.BaseDTO;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/14.
  */
 
-public class ProductVersionDetailDTO {
-
-    @ApiModelProperty(value = "版本主键id")
+@Table(name = "agile_product_version")
+public class ProductVersionDTO extends BaseDTO {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long versionId;
-
-    @ApiModelProperty(value = "版本名称")
     private String name;
-
-    @ApiModelProperty(value = "版本描述")
     private String description;
-
-    @ApiModelProperty(value = "版本开始时间")
     private Date startDate;
-
-    @ApiModelProperty(value = "版本预计发布时间")
     private Date expectReleaseDate;
-
-    @ApiModelProperty(value = "发布时间")
     private Date releaseDate;
-
-    @ApiModelProperty(value = "状态")
     private String statusCode;
-
-    @ApiModelProperty(value = "项目id")
+    private String oldStatusCode;
+    @Transient
+    private String status;
+    @Transient
+    private String relationType;
+    @NotNull
     private Long projectId;
-
-    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
+
+    private Integer sequence;
 
     public Long getVersionId() {
         return versionId;
@@ -77,12 +72,28 @@ public class ProductVersionDetailDTO {
         return expectReleaseDate;
     }
 
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
     public String getStatusCode() {
         return statusCode;
     }
 
     public void setStatusCode(String statusCode) {
         this.statusCode = statusCode;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Long getProjectId() {
@@ -93,10 +104,36 @@ public class ProductVersionDetailDTO {
         this.projectId = projectId;
     }
 
+    public String getOldStatusCode() {
+        return oldStatusCode;
+    }
+
+    public void setOldStatusCode(String oldStatusCode) {
+        this.oldStatusCode = oldStatusCode;
+    }
+
+    public String getRelationType() {
+        return relationType;
+    }
+
+    public void setRelationType(String relationType) {
+        this.relationType = relationType;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
+    @Override
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
     }
 
+    @Override
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
     }

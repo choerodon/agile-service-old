@@ -38,8 +38,8 @@ public class IssueAssembler extends AbstractAssembler {
         BeanUtils.copyProperties(issueDetailDTO, issueVO);
         issueVO.setFeatureVO(ConvertHelper.convert(issueDetailDTO.getFeatureDO(), FeatureVO.class));
         issueVO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
-        issueVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameDTO.class));
-        issueVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameDTO.class));
+        issueVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameVO.class));
+        issueVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameVO.class));
         issueVO.setActivePi(sprintNameAssembler.toTarget(issueDetailDTO.getActivePi(), PiNameVO.class));
         issueVO.setClosePi(sprintNameAssembler.toTargetList(issueDetailDTO.getClosePi(), PiNameVO.class));
         issueVO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
@@ -220,8 +220,8 @@ public class IssueAssembler extends AbstractAssembler {
         BeanUtils.copyProperties(issueDetailDTO, issueSubVO);
         issueSubVO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
         issueSubVO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
-        issueSubVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameDTO.class));
-        issueSubVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameDTO.class));
+        issueSubVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameVO.class));
+        issueSubVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameVO.class));
         issueSubVO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
         issueSubVO.setIssueAttachmentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueAttachmentDTOList(), IssueAttachmentVO.class));
         issueSubVO.setIssueCommentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueCommentDTOList(), IssueCommentVO.class));

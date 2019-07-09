@@ -103,7 +103,7 @@ public class ExcelServiceImpl implements ExcelService {
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
         List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
         List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
-        List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
+        List<ProductVersionCommonDTO> productVersionCommonDTOList = productVersionMapper.listByProjectId(projectId);
         List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
         List<SprintDTO> sprintDTOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> priorityList = new ArrayList<>();
@@ -119,9 +119,9 @@ public class ExcelServiceImpl implements ExcelService {
             }
         }
         List<String> versionList = new ArrayList<>();
-        for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
-            if (VERSION_PLANNING.equals(productVersionCommonDO.getStatusCode())) {
-                versionList.add(productVersionCommonDO.getName());
+        for (ProductVersionCommonDTO productVersionCommonDTO : productVersionCommonDTOList) {
+            if (VERSION_PLANNING.equals(productVersionCommonDTO.getStatusCode())) {
+                versionList.add(productVersionCommonDTO.getName());
             }
         }
         List<String> componentList = new ArrayList<>();
@@ -472,14 +472,14 @@ public class ExcelServiceImpl implements ExcelService {
         Map<String, Long> versionMap = new HashMap<>();
         Map<String, Long> componentMap = new HashMap<>();
         Map<String, Long> sprintMap = new HashMap<>();
-        List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
+        List<ProductVersionCommonDTO> productVersionCommonDTOList = productVersionMapper.listByProjectId(projectId);
         List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
         List<SprintDTO> sprintDTOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> versionList = new ArrayList<>();
-        for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
-            if (VERSION_PLANNING.equals(productVersionCommonDO.getStatusCode())) {
-                versionMap.put(productVersionCommonDO.getName(), productVersionCommonDO.getVersionId());
-                versionList.add(productVersionCommonDO.getName());
+        for (ProductVersionCommonDTO productVersionCommonDTO : productVersionCommonDTOList) {
+            if (VERSION_PLANNING.equals(productVersionCommonDTO.getStatusCode())) {
+                versionMap.put(productVersionCommonDTO.getName(), productVersionCommonDTO.getVersionId());
+                versionList.add(productVersionCommonDTO.getName());
             }
         }
         List<String> componentList = new ArrayList<>();

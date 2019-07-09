@@ -12,21 +12,21 @@ import java.util.Map;
 /**
  * Created by jian_zhang02@163.com on 2018/5/14.
  */
-public interface ProductVersionMapper extends Mapper<ProductVersionDO> {
+public interface ProductVersionMapper extends Mapper<ProductVersionDTO> {
 
     List queryVersionIdsByProjectId(@Param("projectId") Long projectId,
                                     @Param("searchArgs") Map<String, Object> searchArgs,
                                     @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("contents") List<String> contents);
 
-    List<ProductVersionDO> queryVersionByIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
+    List<ProductVersionDTO> queryVersionByIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
 
     Boolean isRepeatName(@Param("projectId") Long projectId, @Param("name") String name);
 
     Boolean isNotReName(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("name") String name);
 
-    List<ProductVersionDataDO> queryVersionByProjectId(@Param("projectId") Long projectId);
+    List<ProductVersionDataDTO> queryVersionByProjectId(@Param("projectId") Long projectId);
 
-    ProductVersionStatisticsDO queryVersionStatisticsByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    ProductVersionStatisticsDTO queryVersionStatisticsByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
     List<IssueDTO> queryIssueByVersionIdAndStatusCode(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("statusCode") String statusCode, @Param("filterStatusIds") List<Long> filterStatusIds, @Param("searchVO") SearchVO searchVO);
 
@@ -47,9 +47,9 @@ public interface ProductVersionMapper extends Mapper<ProductVersionDO> {
 
     int queryNotDoneIssueCount(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<ProductVersionNameDO> queryPlanVersionNames(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    List<ProductVersionNameDTO> queryPlanVersionNames(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    int issueToDestination(@Param("projectId") Long projectId, @Param("targetVersionId") Long targetVersionId, @Param("versionIssues") List<VersionIssueDO> versionIssues, @Param("date") Date date, @Param("userId") Long userId);
+    int issueToDestination(@Param("projectId") Long projectId, @Param("targetVersionId") Long targetVersionId, @Param("versionIssues") List<VersionIssueDTO> versionIssues, @Param("date") Date date, @Param("userId") Long userId);
 
     int releaseVersion(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("releaseDate") Date releaseDate);
 
@@ -57,21 +57,21 @@ public interface ProductVersionMapper extends Mapper<ProductVersionDO> {
 
     int queryIssueCountByApplyType(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("applyType") String applyType);
 
-    List<ProductVersionNameDO> queryVersionNames(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    List<ProductVersionNameDTO> queryVersionNames(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<VersionIssueDO> queryIncompleteIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    List<VersionIssueDTO> queryIncompleteIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<VersionIssueDO> queryIssuesByRelationType(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("relationType") String relationType);
+    List<VersionIssueDTO> queryIssuesByRelationType(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("relationType") String relationType);
 
-    List<ProductVersionNameDO> queryNameByOptions(@Param("projectId") Long projectId, @Param("statusCodes") List<String> statusCodes);
+    List<ProductVersionNameDTO> queryNameByOptions(@Param("projectId") Long projectId, @Param("statusCodes") List<String> statusCodes);
 
-    List<ProductVersionCommonDO> listByProjectId(@Param("projectId") Long projectId);
+    List<ProductVersionCommonDTO> listByProjectId(@Param("projectId") Long projectId);
 
-    List<VersionIssueDO> queryIssueByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds, @Param("targetVersionId") Long targetVersionId);
+    List<VersionIssueDTO> queryIssueByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds, @Param("targetVersionId") Long targetVersionId);
 
     int deleteByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
 
-    List<ProductVersionDO> selectVersionRelsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
+    List<ProductVersionDTO> selectVersionRelsByIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
     List<Long> listIds();
 
@@ -81,9 +81,9 @@ public interface ProductVersionMapper extends Mapper<ProductVersionDO> {
      * @param projectId    projectId
      * @param issueId      issueId
      * @param relationType relationType
-     * @return ProductVersionDO
+     * @return ProductVersionDTO
      */
-    List<ProductVersionDO> queryVersionRelByIssueIdAndTypeArchivedExceptInfluence(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("relationType") String relationType);
+    List<ProductVersionDTO> queryVersionRelByIssueIdAndTypeArchivedExceptInfluence(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("relationType") String relationType);
 
     /**
      * 批量更新排序
@@ -127,27 +127,27 @@ public interface ProductVersionMapper extends Mapper<ProductVersionDO> {
      *
      * @param projectId  projectId
      * @param versionIds versionIds
-     * @return VersionIssueDO
+     * @return VersionIssueDTO
      */
-    List<VersionIssueDO> queryIssueForLogByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
+    List<VersionIssueDTO> queryIssueForLogByVersionIds(@Param("projectId") Long projectId, @Param("versionIds") List<Long> versionIds);
 
     /**
      * 查询版本关系中未完成的版本
      *
      * @param projectId projectId
      * @param versionId versionId
-     * @return VersionIssueDO
+     * @return VersionIssueDTO
      */
-    List<VersionIssueDO> queryInCompleteIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    List<VersionIssueDTO> queryInCompleteIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
     /**
      * 查询版本中issue关系
      *
      * @param projectId projectId
      * @param versionId versionId
-     * @return VersionIssueDO
+     * @return VersionIssueDTO
      */
-    List<VersionIssueDO> queryVersionIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    List<VersionIssueDTO> queryVersionIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
     /**
      * 查询版本中的issue中的状态统计

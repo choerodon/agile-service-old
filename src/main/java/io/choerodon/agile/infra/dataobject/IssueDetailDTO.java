@@ -52,9 +52,9 @@ public class IssueDetailDTO {
 
     private List<IssueLinkDO> issueLinkDOList;
 
-    private SprintNameDO activeSprint;
+    private SprintNameDTO activeSprint;
 
-    private List<SprintNameDO> closeSprint;
+    private List<SprintNameDTO> closeSprint;
 
     private PiNameDTO activePi;
 
@@ -366,19 +366,19 @@ public class IssueDetailDTO {
         this.parentIssueNum = parentIssueNum;
     }
 
-    public SprintNameDO getActiveSprint() {
+    public SprintNameDTO getActiveSprint() {
         return activeSprint;
     }
 
-    public void setActiveSprint(SprintNameDO activeSprint) {
+    public void setActiveSprint(SprintNameDTO activeSprint) {
         this.activeSprint = activeSprint;
     }
 
-    public List<SprintNameDO> getCloseSprint() {
+    public List<SprintNameDTO> getCloseSprint() {
         return closeSprint;
     }
 
-    public void setCloseSprint(List<SprintNameDO> closeSprint) {
+    public void setCloseSprint(List<SprintNameDTO> closeSprint) {
         this.closeSprint = closeSprint;
     }
 

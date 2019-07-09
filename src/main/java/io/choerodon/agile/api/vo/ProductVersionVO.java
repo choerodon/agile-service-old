@@ -8,7 +8,7 @@ import java.util.Date;
  * Created by HuangFuqiang@choerodon.io on 2018/6/20.
  * Email: fuqianghuang01@gmail.com
  */
-public class ProductVersionDTO {
+public class ProductVersionVO {
 
     @ApiModelProperty(value = "主键id")
     private Long versionId;

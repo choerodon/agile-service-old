@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by jian_zhang02@163.com on 2018/6/20.
  */
-public class ProductVersionMergeDTO {
+public class ProductVersionMergeVO {
     private static final String SOURCE_VERSION_ERROR = "error.sourceVersionIds.notNull";
     private static final String TARGET_VERSION_ERROR = "error.targetVersionId.notNull";
 

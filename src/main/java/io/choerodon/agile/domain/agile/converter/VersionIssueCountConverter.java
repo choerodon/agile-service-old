@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
 
-import io.choerodon.agile.api.vo.VersionIssueCountDTO;
-import io.choerodon.agile.infra.dataobject.ProductVersionStatisticsDO;
+import io.choerodon.agile.api.vo.VersionIssueCountVO;
+import io.choerodon.agile.infra.dataobject.ProductVersionStatisticsDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class VersionIssueCountConverter implements ConvertorI<Object, ProductVersionStatisticsDO, VersionIssueCountDTO> {
+public class VersionIssueCountConverter implements ConvertorI<Object, ProductVersionStatisticsDTO, VersionIssueCountVO> {
 
     @Override
-    public VersionIssueCountDTO doToDto(ProductVersionStatisticsDO productVersionStatisticsDO) {
-        VersionIssueCountDTO versionIssueCountDTO = new VersionIssueCountDTO();
-        BeanUtils.copyProperties(productVersionStatisticsDO, versionIssueCountDTO);
-        return versionIssueCountDTO;
+    public VersionIssueCountVO doToDto(ProductVersionStatisticsDTO productVersionStatisticsDTO) {
+        VersionIssueCountVO versionIssueCountVO = new VersionIssueCountVO();
+        BeanUtils.copyProperties(productVersionStatisticsDTO, versionIssueCountVO);
+        return versionIssueCountVO;
     }
 }

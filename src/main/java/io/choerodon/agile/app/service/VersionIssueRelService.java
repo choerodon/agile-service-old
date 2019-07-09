@@ -1,4 +1,4 @@
-package io.choerodon.agile.infra.repository;
+package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
@@ -10,7 +10,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 16:21:18
  */
-public interface VersionIssueRelRepository {
+public interface VersionIssueRelService {
 
     /**
      * 添加一个

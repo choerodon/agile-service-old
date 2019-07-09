@@ -361,10 +361,10 @@ public class IssueValidator {
         if (issueIds.isEmpty()) {
             throw new CommonException("error.issueValidator.issueIdsNull");
         }
-        ProductVersionDO productVersionDO = new ProductVersionDO();
-        productVersionDO.setProjectId(projectId);
-        productVersionDO.setVersionId(versionId);
-        if (productVersionMapper.selectByPrimaryKey(productVersionDO) == null) {
+        ProductVersionDTO productVersionDTO = new ProductVersionDTO();
+        productVersionDTO.setProjectId(projectId);
+        productVersionDTO.setVersionId(versionId);
+        if (productVersionMapper.selectByPrimaryKey(productVersionDTO) == null) {
             throw new CommonException("error.issueValidator.versionNotFound");
         }
     }

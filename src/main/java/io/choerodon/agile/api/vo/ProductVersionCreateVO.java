@@ -9,16 +9,12 @@ import java.util.Date;
  * Created by jian_zhang02@163.com on 2018/5/14.
  */
 
-public class ProductVersionUpdateDTO {
+public class ProductVersionCreateVO {
+    private static final String NAME_NULL_ERROR = "error.productVersionName.NotNull";
     private static final String PROJECT_ID_NULL_ERROR = "error.projectId.NotNull";
-    private static final String VERSION_ID_NULL_ERROR = "error.versionId.NotNull";
-    private static final String OBJECT_VERSION_NUMBER_NULL_ERROR = "error.objectVersionNumber.NotNull";
-
-    @ApiModelProperty(value = "版本id")
-    @NotNull(message = VERSION_ID_NULL_ERROR)
-    private Long versionId;
 
     @ApiModelProperty(value = "版本名称")
+    @NotNull(message = NAME_NULL_ERROR)
     private String name;
 
     @ApiModelProperty(value = "版本描述")
@@ -27,7 +23,7 @@ public class ProductVersionUpdateDTO {
     @ApiModelProperty(value = "版本开始时间")
     private Date startDate;
 
-    @ApiModelProperty(value = "版本预计发布时间")
+    @ApiModelProperty(value = "版本预期发布时间")
     private Date expectReleaseDate;
 
     @ApiModelProperty(value = "版本发布时间")
@@ -36,18 +32,6 @@ public class ProductVersionUpdateDTO {
     @ApiModelProperty(value = "项目id")
     @NotNull(message = PROJECT_ID_NULL_ERROR)
     private Long projectId;
-
-    @ApiModelProperty(value = "版本号")
-    @NotNull(message = OBJECT_VERSION_NUMBER_NULL_ERROR)
-    private Long objectVersionNumber;
-
-    public Long getVersionId() {
-        return versionId;
-    }
-
-    public void setVersionId(Long versionId) {
-        this.versionId = versionId;
-    }
 
     public String getName() {
         return name;
@@ -97,11 +81,4 @@ public class ProductVersionUpdateDTO {
         this.projectId = projectId;
     }
 
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
-    }
-
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
-    }
 }

@@ -11,7 +11,7 @@ import io.choerodon.agile.api.vo.ProjectDTO
 import io.choerodon.agile.api.vo.SprintCompleteVO
 import io.choerodon.agile.api.vo.SprintCompleteMessageVO
 import io.choerodon.agile.api.vo.SprintDetailVO
-import io.choerodon.agile.api.vo.SprintNameDTO
+import io.choerodon.agile.api.vo.SprintNameVO
 import io.choerodon.agile.api.vo.SprintSearchDTO
 import io.choerodon.agile.api.vo.SprintUpdateVO
 import io.choerodon.agile.api.vo.WorkCalendarRefDTO
@@ -230,7 +230,7 @@ class SprintControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '返回值'
-        List<SprintNameDTO> result = entity.body
+        List<SprintNameVO> result = entity.body
 
         expect: '期望值'
         result.size() == 2

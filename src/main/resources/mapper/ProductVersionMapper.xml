@@ -30,7 +30,7 @@
         </if>
     </select>
 
-    <select id="queryVersionByIds" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+    <select id="queryVersionByIds" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDTO">
         SELECT
         apv.version_id, apv.name,
         apv.description, apv.start_date,
@@ -67,7 +67,7 @@
         WHERE project_id = #{projectId} AND version_id = #{versionId}
     </select>
 
-    <select id="queryVersionByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDataDO">
+    <select id="queryVersionByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDataDTO">
         SELECT
             version_id,
             name,
@@ -164,7 +164,7 @@
     </select>
 
     <select id="queryVersionStatisticsByVersionId"
-            resultType="io.choerodon.agile.infra.dataobject.ProductVersionStatisticsDO">
+            resultType="io.choerodon.agile.infra.dataobject.ProductVersionStatisticsDTO">
         SELECT
             apv.version_id,
             apv.name,
@@ -292,7 +292,7 @@
               AND ai.apply_type = 'agile'
     </select>
 
-    <select id="queryPlanVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
+    <select id="queryPlanVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDTO">
         SELECT
             version_id,
             name
@@ -312,7 +312,7 @@
         </foreach>
     </insert>
 
-    <select id="queryIncompleteIssues" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIncompleteIssues" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT
             ai.issue_id,
             avir.relation_type
@@ -322,7 +322,7 @@
               AND ais.is_completed != 1
     </select>
 
-    <select id="queryIssuesByRelationType" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIssuesByRelationType" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT
             ai.issue_id,
             avir.relation_type
@@ -331,7 +331,7 @@
               AND avir.issue_id = ai.issue_id
     </select>
 
-    <select id="queryIssueByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIssueByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT DISTINCT(ai.issue_id), avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai
         WHERE ai.project_id = #{projectId} AND avir.issue_id = ai.issue_id
@@ -348,7 +348,7 @@
         )
     </select>
 
-    <select id="queryIssueForLogByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIssueForLogByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
         FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
         WHERE avir.project_id = #{projectId}
@@ -359,7 +359,7 @@
         </foreach>
     </select>
 
-    <select id="queryInCompleteIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryInCompleteIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
         FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
         left join agile_issue ai on avir.issue_id = ai.issue_id left join agile_issue_status ais on ai.status_id = ais.status_id
@@ -368,7 +368,7 @@
         AND avir.version_id = #{versionId} and ais.is_completed != 1
     </select>
 
-    <select id="queryVersionIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryVersionIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
         FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
         WHERE avir.project_id = #{projectId}
@@ -434,7 +434,7 @@
         )
     </select>
 
-    <select id="queryVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
+    <select id="queryVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDTO">
         SELECT
             version_id,
             name
@@ -443,7 +443,7 @@
               AND status_code != 'archived'
     </select>
 
-    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
+    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDTO">
         SELECT version_id, name, status_code,release_date, expect_release_date
         FROM agile_product_version
         WHERE project_id = #{projectId}
@@ -457,7 +457,7 @@
         ORDER BY sequence DESC
     </select>
 
-    <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionCommonDO">
+    <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionCommonDTO">
         SELECT
             apv.*,
             alv.`name` AS status_name
@@ -468,7 +468,7 @@
             apv.project_id = #{projectId}
     </select>
 
-    <select id="selectVersionRelsByIssueId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+    <select id="selectVersionRelsByIssueId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDTO">
         SELECT
             avir.version_id AS version_id,
             avir.issue_id   AS issue_id,
@@ -490,7 +490,7 @@
     </select>
 
     <select id="queryVersionRelByIssueIdAndTypeArchivedExceptInfluence"
-            resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+            resultType="io.choerodon.agile.infra.dataobject.ProductVersionDTO">
         SELECT
         avir.version_id AS version_id,
         avir.issue_id AS issue_id,

@@ -1,10 +1,10 @@
-package io.choerodon.agile.infra.repository.impl;
+package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
-import io.choerodon.agile.infra.repository.VersionIssueRelRepository;
+import io.choerodon.agile.app.service.VersionIssueRelService;
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,7 @@ import java.util.List;
  * @since 2018-05-15 16:21:18
  */
 @Component
-public class VersionIssueRelRepositoryImpl implements VersionIssueRelRepository {
+public class VersionIssueRelServiceImpl implements VersionIssueRelService {
 
     private static final String INSERT_ERROR = "error.VersionIssueRel.create";
 

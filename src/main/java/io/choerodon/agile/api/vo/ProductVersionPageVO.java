@@ -1,36 +1,47 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
 
-import io.choerodon.mybatis.entity.BaseDTO;
+import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
  * Created by jian_zhang02@163.com on 2018/5/14.
  */
 
-@Table(name = "agile_product_version")
-public class ProductVersionDO extends BaseDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long versionId;
-    private String name;
-    private String description;
-    private Date startDate;
-    private Date expectReleaseDate;
-    private Date releaseDate;
-    private String statusCode;
-    private String oldStatusCode;
-    @Transient
-    private String status;
-    @Transient
-    private String relationType;
-    @NotNull
-    private Long projectId;
-    private Long objectVersionNumber;
+public class ProductVersionPageVO {
 
+    @ApiModelProperty(value = "版本主键id")
+    private Long versionId;
+
+    @ApiModelProperty(value = "版本名称")
+    private String name;
+
+    @ApiModelProperty(value = "版本描述")
+    private String description;
+
+    @ApiModelProperty(value = "版本开始时间")
+    private Date startDate;
+
+    @ApiModelProperty(value = "版本预计发布时间")
+    private Date expectReleaseDate;
+
+    @ApiModelProperty(value = "版本发布时间")
+    private Date releaseDate;
+
+    @ApiModelProperty(value = "版本状态code")
+    private String statusCode;
+
+    @ApiModelProperty(value = "版本状态名称")
+    private String status;
+
+    @ApiModelProperty(value = "版本排序字段")
     private Integer sequence;
+
+    @ApiModelProperty(value = "项目id")
+    private Long projectId;
+
+    @ApiModelProperty(value = "版本号")
+    private Long objectVersionNumber;
 
     public Long getVersionId() {
         return versionId;
@@ -104,20 +115,12 @@ public class ProductVersionDO extends BaseDTO {
         this.projectId = projectId;
     }
 
-    public String getOldStatusCode() {
-        return oldStatusCode;
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 
-    public void setOldStatusCode(String oldStatusCode) {
-        this.oldStatusCode = oldStatusCode;
-    }
-
-    public String getRelationType() {
-        return relationType;
-    }
-
-    public void setRelationType(String relationType) {
-        this.relationType = relationType;
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
     }
 
     public Integer getSequence() {
@@ -126,15 +129,5 @@ public class ProductVersionDO extends BaseDTO {
 
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
-    }
-
-    @Override
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
-    }
-
-    @Override
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
     }
 }

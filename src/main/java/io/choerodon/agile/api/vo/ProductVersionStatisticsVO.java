@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by jian_zhang02@163.com on 2018/5/18.
  */
-public class ProductVersionStatisticsDTO {
+public class ProductVersionStatisticsVO {
 
     @ApiModelProperty(value = "版本主键id")
     private Long versionId;

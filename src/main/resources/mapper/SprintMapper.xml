@@ -536,7 +536,7 @@
         order by asp.start_date asc
     </select>
 
-    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDTO">
         SELECT
         sprint_id,
         sprint_name,
@@ -571,7 +571,7 @@
         AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed = 1
     </select>
 
-    <select id="queryPlanSprintName" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="queryPlanSprintName" resultType="io.choerodon.agile.infra.dataobject.SprintNameDTO">
         SELECT
         sprint_id,
         sprint_name

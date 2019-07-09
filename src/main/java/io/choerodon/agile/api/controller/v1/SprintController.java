@@ -100,9 +100,9 @@ public class SprintController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "查询冲刺名")
     @PostMapping(value = "/names")
-    public ResponseEntity<List<SprintNameDTO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<SprintNameVO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
                                                                   @PathVariable(name = "project_id") Long projectId,
-                                                                  @ApiParam(value = "状态列表", required = false)
+                                                                 @ApiParam(value = "状态列表", required = false)
                                                                   @RequestBody(required = false) List<String> sprintStatusCodes) {
         return Optional.ofNullable(sprintService.queryNameByOptions(projectId, sprintStatusCodes))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

@@ -5,7 +5,7 @@ import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.IssueStatusDTO;
-import io.choerodon.agile.infra.dataobject.ProductVersionDO;
+import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
 import io.choerodon.agile.infra.dataobject.SprintDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
@@ -227,9 +227,9 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByBatchDeleteVersionDataLog(Long projectId, List<ProductVersionDO> productVersionDOS) {
+    public void deleteByBatchDeleteVersionDataLog(Long projectId, List<ProductVersionDTO> productVersionDTOS) {
         redisUtil.deleteRedisCache(new String[]{PIE_CHART + projectId + COLON + FIX_VERSION_CACHE + POINTER});
-        productVersionDOS.parallelStream().forEach(productVersionDO -> redisUtil.deleteRedisCache(new String[]{VERSION_CHART + productVersionDO.getProjectId() + COLON + productVersionDO.getVersionId() + COLON + POINTER,
+        productVersionDTOS.parallelStream().forEach(productVersionDO -> redisUtil.deleteRedisCache(new String[]{VERSION_CHART + productVersionDO.getProjectId() + COLON + productVersionDO.getVersionId() + COLON + POINTER,
                 BURN_DOWN_COORDINATE_BY_TYPE + productVersionDO.getProjectId() + COLON + VERSION + COLON + productVersionDO.getVersionId()
         }));
 

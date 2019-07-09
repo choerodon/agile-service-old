@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by jian_zhang02@163.com on 2018/6/4.
  */
-public class VersionMessageDTO {
+public class VersionMessageVO {
 
     @ApiModelProperty(value = "敏捷问题数量")
     private Integer agileIssueCount;
@@ -23,7 +23,7 @@ public class VersionMessageDTO {
     private Integer influenceIssueCount;
 
     @ApiModelProperty(value = "版本列表")
-    private List<ProductVersionNameDTO> versionNames;
+    private List<ProductVersionNameVO> versionNames;
 
     public Integer getAgileIssueCount() {
         return agileIssueCount;
@@ -57,11 +57,11 @@ public class VersionMessageDTO {
         this.fixIssueCount = fixIssueCount;
     }
 
-    public List<ProductVersionNameDTO> getVersionNames() {
+    public List<ProductVersionNameVO> getVersionNames() {
         return versionNames;
     }
 
-    public void setVersionNames(List<ProductVersionNameDTO> versionNames) {
+    public void setVersionNames(List<ProductVersionNameVO> versionNames) {
         this.versionNames = versionNames;
     }
 

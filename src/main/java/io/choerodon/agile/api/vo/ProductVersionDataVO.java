@@ -5,12 +5,11 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.Date;
 
 /**
- * Created by jian_zhang02@163.com on 2018/5/14.
+ * Created by jian_zhang02@163.com on 2018/5/16.
  */
+public class ProductVersionDataVO {
 
-public class ProductVersionPageDTO {
-
-    @ApiModelProperty(value = "版本主键id")
+    @ApiModelProperty(value = "版本id")
     private Long versionId;
 
     @ApiModelProperty(value = "版本名称")
@@ -31,17 +30,26 @@ public class ProductVersionPageDTO {
     @ApiModelProperty(value = "版本状态code")
     private String statusCode;
 
-    @ApiModelProperty(value = "版本状态名称")
-    private String status;
+    @ApiModelProperty(value = "版本下的问题计数")
+    private Integer issueCount;
 
-    @ApiModelProperty(value = "版本排序字段")
-    private Integer sequence;
+    @ApiModelProperty(value = "版本下的已完成故事计数")
+    private Integer doneIssueCount;
+
+    @ApiModelProperty(value = "版本下的未预估故事计数")
+    private Integer notEstimate;
+
+    @ApiModelProperty(value = "版本下的故事点总和")
+    private Integer totalEstimate;
 
     @ApiModelProperty(value = "项目id")
     private Long projectId;
 
     @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
+
+    @ApiModelProperty(value = "版本排序字段")
+    private Integer sequence;
 
     public Long getVersionId() {
         return versionId;
@@ -99,12 +107,36 @@ public class ProductVersionPageDTO {
         this.statusCode = statusCode;
     }
 
-    public String getStatus() {
-        return status;
+    public Integer getIssueCount() {
+        return issueCount;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setIssueCount(Integer issueCount) {
+        this.issueCount = issueCount;
+    }
+
+    public Integer getDoneIssueCount() {
+        return doneIssueCount;
+    }
+
+    public void setDoneIssueCount(Integer doneIssueCount) {
+        this.doneIssueCount = doneIssueCount;
+    }
+
+    public Integer getNotEstimate() {
+        return notEstimate;
+    }
+
+    public void setNotEstimate(Integer notEstimate) {
+        this.notEstimate = notEstimate;
+    }
+
+    public Integer getTotalEstimate() {
+        return totalEstimate;
+    }
+
+    public void setTotalEstimate(Integer totalEstimate) {
+        this.totalEstimate = totalEstimate;
     }
 
     public Long getProjectId() {

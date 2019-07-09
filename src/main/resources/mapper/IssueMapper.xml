@@ -163,7 +163,7 @@
         </foreach>
     </select>
 
-    <select id="queryCloseSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="queryCloseSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDTO">
         SELECT
             asp.sprint_id,
             asp.sprint_name
@@ -180,7 +180,7 @@
         WHERE apf.issue_id = #{issueId} AND apf.pi_id = ap.id AND ap.status_code = 'done'
     </select>
 
-    <select id="querySprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="querySprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDTO">
         SELECT
             asp.sprint_id,
             asp.sprint_name
@@ -188,7 +188,7 @@
         WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id
     </select>
 
-    <select id="querySprintNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="querySprintNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintNameDTO">
         SELECT
         aisr.issue_id, asp.sprint_name
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
@@ -200,7 +200,7 @@
         </foreach>
     </select>
 
-    <select id="queryActiveSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="queryActiveSprintNameByIssueId" resultType="io.choerodon.agile.infra.dataobject.SprintNameDTO">
         SELECT
             asp.sprint_id,
             asp.sprint_name

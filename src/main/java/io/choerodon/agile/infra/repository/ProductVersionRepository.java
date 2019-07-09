@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository;
 
 import io.choerodon.agile.domain.agile.entity.ProductVersionE;
-import io.choerodon.agile.infra.dataobject.VersionIssueDO;
+import io.choerodon.agile.infra.dataobject.VersionIssueDTO;
 
 import java.util.Date;
 import java.util.List;
@@ -17,7 +17,7 @@ public interface ProductVersionRepository {
 
     ProductVersionE updateVersion(ProductVersionE versionE, List<String> fieldList);
 
-    Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDO> incompleteIssues, Date date, Long userId);
+    Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDTO> incompleteIssues, Date date, Long userId);
 
     Boolean releaseVersion(Long projectId, Long versionId, Date releaseDate);
 

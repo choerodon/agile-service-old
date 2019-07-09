@@ -3,7 +3,7 @@ package io.choerodon.agile.infra.dataobject;
 /**
  * Created by jian_zhang02@163.com on 2018/6/5.
  */
-public class VersionIssueDO {
+public class VersionIssueDTO {
     private Long issueId;
     private String relationType;
     private Long versionId;

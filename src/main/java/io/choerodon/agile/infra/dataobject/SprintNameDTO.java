@@ -1,6 +1,4 @@
-package io.choerodon.agile.api.vo;
-
-import io.swagger.annotations.ApiModelProperty;
+package io.choerodon.agile.infra.dataobject;
 
 import java.util.Date;
 
@@ -8,20 +6,11 @@ import java.util.Date;
  * Created by jian_zhang02@163.com on 2018/5/17.
  */
 public class SprintNameDTO {
-
-    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
-
-    @ApiModelProperty(value = "冲刺名称")
     private String sprintName;
-
-    @ApiModelProperty(value = "冲刺开始时间")
+    private Long issueId;
     private Date startDate;
-
-    @ApiModelProperty(value = "冲刺结束时间")
     private Date endDate;
-
-    @ApiModelProperty(value = "冲刺状态")
     private String statusCode;
 
     public Long getSprintId() {
@@ -38,6 +27,14 @@ public class SprintNameDTO {
 
     public void setSprintName(String sprintName) {
         this.sprintName = sprintName;
+    }
+
+    public Long getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
     }
 
     public Date getStartDate() {

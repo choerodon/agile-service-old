@@ -1,37 +1,37 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
-import io.swagger.annotations.ApiModelProperty;
-
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
- * Created by jian_zhang02@163.com on 2018/5/14.
+ * Created by jian_zhang02@163.com on 2018/5/16.
  */
-
-public class ProductVersionCreateDTO {
-    private static final String NAME_NULL_ERROR = "error.productVersionName.NotNull";
-    private static final String PROJECT_ID_NULL_ERROR = "error.projectId.NotNull";
-
-    @ApiModelProperty(value = "版本名称")
-    @NotNull(message = NAME_NULL_ERROR)
+public class ProductVersionDataDTO {
+    private Long versionId;
     private String name;
-
-    @ApiModelProperty(value = "版本描述")
     private String description;
-
-    @ApiModelProperty(value = "版本开始时间")
     private Date startDate;
-
-    @ApiModelProperty(value = "版本预期发布时间")
     private Date expectReleaseDate;
-
-    @ApiModelProperty(value = "版本发布时间")
     private Date releaseDate;
-
-    @ApiModelProperty(value = "项目id")
-    @NotNull(message = PROJECT_ID_NULL_ERROR)
+    private String statusCode;
     private Long projectId;
+    private Long objectVersionNumber;
+    private Integer sequence;
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
+    public Long getVersionId() {
+        return versionId;
+    }
+
+    public void setVersionId(Long versionId) {
+        this.versionId = versionId;
+    }
 
     public String getName() {
         return name;
@@ -73,6 +73,14 @@ public class ProductVersionCreateDTO {
         this.releaseDate = releaseDate;
     }
 
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(String statusCode) {
+        this.statusCode = statusCode;
+    }
+
     public Long getProjectId() {
         return projectId;
     }
@@ -81,4 +89,11 @@ public class ProductVersionCreateDTO {
         this.projectId = projectId;
     }
 
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
 }

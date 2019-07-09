@@ -4,7 +4,7 @@ import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.dataobject.DataLogDTO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
-import io.choerodon.agile.infra.dataobject.ProductVersionDO;
+import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -55,11 +55,11 @@ public interface DataLogMapper extends Mapper<DataLogDTO> {
      * 批量生成版本变更日志
      *
      * @param projectId        projectId
-     * @param productVersionDO productVersionDO
+     * @param productVersionDTO productVersionDTO
      * @param issueIds         issueIds
      * @param userId           userId
      */
-    void batchCreateVersionDataLog(@Param("projectId") Long projectId, @Param("productVersionDO") ProductVersionDO productVersionDO, @Param("issueIds") List<Long> issueIds, @Param("userId") Long userId);
+    void batchCreateVersionDataLog(@Param("projectId") Long projectId, @Param("productVersionDTO") ProductVersionDTO productVersionDTO, @Param("issueIds") List<Long> issueIds, @Param("userId") Long userId);
 
     /**
      * 批量删除错误数据

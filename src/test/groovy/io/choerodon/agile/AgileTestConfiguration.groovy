@@ -329,7 +329,7 @@ class AgileTestConfiguration {
     }
 
     private void initVersion() {
-        ProductVersionDO productVersionDO = new ProductVersionDO()
+        ProductVersionDTO productVersionDO = new ProductVersionDTO()
         productVersionDO.projectId = 1L
         productVersionDO.name = "v1.0.0"
         productVersionDO.statusCode = 'version_planning'

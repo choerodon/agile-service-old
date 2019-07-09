@@ -2,14 +2,20 @@ package io.choerodon.agile.api.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
- * Created by jian_zhang02@163.com on 2018/5/16.
+ * Created by jian_zhang02@163.com on 2018/5/14.
  */
-public class ProductVersionDataDTO {
+
+public class ProductVersionUpdateVO {
+    private static final String PROJECT_ID_NULL_ERROR = "error.projectId.NotNull";
+    private static final String VERSION_ID_NULL_ERROR = "error.versionId.NotNull";
+    private static final String OBJECT_VERSION_NUMBER_NULL_ERROR = "error.objectVersionNumber.NotNull";
 
     @ApiModelProperty(value = "版本id")
+    @NotNull(message = VERSION_ID_NULL_ERROR)
     private Long versionId;
 
     @ApiModelProperty(value = "版本名称")
@@ -27,29 +33,13 @@ public class ProductVersionDataDTO {
     @ApiModelProperty(value = "版本发布时间")
     private Date releaseDate;
 
-    @ApiModelProperty(value = "版本状态code")
-    private String statusCode;
-
-    @ApiModelProperty(value = "版本下的问题计数")
-    private Integer issueCount;
-
-    @ApiModelProperty(value = "版本下的已完成故事计数")
-    private Integer doneIssueCount;
-
-    @ApiModelProperty(value = "版本下的未预估故事计数")
-    private Integer notEstimate;
-
-    @ApiModelProperty(value = "版本下的故事点总和")
-    private Integer totalEstimate;
-
     @ApiModelProperty(value = "项目id")
+    @NotNull(message = PROJECT_ID_NULL_ERROR)
     private Long projectId;
 
     @ApiModelProperty(value = "版本号")
+    @NotNull(message = OBJECT_VERSION_NUMBER_NULL_ERROR)
     private Long objectVersionNumber;
-
-    @ApiModelProperty(value = "版本排序字段")
-    private Integer sequence;
 
     public Long getVersionId() {
         return versionId;
@@ -99,46 +89,6 @@ public class ProductVersionDataDTO {
         this.releaseDate = releaseDate;
     }
 
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public Integer getIssueCount() {
-        return issueCount;
-    }
-
-    public void setIssueCount(Integer issueCount) {
-        this.issueCount = issueCount;
-    }
-
-    public Integer getDoneIssueCount() {
-        return doneIssueCount;
-    }
-
-    public void setDoneIssueCount(Integer doneIssueCount) {
-        this.doneIssueCount = doneIssueCount;
-    }
-
-    public Integer getNotEstimate() {
-        return notEstimate;
-    }
-
-    public void setNotEstimate(Integer notEstimate) {
-        this.notEstimate = notEstimate;
-    }
-
-    public Integer getTotalEstimate() {
-        return totalEstimate;
-    }
-
-    public void setTotalEstimate(Integer totalEstimate) {
-        this.totalEstimate = totalEstimate;
-    }
-
     public Long getProjectId() {
         return projectId;
     }
@@ -153,13 +103,5 @@ public class ProductVersionDataDTO {
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
-    }
-
-    public Integer getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(Integer sequence) {
-        this.sequence = sequence;
     }
 }

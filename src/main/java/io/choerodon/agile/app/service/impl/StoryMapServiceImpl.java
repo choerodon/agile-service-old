@@ -11,7 +11,7 @@ import io.choerodon.agile.infra.mapper.StoryMapMapper;
 import io.choerodon.agile.infra.mapper.StoryMapWidthMapper;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.repository.VersionIssueRelRepository;
+import io.choerodon.agile.app.service.VersionIssueRelService;
 import io.choerodon.core.convertor.ConvertHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +36,7 @@ public class StoryMapServiceImpl implements StoryMapService {
     private StoryMapValidator storyMapValidator;
 
     @Autowired
-    private VersionIssueRelRepository versionIssueRelRepository;
+    private VersionIssueRelService versionIssueRelService;
 
     @Autowired
     private StoryMapWidthMapper storyMapWidthMapper;
@@ -147,7 +147,7 @@ public class StoryMapServiceImpl implements StoryMapService {
                 versionIssueRelDO.setVersionId(versionIssueRelDTO.getVersionId());
                 versionIssueRelDO.setRelationType("fix");
                 versionIssueRelDO.setProjectId(projectId);
-                versionIssueRelRepository.delete(versionIssueRelDO);
+                versionIssueRelService.delete(versionIssueRelDO);
             }
         }
         storyMapValidator.checkVersionExist(versionId);

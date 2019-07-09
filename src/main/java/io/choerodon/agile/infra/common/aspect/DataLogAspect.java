@@ -424,14 +424,14 @@ public class DataLogAspect {
         List<Long> issueIds = (List<Long>) args[2];
         if (projectId != null && sprintId != null && issueIds != null && !issueIds.isEmpty()) {
             SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
-            SprintNameDO sprintNameDO = new SprintNameDO();
-            sprintNameDO.setSprintId(sprintId);
-            sprintNameDO.setSprintName(sprintDTO.getSprintName());
+            SprintNameDTO sprintNameDTO = new SprintNameDTO();
+            sprintNameDTO.setSprintId(sprintId);
+            sprintNameDTO.setSprintName(sprintDTO.getSprintName());
             for (Long issueId : issueIds) {
                 StringBuilder newSprintIdStr = new StringBuilder();
                 StringBuilder newSprintNameStr = new StringBuilder();
-                List<SprintNameDO> sprintNames = issueMapper.querySprintNameByIssueId(issueId);
-                handleBatchCreateDataLogForSpring(sprintNames, sprintNameDO, newSprintNameStr, newSprintIdStr, sprintDTO, projectId, issueId);
+                List<SprintNameDTO> sprintNames = issueMapper.querySprintNameByIssueId(issueId);
+                handleBatchCreateDataLogForSpring(sprintNames, sprintNameDTO, newSprintNameStr, newSprintIdStr, sprintDTO, projectId, issueId);
             }
             dataLogRedisUtil.deleteByBatchRemoveSprintToTarget(sprintId, projectId, null);
         }
@@ -480,7 +480,7 @@ public class DataLogAspect {
         Long projectId = (Long) args[0];
         Long versionId = (Long) args[1];
         if (projectId != null && versionId != null) {
-            List<VersionIssueDO> versionIssueRelDOS = productVersionMapper.queryVersionIssueByVersionId(projectId, versionId);
+            List<VersionIssueDTO> versionIssueRelDOS = productVersionMapper.queryVersionIssueByVersionId(projectId, versionId);
             handleBatchDeleteVersion(versionIssueRelDOS, projectId, versionId);
         }
     }
@@ -489,7 +489,7 @@ public class DataLogAspect {
         Long projectId = (Long) args[0];
         Long versionId = (Long) args[1];
         if (projectId != null && versionId != null) {
-            List<VersionIssueDO> versionIssues = productVersionMapper.queryInCompleteIssueByVersionId(projectId, versionId);
+            List<VersionIssueDTO> versionIssues = productVersionMapper.queryInCompleteIssueByVersionId(projectId, versionId);
             handleBatchDeleteVersion(versionIssues, projectId, versionId);
         }
     }
@@ -502,12 +502,12 @@ public class DataLogAspect {
             }
         }
         if (productVersionE != null) {
-            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(productVersionE.getProjectId(), Collections.singletonList(productVersionE.getVersionId()));
+            List<VersionIssueDTO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(productVersionE.getProjectId(), Collections.singletonList(productVersionE.getVersionId()));
             handleBatchDeleteVersion(versionIssues, productVersionE.getProjectId(), productVersionE.getVersionId());
         }
     }
 
-    private void handleBatchDeleteVersion(List<VersionIssueDO> versionIssues, Long projectId, Long versionId) {
+    private void handleBatchDeleteVersion(List<VersionIssueDTO> versionIssues, Long projectId, Long versionId) {
         if (versionIssues != null && !versionIssues.isEmpty()) {
             versionIssues.forEach(versionIssueDO -> {
                 String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
@@ -531,7 +531,7 @@ public class DataLogAspect {
             }
         }
         if (projectId != null && !versionIds.isEmpty()) {
-            List<VersionIssueDO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(projectId, versionIds);
+            List<VersionIssueDTO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(projectId, versionIds);
             handleBatchDeleteVersion(versionIssues, projectId, null);
             dataLogRedisUtil.deleteByBatchDeleteVersionByVersionIds(projectId, versionIds);
         }
@@ -627,18 +627,18 @@ public class DataLogAspect {
     private void batchMoveVersionDataLog(Object[] args) {
         Long projectId = (Long) args[0];
         Long targetVersionId = (Long) args[1];
-        List<VersionIssueDO> versionIssueDOS = (List<VersionIssueDO>) args[2];
-        if (projectId != null && targetVersionId != null && !versionIssueDOS.isEmpty()) {
-            ProductVersionDO productVersionDO = productVersionMapper.selectByPrimaryKey(targetVersionId);
-            if (productVersionDO == null) {
+        List<VersionIssueDTO> versionIssueDTOS = (List<VersionIssueDTO>) args[2];
+        if (projectId != null && targetVersionId != null && !versionIssueDTOS.isEmpty()) {
+            ProductVersionDTO productVersionDTO = productVersionMapper.selectByPrimaryKey(targetVersionId);
+            if (productVersionDTO == null) {
                 throw new CommonException("error.productVersion.get");
             }
-            for (VersionIssueDO versionIssueDO : versionIssueDOS) {
-                String field = FIX_VERSION.equals(versionIssueDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-                createDataLog(projectId, versionIssueDO.getIssueId(), field, null,
-                        productVersionDO.getName(), null, targetVersionId.toString());
+            for (VersionIssueDTO versionIssueDTO : versionIssueDTOS) {
+                String field = FIX_VERSION.equals(versionIssueDTO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                createDataLog(projectId, versionIssueDTO.getIssueId(), field, null,
+                        productVersionDTO.getName(), null, targetVersionId.toString());
             }
-            dataLogRedisUtil.deleteByHandleBatchDeleteVersion(projectId, productVersionDO.getVersionId());
+            dataLogRedisUtil.deleteByHandleBatchDeleteVersion(projectId, productVersionDTO.getVersionId());
         }
     }
 
@@ -719,13 +719,13 @@ public class DataLogAspect {
             }
         }
         if (versionIssueRelE != null) {
-            List<ProductVersionDO> productVersionDOS = productVersionMapper.queryVersionRelByIssueIdAndTypeArchivedExceptInfluence(
+            List<ProductVersionDTO> productVersionDTOS = productVersionMapper.queryVersionRelByIssueIdAndTypeArchivedExceptInfluence(
                     versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
             Long issueId = versionIssueRelE.getIssueId();
             String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
-            productVersionDOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
+            productVersionDTOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
                     productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
-            dataLogRedisUtil.deleteByBatchDeleteVersionDataLog(versionIssueRelE.getProjectId(), productVersionDOS);
+            dataLogRedisUtil.deleteByBatchDeleteVersionDataLog(versionIssueRelE.getProjectId(), productVersionDTOS);
         }
     }
 
@@ -877,7 +877,7 @@ public class DataLogAspect {
     private void handleBatchRemoveSprint(Long projectId, List<Long> issueIds, Long sprintId) {
         SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
         for (Long issueId : issueIds) {
-            SprintNameDO activeSprintName = issueMapper.queryActiveSprintNameByIssueId(issueId);
+            SprintNameDTO activeSprintName = issueMapper.queryActiveSprintNameByIssueId(issueId);
             Long originSprintId = null;
             if (activeSprintName != null) {
                 if (sprintId != null && sprintId.equals(activeSprintName.getSprintId())) {
@@ -888,16 +888,16 @@ public class DataLogAspect {
             dataLogRedisUtil.deleteByBatchRemoveSprintToTarget(sprintId, projectId, originSprintId);
             StringBuilder newSprintIdStr = new StringBuilder();
             StringBuilder newSprintNameStr = new StringBuilder();
-            List<SprintNameDO> sprintNames = issueMapper.querySprintNameByIssueId(issueId);
+            List<SprintNameDTO> sprintNames = issueMapper.querySprintNameByIssueId(issueId);
             handleBatchCreateDataLogForSpring(sprintNames, activeSprintName, newSprintNameStr, newSprintIdStr, sprintDTO, projectId, issueId);
         }
     }
 
-    private void handleBatchCreateDataLogForSpring(List<SprintNameDO> sprintNames, SprintNameDO activeSprintName,
+    private void handleBatchCreateDataLogForSpring(List<SprintNameDTO> sprintNames, SprintNameDTO activeSprintName,
                                                    StringBuilder newSprintNameStr, StringBuilder newSprintIdStr,
                                                    SprintDTO sprintDTO, Long projectId, Long issueId) {
         String oldSprintIdStr = sprintNames.stream().map(sprintName -> sprintName.getSprintId().toString()).collect(Collectors.joining(","));
-        String oldSprintNameStr = sprintNames.stream().map(SprintNameDO::getSprintName).collect(Collectors.joining(","));
+        String oldSprintNameStr = sprintNames.stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(","));
         handleSprintStringBuilder(sprintNames, activeSprintName, newSprintNameStr, newSprintIdStr, sprintDTO);
         String oldString = "".equals(oldSprintNameStr) ? null : oldSprintNameStr;
         String newString = newSprintNameStr.length() == 0 ? null : newSprintNameStr.toString();
@@ -910,10 +910,10 @@ public class DataLogAspect {
     }
 
 
-    private void handleSprintStringBuilder(List<SprintNameDO> sprintNames, SprintNameDO activeSprintName,
+    private void handleSprintStringBuilder(List<SprintNameDTO> sprintNames, SprintNameDTO activeSprintName,
                                            StringBuilder newSprintNameStr, StringBuilder newSprintIdStr, SprintDTO sprintDTO) {
         int idx = 0;
-        for (SprintNameDO sprintName : sprintNames) {
+        for (SprintNameDTO sprintName : sprintNames) {
             if (activeSprintName != null && activeSprintName.getSprintId().equals(sprintName.getSprintId())) {
                 continue;
             }
@@ -1093,18 +1093,18 @@ public class DataLogAspect {
             map.put(issueId, productVersionMapper.selectVersionRelsByIssueId(projectId, issueId));
         }
         for (Object object : map.entrySet()) {
-            Map.Entry entry = (Map.Entry<Long, List<ProductVersionDO>>) object;
+            Map.Entry entry = (Map.Entry<Long, List<ProductVersionDTO>>) object;
             Long issueId = Long.parseLong(entry.getKey().toString());
-            List<ProductVersionDO> versionIssueRelDOList = (List<ProductVersionDO>) entry.getValue();
-            for (ProductVersionDO productVersionDO : versionIssueRelDOList) {
+            List<ProductVersionDTO> versionIssueRelDOList = (List<ProductVersionDTO>) entry.getValue();
+            for (ProductVersionDTO productVersionDTO : versionIssueRelDOList) {
                 String field;
-                if (productVersionDO.getRelationType() == null) {
+                if (productVersionDTO.getRelationType() == null) {
                     field = FIELD_FIX_VERSION;
                 } else {
-                    field = FIX_VERSION.equals(productVersionDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                    field = FIX_VERSION.equals(productVersionDTO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
                 }
-                createDataLog(projectId, issueId, field, productVersionDO.getName(),
-                        null, productVersionDO.getVersionId().toString(), null);
+                createDataLog(projectId, issueId, field, productVersionDTO.getName(),
+                        null, productVersionDTO.getVersionId().toString(), null);
             }
             dataLogRedisUtil.deleteByBatchDeleteVersionDataLog(projectId, versionIssueRelDOList);
         }
@@ -1119,15 +1119,15 @@ public class DataLogAspect {
             }
         }
         if (versionIssueRelE != null) {
-            ProductVersionDO productVersionDO = productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId());
-            if (productVersionDO == null) {
+            ProductVersionDTO productVersionDTO = productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId());
+            if (productVersionDTO == null) {
                 throw new CommonException("error.productVersion.get");
             }
             if (versionIssueRelE.getIssueIds() != null && !versionIssueRelE.getIssueIds().isEmpty()) {
                 Long userId = DetailsHelper.getUserDetails().getUserId();
-                dataLogMapper.batchCreateVersionDataLog(versionIssueRelE.getProjectId(), productVersionDO, versionIssueRelE.getIssueIds(), userId);
-                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + productVersionDO.getProjectId() + ':' + productVersionDO.getVersionId() + ":" + "*",
-                        BURN_DOWN_COORDINATE_BY_TYPE + productVersionDO.getProjectId() + ":" + VERSION + ":" + productVersionDO.getVersionId()
+                dataLogMapper.batchCreateVersionDataLog(versionIssueRelE.getProjectId(), productVersionDTO, versionIssueRelE.getIssueIds(), userId);
+                redisUtil.deleteRedisCache(new String[]{VERSION_CHART + productVersionDTO.getProjectId() + ':' + productVersionDTO.getVersionId() + ":" + "*",
+                        BURN_DOWN_COORDINATE_BY_TYPE + productVersionDTO.getProjectId() + ":" + VERSION + ":" + productVersionDTO.getVersionId()
                 });
             }
         }

@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Created by jian_zhang02@163.com on 2018/6/4.
  */
-public class ProductVersionReleaseDTO {
+public class ProductVersionReleaseVO {
     private static final String PROJECT_ID_NULL_ERROR = "error.projectId.NotNull";
     private static final String VERSION_ID_NULL_ERROR = "error.versionId.NotNull";
 

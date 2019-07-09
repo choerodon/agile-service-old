@@ -83,10 +83,10 @@ public class IssueSubVO {
     private BigDecimal remainingTime;
 
     @ApiModelProperty(value = "活跃冲刺")
-    private SprintNameDTO activeSprint;
+    private SprintNameVO activeSprint;
 
     @ApiModelProperty(value = "已关闭的冲刺列表")
-    private List<SprintNameDTO> closeSprint;
+    private List<SprintNameVO> closeSprint;
 
     @ApiModelProperty(value = "父任务编号")
     private String parentIssueNum;
@@ -383,19 +383,19 @@ public class IssueSubVO {
         this.remainingTime = remainingTime;
     }
 
-    public SprintNameDTO getActiveSprint() {
+    public SprintNameVO getActiveSprint() {
         return activeSprint;
     }
 
-    public void setActiveSprint(SprintNameDTO activeSprint) {
+    public void setActiveSprint(SprintNameVO activeSprint) {
         this.activeSprint = activeSprint;
     }
 
-    public List<SprintNameDTO> getCloseSprint() {
+    public List<SprintNameVO> getCloseSprint() {
         return closeSprint;
     }
 
-    public void setCloseSprint(List<SprintNameDTO> closeSprint) {
+    public void setCloseSprint(List<SprintNameVO> closeSprint) {
         this.closeSprint = closeSprint;
     }
 
