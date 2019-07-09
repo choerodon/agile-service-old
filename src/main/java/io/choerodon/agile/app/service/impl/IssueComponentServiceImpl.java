@@ -179,8 +179,8 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     }
 
     @Override
-    public List<IssueDTO> queryIssuesByComponentId(Long projectId, Long componentId) {
-        return ConvertHelper.convertList(issueComponentMapper.queryIssuesByComponentId(projectId, componentId), IssueDTO.class);
+    public List<IssueVO> queryIssuesByComponentId(Long projectId, Long componentId) {
+        return ConvertHelper.convertList(issueComponentMapper.queryIssuesByComponentId(projectId, componentId), IssueVO.class);
     }
 
     @Override

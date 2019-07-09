@@ -4,11 +4,11 @@ import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
+import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.domain.service.IIssueService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
 import io.choerodon.agile.infra.dataobject.StoryMapMoveIssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -51,13 +51,13 @@ public class IssueRepositoryImpl implements IssueRepository {
     @Override
     @DataLog(type = "issue")
     public IssueE update(IssueE issueE, String[] fieldList) {
-        IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
+        IssueDTO issueDTO = ConvertHelper.convert(issueE, IssueDTO.class);
         Criteria criteria = new Criteria();
         criteria.update(fieldList);
-        if (issueMapper.updateByPrimaryKeyOptions(issueDO, criteria) != 1) {
+        if (issueMapper.updateByPrimaryKeyOptions(issueDTO, criteria) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDO.getIssueId()), IssueE.class);
+        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueE.class);
     }
 
     @Override
@@ -65,20 +65,20 @@ public class IssueRepositoryImpl implements IssueRepository {
     public IssueE create(IssueE issueE) {
         //临时存个优先级code
         issueE.setPriorityCode("priority-" + issueE.getPriorityId());
-        IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
-        if (issueMapper.insert(issueDO) != 1) {
+        IssueDTO issueDTO = ConvertHelper.convert(issueE, IssueDTO.class);
+        if (issueMapper.insert(issueDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDO.getIssueId()), IssueE.class);
+        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueE.class);
     }
 
     @Override
     public int delete(Long projectId, Long issueId) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setProjectId(projectId);
-        issueDO.setIssueId(issueId);
-        IssueDO issueDO1 = issueMapper.selectOne(issueDO);
-        int isDelete = issueMapper.delete(issueDO1);
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setProjectId(projectId);
+        issueDTO.setIssueId(issueId);
+        IssueDTO issueDTO1 = issueMapper.selectOne(issueDTO);
+        int isDelete = issueMapper.delete(issueDTO1);
         if (isDelete != 1) {
             throw new CommonException(DELETE_ERROR);
         }
@@ -177,11 +177,11 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Override
     public IssueE updateSelective(IssueE issueE) {
-        IssueDO issueDO = ConvertHelper.convert(issueE, IssueDO.class);
-        if (issueMapper.updateByPrimaryKeySelective(issueDO) != 1) {
+        IssueDTO issueDTO = ConvertHelper.convert(issueE, IssueDTO.class);
+        if (issueMapper.updateByPrimaryKeySelective(issueDTO) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDO.getIssueId()), IssueE.class);
+        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueE.class);
 
     }
 
@@ -239,8 +239,8 @@ public class IssueRepositoryImpl implements IssueRepository {
 
     @Override
     @DataLog(type = "batchUpdateStatusId", single = false)
-    public void updateStatusIdBatch(Long programId, Long updateStatusId, List<IssueDO> issueDOList, Long lastUpdatedBy, Date lastUpdateDate) {
-        List<Long> issueIds = issueDOList.stream().map(IssueDO::getIssueId).collect(Collectors.toList());
+    public void updateStatusIdBatch(Long programId, Long updateStatusId, List<IssueDTO> issueDTOList, Long lastUpdatedBy, Date lastUpdateDate) {
+        List<Long> issueIds = issueDTOList.stream().map(IssueDTO::getIssueId).collect(Collectors.toList());
         issueMapper.updateStatusIdBatch(programId, updateStatusId, issueIds, lastUpdatedBy, lastUpdateDate);
     }
 

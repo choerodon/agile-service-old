@@ -4,7 +4,7 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.IssueStatusDTO
 import io.choerodon.agile.api.vo.StatusInfoDTO
 import io.choerodon.agile.api.vo.StatusMoveDTO
-import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO
+import io.choerodon.agile.infra.dataobject.ColumnStatusRelDTO
 import io.choerodon.agile.infra.dataobject.IssueStatusDO
 import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper
@@ -124,7 +124,7 @@ class IssueStatusControllerSpec extends Specification {
         statusMoveDTO.statusObjectVersionNumber = 1L
 
         and:
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO()
+        ColumnStatusRelDTO columnStatusRelDO = new ColumnStatusRelDTO()
         columnStatusRelDO.projectId = projectId
         columnStatusRelDO.columnId = 1L
         columnStatusRelDO.statusId = statusId
@@ -142,7 +142,7 @@ class IssueStatusControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        ColumnStatusRelDO result = columnStatusRelMapper.selectOne(columnStatusRelDO)
+        ColumnStatusRelDTO result = columnStatusRelMapper.selectOne(columnStatusRelDO)
         result != null
 
     }
@@ -153,7 +153,7 @@ class IssueStatusControllerSpec extends Specification {
         statusMoveDTO.columnId = 1L
 
         and:
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO()
+        ColumnStatusRelDTO columnStatusRelDO = new ColumnStatusRelDTO()
         columnStatusRelDO.projectId = projectId
         columnStatusRelDO.columnId = 1L
         columnStatusRelDO.statusId = statusId
@@ -171,7 +171,7 @@ class IssueStatusControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        ColumnStatusRelDO result = columnStatusRelMapper.selectOne(columnStatusRelDO)
+        ColumnStatusRelDTO result = columnStatusRelMapper.selectOne(columnStatusRelDO)
         result == null
 
     }

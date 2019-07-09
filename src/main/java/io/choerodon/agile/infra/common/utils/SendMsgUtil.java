@@ -4,7 +4,6 @@ import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -72,7 +71,7 @@ public class SendMsgUtil {
     }
 
     @Async
-    public void sendMsgByIssueCreate(Long projectId, IssueDTO result) {
+    public void sendMsgByIssueCreate(Long projectId, IssueVO result) {
         //发送消息
         if (SchemeApplyType.AGILE.equals(result.getApplyType())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", result);
@@ -97,9 +96,9 @@ public class SendMsgUtil {
     public void sendMsgBySubIssueCreate(Long projectId, IssueSubDTO result) {
         // 发送消息
         if (SchemeApplyType.AGILE.equals(result.getApplyType())) {
-            IssueDTO issueDTO = new IssueDTO();
-            issueDTO.setReporterId(result.getReporterId());
-            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", issueDTO);
+            IssueVO issueVO = new IssueVO();
+            issueVO.setReporterId(result.getReporterId());
+            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_created", issueVO);
             String summary = result.getIssueNum() + "-" + result.getSummary();
             String userName = result.getReporterName();
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
@@ -118,7 +117,7 @@ public class SendMsgUtil {
     }
 
     @Async
-    public void sendMsgByIssueAssignee(Long projectId, List<String> fieldList, IssueDTO result) {
+    public void sendMsgByIssueAssignee(Long projectId, List<String> fieldList, IssueVO result) {
         if (fieldList.contains("assigneeId") && result.getAssigneeId() != null && SchemeApplyType.AGILE.equals(result.getApplyType())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_assigneed", result);
             String summary = result.getIssueNum() + "-" + result.getSummary();
@@ -139,7 +138,7 @@ public class SendMsgUtil {
     }
 
     @Async
-    public void sendMsgByIssueComplete(Long projectId, List<String> fieldList, IssueDTO result) {
+    public void sendMsgByIssueComplete(Long projectId, List<String> fieldList, IssueVO result) {
         Boolean completed = issueStatusMapper.selectByStatusId(projectId, result.getStatusId()).getCompleted();
         if (fieldList.contains(STATUS_ID) && completed != null && completed && result.getAssigneeId() != null && SchemeApplyType.AGILE.equals(result.getApplyType())) {
             List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", result);
@@ -164,11 +163,11 @@ public class SendMsgUtil {
     }
 
     @Async
-    public void sendMsgByIssueMoveComplete(Long projectId, IssueE issueE, IssueDO issueDO) {
+    public void sendMsgByIssueMoveComplete(Long projectId, IssueMoveVO issueMoveVO, IssueDTO issueDTO) {
         // 发送消息
-        Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueE.getStatusId()).getCompleted();
-        if (completed != null && completed && issueDO.getAssigneeId() != null && SchemeApplyType.AGILE.equals(issueDO.getApplyType())) {
-            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDO, IssueDTO.class));
+        Boolean completed = issueStatusMapper.selectByStatusId(projectId, issueMoveVO.getStatusId()).getCompleted();
+        if (completed != null && completed && issueDTO.getAssigneeId() != null && SchemeApplyType.AGILE.equals(issueDTO.getApplyType())) {
+            List<Long> userIds = noticeService.queryUserIdsByProjectId(projectId, "issue_solved", ConvertHelper.convert(issueDTO, IssueVO.class));
             ProjectDTO projectDTO = userRepository.queryProject(projectId);
             if (projectDTO == null) {
                 throw new CommonException("error.project.notExist");
@@ -183,17 +182,17 @@ public class SendMsgUtil {
                 pio = pioList.get(0);
             }
             String pioCode = (pio == null ? "" : pio.getProjectCode());
-            if ("sub_task".equals(issueDO.getTypeCode())) {
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getParentIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
+            if ("sub_task".equals(issueDTO.getTypeCode())) {
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDTO.getIssueNum() + URL_TEMPLATE4 + issueDTO.getParentIssueId() + URL_TEMPLATE5 + issueDTO.getIssueId());
             } else {
-                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDO.getIssueNum() + URL_TEMPLATE4 + issueDO.getIssueId() + URL_TEMPLATE5 + issueDO.getIssueId());
+                url.append(URL_TEMPLATE1 + projectId + URL_TEMPLATE2 + projectName + URL_TEMPLATE6 + projectDTO.getOrganizationId() + URL_TEMPLATE3 + pioCode + "-" + issueDTO.getIssueNum() + URL_TEMPLATE4 + issueDTO.getIssueId() + URL_TEMPLATE5 + issueDTO.getIssueId());
             }
-            String summary = pioCode + "-" + issueDO.getIssueNum() + "-" + issueDO.getSummary();
+            String summary = pioCode + "-" + issueDTO.getIssueNum() + "-" + issueDTO.getSummary();
             Long[] ids = new Long[1];
-            ids[0] = issueDO.getAssigneeId();
+            ids[0] = issueDTO.getAssigneeId();
             List<UserDO> userDOList = userRepository.listUsersByIds(ids);
             String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
-            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDO.getAssigneeId(), projectId);
+            siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDTO.getAssigneeId(), projectId);
         }
     }
 

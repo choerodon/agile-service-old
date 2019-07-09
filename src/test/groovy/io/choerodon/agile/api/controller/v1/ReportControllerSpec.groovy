@@ -150,7 +150,7 @@ class ReportControllerSpec extends Specification {
         issueCreateDTO.priorityId = 1
         issueCreateDTO.issueTypeId = 1
         issueCreateDTO.reporterId = 1
-        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueVO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
         issueIds.add(issueDTO.issueId)
 
         and: '将issue设置为done状态'
@@ -170,7 +170,7 @@ class ReportControllerSpec extends Specification {
         noDone.priorityId = 1
         noDone.issueTypeId = 1
         noDone.reporterId = 1
-        IssueDTO noDoneIssue = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueVO noDoneIssue = stateMachineService.createIssue(issueCreateDTO, "agile")
         issueIds.add(noDoneIssue.issueId)
 
         and: '设置冲刺开启对象'

@@ -62,13 +62,13 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("项目层下查询查询单个issue")
     @GetMapping(value = "/issue/{issueId}")
-    public ResponseEntity<IssueDTO> queryIssue(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> queryIssue(@ApiParam(value = "项目id", required = true)
                                                @PathVariable(name = "project_id") Long projectId,
-                                               @ApiParam(value = "项目群id", required = true)
+                                              @ApiParam(value = "项目群id", required = true)
                                                @RequestParam Long programId,
-                                               @ApiParam(value = "issueId", required = true)
+                                              @ApiParam(value = "issueId", required = true)
                                                @PathVariable Long issueId,
-                                               @ApiParam(value = "组织id", required = true)
+                                              @ApiParam(value = "组织id", required = true)
                                                @RequestParam(required = false) Long organizationId) {
         return Optional.ofNullable(issueService.queryIssue(programId, issueId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -92,9 +92,9 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("项目层下查询根据projectId查询项目下的board")
     @GetMapping("/board")
-    public ResponseEntity<List<BoardDTO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<BoardVO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
-                                                           @ApiParam(value = "项目群id", required = true)
+                                                          @ApiParam(value = "项目群id", required = true)
                                                            @RequestParam Long programId) {
         return Optional.ofNullable(boardService.queryByProjectId(programId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

@@ -16,7 +16,7 @@ import java.util.List;
  * @since 2018-05-14 20:30:48
  */
 @Table(name = "agile_issue")
-public class IssueDO extends BaseDTO {
+public class IssueDTO extends BaseDTO {
 
     /***/
     @Id

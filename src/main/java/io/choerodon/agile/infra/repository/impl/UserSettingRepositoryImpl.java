@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.UserSettingE;
 import io.choerodon.agile.infra.repository.UserSettingRepository;
-import io.choerodon.agile.infra.dataobject.UserSettingDO;
+import io.choerodon.agile.infra.dataobject.UserSettingDTO;
 import io.choerodon.agile.infra.mapper.UserSettingMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -21,25 +21,25 @@ public class UserSettingRepositoryImpl implements UserSettingRepository {
 
     @Override
     public UserSettingE create(UserSettingE userSettingE) {
-        UserSettingDO userSettingDO = ConvertHelper.convert(userSettingE, UserSettingDO.class);
-        int insert = userSettingMapper.insert(userSettingDO);
+        UserSettingDTO userSettingDTO = ConvertHelper.convert(userSettingE, UserSettingDTO.class);
+        int insert = userSettingMapper.insert(userSettingDTO);
         if (insert != 1) {
             throw new CommonException("error.userSetting.create");
         }
-        return ConvertHelper.convert(userSettingMapper.selectByPrimaryKey(userSettingDO.getSettingId()), UserSettingE.class);
+        return ConvertHelper.convert(userSettingMapper.selectByPrimaryKey(userSettingDTO.getSettingId()), UserSettingE.class);
     }
 
     @Override
     public UserSettingE update(UserSettingE userSettingE) {
-        UserSettingDO userSettingDO = ConvertHelper.convert(userSettingE, UserSettingDO.class);
-        if (userSettingMapper.selectByPrimaryKey(userSettingDO) == null) {
+        UserSettingDTO userSettingDTO = ConvertHelper.convert(userSettingE, UserSettingDTO.class);
+        if (userSettingMapper.selectByPrimaryKey(userSettingDTO) == null) {
             throw new CommonException("error.userSetting.notFound");
         }
-        int update = userSettingMapper.updateByPrimaryKey(userSettingDO);
+        int update = userSettingMapper.updateByPrimaryKey(userSettingDTO);
         if (update != 1) {
             throw new CommonException("error.userSetting.update");
         }
-        return ConvertHelper.convert(userSettingMapper.selectByPrimaryKey(userSettingDO.getSettingId()), UserSettingE.class);
+        return ConvertHelper.convert(userSettingMapper.selectByPrimaryKey(userSettingDTO.getSettingId()), UserSettingE.class);
     }
 
     @Override

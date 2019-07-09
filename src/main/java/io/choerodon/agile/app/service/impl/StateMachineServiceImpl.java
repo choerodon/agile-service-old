@@ -20,7 +20,7 @@ import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
 import io.choerodon.agile.infra.dataobject.RankDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
@@ -153,7 +153,7 @@ public class StateMachineServiceImpl implements StateMachineService {
      * @return
      */
     @Override
-    public IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
+    public IssueVO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
         issueValidator.checkIssueCreate(issueCreateDTO, applyType);
         IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
         Long projectId = issueE.getProjectId();
@@ -259,7 +259,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException("error.applyType.illegal");
         }
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        IssueDO issue = issueMapper.selectByPrimaryKey(issueId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(issueId);
         if (issue == null) {
             throw new CommonException(ERROR_ISSUE_NOT_FOUND);
         }
@@ -294,7 +294,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException("error.applyType.illegal");
         }
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        IssueDO issue = issueMapper.selectByPrimaryKey(issueId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(issueId);
         if (issue == null) {
             throw new CommonException(ERROR_ISSUE_NOT_FOUND);
         }
@@ -339,8 +339,8 @@ public class StateMachineServiceImpl implements StateMachineService {
             issueTypeIds.forEach(issueTypeId -> result.put(issueTypeId, 0L));
             //计算出所有有影响的issue数量，根据issueTypeId分类
             projectConfigs.forEach(projectConfig -> {
-                List<IssueDO> issueDOs = issueMapper.queryByIssueTypeIdsAndApplyType(projectConfig.getProjectId(), projectConfig.getApplyType(), issueTypeIds);
-                Map<Long, Long> issueCounts = issueDOs.stream().collect(Collectors.groupingBy(IssueDO::getIssueTypeId, Collectors.counting()));
+                List<IssueDTO> issueDTOS = issueMapper.queryByIssueTypeIdsAndApplyType(projectConfig.getProjectId(), projectConfig.getApplyType(), issueTypeIds);
+                Map<Long, Long> issueCounts = issueDTOS.stream().collect(Collectors.groupingBy(IssueDTO::getIssueTypeId, Collectors.counting()));
                 for (Map.Entry<Long, Long> entry : issueCounts.entrySet()) {
                     Long issueTypeId = entry.getKey();
                     Long count = entry.getValue();
@@ -354,7 +354,7 @@ public class StateMachineServiceImpl implements StateMachineService {
 
     @Condition(code = "just_reporter", name = "仅允许报告人", description = "只有该报告人才能执行转换")
     public Boolean justReporter(Long instanceId, StateMachineConfigDTO configDTO) {
-        IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(instanceId);
         Long currentUserId = DetailsHelper.getUserDetails().getUserId();
         return issue != null && issue.getReporterId() != null && issue.getReporterId().equals(currentUserId);
     }
@@ -389,7 +389,7 @@ public class StateMachineServiceImpl implements StateMachineService {
 
     @UpdateStatus(code = UPDATE_STATUS)
     public void updateStatus(Long instanceId, Long targetStatusId, String input) {
-        IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(instanceId);
         if (issue == null) {
             throw new CommonException("error.updateStatus.instanceId.notFound");
         }
@@ -406,7 +406,7 @@ public class StateMachineServiceImpl implements StateMachineService {
 
     @UpdateStatus(code = UPDATE_STATUS_MOVE)
     public void updateStatusMove(Long instanceId, Long targetStatusId, String input) {
-        IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(instanceId);
         if (issue == null) {
             throw new CommonException("error.updateStatus.instanceId.notFound");
         }

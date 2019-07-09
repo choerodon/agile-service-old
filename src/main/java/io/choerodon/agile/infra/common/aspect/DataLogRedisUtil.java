@@ -4,7 +4,7 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.domain.agile.entity.SprintE;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.agile.infra.dataobject.SprintDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -59,8 +59,8 @@ public class DataLogRedisUtil {
     private VersionIssueRelMapper versionIssueRelMapper;
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void handleBatchDeleteRedisCache(List<IssueDO> issueDOS, Long projectId) {
-        issueDOS.parallelStream().forEach(issueDO -> {
+    public void handleBatchDeleteRedisCache(List<IssueDTO> issueDTOS, Long projectId) {
+        issueDTOS.parallelStream().forEach(issueDO -> {
             deleteBurnDownCache(issueDO.getSprintId(), projectId, issueDO.getIssueId(), POINTER);
             deleteEpicChartCache(issueDO.getEpicId(), projectId, issueDO.getIssueId(), POINTER);
             deleteVersionCache(projectId, issueDO.getIssueId(), POINTER);
@@ -108,23 +108,23 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void handleBatchDeleteRedisCacheByChangeStatusId(List<IssueDO> issueDOS, Long projectId) {
+    public void handleBatchDeleteRedisCacheByChangeStatusId(List<IssueDTO> issueDTOS, Long projectId) {
         redisUtil.deleteRedisCache(new String[]{CUMULATIVE_FLOW_DIAGRAM + projectId + COLON + POINTER,
                 PIE_CHART + projectId + COLON + FIELD_STATUS + POINTER});
-        handleBatchDeleteRedisCache(issueDOS, projectId);
+        handleBatchDeleteRedisCache(issueDTOS, projectId);
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleStatus(IssueE issueE, IssueDO originIssueDO, Boolean condition) {
-        redisUtil.deleteRedisCache(new String[]{CUMULATIVE_FLOW_DIAGRAM + originIssueDO.getProjectId() + COLON + POINTER
-                , PIE_CHART + originIssueDO.getProjectId() + COLON + FIELD_STATUS + POINTER});
+    public void deleteByHandleStatus(IssueE issueE, IssueDTO originIssueDTO, Boolean condition) {
+        redisUtil.deleteRedisCache(new String[]{CUMULATIVE_FLOW_DIAGRAM + originIssueDTO.getProjectId() + COLON + POINTER
+                , PIE_CHART + originIssueDTO.getProjectId() + COLON + FIELD_STATUS + POINTER});
         if (condition) {
-            deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), POINTER);
-            deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId());
-            deleteBurnDownCoordinateByVersion(originIssueDO.getProjectId(), issueE.getIssueId());
-            deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), POINTER);
-            redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDO.getProjectId() + COLON + POINTER});
-            deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), POINTER);
+            deleteEpicChartCache(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId(), POINTER);
+            deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId());
+            deleteBurnDownCoordinateByVersion(originIssueDTO.getProjectId(), issueE.getIssueId());
+            deleteBurnDownCache(issueE.getSprintId(), originIssueDTO.getProjectId(), issueE.getIssueId(), POINTER);
+            redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDTO.getProjectId() + COLON + POINTER});
+            deleteVersionCache(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), POINTER);
         }
     }
 
@@ -145,32 +145,32 @@ public class DataLogRedisUtil {
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleStoryPoints(IssueE issueE, IssueDO originIssueDO) {
-        deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINT);
-        deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
-        redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDO.getProjectId() + COLON + STORY_POINT,
-                BURN_DOWN_COORDINATE_BY_TYPE + originIssueDO.getProjectId() + COLON + POINTER});
-        deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), STORY_POINT);
+    public void deleteByHandleStoryPoints(IssueE issueE, IssueDTO originIssueDTO) {
+        deleteEpicChartCache(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId(), STORY_POINT);
+        deleteBurnDownCache(issueE.getSprintId(), originIssueDTO.getProjectId(), issueE.getIssueId(), STORY_POINTS_FIELD);
+        redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDTO.getProjectId() + COLON + STORY_POINT,
+                BURN_DOWN_COORDINATE_BY_TYPE + originIssueDTO.getProjectId() + COLON + POINTER});
+        deleteVersionCache(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), STORY_POINT);
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleCalculateRemainData(IssueE issueE, IssueDO originIssueDO) {
-        deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), REMAIN_TIME);
-        deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId());
-        deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), REMAINING_ESTIMATED_TIME);
-        redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDO.getProjectId() + COLON + REMAIN_TIME});
-        deleteVersionCache(originIssueDO.getProjectId(), originIssueDO.getIssueId(), REMAIN_TIME);
+    public void deleteByHandleCalculateRemainData(IssueE issueE, IssueDTO originIssueDTO) {
+        deleteEpicChartCache(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId(), REMAIN_TIME);
+        deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId());
+        deleteBurnDownCache(issueE.getSprintId(), originIssueDTO.getProjectId(), issueE.getIssueId(), REMAINING_ESTIMATED_TIME);
+        redisUtil.deleteRedisCache(new String[]{VELOCITY_CHART + originIssueDTO.getProjectId() + COLON + REMAIN_TIME});
+        deleteVersionCache(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), REMAIN_TIME);
         deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), POINTER);
     }
 
     @Async(REDIS_TASK_EXECUTOR)
-    public void deleteByHandleType(IssueE issueE, IssueDO originIssueDO) {
-        deleteBurnDownCache(issueE.getSprintId(), originIssueDO.getProjectId(), issueE.getIssueId(), POINTER);
-        deleteEpicChartCache(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId(), POINTER);
-        deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDO.getProjectId(), issueE.getIssueId());
+    public void deleteByHandleType(IssueE issueE, IssueDTO originIssueDTO) {
+        deleteBurnDownCache(issueE.getSprintId(), originIssueDTO.getProjectId(), issueE.getIssueId(), POINTER);
+        deleteEpicChartCache(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId(), POINTER);
+        deleteBurnDownCoordinateByTypeEpic(issueE.getEpicId(), originIssueDTO.getProjectId(), issueE.getIssueId());
         deleteVersionCache(issueE.getProjectId(), issueE.getIssueId(), POINTER);
-        redisUtil.deleteRedisCache(new String[]{CUMULATIVE_FLOW_DIAGRAM + originIssueDO.getProjectId() + COLON + POINTER,
-                VELOCITY_CHART + originIssueDO.getProjectId() + COLON + POINTER,
+        redisUtil.deleteRedisCache(new String[]{CUMULATIVE_FLOW_DIAGRAM + originIssueDTO.getProjectId() + COLON + POINTER,
+                VELOCITY_CHART + originIssueDTO.getProjectId() + COLON + POINTER,
                 PIE_CHART + issueE.getProjectId() + COLON + ISSUE_TYPE + POINTER,
                 PIE_CHART + issueE.getProjectId() + COLON + FIELD_STATUS + POINTER,
                 PIE_CHART + issueE.getProjectId() + COLON + EPIC_FIELD + POINTER

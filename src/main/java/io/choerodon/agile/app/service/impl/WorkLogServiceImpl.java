@@ -8,7 +8,7 @@ import io.choerodon.agile.domain.agile.entity.WorkLogE;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
 import io.choerodon.agile.infra.repository.WorkLogRepository;
-import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.dataobject.WorkLogDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -82,8 +82,8 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     public WorkLogDTO create(Long projectId, WorkLogDTO workLogDTO) {
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(workLogDTO.getIssueId());
-        WorkLogValidator.checkCreateWorkLog(projectId, workLogDTO, issueDO);
+        IssueDTO issueDTO = issueMapper.selectByPrimaryKey(workLogDTO.getIssueId());
+        WorkLogValidator.checkCreateWorkLog(projectId, workLogDTO, issueDTO);
         if (workLogDTO.getResidualPrediction() != null) {
             switch (workLogDTO.getResidualPrediction()) {
                 case SELF_ADJUSTMENT:

@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.IssueCreateDTO;
-import io.choerodon.agile.api.vo.IssueDTO;
+import io.choerodon.agile.api.vo.IssueVO;
 import io.choerodon.agile.api.vo.IssueSubCreateDTO;
 import io.choerodon.agile.api.vo.IssueSubDTO;
 import io.choerodon.agile.api.vo.event.ProjectConfig;
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public interface StateMachineService {
 
-    IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType);
+    IssueVO createIssue(IssueCreateDTO issueCreateDTO, String applyType);
 
     IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO);
 

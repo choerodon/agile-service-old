@@ -295,11 +295,11 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     private Boolean checkEpicNameExist(Long projectId, String epicName) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setProjectId(projectId);
-        issueDO.setEpicName(epicName);
-        List<IssueDO> issueDOList = issueMapper.select(issueDO);
-        return issueDOList == null || issueDOList.isEmpty();
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setProjectId(projectId);
+        issueDTO.setEpicName(epicName);
+        List<IssueDTO> issueDTOList = issueMapper.select(issueDTO);
+        return issueDTOList == null || issueDTOList.isEmpty();
     }
 
     private Map<Integer, String> checkRule(Long projectId, Row row, List<String> issueTypeList, List<String> priorityList, List<String> versionList, Map<String, IssueTypeDTO> issueTypeMap, List<String> componentList, List<String> sprintList) {
@@ -533,7 +533,7 @@ public class ExcelServiceImpl implements ExcelService {
             IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
 
             Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap, versionMap, userId, componentMap, sprintMap);
-            IssueDTO result = null;
+            IssueVO result = null;
             if (ok) {
                 result = stateMachineService.createIssue(issueCreateDTO, APPLY_TYPE_AGILE);
             }

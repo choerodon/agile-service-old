@@ -4,7 +4,7 @@ package io.choerodon.agile.infra.dataobject;
  * Created by HuangFuqiang@choerodon.io on 2018/5/31.
  * Email: fuqianghuang01@gmail.com
  */
-public class ColumnWithStatusRelDO {
+public class ColumnWithStatusRelDTO {
 
     private Long statusId;
 

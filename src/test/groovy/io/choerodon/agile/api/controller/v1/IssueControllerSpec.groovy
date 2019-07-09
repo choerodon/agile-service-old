@@ -213,7 +213,7 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.versionIssueRelDTOList = versionIssueRelDTOList
 
         when: '向开始创建issue的接口发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues?applyType={applyType}', issueCreateDTO, IssueDTO, projectId, SchemeApplyType.AGILE)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues?applyType={applyType}', issueCreateDTO, IssueVO, projectId, SchemeApplyType.AGILE)
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
         print(entity.body ? entity.body.toString() : null)
@@ -367,7 +367,7 @@ class IssueControllerSpec extends Specification {
         restTemplate.put('/v1/projects/{project_id}/issues', issueUpdate, projectId)
 
         then: '返回值'
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueIdList[0])
+        IssueDTO issueDO = issueMapper.selectByPrimaryKey(issueIdList[0])
 
         and: '设置值'
         issueObjectVersionNumberList[0] << issueDO.objectVersionNumber
@@ -385,7 +385,7 @@ class IssueControllerSpec extends Specification {
 
     def 'queryIssue'() {
         when: '向开始查询单个issue的接口发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/{issueId}?organizationId={organizationId}', IssueDTO, projectId, issueId, organizationId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issues/{issueId}?organizationId={organizationId}', IssueVO, projectId, issueId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -568,7 +568,7 @@ class IssueControllerSpec extends Specification {
 
         when: '向issue批量加入冲刺接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/update_type?organizationId={organizationId}',
-                issueUpdateTypeDTO, IssueDTO, projectId, organizationId)
+                issueUpdateTypeDTO, IssueVO, projectId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -628,7 +628,7 @@ class IssueControllerSpec extends Specification {
 
         when: '向复制一个issue的接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/{issueId}/clone_issue?organizationId={organizationId}&&applyType={applyType}',
-                conditionDTO, IssueDTO, projectId, issueId, organizationId, "agile")
+                conditionDTO, IssueVO, projectId, issueId, organizationId, "agile")
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -690,7 +690,7 @@ class IssueControllerSpec extends Specification {
 
         when: '执行子任务转为任务'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/transformed_task?organizationId={organizationId}',
-                issueTransformTask, IssueDTO, projectId, organizationId)
+                issueTransformTask, IssueVO, projectId, organizationId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
@@ -876,8 +876,8 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.reporterId = 1L
         issueCreateDTO.typeCode = 'issue_test'
         issueCreateDTO.summary = 'issue-test'
-//        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "test")
-        IssueDTO issueDTO = restTemplate.postForEntity('/v1/projects/{project_id}/issues?applyType={applyType}', issueCreateDTO, IssueDTO, projectId, SchemeApplyType.TEST).getBody()
+//        IssueVO issueDTO = stateMachineService.createIssue(issueCreateDTO, "test")
+        IssueVO issueDTO = restTemplate.postForEntity('/v1/projects/{project_id}/issues?applyType={applyType}', issueCreateDTO, IssueVO, projectId, SchemeApplyType.TEST).getBody()
         issues.add(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()))
         issueIdList.add(issueDTO.getIssueId())
         issueTestId = issueDTO.getIssueId()
@@ -1049,7 +1049,7 @@ class IssueControllerSpec extends Specification {
 //        and: '设置值'
 //        List<Long> issueIds = entity.body
 //        issueService.setIssueMapper(issueMapper)
-//        List<IssueDO> issueDOList = issueMapper.selectAll()
+//        List<IssueDTO> issueDOList = issueMapper.selectAll()
 //        issueIdList.add(issueDOList.get(issueDOList.size() - 1).getIssueId())
 //
 //        expect: '设置期望值'
@@ -1096,7 +1096,7 @@ class IssueControllerSpec extends Specification {
 //        issueSprintRelMapper.insert(issueSprintRelDO)
 //
 //        and: '设置issue属性'
-//        IssueDO issueDO = new IssueDO()
+//        IssueDTO issueDO = new IssueDTO()
 //        issueDO.typeCode = "issue_test"
 //        and: "获取IssueId"
 //        resultId = issueMapper.selectOne(issueDO).issueId
@@ -1241,13 +1241,13 @@ class IssueControllerSpec extends Specification {
     def 'updateIssueStatus'() {
         when: '更新issue的状态'
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issues/update_status?transformId={transformId}&&issueId={issueId}&&objectVersionNumber={objectVersionNumber}&&applyType={applyType}",
-                HttpMethod.PUT, null, IssueDTO, projectId, 1L, issueIdList.get(0), 1l, "agile")
+                HttpMethod.PUT, null, IssueVO, projectId, 1L, issueIdList.get(0), 1l, "agile")
 
         then:
         entity.statusCode.is2xxSuccessful()
 
         and:
-        IssueDTO result = entity.body
+        IssueVO result = entity.body
 
         expect:
         result.statusId == 1L

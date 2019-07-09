@@ -1,9 +1,9 @@
 package io.choerodon.agile.domain.agile.converter;
 
+import io.choerodon.agile.infra.dataobject.ColumnStatusRelDTO;
 import io.choerodon.core.convertor.ConvertorI;
-import io.choerodon.agile.api.vo.ColumnStatusRelDTO;
+import io.choerodon.agile.api.vo.ColumnStatusRelVO;
 import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -12,47 +12,47 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class ColumnStatusRelConverter implements ConvertorI<ColumnStatusRelE, ColumnStatusRelDO, ColumnStatusRelDTO> {
+public class ColumnStatusRelConverter implements ConvertorI<ColumnStatusRelE, ColumnStatusRelDTO, ColumnStatusRelVO> {
 
     @Override
-    public ColumnStatusRelE dtoToEntity(ColumnStatusRelDTO columnStatusRelDTO) {
+    public ColumnStatusRelE dtoToEntity(ColumnStatusRelVO columnStatusRelVO) {
+        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
+        BeanUtils.copyProperties(columnStatusRelVO, columnStatusRelE);
+        return columnStatusRelE;
+    }
+
+    @Override
+    public ColumnStatusRelVO entityToDto(ColumnStatusRelE columnStatusRelE) {
+        ColumnStatusRelVO columnStatusRelVO = new ColumnStatusRelVO();
+        BeanUtils.copyProperties(columnStatusRelE, columnStatusRelVO);
+        return columnStatusRelVO;
+    }
+
+    @Override
+    public ColumnStatusRelE doToEntity(ColumnStatusRelDTO columnStatusRelDTO) {
         ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
         BeanUtils.copyProperties(columnStatusRelDTO, columnStatusRelE);
         return columnStatusRelE;
     }
 
     @Override
-    public ColumnStatusRelDTO entityToDto(ColumnStatusRelE columnStatusRelE) {
+    public ColumnStatusRelDTO entityToDo(ColumnStatusRelE columnStatusRelE) {
         ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
         BeanUtils.copyProperties(columnStatusRelE, columnStatusRelDTO);
         return columnStatusRelDTO;
     }
 
     @Override
-    public ColumnStatusRelE doToEntity(ColumnStatusRelDO columnStatusRelDO) {
-        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-        BeanUtils.copyProperties(columnStatusRelDO, columnStatusRelE);
-        return columnStatusRelE;
+    public ColumnStatusRelVO doToDto(ColumnStatusRelDTO columnStatusRelDTO) {
+        ColumnStatusRelVO columnStatusRelVO = new ColumnStatusRelVO();
+        BeanUtils.copyProperties(columnStatusRelDTO, columnStatusRelVO);
+        return columnStatusRelVO;
     }
 
     @Override
-    public ColumnStatusRelDO entityToDo(ColumnStatusRelE columnStatusRelE) {
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        BeanUtils.copyProperties(columnStatusRelE, columnStatusRelDO);
-        return columnStatusRelDO;
-    }
-
-    @Override
-    public ColumnStatusRelDTO doToDto(ColumnStatusRelDO columnStatusRelDO) {
+    public ColumnStatusRelDTO dtoToDo(ColumnStatusRelVO columnStatusRelVO) {
         ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
-        BeanUtils.copyProperties(columnStatusRelDO, columnStatusRelDTO);
+        BeanUtils.copyProperties(columnStatusRelVO, columnStatusRelDTO);
         return columnStatusRelDTO;
-    }
-
-    @Override
-    public ColumnStatusRelDO dtoToDo(ColumnStatusRelDTO columnStatusRelDTO) {
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        BeanUtils.copyProperties(columnStatusRelDTO, columnStatusRelDO);
-        return columnStatusRelDO;
     }
 }

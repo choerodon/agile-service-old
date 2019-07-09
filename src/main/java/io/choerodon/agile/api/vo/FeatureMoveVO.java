@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2019/3/25.
  * Email: fuqianghuang01@gmail.com
  */
-public class FeatureMoveDTO {
+public class FeatureMoveVO {
 
     @ApiModelProperty(value = "问题主键id")
     private Long issueId;

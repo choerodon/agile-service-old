@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 import io.choerodon.agile.domain.agile.entity.PiFeatureE;
-import io.choerodon.agile.infra.dataobject.PiFeatureDO;
+import io.choerodon.agile.infra.dataobject.PiFeatureDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class PiFeatureConverter implements ConvertorI<PiFeatureE, PiFeatureDO, Object> {
+public class PiFeatureConverter implements ConvertorI<PiFeatureE, PiFeatureDTO, Object> {
 
     @Override
-    public PiFeatureE doToEntity(PiFeatureDO piFeatureDO) {
+    public PiFeatureE doToEntity(PiFeatureDTO piFeatureDTO) {
         PiFeatureE piFeatureE = new PiFeatureE();
-        BeanUtils.copyProperties(piFeatureDO, piFeatureE);
+        BeanUtils.copyProperties(piFeatureDTO, piFeatureE);
         return piFeatureE;
     }
 
     @Override
-    public PiFeatureDO entityToDo(PiFeatureE piFeatureE) {
-        PiFeatureDO piFeatureDO = new PiFeatureDO();
-        BeanUtils.copyProperties(piFeatureE, piFeatureDO);
-        return piFeatureDO;
+    public PiFeatureDTO entityToDo(PiFeatureE piFeatureE) {
+        PiFeatureDTO piFeatureDTO = new PiFeatureDTO();
+        BeanUtils.copyProperties(piFeatureE, piFeatureDTO);
+        return piFeatureDTO;
     }
 }

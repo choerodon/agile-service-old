@@ -102,19 +102,19 @@ public class IssueValidator {
         if (issueUpdate.get(ISSUE_ID) == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
-        IssueDO issueDO = new IssueDO();
-        issueDO.setIssueId(Long.parseLong(issueUpdate.get(ISSUE_ID).toString()));
-        issueDO.setProjectId(projectId);
-        issueDO = issueMapper.selectByPrimaryKey(issueDO);
-        if (issueDO == null) {
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setIssueId(Long.parseLong(issueUpdate.get(ISSUE_ID).toString()));
+        issueDTO.setProjectId(projectId);
+        issueDTO = issueMapper.selectByPrimaryKey(issueDTO);
+        if (issueDTO == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
         //不是epic类型的，不能修改颜色
-        if (issueUpdate.get(COLOR) != null && !ISSUE_EPIC.equals(issueDO.getTypeCode())) {
+        if (issueUpdate.get(COLOR) != null && !ISSUE_EPIC.equals(issueDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.color");
         }
         //不是epic类型的，不能修改epicName
-        if (issueUpdate.get(EPIC_NAME) != null && !ISSUE_EPIC.equals(issueDO.getTypeCode())) {
+        if (issueUpdate.get(EPIC_NAME) != null && !ISSUE_EPIC.equals(issueDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.EpicName");
         }
         //修改状态要有当前状态
@@ -122,13 +122,13 @@ public class IssueValidator {
             throw new CommonException("error.IssueRule.statusId");
         }
         //不是故事无法修改feature
-        if (issueUpdate.get(FEATURE_ID) != null && !STORY.equals(issueDO.getTypeCode())) {
+        if (issueUpdate.get(FEATURE_ID) != null && !STORY.equals(issueDTO.getTypeCode())) {
             throw new CommonException("error.issue.type");
         } else if (issueUpdate.get(EPIC_ID) != null
                 && Long.parseLong(issueUpdate.get(EPIC_ID).toString()) != 0
                 && issueUpdate.get(FEATURE_ID) != null
                 && Long.parseLong(issueUpdate.get(FEATURE_ID).toString()) != 0) {
-            IssueDO issue = new IssueDO();
+            IssueDTO issue = new IssueDTO();
             issue.setProjectId(projectId);
             issue.setTypeCode(FEATURE);
             issue.setEpicId(Long.parseLong(issueUpdate.get(EPIC_ID).toString()));
@@ -138,25 +138,25 @@ public class IssueValidator {
             }
         } else if (issueUpdate.get(EPIC_ID) != null
                 && Long.parseLong(issueUpdate.get(EPIC_ID).toString()) != 0
-                && STORY.equals(issueDO.getTypeCode())
-                && issueDO.getFeatureId() != null
-                && issueDO.getFeatureId() != 0) {
-            IssueDO issue = new IssueDO();
+                && STORY.equals(issueDTO.getTypeCode())
+                && issueDTO.getFeatureId() != null
+                && issueDTO.getFeatureId() != 0) {
+            IssueDTO issue = new IssueDTO();
             issue.setProjectId(projectId);
             issue.setTypeCode(FEATURE);
             issue.setEpicId(Long.parseLong(issueUpdate.get(EPIC_ID).toString()));
-            issue.setIssueId(issueDO.getFeatureId());
+            issue.setIssueId(issueDTO.getFeatureId());
             if (issueMapper.selectByPrimaryKey(issue) == null) {
                 issueUpdate.put("featureId", 0);
             }
         } else if (issueUpdate.get(FEATURE_ID) != null
                 && Long.parseLong(issueUpdate.get(FEATURE_ID).toString()) != 0
-                && issueDO.getEpicId() != null
-                && issueDO.getEpicId() != 0) {
-            IssueDO issue = new IssueDO();
+                && issueDTO.getEpicId() != null
+                && issueDTO.getEpicId() != 0) {
+            IssueDTO issue = new IssueDTO();
             issue.setProjectId(projectId);
             issue.setTypeCode(FEATURE);
-            issue.setEpicId(issueDO.getEpicId());
+            issue.setEpicId(issueDTO.getEpicId());
             issue.setIssueId(Long.parseLong(issueUpdate.get(FEATURE_ID).toString()));
             if (issueMapper.selectByPrimaryKey(issue) == null) {
                 throw new CommonException("error.featureId.of.epic");
@@ -169,10 +169,10 @@ public class IssueValidator {
         if (issueSubCreateDTO.getParentIssueId() == null) {
             throw new CommonException("error.IssueRule.ParentIssueId");
         }
-        IssueDO issueDO = new IssueDO();
-        issueDO.setProjectId(projectId);
-        issueDO.setIssueId(issueSubCreateDTO.getParentIssueId());
-        IssueDO query = issueMapper.selectOne(issueDO);
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setProjectId(projectId);
+        issueDTO.setIssueId(issueSubCreateDTO.getParentIssueId());
+        IssueDTO query = issueMapper.selectOne(issueDTO);
         if (query != null) {
             issueSubCreateDTO.setProjectId(projectId);
         } else {
@@ -182,10 +182,10 @@ public class IssueValidator {
 
     public void judgeExist(Long projectId, Long epicId) {
         if (epicId != null && !Objects.equals(epicId, 0L)) {
-            IssueDO issueDO = new IssueDO();
-            issueDO.setProjectId(projectId);
-            issueDO.setIssueId(epicId);
-            if (issueMapper.selectByPrimaryKey(issueDO) == null) {
+            IssueDTO issueDTO = new IssueDTO();
+            issueDTO.setProjectId(projectId);
+            issueDTO.setIssueId(epicId);
+            if (issueMapper.selectByPrimaryKey(issueDTO) == null) {
                 throw new CommonException("error.epic.notFound");
             }
         }
@@ -314,9 +314,9 @@ public class IssueValidator {
     }
 
     public void verifySubTask(Long parentIssueId) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setIssueId(parentIssueId);
-        IssueDO query = issueMapper.selectByPrimaryKey(issueDO);
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setIssueId(parentIssueId);
+        IssueDTO query = issueMapper.selectByPrimaryKey(issueDTO);
         if (query == null) {
             throw new CommonException("error.IssueRule.issueNoFound");
         } else if (query.getTypeCode().equals(SUB_TASK)) {
@@ -336,22 +336,22 @@ public class IssueValidator {
         }
     }
 
-    public static void checkParentIdUpdate(IssueDO issueDO, IssueDO parentIssueDO) {
-        if (issueDO == null) {
+    public static void checkParentIdUpdate(IssueDTO issueDTO, IssueDTO parentIssueDTO) {
+        if (issueDTO == null) {
             throw new CommonException(ERROR_ISSUE_GET);
         }
-        if (parentIssueDO == null) {
+        if (parentIssueDTO == null) {
             throw new CommonException(ERROR_PARENT_ISSUE_NOT_EXIST);
         }
-        String typeCode = issueDO.getTypeCode();
+        String typeCode = issueDTO.getTypeCode();
         if (!"sub_task".equals(typeCode)) {
             throw new CommonException(ERROR_TYPECODE_ISSUBTASK);
         }
-        typeCode = parentIssueDO.getTypeCode();
+        typeCode = parentIssueDTO.getTypeCode();
         if ("sub_task".equals(typeCode)) {
             throw new CommonException(ERROR_PARENT_ISSUE_ISSUBTASK);
         }
-        if (SchemeApplyType.TEST.equals(issueDO.getApplyType())) {
+        if (SchemeApplyType.TEST.equals(issueDTO.getApplyType())) {
             throw new CommonException(ERROR_PARENT_ISSUE_ISTEST);
         }
     }

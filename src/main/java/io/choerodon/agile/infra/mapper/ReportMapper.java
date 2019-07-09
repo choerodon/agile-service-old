@@ -189,7 +189,7 @@ public interface ReportMapper {
 
     List<Long> queryReportIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("startDate") Date startDate, @Param("actualEndDate") Date actualEndDate, @Param("status") Boolean status);
 
-    List<IssueDO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<IssueDTO> queryIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     List<SprintReportIssueStatusDO> queryIssueStoryPoints(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("actualEndDate") Date actualEndDate);
 
@@ -398,14 +398,14 @@ public interface ReportMapper {
     /**
      * 获取需要修复的issue
      *
-     * @return IssueDO
+     * @return IssueDTO
      */
     Set<Long> queryIssueDOByFixCumulativeData();
 
     /**
      * 排除有问题数据的issue
      *
-     * @return IssueDO
+     * @return IssueDTO
      */
     Set<Long> queryRemoveIssueIds();
 

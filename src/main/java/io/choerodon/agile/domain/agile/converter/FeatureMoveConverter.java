@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.FeatureMoveDTO;
-import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.api.vo.FeatureMoveVO;
+import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class FeatureMoveConverter implements ConvertorI<Object, IssueDO, FeatureMoveDTO> {
+public class FeatureMoveConverter implements ConvertorI<Object, IssueDTO, FeatureMoveVO> {
 
     @Override
-    public FeatureMoveDTO doToDto(IssueDO issueDO) {
-        FeatureMoveDTO featureMoveDTO = new FeatureMoveDTO();
-        BeanUtils.copyProperties(issueDO, featureMoveDTO);
-        return featureMoveDTO;
+    public FeatureMoveVO doToDto(IssueDTO issueDTO) {
+        FeatureMoveVO featureMoveVO = new FeatureMoveVO();
+        BeanUtils.copyProperties(issueDTO, featureMoveVO);
+        return featureMoveVO;
     }
 }

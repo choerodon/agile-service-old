@@ -180,7 +180,7 @@
         WHERE apv.project_id = #{projectId} AND apv.version_id = #{versionId}
     </select>
 
-    <resultMap id="versionDeatilMap" type="io.choerodon.agile.infra.dataobject.IssueDO">
+    <resultMap id="versionDeatilMap" type="io.choerodon.agile.infra.dataobject.IssueDTO">
         <id column="issue_id" property="issueId"/>
         <id column="issue_num" property="issueNum"/>
         <id column="type_code" property="typeCode"/>

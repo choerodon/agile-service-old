@@ -73,7 +73,7 @@
         </if>
     </select>
 
-    <select id="queryIssuesByComponentId" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+    <select id="queryIssuesByComponentId" resultType="io.choerodon.agile.infra.dataobject.IssueDTO">
         SELECT
             *
         FROM

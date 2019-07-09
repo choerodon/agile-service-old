@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO;
 import io.choerodon.agile.api.vo.SearchDTO;
 import io.choerodon.agile.api.vo.event.RemoveStatusWithProject;
 import io.choerodon.agile.infra.dataobject.*;
@@ -13,7 +13,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
  */
-public interface BoardColumnMapper extends Mapper<BoardColumnDO> {
+public interface BoardColumnMapper extends Mapper<BoardColumnDTO> {
 
     List selectColumnsByBoardId(@Param("projectId") Long projectId,
                                 @Param("boardId") Long boardId,
@@ -47,9 +47,9 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDO> {
 //                                                        @Param("columnId") Long columnId,
 //                                                        @Param("activeSprintId") Long activeSprintId);
 
-    void updateMaxAndMinNum(@Param("columnInfo") ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO);
+    void updateMaxAndMinNum(@Param("columnInfo") ColumnWithMaxMinNumVO columnWithMaxMinNumVO);
 
-    List<BoardColumnDO> selectByBoardIdOrderBySequence(@Param("boardId") Long boardId);
+    List<BoardColumnDTO> selectByBoardIdOrderBySequence(@Param("boardId") Long boardId);
 
     void updateSequenceWhenDelete(@Param("boardId") Long boardId, @Param("sequence") Integer sequence);
 

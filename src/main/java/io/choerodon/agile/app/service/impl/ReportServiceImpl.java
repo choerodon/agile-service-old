@@ -389,7 +389,7 @@ public class ReportServiceImpl implements ReportService {
         }
         pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), "ai", new HashMap<>()));
         //pageRequest.resetOrder("ai", new HashMap<>());
-        PageInfo<IssueDO> reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
+        PageInfo<IssueDTO> reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
                 PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> reportMapper.
                 queryReportIssues(projectId, versionId, status, type));
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
@@ -676,14 +676,14 @@ public class ReportServiceImpl implements ReportService {
             List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).map(ColumnChangeDTO::getIssueId).collect(Collectors.toList());
             if (statusToNullIssueIds != null && !statusToNullIssueIds.isEmpty()) {
                 //查询issue当前的状态
-                Map<Long, ColumnStatusRelDO> columnStatusRelMap = columnStatusRelMapper.queryByIssueIdAndColumnIds(statusToNullIssueIds, columnIds)
-                        .stream().collect(Collectors.toMap(ColumnStatusRelDO::getIssueId, Function.identity()));
+                Map<Long, ColumnStatusRelDTO> columnStatusRelMap = columnStatusRelMapper.queryByIssueIdAndColumnIds(statusToNullIssueIds, columnIds)
+                        .stream().collect(Collectors.toMap(ColumnStatusRelDTO::getIssueId, Function.identity()));
                 addIssueDuringDate.parallelStream().forEach(columnChangeDTO -> {
                     if (statusToNullIssueIds.contains(columnChangeDTO.getIssueId())) {
-                        ColumnStatusRelDO columnStatusRelDO = columnStatusRelMap.get(columnChangeDTO.getIssueId());
-                        if (columnStatusRelDO != null) {
-                            columnChangeDTO.setColumnTo(columnStatusRelDO.getColumnId().toString());
-                            columnChangeDTO.setStatusTo(columnStatusRelDO.getStatusId().toString());
+                        ColumnStatusRelDTO columnStatusRelDTO = columnStatusRelMap.get(columnChangeDTO.getIssueId());
+                        if (columnStatusRelDTO != null) {
+                            columnChangeDTO.setColumnTo(columnStatusRelDTO.getColumnId().toString());
+                            columnChangeDTO.setStatusTo(columnStatusRelDTO.getStatusId().toString());
                         }
                     }
                 });
@@ -1429,11 +1429,11 @@ public class ReportServiceImpl implements ReportService {
         Date startDate;
         List<SprintDO> sprintDOList;
         if (E_PIC.equals(type)) {
-            IssueDO issueDO = issueMapper.queryEpicWithStatusByIssueId(id, projectId);
-            if (issueDO != null) {
-                startDate = issueDO.getCreationDate();
-                if (issueDO.getCompleted() && issueDO.getDoneDate() != null) {
-                    sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, issueDO.getDoneDate());
+            IssueDTO issueDTO = issueMapper.queryEpicWithStatusByIssueId(id, projectId);
+            if (issueDTO != null) {
+                startDate = issueDTO.getCreationDate();
+                if (issueDTO.getCompleted() && issueDTO.getDoneDate() != null) {
+                    sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, issueDTO.getDoneDate());
                 } else {
                     sprintDOList = sprintMapper.queryNotPlanSprintByProjectId(projectId, startDate, null);
                 }
@@ -1524,10 +1524,10 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleBurnDownReportTypeData(BurnDownReportDTO burnDownReportDTO, Long id, Long projectId, Boolean typeCondition) {
         if (typeCondition) {
-            IssueDO issueDO = issueMapper.queryEpicDetailByIssueId(id, projectId);
-            burnDownReportDTO.getJsonObject().put("epicName", issueDO.getEpicName());
-            burnDownReportDTO.getJsonObject().put("issueNum", issueDO.getIssueNum());
-            burnDownReportDTO.getJsonObject().put("issueId", issueDO.getIssueId());
+            IssueDTO issueDTO = issueMapper.queryEpicDetailByIssueId(id, projectId);
+            burnDownReportDTO.getJsonObject().put("epicName", issueDTO.getEpicName());
+            burnDownReportDTO.getJsonObject().put("issueNum", issueDTO.getIssueNum());
+            burnDownReportDTO.getJsonObject().put("issueId", issueDTO.getIssueId());
         } else {
             ProductVersionDO query = new ProductVersionDO();
             query.setVersionId(id);

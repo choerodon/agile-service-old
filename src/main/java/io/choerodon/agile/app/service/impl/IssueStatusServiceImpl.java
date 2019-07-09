@@ -101,11 +101,11 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     public Boolean checkColumnStatusRelExist(Long projectId, Long statusId, Long originColumnId) {
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        columnStatusRelDO.setStatusId(statusId);
-        columnStatusRelDO.setColumnId(originColumnId);
-        columnStatusRelDO.setProjectId(projectId);
-        ColumnStatusRelDO rel = columnStatusRelMapper.selectOne(columnStatusRelDO);
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setStatusId(statusId);
+        columnStatusRelDTO.setColumnId(originColumnId);
+        columnStatusRelDTO.setProjectId(projectId);
+        ColumnStatusRelDTO rel = columnStatusRelMapper.selectOne(columnStatusRelDTO);
         return rel == null;
     }
 
@@ -118,11 +118,11 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     public void createColumnStatusRel(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        columnStatusRelDO.setStatusId(statusId);
-        columnStatusRelDO.setProjectId(projectId);
-        columnStatusRelDO.setColumnId(statusMoveDTO.getColumnId());
-        if (columnStatusRelMapper.select(columnStatusRelDO).isEmpty()) {
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setStatusId(statusId);
+        columnStatusRelDTO.setProjectId(projectId);
+        columnStatusRelDTO.setColumnId(statusMoveDTO.getColumnId());
+        if (columnStatusRelMapper.select(columnStatusRelDTO).isEmpty()) {
             ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
             columnStatusRelE.setColumnId(statusMoveDTO.getColumnId());
             columnStatusRelE.setPosition(statusMoveDTO.getPosition());
@@ -182,11 +182,11 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     private void checkIssueNumOfStatus(Long projectId, Long statusId) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setStatusId(statusId);
-        issueDO.setProjectId(projectId);
-        List<IssueDO> issueDOList = issueMapper.select(issueDO);
-        if (issueDOList != null && !issueDOList.isEmpty()) {
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setStatusId(statusId);
+        issueDTO.setProjectId(projectId);
+        List<IssueDTO> issueDTOList = issueMapper.select(issueDTO);
+        if (issueDTOList != null && !issueDTOList.isEmpty()) {
             throw new CommonException("error.statusHasIssues.delete");
         }
     }

@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.ColumnSortDTO;
+import io.choerodon.agile.api.vo.ColumnSortVO;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class ColumnSortConverter implements ConvertorI<BoardColumnE, Object, ColumnSortDTO> {
+public class ColumnSortConverter implements ConvertorI<BoardColumnE, Object, ColumnSortVO> {
 
     @Override
-    public BoardColumnE dtoToEntity(ColumnSortDTO columnSortDTO) {
+    public BoardColumnE dtoToEntity(ColumnSortVO columnSortVO) {
         BoardColumnE boardColumnE = new BoardColumnE();
-        BeanUtils.copyProperties(columnSortDTO, boardColumnE);
+        BeanUtils.copyProperties(columnSortVO, boardColumnE);
         return boardColumnE;
     }
 
     @Override
-    public ColumnSortDTO entityToDto(BoardColumnE boardColumnE) {
-        ColumnSortDTO columnSortDTO = new ColumnSortDTO();
-        BeanUtils.copyProperties(boardColumnE, columnSortDTO);
-        return columnSortDTO;
+    public ColumnSortVO entityToDto(BoardColumnE boardColumnE) {
+        ColumnSortVO columnSortVO = new ColumnSortVO();
+        BeanUtils.copyProperties(boardColumnE, columnSortVO);
+        return columnSortVO;
     }
 }

@@ -5,8 +5,8 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.ActiveSprintDTO
 import io.choerodon.agile.api.vo.BackLogIssueDTO
 import io.choerodon.agile.api.vo.IssueCreateDTO
-import io.choerodon.agile.api.vo.IssueDTO
 import io.choerodon.agile.api.vo.IssueListDTO
+import io.choerodon.agile.api.vo.IssueVO
 import io.choerodon.agile.api.vo.ProjectDTO
 import io.choerodon.agile.api.vo.SprintCompleteDTO
 import io.choerodon.agile.api.vo.SprintCompleteMessageDTO
@@ -142,7 +142,7 @@ class SprintControllerSpec extends Specification {
         issueCreateDTO.reporterId = 1
 
         when: '更新issue'
-        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueVO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
         issueIds.add(issueDTO.getIssueId())
 
         then: '判断issue是否成功生成'

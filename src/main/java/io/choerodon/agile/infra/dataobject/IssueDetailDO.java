@@ -64,9 +64,9 @@ public class IssueDetailDO {
 
     private List<IssueAttachmentDO> issueAttachmentDOList;
 
-    private List<IssueDO> subIssueDOList;
+    private List<IssueDTO> subIssueDTOList;
 
-    private List<IssueDO> subBugDOList;
+    private List<IssueDTO> subBugDOList;
 
     private Date creationDate;
 
@@ -278,12 +278,12 @@ public class IssueDetailDO {
         this.issueAttachmentDOList = issueAttachmentDOList;
     }
 
-    public List<IssueDO> getSubIssueDOList() {
-        return subIssueDOList;
+    public List<IssueDTO> getSubIssueDTOList() {
+        return subIssueDTOList;
     }
 
-    public void setSubIssueDOList(List<IssueDO> subIssueDOList) {
-        this.subIssueDOList = subIssueDOList;
+    public void setSubIssueDTOList(List<IssueDTO> subIssueDTOList) {
+        this.subIssueDTOList = subIssueDTOList;
     }
 
     public Date getCreationDate() {
@@ -478,11 +478,11 @@ public class IssueDetailDO {
         return relateIssueId;
     }
 
-    public void setSubBugDOList(List<IssueDO> subBugDOList) {
+    public void setSubBugDOList(List<IssueDTO> subBugDOList) {
         this.subBugDOList = subBugDOList;
     }
 
-    public List<IssueDO> getSubBugDOList() {
+    public List<IssueDTO> getSubBugDOList() {
         return subBugDOList;
     }
 

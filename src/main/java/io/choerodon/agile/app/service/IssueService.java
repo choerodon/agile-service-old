@@ -24,7 +24,7 @@ public interface IssueService {
 
     void setIssueMapper(IssueMapper issueMapper);
 
-    IssueDTO queryIssueCreate(Long projectId, Long issueId);
+    IssueVO queryIssueCreate(Long projectId, Long issueId);
 
     void handleInitIssue(IssueE issueE, Long statusId, ProjectInfoE projectInfoE);
 
@@ -37,9 +37,9 @@ public interface IssueService {
      *
      * @param projectId projectId
      * @param issueId   issueId
-     * @return IssueDTO
+     * @return IssueVO
      */
-    IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId);
+    IssueVO queryIssue(Long projectId, Long issueId, Long organizationId);
 
     /**
      * 分页过滤查询issueList（包含子任务）
@@ -63,9 +63,9 @@ public interface IssueService {
      * @param projectId      projectId
      * @param issueUpdateDTO issueUpdateDTO
      * @param fieldList      fieldList
-     * @return IssueDTO
+     * @return IssueVO
      */
-    IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList);
+    IssueVO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList);
 
     /**
      * 更新issue的状态
@@ -75,7 +75,7 @@ public interface IssueService {
      * @param transformId
      * @return
      */
-    IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType);
+    IssueVO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType);
 
     /**
      * 更新issue自己的字段
@@ -147,9 +147,9 @@ public interface IssueService {
      *
      * @param issueE             issueE
      * @param issueUpdateTypeDTO issueUpdateTypeDTO
-     * @return IssueDTO
+     * @return IssueVO
      */
-    IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO, Long organizationId);
+    IssueVO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO, Long organizationId);
 
     /**
      * 通过项目id和issueId查询issueE
@@ -172,9 +172,9 @@ public interface IssueService {
      * @param projectId        projectId
      * @param issueId          issueId
      * @param copyConditionDTO copyConditionDTO
-     * @return IssueDTO
+     * @return IssueVO
      */
-    IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId, String applyType);
+    IssueVO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId, String applyType);
 
     /**
      * 根据issueId转换为子任务
@@ -193,7 +193,7 @@ public interface IssueService {
      * @param organizationId
      * @return
      */
-    IssueDTO transformedTask(IssueE issueE, IssueTransformTask issueTransformTask, Long organizationId);
+    IssueVO transformedTask(IssueE issueE, IssueTransformTask issueTransformTask, Long organizationId);
 
     List<IssueInfoDTO> listByIssueIds(Long projectId, List<Long> issueIds);
 
@@ -256,7 +256,7 @@ public interface IssueService {
 
     List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds);
 
-    IssueDTO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO);
+    IssueVO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO);
 
     void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO);
 

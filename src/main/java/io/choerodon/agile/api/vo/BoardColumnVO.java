@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
  */
-public class BoardColumnDTO {
+public class BoardColumnVO {
 
     @ApiModelProperty(value = "列主键id")
     private Long columnId;
@@ -147,7 +147,7 @@ public class BoardColumnDTO {
 
     @Override
     public String toString() {
-        return "BoardColumnDTO{" +
+        return "BoardColumnVO{" +
                 "columnId=" + columnId +
                 ", name='" + name + '\'' +
                 ", boardId=" + boardId +

@@ -1,11 +1,11 @@
 package io.choerodon.agile.domain.agile.converter;
 
 
+import io.choerodon.agile.api.vo.IssueVO;
+import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.BeanUtils;
-import io.choerodon.agile.api.vo.IssueDTO;
-import io.choerodon.agile.infra.dataobject.IssueDO;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 
 /**
@@ -15,48 +15,48 @@ import io.choerodon.agile.domain.agile.entity.IssueE;
  * @since 2018-05-14 20:30:48
  */
 @Component
-public class IssueConverter implements ConvertorI<IssueE, IssueDO, IssueDTO> {
+public class IssueConverter implements ConvertorI<IssueE, IssueDTO, IssueVO> {
 
     @Override
-    public IssueE dtoToEntity(IssueDTO issueDTO) {
+    public IssueE dtoToEntity(IssueVO issueVO) {
+        IssueE issueE = new IssueE();
+        BeanUtils.copyProperties(issueVO, issueE);
+        return issueE;
+    }
+
+    @Override
+    public IssueE doToEntity(IssueDTO issueDTO) {
         IssueE issueE = new IssueE();
         BeanUtils.copyProperties(issueDTO, issueE);
         return issueE;
     }
 
     @Override
-    public IssueE doToEntity(IssueDO issueDO) {
-        IssueE issueE = new IssueE();
-        BeanUtils.copyProperties(issueDO, issueE);
-        return issueE;
+    public IssueVO entityToDto(IssueE issueE) {
+        IssueVO issueVO = new IssueVO();
+        BeanUtils.copyProperties(issueE, issueVO);
+        return issueVO;
     }
 
     @Override
-    public IssueDTO entityToDto(IssueE issueE) {
+    public IssueDTO entityToDo(IssueE issueE) {
         IssueDTO issueDTO = new IssueDTO();
         BeanUtils.copyProperties(issueE, issueDTO);
         return issueDTO;
     }
 
     @Override
-    public IssueDO entityToDo(IssueE issueE) {
-        IssueDO issueDO = new IssueDO();
-        BeanUtils.copyProperties(issueE, issueDO);
-        return issueDO;
+    public IssueVO doToDto(IssueDTO issueDTO) {
+        IssueVO issueVO = new IssueVO();
+        BeanUtils.copyProperties(issueDTO, issueVO);
+        return issueVO;
     }
 
     @Override
-    public IssueDTO doToDto(IssueDO issueDO) {
+    public IssueDTO dtoToDo(IssueVO issueVO) {
         IssueDTO issueDTO = new IssueDTO();
-        BeanUtils.copyProperties(issueDO, issueDTO);
+        BeanUtils.copyProperties(issueVO, issueDTO);
         return issueDTO;
-    }
-
-    @Override
-    public IssueDO dtoToDo(IssueDTO issueDTO) {
-        IssueDO issueDO = new IssueDO();
-        BeanUtils.copyProperties(issueDTO, issueDO);
-        return issueDO;
     }
 
 }

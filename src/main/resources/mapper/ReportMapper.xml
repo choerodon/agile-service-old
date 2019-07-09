@@ -810,7 +810,7 @@
         </if>
     </select>
 
-    <select id="queryIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+    <select id="queryIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueDTO">
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         ai.type_code,
@@ -1032,7 +1032,7 @@
         AND adl.creation_date &lt;= #{endDate}
     </select>
 
-    <select id="queryReportIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDO">
+    <select id="queryReportIssues" resultType="io.choerodon.agile.infra.dataobject.IssueDTO">
         SELECT
         ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         ai.issue_type_id,

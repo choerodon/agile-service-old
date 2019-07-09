@@ -98,15 +98,15 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
-    private void addUsersByReporter(List<String> res, List<Long> result, IssueDTO issueDTO) {
-        if (res.contains("reporter") && !result.contains(issueDTO.getReporterId())) {
-            result.add(issueDTO.getReporterId());
+    private void addUsersByReporter(List<String> res, List<Long> result, IssueVO issueVO) {
+        if (res.contains("reporter") && !result.contains(issueVO.getReporterId())) {
+            result.add(issueVO.getReporterId());
         }
     }
 
-    private void addUsersByAssigneer(List<String> res, List<Long> result, IssueDTO issueDTO, String event) {
-        if (res.contains("assigneer") && issueDTO.getAssigneeId() != null && !result.contains(issueDTO.getAssigneeId()) && !"issue_created".equals(event)) {
-            result.add(issueDTO.getAssigneeId());
+    private void addUsersByAssigneer(List<String> res, List<Long> result, IssueVO issueVO, String event) {
+        if (res.contains("assigneer") && issueVO.getAssigneeId() != null && !result.contains(issueVO.getAssigneeId()) && !"issue_created".equals(event)) {
+            result.add(issueVO.getAssigneeId());
         }
     }
 
@@ -153,7 +153,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public List<Long> queryUserIdsByProjectId(Long projectId, String event, IssueDTO issueDTO) {
+    public List<Long> queryUserIdsByProjectId(Long projectId, String event, IssueVO issueVO) {
         List<MessageDO> originMessageList = noticeMapper.selectByEvent(event);
         List<MessageDO> changeMessageList = noticeMapper.selectByProjectIdAndEvent(projectId, event);
         List<String> res = new ArrayList<>();
@@ -172,8 +172,8 @@ public class NoticeServiceImpl implements NoticeService {
             }
         }
         List<Long> result = new ArrayList<>();
-        addUsersByReporter(res, result, issueDTO);
-        addUsersByAssigneer(res, result, issueDTO, event);
+        addUsersByReporter(res, result, issueVO);
+        addUsersByAssigneer(res, result, issueVO, event);
         addUsersByProjectOwner(projectId, res, result);
         addUsersByUsers(res, result, users);
         return result;

@@ -5,45 +5,45 @@ import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2018/6/2.
+ * Created by HuangFuqiang@choerodon.io on 2018/5/25.
  * Email: fuqianghuang01@gmail.com
  */
-public class ColumnWithMaxMinNumDTO {
+public class ColumnSortVO {
 
     @ApiModelProperty(value = "项目id")
     @NotNull(message = "项目id不能为空")
     private Long projectId;
 
     @ApiModelProperty(value = "看板id")
+    @NotNull(message = "board id不能为空")
     private Long boardId;
 
     @ApiModelProperty(value = "列id")
     @NotNull(message = "列id不能为空")
     private Long columnId;
 
-    @ApiModelProperty(value = "列问题数量最大值")
-    private Long maxNum;
-
-    @ApiModelProperty(value = "列问题数量最小值")
-    private Long minNum;
+    @ApiModelProperty(value = "列顺序")
+    @NotNull(message = "列序号不能为空")
+    private Integer sequence;
 
     @ApiModelProperty(value = "版本号")
+    @NotNull(message = "数据版本序号不能为空")
     private Long objectVersionNumber;
-
-    public Long getProjectId() {
-        return projectId;
-    }
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 
-    public Long getBoardId() {
-        return boardId;
+    public Long getProjectId() {
+        return projectId;
     }
 
     public void setBoardId(Long boardId) {
         this.boardId = boardId;
+    }
+
+    public Long getBoardId() {
+        return boardId;
     }
 
     public Long getColumnId() {
@@ -54,27 +54,19 @@ public class ColumnWithMaxMinNumDTO {
         this.columnId = columnId;
     }
 
-    public Long getMaxNum() {
-        return maxNum;
+    public Integer getSequence() {
+        return sequence;
     }
 
-    public void setMaxNum(Long maxNum) {
-        this.maxNum = maxNum;
-    }
-
-    public Long getMinNum() {
-        return minNum;
-    }
-
-    public void setMinNum(Long minNum) {
-        this.minNum = minNum;
-    }
-
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
     }
 }

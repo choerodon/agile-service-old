@@ -2,7 +2,7 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.ComponentForListDTO;
 import io.choerodon.agile.api.vo.IssueComponentDTO;
-import io.choerodon.agile.api.vo.IssueDTO;
+import io.choerodon.agile.api.vo.IssueVO;
 import io.choerodon.agile.api.vo.SearchDTO;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.domain.PageRequest;
@@ -26,7 +26,7 @@ public interface IssueComponentService {
 
     PageInfo<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchDTO searchDTO, PageRequest pageRequest);
 
-    List<IssueDTO> queryIssuesByComponentId(Long projectId, Long componentId);
+    List<IssueVO> queryIssuesByComponentId(Long projectId, Long componentId);
 
     List<ComponentForListDTO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest);
 

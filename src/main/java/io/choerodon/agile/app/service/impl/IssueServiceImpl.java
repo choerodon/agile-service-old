@@ -342,7 +342,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO queryIssueCreate(Long projectId, Long issueId) {
+    public IssueVO queryIssueCreate(Long projectId, Long issueId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
@@ -350,7 +350,7 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
-        IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
+        IssueVO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueCreate(projectId, result);
         return result;
     }
@@ -380,7 +380,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO queryIssue(Long projectId, Long issueId, Long organizationId) {
+    public IssueVO queryIssue(Long projectId, Long issueId, Long organizationId) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
@@ -394,7 +394,7 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         if (STORY_TYPE.equals(issue.getTypeCode()) && issue.getFeatureId() != null) {
-            IssueDO issueInfo = issueMapper.selectByPrimaryKey(issue.getFeatureId());
+            IssueDTO issueInfo = issueMapper.selectByPrimaryKey(issue.getFeatureId());
             if (issueInfo != null) {
                 issue.setFeatureName(issueInfo.getSummary());
             }
@@ -405,13 +405,13 @@ public class IssueServiceImpl implements IssueService {
         return issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
     }
 
-    private IssueDTO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList) {
+    private IssueVO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList) {
         IssueDetailDO issue = issueMapper.queryIssueDetail(projectId, issueId);
         if (issue.getIssueAttachmentDOList() != null && !issue.getIssueAttachmentDOList().isEmpty()) {
             issue.getIssueAttachmentDOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         if (STORY_TYPE.equals(issue.getTypeCode()) && issue.getFeatureId() != null) {
-            IssueDO issueInfo = issueMapper.selectByPrimaryKey(issue.getFeatureId());
+            IssueDTO issueInfo = issueMapper.selectByPrimaryKey(issue.getFeatureId());
             if (issueInfo != null) {
                 issue.setFeatureName(issueInfo.getSummary());
             }
@@ -419,7 +419,7 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
-        IssueDTO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
+        IssueVO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueAssignee(projectId, fieldList, result);
         // return feature extends table info
         if (ISSUE_TYPE_FEATURE.equals(result.getTypeCode())) {
@@ -482,13 +482,13 @@ public class IssueServiceImpl implements IssueService {
 
             PageInfo<IssueListFieldKVDTO> issueListDTOPage;
             if (issueIdPage.getList() != null && !issueIdPage.getList().isEmpty()) {
-                List<IssueDO> issueDOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getList());
+                List<IssueDTO> issueDTOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getList());
                 Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
                 Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
                 Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
                 Map<Long, Map<String, String>> foundationCodeValue = foundationFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIdPage.getList()).getBody();
                 issueListDTOPage = PageUtil.buildPageInfoWithPageInfoList(issueIdPage,
-                        issueAssembler.issueDoToIssueListFieldKVDTO(issueDOList, priorityMap, statusMapDTOMap, issueTypeDTOMap, foundationCodeValue));
+                        issueAssembler.issueDoToIssueListFieldKVDTO(issueDTOList, priorityMap, statusMapDTOMap, issueTypeDTOMap, foundationCodeValue));
             } else {
                 issueListDTOPage = new PageInfo<>(new ArrayList<>());
             }
@@ -588,19 +588,19 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private Boolean checkEpicNameUpdate(Long projectId, Long issueId, String epicName) {
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
-        if (epicName.equals(issueDO.getEpicName())) {
+        IssueDTO issueDTO = issueMapper.selectByPrimaryKey(issueId);
+        if (epicName.equals(issueDTO.getEpicName())) {
             return false;
         }
-        IssueDO check = new IssueDO();
+        IssueDTO check = new IssueDTO();
         check.setProjectId(projectId);
         check.setEpicName(epicName);
-        List<IssueDO> issueDOList = issueMapper.select(check);
-        return issueDOList != null && !issueDOList.isEmpty();
+        List<IssueDTO> issueDTOList = issueMapper.select(check);
+        return issueDTOList != null && !issueDTOList.isEmpty();
     }
 
     @Override
-    public IssueDTO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
+    public IssueVO updateIssue(Long projectId, IssueUpdateDTO issueUpdateDTO, List<String> fieldList) {
         if (fieldList.contains("epicName") && issueUpdateDTO.getEpicName() != null && checkEpicNameUpdate(projectId, issueUpdateDTO.getIssueId(), issueUpdateDTO.getEpicName())) {
             throw new CommonException("error.epicName.exist");
         }
@@ -616,7 +616,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
+    public IssueVO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
         stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType, new InputDTO(issueId, "updateStatus", null));
         if ("agile".equals(applyType)) {
             IssueE issueE = new IssueE();
@@ -631,7 +631,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public void handleUpdateIssue(IssueUpdateDTO issueUpdateDTO, List<String> fieldList, Long projectId) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        IssueDO originIssue = issueMapper.queryIssueWithNoCloseSprint(issueUpdateDTO.getIssueId());
+        IssueDTO originIssue = issueMapper.queryIssueWithNoCloseSprint(issueUpdateDTO.getIssueId());
         IssueE issueE = issueAssembler.toTarget(issueUpdateDTO, IssueE.class);
         //处理用户，前端可能会传0，处理为null
         issueE.initializationIssueUser();
@@ -669,7 +669,7 @@ public class IssueServiceImpl implements IssueService {
                 issueE.setEpicId(0L);
                 fieldList.add("epicId");
             } else if (!Objects.equals(issueUpdateDTO.getFeatureId(), 0L)) {
-                IssueDO featureUpdate = issueMapper.selectByPrimaryKey(issueUpdateDTO.getFeatureId());
+                IssueDTO featureUpdate = issueMapper.selectByPrimaryKey(issueUpdateDTO.getFeatureId());
                 issueE.setEpicId(featureUpdate.getEpicId() == null ? 0L : featureUpdate.getEpicId());
                 fieldList.add("epicId");
             }
@@ -847,9 +847,9 @@ public class IssueServiceImpl implements IssueService {
             } else {
                 redisUtil.deleteRedisCache(new String[]{"Agile:EpicChart" + projectId + ":" + issueE.getEpicId() + ":" + "*"});
             }
-            List<IssueDO> issueDOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
-            if (issueDOList != null && !issueDOList.isEmpty()) {
-                issueDOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
+            List<IssueDTO> issueDTOList = issueMapper.queryIssueSubList(projectId, issueE.getIssueId());
+            if (issueDTOList != null && !issueDTOList.isEmpty()) {
+                issueDTOList.forEach(subIssue -> deleteIssue(subIssue.getProjectId(), subIssue.getIssueId()));
             }
         }
         // 如果是删除feature，将其下的issue的featureId置为0
@@ -975,7 +975,7 @@ public class IssueServiceImpl implements IssueService {
         issueValidator.checkBatchStoryToFeature(featureId);
         List<Long> filterIds = issueMapper.filterStoryIds(projectId, issueIds);
         if (filterIds != null && !filterIds.isEmpty()) {
-            IssueDO feature = issueMapper.selectByPrimaryKey(featureId);
+            IssueDTO feature = issueMapper.selectByPrimaryKey(featureId);
             Long updateEpicId = (feature.getEpicId() == null ? 0L : feature.getEpicId());
             issueRepository.batchStoryToFeature(projectId, featureId, filterIds, updateEpicId);
         }
@@ -1314,12 +1314,12 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueFeatureDTO> listFeature(Long projectId, Long organizationId) {
         ProjectDTO program = userRepository.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
-            List<IssueDO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), projectId, null);
+            List<IssueDTO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), projectId, null);
             List<IssueFeatureDTO> issueFeatureDTOList = issueAssembler.toTargetList(programFeatureList, IssueFeatureDTO.class);
             setFeatureStatisticDetail(projectId, issueFeatureDTOList);
             return issueFeatureDTOList;
         } else {
-            List<IssueDO> projectFeatureList = issueMapper.selectFeatureListByAgileProject(projectId);
+            List<IssueDTO> projectFeatureList = issueMapper.selectFeatureListByAgileProject(projectId);
             List<IssueFeatureDTO> featureDTOList = issueAssembler.toTargetList(projectFeatureList, IssueFeatureDTO.class);
             setFeatureStatisticDetail(projectId, featureDTOList);
             return featureDTOList;
@@ -1355,7 +1355,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public synchronized IssueDTO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO, Long organizationId) {
+    public synchronized IssueVO updateIssueTypeCode(IssueE issueE, IssueUpdateTypeDTO issueUpdateTypeDTO, Long organizationId) {
         String originType = issueE.getTypeCode();
         if (originType.equals(SUB_TASK)) {
             issueE.setParentIssueId(null);
@@ -1393,10 +1393,10 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueE queryIssueByProjectIdAndIssueId(Long projectId, Long issueId) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setProjectId(projectId);
-        issueDO.setIssueId(issueId);
-        return ConvertHelper.convert(issueMapper.selectOne(issueDO), IssueE.class);
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setProjectId(projectId);
+        issueDTO.setIssueId(issueId);
+        return ConvertHelper.convert(issueMapper.selectOne(issueDTO), IssueE.class);
     }
 
     private void handleCreateLabelIssue(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
@@ -1847,7 +1847,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId, String applyType) {
+    public IssueVO cloneIssueByIssueId(Long projectId, Long issueId, CopyConditionDTO copyConditionDTO, Long organizationId, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
         }
@@ -1882,7 +1882,7 @@ public class IssueServiceImpl implements IssueService {
                 if ("program".equals(applyType)) {
                     issueCreateDTO.setProgramId(projectId);
                 }
-                IssueDTO newIssue = stateMachineService.createIssue(issueCreateDTO, applyType);
+                IssueVO newIssue = stateMachineService.createIssue(issueCreateDTO, applyType);
                 newIssueId = newIssue.getIssueId();
                 objectVersionNumber = newIssue.getObjectVersionNumber();
             }
@@ -1895,9 +1895,9 @@ public class IssueServiceImpl implements IssueService {
             //复制冲刺
             handleCreateCopyIssueSprintRel(copyConditionDTO.getSprintValues(), issueDetailDO, newIssueId);
             if (copyConditionDTO.getSubTask()) {
-                List<IssueDO> subIssueDOList = issueDetailDO.getSubIssueDOList();
-                if (subIssueDOList != null && !subIssueDOList.isEmpty()) {
-                    subIssueDOList.forEach(issueDO -> copySubIssue(issueDO, newIssueId, projectId));
+                List<IssueDTO> subIssueDTOList = issueDetailDO.getSubIssueDTOList();
+                if (subIssueDTOList != null && !subIssueDTOList.isEmpty()) {
+                    subIssueDTOList.forEach(issueDO -> copySubIssue(issueDO, newIssueId, projectId));
                 }
             }
             return queryIssue(projectId, newIssueId, organizationId);
@@ -1925,14 +1925,14 @@ public class IssueServiceImpl implements IssueService {
         updateIssue(projectId, issueUpdateDTO, fieldList);
     }
 
-    private void copySubIssue(IssueDO issueDO, Long newIssueId, Long projectId) {
-        IssueDetailDO subIssueDetailDO = issueMapper.queryIssueDetail(issueDO.getProjectId(), issueDO.getIssueId());
+    private void copySubIssue(IssueDTO issueDTO, Long newIssueId, Long projectId) {
+        IssueDetailDO subIssueDetailDO = issueMapper.queryIssueDetail(issueDTO.getProjectId(), issueDTO.getIssueId());
         IssueSubCreateDTO issueSubCreateDTO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDO, newIssueId);
         IssueSubDTO newSubIssue = stateMachineService.createSubIssue(issueSubCreateDTO);
         //复制剩余工作量并记录日志
-        if (issueDO.getRemainingTime() != null) {
+        if (issueDTO.getRemainingTime() != null) {
             IssueUpdateDTO subIssueUpdateDTO = new IssueUpdateDTO();
-            subIssueUpdateDTO.setRemainingTime(issueDO.getRemainingTime());
+            subIssueUpdateDTO.setRemainingTime(issueDTO.getRemainingTime());
             subIssueUpdateDTO.setIssueId(newSubIssue.getIssueId());
             subIssueUpdateDTO.setObjectVersionNumber(newSubIssue.getObjectVersionNumber());
             updateIssue(projectId, subIssueUpdateDTO, Lists.newArrayList(REMAIN_TIME_FIELD));
@@ -2042,7 +2042,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public synchronized IssueDTO transformedTask(IssueE issueE, IssueTransformTask issueTransformTask, Long organizationId) {
+    public synchronized IssueVO transformedTask(IssueE issueE, IssueTransformTask issueTransformTask, Long organizationId) {
         String originType = issueE.getTypeCode();
         if (originType.equals(SUB_TASK)) {
             issueE.setParentIssueId(null);
@@ -2103,11 +2103,11 @@ public class IssueServiceImpl implements IssueService {
         return piName.toString();
     }
 
-    private IssueDO queryIssueByIssueIdAndProjectId(Long projectId, Long issueId) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setIssueId(issueId);
-        issueDO.setProjectId(projectId);
-        return issueMapper.selectOne(issueDO);
+    private IssueDTO queryIssueByIssueIdAndProjectId(Long projectId, Long issueId) {
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setIssueId(issueId);
+        issueDTO.setProjectId(projectId);
+        return issueMapper.selectOne(issueDTO);
     }
 
     @Override
@@ -2120,13 +2120,13 @@ public class IssueServiceImpl implements IssueService {
         //连表查询需要设置主表别名
         pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, new HashMap<>()));
         //pageRequest.resetOrder(SEARCH, new HashMap<>());
-        PageInfo<IssueDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
+        PageInfo<IssueDTO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
                 PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> issueMapper.listIssueWithoutSubToTestComponent(projectId, searchDTO.getSearchArgs(),
                 searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         return handleIssueListTestDoToDto(issueDOPage, organizationId, projectId);
     }
 
-    private PageInfo<IssueListTestDTO> handleIssueListTestDoToDto(PageInfo<IssueDO> issueDOPage, Long organizationId, Long projectId) {
+    private PageInfo<IssueListTestDTO> handleIssueListTestDoToDto(PageInfo<IssueDTO> issueDOPage, Long organizationId, Long projectId) {
         Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, StatusMapDTO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
@@ -2137,7 +2137,7 @@ public class IssueServiceImpl implements IssueService {
     public PageInfo<IssueListTestWithSprintVersionDTO> listIssueWithLinkedIssues(Long projectId, SearchDTO searchDTO, PageRequest pageRequest, Long organizationId) {
         pageRequest.setSort(PageUtil.sortResetOrder(pageRequest.getSort(), SEARCH, new HashMap<>()));
         //pageRequest.resetOrder(SEARCH, new HashMap<>());
-        PageInfo<IssueDO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
+        PageInfo<IssueDTO> issueDOPage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
                 issueMapper.listIssueWithLinkedIssues(projectId, searchDTO.getSearchArgs(),
                         searchDTO.getAdvancedSearchArgs(), searchDTO.getOtherArgs(), searchDTO.getContents()));
         return handleILTDTOToILTWSVDTO(projectId, handleIssueListTestDoToDto(issueDOPage, organizationId, projectId));
@@ -2220,10 +2220,10 @@ public class IssueServiceImpl implements IssueService {
         if (epicSequenceDTO.getAfterSequence() == null && epicSequenceDTO.getBeforeSequence() == null) {
             throw new CommonException("error.dragEpic.noSequence");
         }
-        IssueDO issueDO = new IssueDO();
-        issueDO.setIssueId(epicSequenceDTO.getEpicId());
-        issueDO.setProjectId(projectId);
-        IssueE issueE = ConvertHelper.convert(issueMapper.selectOne(issueDO), IssueE.class);
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setIssueId(epicSequenceDTO.getEpicId());
+        issueDTO.setProjectId(projectId);
+        IssueE issueE = ConvertHelper.convert(issueMapper.selectOne(issueDTO), IssueE.class);
         if (issueE == null) {
             throw new CommonException("error.issue.notFound");
         } else {
@@ -2344,14 +2344,14 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleSaveUserSetting(Long projectId, String type, String pageType) {
         if (USERMAP.equals(pageType)) {
-            UserSettingDO userSettingDO = new UserSettingDO();
-            userSettingDO.setProjectId(projectId);
-            userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
-            userSettingDO.setTypeCode(STORYMAP);
-            UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
+            UserSettingDTO userSettingDTO = new UserSettingDTO();
+            userSettingDTO.setProjectId(projectId);
+            userSettingDTO.setUserId(DetailsHelper.getUserDetails().getUserId());
+            userSettingDTO.setTypeCode(STORYMAP);
+            UserSettingDTO query = userSettingMapper.selectOne(userSettingDTO);
             if (query == null) {
-                userSettingDO.setStorymapSwimlaneCode(STORYMAP_TYPE_NONE);
-                userSettingRepository.create(ConvertHelper.convert(userSettingDO, UserSettingE.class));
+                userSettingDTO.setStorymapSwimlaneCode(STORYMAP_TYPE_NONE);
+                userSettingRepository.create(ConvertHelper.convert(userSettingDTO, UserSettingE.class));
             } else if (!query.getStorymapSwimlaneCode().equals(type)) {
                 query.setStorymapSwimlaneCode(type);
                 userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
@@ -2379,17 +2379,17 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public IssueDTO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO) {
+    public IssueVO issueParentIdUpdate(Long projectId, IssueUpdateParentIdDTO issueUpdateParentIdDTO) {
         Long issueId = issueUpdateParentIdDTO.getIssueId();
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
+        IssueDTO issueDTO = issueMapper.selectByPrimaryKey(issueId);
         Long parentIssueId = issueUpdateParentIdDTO.getParentIssueId();
-        IssueDO parentIssueDO = issueMapper.selectByPrimaryKey(parentIssueId);
-        IssueValidator.checkParentIdUpdate(issueDO, parentIssueDO);
+        IssueDTO parentIssueDTO = issueMapper.selectByPrimaryKey(parentIssueId);
+        IssueValidator.checkParentIdUpdate(issueDTO, parentIssueDTO);
         IssueE updateIssue = new IssueE();
         updateIssue.setIssueId(issueId);
         updateIssue.setObjectVersionNumber(issueUpdateParentIdDTO.getObjectVersionNumber());
         updateIssue.setParentIssueId(issueUpdateParentIdDTO.getParentIssueId());
-        return ConvertHelper.convert(issueRepository.updateSelective(updateIssue), IssueDTO.class);
+        return ConvertHelper.convert(issueRepository.updateSelective(updateIssue), IssueVO.class);
     }
 
     @Override
@@ -2424,7 +2424,7 @@ public class IssueServiceImpl implements IssueService {
         UserSettingE userSettingE = new UserSettingE();
         userSettingE.initUserSetting(projectId);
         userSettingE.setTypeCode(STORYMAP);
-        UserSettingDO query = userSettingMapper.selectOne(ConvertHelper.convert(userSettingE, UserSettingDO.class));
+        UserSettingDTO query = userSettingMapper.selectOne(ConvertHelper.convert(userSettingE, UserSettingDTO.class));
         String result;
         if (query == null) {
             userSettingE.setStorymapSwimlaneCode("none");
@@ -2546,11 +2546,11 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public Boolean checkEpicName(Long projectId, String epicName) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setProjectId(projectId);
-        issueDO.setEpicName(epicName);
-        List<IssueDO> issueDOList = issueMapper.select(issueDO);
-        return issueDOList != null && !issueDOList.isEmpty();
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setProjectId(projectId);
+        issueDTO.setEpicName(epicName);
+        List<IssueDTO> issueDTOList = issueMapper.select(issueDTO);
+        return issueDTOList != null && !issueDTOList.isEmpty();
     }
 
     @Override

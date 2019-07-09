@@ -362,12 +362,12 @@ public class PiServiceImpl implements PiService {
             throw new CommonException("error.pi.update");
         }
         // update issue status
-        List<IssueDO> issueDOList = issueMapper.selectStatusChangeIssueByPiId(programId, piVO.getId());
+        List<IssueDTO> issueDTOList = issueMapper.selectStatusChangeIssueByPiId(programId, piVO.getId());
         Long updateStatusId = piVO.getUpdateStatusId();
         if (updateStatusId != null) {
-            if (issueDOList != null && !issueDOList.isEmpty()) {
+            if (issueDTOList != null && !issueDTOList.isEmpty()) {
                 CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-                issueRepository.updateStatusIdBatch(programId, updateStatusId, issueDOList, customUserDetails.getUserId(), new Date());
+                issueRepository.updateStatusIdBatch(programId, updateStatusId, issueDTOList, customUserDetails.getUserId(), new Date());
             }
         }
         return piMapper.selectByPrimaryKey(piVO.getId());
@@ -597,7 +597,7 @@ public class PiServiceImpl implements PiService {
     }
 
     private void batchUpdateStatus(Long programId, Long piId, List<Long> moveIssueIdsFilter, Long updateStatusId, String categoryCode, Long userId) {
-        List<IssueDO> moveIssues = issueMapper.selectFeatureByMoveIssueIds(programId, moveIssueIdsFilter, categoryCode, piId);
+        List<IssueDTO> moveIssues = issueMapper.selectFeatureByMoveIssueIds(programId, moveIssueIdsFilter, categoryCode, piId);
         if (moveIssues == null || moveIssues.isEmpty()) {
             return;
         }
@@ -658,7 +658,7 @@ public class PiServiceImpl implements PiService {
         }
         List<PiDTO> piDTOList = piMapper.selectUnDonePiDOList(programId, activeArt.getId());
         if (piDTOList != null && !piDTOList.isEmpty()) {
-            return modelMapper.map(piDTOList, new TypeToken<PiNameDTO>(){}.getType());
+            return modelMapper.map(piDTOList, new TypeToken<PiNameVO>(){}.getType());
         } else {
             return new ArrayList<>();
         }

@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018/7/4
  */
-public class UserSettingDTO {
+public class UserSettingVO {
 
     @ApiModelProperty(value = "设置主键id")
     private Long settingId;

@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.IssueDTO;
+import io.choerodon.agile.api.vo.IssueVO;
 import io.choerodon.agile.api.vo.MessageDTO;
 
 import java.util.List;
@@ -15,5 +15,5 @@ public interface NoticeService {
 
     void updateNotice(Long projectId, List<MessageDTO> messageDTOList);
 
-    List<Long> queryUserIdsByProjectId(Long projectId, String event, IssueDTO issueDTO);
+    List<Long> queryUserIdsByProjectId(Long projectId, String event, IssueVO issueVO);
 }

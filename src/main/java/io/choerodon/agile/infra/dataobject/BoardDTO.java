@@ -1,44 +1,39 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.choerodon.mybatis.entity.BaseDTO;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
  */
-public class BoardDTO {
+@Table(name = "agile_board")
+public class BoardDTO extends BaseDTO {
 
-    @ApiModelProperty(value = "看板id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardId;
 
-    @ApiModelProperty(value = "看板名称")
     private String name;
 
-    @ApiModelProperty(value = "项目id")
-    @NotNull(message = "项目id不能为空")
     private Long projectId;
 
-    @ApiModelProperty(value = "管理员id")
     private Long administratorId;
 
-    @ApiModelProperty(value = "列约束")
     private String columnConstraint;
 
+    @Column(name = "is_day_in_column")
     private Boolean dayInColumn;
 
-    @ApiModelProperty(value = "泳道")
     private String swimlaneBasedCode;
 
     private String estimationStatistic;
 
-    @ApiModelProperty(value = "版本号")
-    private Long objectVersionNumber;
-
+    @Transient
     private Boolean userDefault;
 
-    @ApiModelProperty(value = "用户默认看板")
+    @Transient
     private String userDefaultBoard;
 
     public Long getBoardId() {
@@ -103,14 +98,6 @@ public class BoardDTO {
 
     public void setEstimationStatistic(String estimationStatistic) {
         this.estimationStatistic = estimationStatistic;
-    }
-
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
-    }
-
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
     }
 
     public Boolean getUserDefault() {

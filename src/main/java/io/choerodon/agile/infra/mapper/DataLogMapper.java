@@ -3,7 +3,7 @@ package io.choerodon.agile.infra.mapper;
 import io.choerodon.agile.api.vo.StatusMapDTO;
 import io.choerodon.agile.infra.dataobject.DataLogDO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
-import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDO;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -30,24 +30,24 @@ public interface DataLogMapper extends Mapper<DataLogDO> {
      * 批量生成issue是否解决日志
      *
      * @param projectId    projectId
-     * @param issueDOS     issueDOS
+     * @param issueDTOS     issueDTOS
      * @param userId       userId
      * @param statusMapDTO statusMapDTO
      * @param completed    completed
      */
-    void batchCreateStatusLogByIssueDOS(@Param("projectId") Long projectId, @Param("issueDOS") List<IssueDO> issueDOS
+    void batchCreateStatusLogByIssueDOS(@Param("projectId") Long projectId, @Param("issueDTOS") List<IssueDTO> issueDTOS
             , @Param("userId") Long userId, @Param("statusMapDTO") StatusMapDTO statusMapDTO, @Param("completed") Boolean completed);
 
     /**
      * 批量生成issue状态变更日志
      *
      * @param projectId projectId
-     * @param issueDOS  issueDOS
+     * @param issueDTOS  issueDTOS
      * @param userId    userId
      * @param oldStatus oldStatus
      * @param newStatus newStatus
      */
-    void batchCreateChangeStatusLogByIssueDOS(@Param("projectId") Long projectId, @Param("issueDOS") List<IssueDO> issueDOS, @Param("userId") Long userId,
+    void batchCreateChangeStatusLogByIssueDOS(@Param("projectId") Long projectId, @Param("issueDTOS") List<IssueDTO> issueDTOS, @Param("userId") Long userId,
                                               @Param("oldStatus") StatusMapDTO oldStatus, @Param("newStatus") StatusMapDTO newStatus);
 
 
@@ -83,6 +83,6 @@ public interface DataLogMapper extends Mapper<DataLogDO> {
 
     void updateDemoEpicDataLog(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate, @Param("userId") Long userId);
 
-    void batchCreateChangePriorityLogByIssueDOs(@Param("issueDOS") List<IssueDO> issueDOS, @Param("userId") Long userId,
+    void batchCreateChangePriorityLogByIssueDOs(@Param("issueDTOS") List<IssueDTO> issueDTOS, @Param("userId") Long userId,
                                                 @Param("oldPriorityName") String oldPriorityName, @Param("newPriorityName") String newPriorityName);
 }

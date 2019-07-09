@@ -31,78 +31,78 @@ public class IssueAssembler extends AbstractAssembler {
      * issueDetailDO转换到IssueDTO
      *
      * @param issueDetailDO issueDetailDO
-     * @return IssueDTO
+     * @return IssueVO
      */
-    public IssueDTO issueDetailDoToDto(IssueDetailDO issueDetailDO, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
-        IssueDTO issueDTO = new IssueDTO();
-        BeanUtils.copyProperties(issueDetailDO, issueDTO);
-        issueDTO.setFeatureDTO(ConvertHelper.convert(issueDetailDO.getFeatureDO(), FeatureDTO.class));
-        issueDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
-        issueDTO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDO.getActiveSprint(), SprintNameDTO.class));
-        issueDTO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDO.getCloseSprint(), SprintNameDTO.class));
-        issueDTO.setActivePi(sprintNameAssembler.toTarget(issueDetailDO.getActivePi(), PiNameVO.class));
-        issueDTO.setClosePi(sprintNameAssembler.toTargetList(issueDetailDO.getClosePi(), PiNameVO.class));
-        issueDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
-        issueDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
-        issueDTO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
-        issueDTO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
-        issueDTO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
-        issueDTO.setSubBugDTOList(issueDoToSubIssueDto(issueDetailDO.getSubBugDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
-        issueDTO.setPriorityDTO(priorityDTOMap.get(issueDTO.getPriorityId()));
-        issueDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueDTO.getIssueTypeId()));
-        issueDTO.setStatusMapDTO(statusMapDTOMap.get(issueDTO.getStatusId()));
+    public IssueVO issueDetailDoToDto(IssueDetailDO issueDetailDO, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
+        IssueVO issueVO = new IssueVO();
+        BeanUtils.copyProperties(issueDetailDO, issueVO);
+        issueVO.setFeatureDTO(ConvertHelper.convert(issueDetailDO.getFeatureDO(), FeatureDTO.class));
+        issueVO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
+        issueVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDO.getActiveSprint(), SprintNameDTO.class));
+        issueVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDO.getCloseSprint(), SprintNameDTO.class));
+        issueVO.setActivePi(sprintNameAssembler.toTarget(issueDetailDO.getActivePi(), PiNameVO.class));
+        issueVO.setClosePi(sprintNameAssembler.toTargetList(issueDetailDO.getClosePi(), PiNameVO.class));
+        issueVO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
+        issueVO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
+        issueVO.setIssueAttachmentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueAttachmentDOList(), IssueAttachmentDTO.class));
+        issueVO.setIssueCommentDTOList(ConvertHelper.convertList(issueDetailDO.getIssueCommentDOList(), IssueCommentDTO.class));
+        issueVO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDO.getSubIssueDTOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
+        issueVO.setSubBugDTOList(issueDoToSubIssueDto(issueDetailDO.getSubBugDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
+        issueVO.setPriorityDTO(priorityDTOMap.get(issueVO.getPriorityId()));
+        issueVO.setIssueTypeDTO(issueTypeDTOMap.get(issueVO.getIssueTypeId()));
+        issueVO.setStatusMapDTO(statusMapDTOMap.get(issueVO.getStatusId()));
         List<Long> assigneeIdList = new ArrayList<>();
         assigneeIdList.add(issueDetailDO.getAssigneeId());
         assigneeIdList.add(issueDetailDO.getReporterId());
         assigneeIdList.add(issueDetailDO.getCreatedBy());
-        Boolean issueCommentCondition = issueDTO.getIssueCommentDTOList() != null && !issueDTO.getIssueCommentDTOList().isEmpty();
+        Boolean issueCommentCondition = issueVO.getIssueCommentDTOList() != null && !issueVO.getIssueCommentDTOList().isEmpty();
         if (issueCommentCondition) {
-            assigneeIdList.addAll(issueDTO.getIssueCommentDTOList().stream().map(IssueCommentDTO::getUserId).collect(Collectors.toList()));
+            assigneeIdList.addAll(issueVO.getIssueCommentDTOList().stream().map(IssueCommentDTO::getUserId).collect(Collectors.toList()));
         }
         Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
                 assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
-        UserMessageDO assigneeUserDO = userMessageDOMap.get(issueDTO.getAssigneeId());
-        UserMessageDO reporterUserDO = userMessageDOMap.get(issueDTO.getReporterId());
+        UserMessageDO assigneeUserDO = userMessageDOMap.get(issueVO.getAssigneeId());
+        UserMessageDO reporterUserDO = userMessageDOMap.get(issueVO.getReporterId());
         String assigneeName = assigneeUserDO != null ? assigneeUserDO.getName() : null;
         String assigneeLoginName = assigneeUserDO != null ? assigneeUserDO.getLoginName() : null;
         String assigneeRealName = assigneeUserDO != null ? assigneeUserDO.getRealName() : null;
         String reporterName = reporterUserDO != null ? reporterUserDO.getName() : null;
         String reporterLoginName = reporterUserDO != null ? reporterUserDO.getLoginName() : null;
         String reporterRealName = reporterUserDO != null ? reporterUserDO.getRealName() : null;
-        String createrName = userMessageDOMap.get(issueDTO.getCreatedBy()) != null ? userMessageDOMap.get(issueDTO.getCreatedBy()).getName() : null;
-        issueDTO.setCreaterEmail(userMessageDOMap.get(issueDTO.getCreatedBy()) != null ? userMessageDOMap.get(issueDTO.getCreatedBy()).getEmail() : null);
-        issueDTO.setAssigneeName(assigneeName);
-        issueDTO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueDTO.getAssigneeId()).getImageUrl() : null);
-        issueDTO.setReporterName(reporterName);
-        issueDTO.setReporterImageUrl(reporterName != null ? userMessageDOMap.get(issueDTO.getReporterId()).getImageUrl() : null);
-        issueDTO.setCreaterName(createrName);
-        issueDTO.setCreaterImageUrl(createrName != null ? userMessageDOMap.get(issueDTO.getCreatedBy()).getImageUrl() : null);
-        issueDTO.setAssigneeLoginName(assigneeLoginName);
-        issueDTO.setAssigneeRealName(assigneeRealName);
-        issueDTO.setReporterLoginName(reporterLoginName);
-        issueDTO.setReporterRealName(reporterRealName);
+        String createrName = userMessageDOMap.get(issueVO.getCreatedBy()) != null ? userMessageDOMap.get(issueVO.getCreatedBy()).getName() : null;
+        issueVO.setCreaterEmail(userMessageDOMap.get(issueVO.getCreatedBy()) != null ? userMessageDOMap.get(issueVO.getCreatedBy()).getEmail() : null);
+        issueVO.setAssigneeName(assigneeName);
+        issueVO.setAssigneeImageUrl(assigneeName != null ? userMessageDOMap.get(issueVO.getAssigneeId()).getImageUrl() : null);
+        issueVO.setReporterName(reporterName);
+        issueVO.setReporterImageUrl(reporterName != null ? userMessageDOMap.get(issueVO.getReporterId()).getImageUrl() : null);
+        issueVO.setCreaterName(createrName);
+        issueVO.setCreaterImageUrl(createrName != null ? userMessageDOMap.get(issueVO.getCreatedBy()).getImageUrl() : null);
+        issueVO.setAssigneeLoginName(assigneeLoginName);
+        issueVO.setAssigneeRealName(assigneeRealName);
+        issueVO.setReporterLoginName(reporterLoginName);
+        issueVO.setReporterRealName(reporterRealName);
         if (issueCommentCondition) {
-            issueDTO.getIssueCommentDTOList().forEach(issueCommentDTO -> {
+            issueVO.getIssueCommentDTOList().forEach(issueCommentDTO -> {
                 issueCommentDTO.setUserName(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getName() : null);
                 issueCommentDTO.setUserImageUrl(userMessageDOMap.get(issueCommentDTO.getUserId()) != null ? userMessageDOMap.get(issueCommentDTO.getUserId()).getImageUrl() : null);
             });
         }
-        return issueDTO;
+        return issueVO;
     }
 
     /**
      * issueDO转换到IssueListFieldKVDTO
      *
-     * @param issueDOList issueDetailDO
+     * @param issueDTOList issueDetailDO
      * @return IssueListFieldKVDTO
      */
 
-    public List<IssueListFieldKVDTO> issueDoToIssueListFieldKVDTO(List<IssueDO> issueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, Map<String, String>> foundationCodeValue) {
-        List<IssueListFieldKVDTO> issueListFieldKVDTOList = new ArrayList<>(issueDOList.size());
-        Set<Long> userIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).collect(Collectors.toSet());
-        userIds.addAll(issueDOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDO::getReporterId).collect(Collectors.toSet()));
+    public List<IssueListFieldKVDTO> issueDoToIssueListFieldKVDTO(List<IssueDTO> issueDTOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, Map<String, String>> foundationCodeValue) {
+        List<IssueListFieldKVDTO> issueListFieldKVDTOList = new ArrayList<>(issueDTOList.size());
+        Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
+        userIds.addAll(issueDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDTO::getReporterId).collect(Collectors.toSet()));
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(Lists.newArrayList(userIds), true);
-        issueDOList.forEach(issueDO -> {
+        issueDTOList.forEach(issueDO -> {
             UserMessageDO assigneeUserDO = usersMap.get(issueDO.getAssigneeId());
             UserMessageDO reporterUserDO = usersMap.get(issueDO.getReporterId());
             String assigneeName = assigneeUserDO != null ? assigneeUserDO.getName() : null;
@@ -139,15 +139,15 @@ public class IssueAssembler extends AbstractAssembler {
     /**
      * issueDO转换到IssueListDTO
      *
-     * @param issueDOList issueDetailDO
+     * @param issueDTOList issueDetailDO
      * @return IssueListDTO
      */
-    public List<IssueListDTO> issueDoToIssueListDto(List<IssueDO> issueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        List<IssueListDTO> issueListDTOList = new ArrayList<>(issueDOList.size());
-        Set<Long> userIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).collect(Collectors.toSet());
-        userIds.addAll(issueDOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDO::getReporterId).collect(Collectors.toSet()));
+    public List<IssueListDTO> issueDoToIssueListDto(List<IssueDTO> issueDTOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+        List<IssueListDTO> issueListDTOList = new ArrayList<>(issueDTOList.size());
+        Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
+        userIds.addAll(issueDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDTO::getReporterId).collect(Collectors.toSet()));
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(Lists.newArrayList(userIds), true);
-        issueDOList.forEach(issueDO -> {
+        issueDTOList.forEach(issueDO -> {
             UserMessageDO assigneeUserDO = usersMap.get(issueDO.getAssigneeId());
             UserMessageDO reporterUserDO = usersMap.get(issueDO.getReporterId());
             String assigneeName = assigneeUserDO != null ? assigneeUserDO.getName() : null;
@@ -182,14 +182,14 @@ public class IssueAssembler extends AbstractAssembler {
     /**
      * issueDO转换到subIssueDTO
      *
-     * @param issueDOList issueDOList
+     * @param issueDTOList issueDTOList
      * @return SubIssueDTO
      */
-    private List<IssueSubListDTO> issueDoToSubIssueDto(List<IssueDO> issueDOList, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
-        List<IssueSubListDTO> subIssueDTOList = new ArrayList<>(issueDOList.size());
-        List<Long> assigneeIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).distinct().collect(Collectors.toList());
+    private List<IssueSubListDTO> issueDoToSubIssueDto(List<IssueDTO> issueDTOList, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, PriorityDTO> priorityDTOMap) {
+        List<IssueSubListDTO> subIssueDTOList = new ArrayList<>(issueDTOList.size());
+        List<Long> assigneeIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-        issueDOList.forEach(issueDO -> {
+        issueDTOList.forEach(issueDO -> {
             UserMessageDO userMessageDO = usersMap.get(issueDO.getAssigneeId());
             String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
             String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
@@ -397,11 +397,11 @@ public class IssueAssembler extends AbstractAssembler {
         return issueComponentDetailDTOS;
     }
 
-    public List<IssueListTestDTO> issueDoToIssueTestListDto(List<IssueDO> issueDOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        List<IssueListTestDTO> issueListTestDTOS = new ArrayList<>(issueDOList.size());
-        Set<Long> userIds = issueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDO::getAssigneeId).collect(Collectors.toSet());
+    public List<IssueListTestDTO> issueDoToIssueTestListDto(List<IssueDTO> issueDTOList, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+        List<IssueListTestDTO> issueListTestDTOS = new ArrayList<>(issueDTOList.size());
+        Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
         Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(Lists.newArrayList(userIds), true);
-        issueDOList.forEach(issueDO -> {
+        issueDTOList.forEach(issueDO -> {
             String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
             String assigneeImageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
             IssueListTestDTO issueListTestDTO = toTarget(issueDO, IssueListTestDTO.class);

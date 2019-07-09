@@ -2,16 +2,16 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.BoardDTO
-import io.choerodon.agile.api.vo.IssueMoveDTO
+import io.choerodon.agile.api.vo.BoardVO
+import io.choerodon.agile.api.vo.IssueMoveVO
 import io.choerodon.agile.api.vo.MessageDTO
-import io.choerodon.agile.api.vo.UserSettingDTO
+import io.choerodon.agile.api.vo.UserSettingVO
 import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.BoardService
 import io.choerodon.agile.app.service.NoticeService
-import io.choerodon.agile.infra.dataobject.BoardDO
+import io.choerodon.agile.infra.dataobject.BoardDTO
 import io.choerodon.agile.infra.dataobject.ColumnAndIssueDO
-import io.choerodon.agile.infra.dataobject.IssueDO
+import io.choerodon.agile.infra.dataobject.IssueDTO
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
@@ -107,7 +107,7 @@ class BoardControllerSpec extends Specification {
 
     def 'createScrumBoard'() {
         given:
-        BoardDO boardDO = new BoardDO()
+        BoardDTO boardDO = new BoardDTO()
         boardDO.name = boardNameExtra
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board?boardName={boardName}",
@@ -118,24 +118,24 @@ class BoardControllerSpec extends Specification {
                 boardNameExtra)
         then:
         entity.statusCode.is2xxSuccessful()
-        BoardDO result = boardMapper.selectOne(boardDO)
+        BoardDTO result = boardMapper.selectOne(boardDO)
         result != null
     }
 
     def 'updateScrumBoard'() {
         given:
-        BoardDO boardDO = new BoardDO()
+        BoardDTO boardDO = new BoardDTO()
         boardDO.name = boardNameExtra
-        BoardDO selectd = boardMapper.selectOne(boardDO)
+        BoardDTO selectd = boardMapper.selectOne(boardDO)
         boardId = selectd.getBoardId()
         selectd.name = changeBoardName
 
         when:
-        HttpEntity<BoardDO> boardDOHttpEntity = new HttpEntity<>(selectd)
+        HttpEntity<BoardDTO> boardDOHttpEntity = new HttpEntity<>(selectd)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/{boardId}",
                 HttpMethod.PUT,
                 boardDOHttpEntity,
-                BoardDTO.class,
+                BoardVO.class,
                 projectId,
                 boardId)
         then:
@@ -148,7 +148,7 @@ class BoardControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/{boardId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
-                BoardDTO.class,
+                BoardVO.class,
                 projectId,
                 boardId)
         then:
@@ -158,8 +158,8 @@ class BoardControllerSpec extends Specification {
 
     def 'move'() {
         given:
-        IssueMoveDTO issueMoveDTO = new IssueMoveDTO()
-        IssueDO issue = issueMapper.selectByPrimaryKey(1L)
+        IssueMoveVO issueMoveDTO = new IssueMoveVO()
+        IssueDTO issue = issueMapper.selectByPrimaryKey(1L)
         issueMoveDTO.issueId = issue.getIssueId()
         issueMoveDTO.statusId = 2L
         issueMoveDTO.boardId = boardId
@@ -187,17 +187,17 @@ class BoardControllerSpec extends Specification {
         noticeService.updateNotice(projectId, messageDTOList)
 
         when:
-        HttpEntity<IssueMoveDTO> issueMoveDTOHttpEntity = new HttpEntity<>(issueMoveDTO)
+        HttpEntity<IssueMoveVO> issueMoveDTOHttpEntity = new HttpEntity<>(issueMoveDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board/issue/{issueId}/move?transformId={transformId}",
                 HttpMethod.POST,
                 issueMoveDTOHttpEntity,
-                IssueMoveDTO.class,
+                IssueMoveVO.class,
                 1L,
                 1L,
                 2L)
         then:
         entity.statusCode.is2xxSuccessful()
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(1L)
+        IssueDTO issueDO = issueMapper.selectByPrimaryKey(1L)
         issueDO.statusId == 1L
     }
 
@@ -232,11 +232,11 @@ class BoardControllerSpec extends Specification {
     def 'updateUserSettingBoard'() {
         when: '发送更新请求'
         def entity = restTemplate.postForEntity("/v1/projects/{project_id}/board/user_setting/{boardId}?swimlaneBasedCode={swimlaneBasedCode}",
-                null, UserSettingDTO, projectId, boardId, "assignee")
+                null, UserSettingVO, projectId, boardId, "assignee")
         then: '校验请求'
         entity.statusCode.is2xxSuccessful()
         and: '设置值'
-        UserSettingDTO userSettingDTO = entity.body
+        UserSettingVO userSettingDTO = entity.body
         expect: '期望值'
         userSettingDTO.settingId != null
         userSettingDTO.swimlaneBasedCode == "assignee"
@@ -246,11 +246,11 @@ class BoardControllerSpec extends Specification {
     def 'queryUserSettingBoard'() {
         when: '发送查询请求'
         def entity = restTemplate.getForEntity("/v1/projects/{project_id}/board/user_setting/{boardId}",
-                UserSettingDTO, projectId, boardId)
+                UserSettingVO, projectId, boardId)
         then: '校验请求'
         entity.statusCode.is2xxSuccessful()
         and: '设置值'
-        UserSettingDTO userSettingDTO = entity.body
+        UserSettingVO userSettingDTO = entity.body
         expect: '期望值'
         userSettingDTO.settingId != null
         userSettingDTO.swimlaneBasedCode == "assignee"
@@ -267,13 +267,13 @@ class BoardControllerSpec extends Specification {
                 boardId)
         then:
         entity.statusCode.is2xxSuccessful()
-        BoardDO result = boardMapper.selectByPrimaryKey(boardId)
+        BoardDTO result = boardMapper.selectByPrimaryKey(boardId)
         result == null
     }
 
     def 'returnData'() {
         given: '回退issue状态'
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(1L)
+        IssueDTO issueDO = issueMapper.selectByPrimaryKey(1L)
         issueDO.setStatusId(1L)
 
         when: '更新'

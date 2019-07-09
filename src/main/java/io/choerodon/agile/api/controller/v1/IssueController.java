@@ -56,11 +56,11 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建issue")
     @PostMapping
-    public ResponseEntity<IssueDTO> createIssue(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> createIssue(@ApiParam(value = "项目id", required = true)
                                                 @PathVariable(name = "project_id") Long projectId,
-                                                @ApiParam(value = "应用类型", required = true)
+                                               @ApiParam(value = "应用类型", required = true)
                                                 @RequestParam(value = "applyType") String applyType,
-                                                @ApiParam(value = "创建issue对象", required = true)
+                                               @ApiParam(value = "创建issue对象", required = true)
                                                 @RequestBody IssueCreateDTO issueCreateDTO) {
         issueValidator.verifyCreateData(issueCreateDTO, projectId, applyType);
         return Optional.ofNullable(stateMachineService.createIssue(issueCreateDTO, applyType))
@@ -96,9 +96,9 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新issue")
     @PutMapping
-    public ResponseEntity<IssueDTO> updateIssue(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> updateIssue(@ApiParam(value = "项目id", required = true)
                                                 @PathVariable(name = "project_id") Long projectId,
-                                                @ApiParam(value = "更新issue对象", required = true)
+                                               @ApiParam(value = "更新issue对象", required = true)
                                                 @RequestBody JSONObject issueUpdate) {
         issueValidator.verifyUpdateData(issueUpdate, projectId);
         IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO();
@@ -114,15 +114,15 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新issue的状态")
     @PutMapping("/update_status")
-    public ResponseEntity<IssueDTO> updateIssueStatus(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> updateIssueStatus(@ApiParam(value = "项目id", required = true)
                                                       @PathVariable(name = "project_id") Long projectId,
-                                                      @ApiParam(value = "转换id", required = true)
+                                                     @ApiParam(value = "转换id", required = true)
                                                       @RequestParam Long transformId,
-                                                      @ApiParam(value = "问题id", required = true)
+                                                     @ApiParam(value = "问题id", required = true)
                                                       @RequestParam Long issueId,
-                                                      @ApiParam(value = "版本号", required = true)
+                                                     @ApiParam(value = "版本号", required = true)
                                                       @RequestParam Long objectVersionNumber,
-                                                      @ApiParam(value = "应用类型", required = true)
+                                                     @ApiParam(value = "应用类型", required = true)
                                                       @RequestParam String applyType) {
         return Optional.ofNullable(issueService.updateIssueStatus(projectId, issueId, transformId, objectVersionNumber, applyType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -132,11 +132,11 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询单个issue")
     @GetMapping(value = "/{issueId}")
-    public ResponseEntity<IssueDTO> queryIssue(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> queryIssue(@ApiParam(value = "项目id", required = true)
                                                @PathVariable(name = "project_id") Long projectId,
-                                               @ApiParam(value = "issueId", required = true)
+                                              @ApiParam(value = "issueId", required = true)
                                                @PathVariable Long issueId,
-                                               @ApiParam(value = "组织id", required = true)
+                                              @ApiParam(value = "组织id", required = true)
                                                @RequestParam(required = false) Long organizationId) {
         return Optional.ofNullable(issueService.queryIssue(projectId, issueId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -404,11 +404,11 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更改issue类型")
     @PostMapping("/update_type")
-    public ResponseEntity<IssueDTO> updateIssueTypeCode(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> updateIssueTypeCode(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "组织id", required = true)
+                                                       @ApiParam(value = "组织id", required = true)
                                                         @RequestParam Long organizationId,
-                                                        @ApiParam(value = "修改类型信息", required = true)
+                                                       @ApiParam(value = "修改类型信息", required = true)
                                                         @RequestBody IssueUpdateTypeDTO issueUpdateTypeDTO) {
         IssueE issueE = issueValidator.verifyUpdateTypeData(projectId, issueUpdateTypeDTO);
         return Optional.ofNullable(issueService.updateIssueTypeCode(issueE, issueUpdateTypeDTO, organizationId))
@@ -434,11 +434,11 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("子任务转换为任务")
     @PostMapping("/transformed_task")
-    public ResponseEntity<IssueDTO> transformedTask(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> transformedTask(@ApiParam(value = "项目id", required = true)
                                                     @PathVariable(name = "project_id") Long projectId,
-                                                    @ApiParam(value = "组织id", required = true)
+                                                   @ApiParam(value = "组织id", required = true)
                                                     @RequestParam Long organizationId,
-                                                    @ApiParam(value = "转换任务信息", required = true)
+                                                   @ApiParam(value = "转换任务信息", required = true)
                                                     @RequestBody IssueTransformTask issueTransformTask) {
         IssueE issueE = issueValidator.verifyTransformedTask(projectId, issueTransformTask);
         return Optional.ofNullable(issueService.transformedTask(issueE, issueTransformTask, organizationId))
@@ -479,15 +479,15 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("复制一个issue")
     @PostMapping("/{issueId}/clone_issue")
-    public ResponseEntity<IssueDTO> cloneIssueByIssueId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> cloneIssueByIssueId(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "issueId", required = true)
+                                                       @ApiParam(value = "issueId", required = true)
                                                         @PathVariable(name = "issueId") Long issueId,
-                                                        @ApiParam(value = "组织id", required = true)
+                                                       @ApiParam(value = "组织id", required = true)
                                                         @RequestParam Long organizationId,
-                                                        @ApiParam(value = "应用类型", required = true)
+                                                       @ApiParam(value = "应用类型", required = true)
                                                         @RequestParam(value = "applyType") String applyType,
-                                                        @ApiParam(value = "复制条件", required = true)
+                                                       @ApiParam(value = "复制条件", required = true)
                                                         @RequestBody CopyConditionDTO copyConditionDTO) {
         return Optional.ofNullable(issueService.cloneIssueByIssueId(projectId, issueId, copyConditionDTO, organizationId, applyType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -640,9 +640,9 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更改父任务")
     @PostMapping(value = "/update_parent")
-    public ResponseEntity<IssueDTO> updateIssueParentId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> updateIssueParentId(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "issue parent id update vo", required = true)
+                                                       @ApiParam(value = "issue parent id update vo", required = true)
                                                         @RequestBody IssueUpdateParentIdDTO issueUpdateParentIdDTO) {
         return Optional.ofNullable(issueService.issueParentIdUpdate(projectId, issueUpdateParentIdDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

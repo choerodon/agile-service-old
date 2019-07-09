@@ -183,7 +183,7 @@
         WHERE board_id = #{boardId}
     </update>
 
-    <select id="queryColumnStatusRelByProjectId" resultType="io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDO">
+    <select id="queryColumnStatusRelByProjectId" resultType="io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDTO">
         SELECT
             DISTINCT
             (abcsr.status_id)
@@ -234,7 +234,7 @@
             <!--abc.column_id = #{columnId}-->
     <!--</select>-->
 
-    <update id="updateMaxAndMinNum" parameterType="io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO">
+    <update id="updateMaxAndMinNum" parameterType="io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO">
         UPDATE agile_board_column
         SET max_num               = #{columnInfo.maxNum},
             min_num               = #{columnInfo.minNum},
@@ -245,7 +245,7 @@
             AND object_version_number = #{columnInfo.objectVersionNumber}
     </update>
 
-    <select id="selectByBoardIdOrderBySequence" resultType="io.choerodon.agile.infra.dataobject.BoardColumnDO">
+    <select id="selectByBoardIdOrderBySequence" resultType="io.choerodon.agile.infra.dataobject.BoardColumnDTO">
         SELECT *
         FROM
             agile_board_column

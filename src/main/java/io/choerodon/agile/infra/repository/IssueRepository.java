@@ -4,7 +4,7 @@ import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.domain.agile.entity.IssueE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
-import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.MoveIssueDO;
 import io.choerodon.agile.infra.dataobject.StoryMapMoveIssueDO;
 
@@ -130,6 +130,6 @@ public interface IssueRepository {
 
     void updateEpicIdOfStoryByFeatureList(List<Long> featureIds, Long epicId);
 
-    void updateStatusIdBatch(Long programId, Long updateStatusId, List<IssueDO> issueDOList, Long lastUpdatedBy, Date lastUpdateDate);
+    void updateStatusIdBatch(Long programId, Long updateStatusId, List<IssueDTO> issueDTOList, Long lastUpdatedBy, Date lastUpdateDate);
 
 }

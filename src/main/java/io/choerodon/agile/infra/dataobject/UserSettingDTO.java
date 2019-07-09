@@ -10,7 +10,7 @@ import javax.persistence.*;
  * @since 2018/7/4
  */
 @Table(name = "agile_user_setting")
-public class UserSettingDO extends BaseDTO {
+public class UserSettingDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

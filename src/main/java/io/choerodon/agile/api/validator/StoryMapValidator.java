@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.validator;
 
 
-import io.choerodon.agile.infra.dataobject.IssueDO;
+import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +40,11 @@ public class StoryMapValidator {
 
     public void checkVersionExist(Long versionId) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
-            IssueDO issueDO = issueMapper.selectByPrimaryKey(versionId);
-            if (issueDO == null) {
+            IssueDTO issueDTO = issueMapper.selectByPrimaryKey(versionId);
+            if (issueDTO == null) {
                 throw new CommonException("error.version.notFound");
             }
-            if (ARCHIVED.equals(issueDO.getStatusCode()) || RELEASED.equals(issueDO.getStatusCode())) {
+            if (ARCHIVED.equals(issueDTO.getStatusCode()) || RELEASED.equals(issueDTO.getStatusCode())) {
                 throw new CommonException("error.productStatus.notRight");
             }
         }
@@ -52,7 +52,7 @@ public class StoryMapValidator {
 
     public void checkFeatureUnderEpic(Long featureId, Long epicId) {
         if (epicId != null && epicId != 0 && featureId != null && featureId != 0) {
-            IssueDO featureDO = issueMapper.selectByPrimaryKey(featureId);
+            IssueDTO featureDO = issueMapper.selectByPrimaryKey(featureId);
             if (featureDO == null) {
                 throw new CommonException("error.feature.notFound");
             }

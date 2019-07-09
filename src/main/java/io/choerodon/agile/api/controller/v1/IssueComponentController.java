@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.vo.ComponentForListDTO;
-import io.choerodon.agile.api.vo.IssueDTO;
+import io.choerodon.agile.api.vo.IssueVO;
 import io.choerodon.agile.api.vo.SearchDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -125,9 +125,9 @@ public class IssueComponentController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询component下的issues")
     @GetMapping(value = "/{id}/issues")
-    public ResponseEntity<List<IssueDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<IssueVO>> listByOptions(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "component id", required = true)
+                                                       @ApiParam(value = "component id", required = true)
                                                         @PathVariable Long id) {
         return Optional.ofNullable(issueComponentService.queryIssuesByComponentId(projectId, id))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

@@ -1,24 +1,28 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.mybatis.entity.BaseDTO;
+
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2018/5/16.
+ * Created by HuangFuqiang@choerodon.io on 2018/5/15.
  * Email: fuqianghuang01@gmail.com
  */
-public class ColumnStatusRelDTO {
+@Table(name = "agile_board_column_status_rel")
+public class ColumnStatusRelDTO extends BaseDTO {
 
-    @ApiModelProperty(value = "状态位置字段")
     private Integer position;
 
-    @ApiModelProperty(value = "状态id")
     private Long statusId;
 
-    @ApiModelProperty(value = "列id")
     private Long columnId;
 
-    @ApiModelProperty(value = "项目id")
     private Long projectId;
+
+    @Transient
+    private Long issueId;
 
     public Integer getPosition() {
         return position;
@@ -50,5 +54,18 @@ public class ColumnStatusRelDTO {
 
     public Long getProjectId() {
         return projectId;
+    }
+
+    public Long getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(Long issueId) {
+        this.issueId = issueId;
+    }
+
+    @Override
+    public String toString() {
+        return StringUtil.getToString(this);
     }
 }

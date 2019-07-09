@@ -270,7 +270,7 @@ class AgileTestConfiguration {
     }
 
     private void initIssues() {
-        IssueDO epicIssue = new IssueDO()
+        IssueDTO epicIssue = new IssueDTO()
         epicIssue.issueId = 1L
         epicIssue.issueNum = '1'
         epicIssue.projectId = 1L
@@ -286,7 +286,7 @@ class AgileTestConfiguration {
         epicIssue.epicName = 'epicNameTest'
         issueMapper.insert(epicIssue)
 
-        IssueDO story = new IssueDO()
+        IssueDTO story = new IssueDTO()
         story.projectId = 1L
         story.typeCode = 'story'
         story.statusId = 1L

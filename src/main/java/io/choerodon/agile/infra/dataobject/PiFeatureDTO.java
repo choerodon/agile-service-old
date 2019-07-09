@@ -9,7 +9,15 @@ import javax.persistence.Table;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_pi_feature")
-public class PiFeatureDO extends BaseDTO {
+public class PiFeatureDTO extends BaseDTO {
+
+    public PiFeatureDTO() {}
+
+    public PiFeatureDTO(Long issueId, Long piId, Long programId) {
+        this.issueId = issueId;
+        this.piId = piId;
+        this.programId = programId;
+    }
 
     private Long issueId;
 

@@ -3,7 +3,7 @@ package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.IssueCreateDTO
-import io.choerodon.agile.api.vo.IssueDTO
+import io.choerodon.agile.api.vo.IssueVO
 import io.choerodon.agile.api.vo.ProjectDTO
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.api.vo.event.ProjectConfig
@@ -89,7 +89,7 @@ class StateMachineControllerSpec extends Specification {
         issueCreateDTO.priorityId = 1L
         issueCreateDTO.issueTypeId = 1L
         issueCreateDTO.reporterId = 1L
-        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueVO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
         issueIds.add(issueDTO.issueId)
 
         when: '校验是否可以删除状态机的节点'
@@ -147,7 +147,7 @@ class StateMachineControllerSpec extends Specification {
         issueCreateDTO.priorityId = 1L
         issueCreateDTO.issueTypeId = 1L
         issueCreateDTO.reporterId = 1L
-        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueVO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
         issueIds.add(issueDTO.issueId)
 
         when: '查询状态机方案变更后对issue的影响'

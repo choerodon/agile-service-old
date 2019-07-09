@@ -1,9 +1,9 @@
 package io.choerodon.agile.infra.repository;
 
-import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO;
 import io.choerodon.agile.domain.agile.entity.BoardColumnE;
 import io.choerodon.agile.api.vo.event.RemoveStatusWithProject;
-import io.choerodon.agile.infra.dataobject.BoardColumnDO;
+import io.choerodon.agile.infra.dataobject.BoardColumnDTO;
 
 import java.util.List;
 
@@ -23,9 +23,9 @@ public interface BoardColumnRepository {
 
     void columnSortByProgram(Long projectId, Long boardId, BoardColumnE boardColumnE);
 
-    BoardColumnE updateMaxAndMinNum(ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO);
+    BoardColumnE updateMaxAndMinNum(ColumnWithMaxMinNumVO columnWithMaxMinNumVO);
 
-    void updateSequenceWhenDelete(Long projectId, BoardColumnDO boardColumnDO);
+    void updateSequenceWhenDelete(Long projectId, BoardColumnDTO boardColumnDTO);
 
     /**
      * 批量删除列和状态的关系
