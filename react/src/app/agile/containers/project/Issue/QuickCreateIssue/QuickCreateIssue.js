@@ -190,7 +190,7 @@ class QuickCreateIssue extends Component {
               <div style={{ marginLeft: 8, flexGrow: 1 }}>
                 <Input
                   autoFocus
-                  className="noLabel"
+                  className="hidden-label"
                   ref={(e) => { this.inputvalue = e; }}
                   placeholder="请输入问题概要"
                   maxLength={44}

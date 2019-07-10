@@ -1,4 +1,4 @@
-.agile {
+.program {
   .text-overflow-hidden {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -115,6 +115,12 @@
       }
     }
 
+    .c7n-select-selection--single {
+      .c7n-select-selection__rendered {
+        min-height: unset;
+      }
+    }
+
     &.c7n-select-multiple {
       .c7n-select-selection__rendered {
         min-height: 24px;
@@ -134,9 +140,19 @@
   }
 
   .c7n-input-focused {
-    .noLabel+.c7n-input-label-wrapper {
+    .hidden-label+.c7n-input-label-wrapper {
       transition: none;
       display: none;
+    }
+  }
+
+  // 去掉搜索的文字上浮
+  .c7n-select-dropdown-filter-input {
+    .c7n-input-focused {
+      .c7n-input-label-wrapper {
+        transition: none;
+        display: none;
+      }
     }
   }
 
@@ -154,11 +170,16 @@
     .c7n-select-selection__rendered {
       line-height: 0.3rem;
       height: 0.32rem;
+      min-height: 0.32rem;
     }
 
     .c7n-select-label {
       margin-top: -4px;
     }
   }
-
+  .hidden-length-info {
+    .c7n-input-length-info {
+      display: none;
+    }
+  }
 }

@@ -137,7 +137,7 @@ class FilterManage extends Component {
                       {
                           isEditing ? (
                             <Form className="c7n-filterNameForm">
-                              <FormItem>
+                              <FormItem style={{ marginTop: 22 }}>
                                 {getFieldDecorator(`filterName_${filter.filterId}`, {
                                   rules: [{
                                     required: true, message: '名称必填',

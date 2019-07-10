@@ -104,7 +104,7 @@ const FormItem = Form.Item;
                         rules: [{ required: true, message: '请输入问题概要！' }],
                       })(
                         <Input
-                          className="noLabel"
+                          className="hidden-label"
                           autoFocus
                           maxLength={44}
                           placeholder="请输入问题概要"

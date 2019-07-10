@@ -206,30 +206,12 @@
       }
 
       .c7n-filterNameForm {
-        .c7n-input-content {
-          display: flex;
-          margin-top: 12px;
+        .c7n-input-wrapper:before {
+          border: none;
         }
 
-        .c7n-input-underline {
+        .c7n-input-length-info {
           display: none;
-        }
-
-        .c7n-form-item-control.has-success {
-          margin-top: 14px;
-        }
-
-        .c7n-form-item-control.has-feedback {
-          margin-top: 14px;
-        }
-
-        .c7n-form-item-control.has-error {
-          display: flex;
-          align-items: center;
-
-          .c7n-form-explain {
-            margin-top: 5px;
-          }
         }
       }
     }
