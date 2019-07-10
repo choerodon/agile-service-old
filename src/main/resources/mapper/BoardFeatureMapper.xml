@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.BoardFeatureMapper">
 
-    <resultMap id="boardFeature" type="io.choerodon.agile.infra.dataobject.BoardFeatureDO">
+    <resultMap id="boardFeature" type="io.choerodon.agile.infra.dataobject.BoardFeatureDTO">
         <id property="id" column="id"/>
         <id property="featureId" column="feature_id"/>
         <id property="sprintId" column="sprint_id"/>
@@ -18,7 +18,7 @@
         <id property="objectVersionNumber" column="object_version_number"/>
     </resultMap>
 
-    <resultMap id="boardFeatureInfo" type="io.choerodon.agile.api.vo.BoardFeatureInfoDTO">
+    <resultMap id="boardFeatureInfo" type="io.choerodon.agile.api.vo.BoardFeatureInfoVO">
         <id property="id" column="id"/>
         <id property="featureId" column="feature_id"/>
         <id property="sprintId" column="sprint_id"/>

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface DataLogService {
 
-    DataLogVO create(Long projectId, DataLogCreateVO createDTO);
+    DataLogVO create(Long projectId, DataLogCreateVO createVO);
 
     List<DataLogVO> listByIssueId(Long projectId, Long issueId);
 

@@ -20,7 +20,7 @@ public class ProgramBoardInfoDTO {
     @ApiModelProperty(value = "团队信息")
     private List<ProgramBoardTeamInfoDTO> teamProjects;
     @ApiModelProperty(value = "依赖关系")
-    private List<BoardDependInfoDTO> boardDepends;
+    private List<BoardDependInfoVO> boardDepends;
 
     @ApiModelProperty(value = "冲刺筛选列表")
     private List<SprintVO> filterSprintList;
@@ -67,11 +67,11 @@ public class ProgramBoardInfoDTO {
         this.teamProjects = teamProjects;
     }
 
-    public List<BoardDependInfoDTO> getBoardDepends() {
+    public List<BoardDependInfoVO> getBoardDepends() {
         return boardDepends;
     }
 
-    public void setBoardDepends(List<BoardDependInfoDTO> boardDepends) {
+    public void setBoardDepends(List<BoardDependInfoVO> boardDepends) {
         this.boardDepends = boardDepends;
     }
 

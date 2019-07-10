@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author shinan.chen
  * @since 2019/5/14
  */
-public class BoardFeatureInfoDTO {
+public class BoardFeatureInfoVO {
     @ApiModelProperty(value = "id")
     private Long id;
     @ApiModelProperty(value = "特性id")

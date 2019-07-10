@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.BoardSprintAttrMapper">
 
-    <resultMap id="boardSprintAttr" type="io.choerodon.agile.infra.dataobject.BoardSprintAttrDO">
+    <resultMap id="boardSprintAttr" type="io.choerodon.agile.infra.dataobject.BoardSprintAttrDTO">
         <id property="id" column="id"/>
         <id property="sprintId" column="sprint_id"/>
         <id property="columnWidth" column="column_width"/>

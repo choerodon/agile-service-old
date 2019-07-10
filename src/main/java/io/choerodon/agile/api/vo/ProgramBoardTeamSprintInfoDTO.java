@@ -13,7 +13,7 @@ public class ProgramBoardTeamSprintInfoDTO {
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
     @ApiModelProperty(value = "公告板特性列表")
-    private List<BoardFeatureInfoDTO> boardFeatures;
+    private List<BoardFeatureInfoVO> boardFeatures;
 
     public Long getSprintId() {
         return sprintId;
@@ -23,11 +23,11 @@ public class ProgramBoardTeamSprintInfoDTO {
         this.sprintId = sprintId;
     }
 
-    public List<BoardFeatureInfoDTO> getBoardFeatures() {
+    public List<BoardFeatureInfoVO> getBoardFeatures() {
         return boardFeatures;
     }
 
-    public void setBoardFeatures(List<BoardFeatureInfoDTO> boardFeatures) {
+    public void setBoardFeatures(List<BoardFeatureInfoVO> boardFeatures) {
         this.boardFeatures = boardFeatures;
     }
 }

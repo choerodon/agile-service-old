@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author shinan.chen
  * @since 2019/5/13
  */
-public class BoardDependDTO {
+public class BoardDependInfoVO {
 
     @ApiModelProperty(value = "id")
     private Long id;
@@ -20,6 +20,10 @@ public class BoardDependDTO {
     private Long programId;
     @ApiModelProperty(value = "乐观锁")
     private Long objectVersionNumber;
+    @ApiModelProperty(value = "公告板特性")
+    private BoardFeatureInfoVO boardFeature;
+    @ApiModelProperty(value = "依赖的公告板特")
+    private BoardFeatureInfoVO dependBoardFeature;
 
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
@@ -67,6 +71,22 @@ public class BoardDependDTO {
 
     public void setProgramId(Long programId) {
         this.programId = programId;
+    }
+
+    public BoardFeatureInfoVO getBoardFeature() {
+        return boardFeature;
+    }
+
+    public void setBoardFeature(BoardFeatureInfoVO boardFeature) {
+        this.boardFeature = boardFeature;
+    }
+
+    public BoardFeatureInfoVO getDependBoardFeature() {
+        return dependBoardFeature;
+    }
+
+    public void setDependBoardFeature(BoardFeatureInfoVO dependBoardFeature) {
+        this.dependBoardFeature = dependBoardFeature;
     }
 }
 

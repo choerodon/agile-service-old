@@ -12,7 +12,7 @@ import javax.persistence.Table;
  * @since 2019/5/13
  */
 @Table(name = "agile_board_depend")
-public class BoardDependDO extends BaseDTO {
+public class BoardDependDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

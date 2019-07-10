@@ -8,17 +8,19 @@ import io.choerodon.agile.api.vo.*;
  */
 public interface BoardFeatureService {
 
-    BoardFeatureInfoDTO create(Long projectId, BoardFeatureCreateDTO createDTO);
+    BoardFeatureInfoVO create(Long projectId, BoardFeatureCreateVO createVO);
 
-    BoardFeatureInfoDTO update(Long projectId, Long boardFeatureId, BoardFeatureUpdateDTO updateDTO);
+    BoardFeatureInfoVO update(Long projectId, Long boardFeatureId, BoardFeatureUpdateVO updateVO);
 
-    BoardFeatureDTO queryById(Long projectId, Long boardFeatureId);
+    BoardFeatureVO queryById(Long projectId, Long boardFeatureId);
 
-    BoardFeatureInfoDTO queryInfoById(Long projectId, Long boardFeatureId);
+    BoardFeatureInfoVO queryInfoById(Long projectId, Long boardFeatureId);
 
     void deleteById(Long projectId, Long boardFeatureId);
 
     void deleteByFeatureId(Long projectId, Long featureId);
 
     ProgramBoardInfoDTO queryBoardInfo(Long programId, ProgramBoardFilterDTO boardFilter);
+
+    void checkId(Long projectId, Long boardFeatureId);
 }

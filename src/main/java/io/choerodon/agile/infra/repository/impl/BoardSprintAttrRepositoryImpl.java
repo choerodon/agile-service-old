@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
-import io.choerodon.agile.infra.dataobject.BoardSprintAttrDO;
+import io.choerodon.agile.infra.dataobject.BoardSprintAttrDTO;
 import io.choerodon.agile.infra.mapper.BoardSprintAttrMapper;
 import io.choerodon.agile.infra.repository.BoardSprintAttrRepository;
 import io.choerodon.core.exception.CommonException;
@@ -21,8 +21,8 @@ public class BoardSprintAttrRepositoryImpl implements BoardSprintAttrRepository 
     private static final String ERROR_SPRINTATTR_DELETE = "error.boardSprintAttr.delete";
 
     @Override
-    public BoardSprintAttrDO create(Long projectId, Long sprintId, int columnWidth) {
-        BoardSprintAttrDO create = new BoardSprintAttrDO();
+    public BoardSprintAttrDTO create(Long projectId, Long sprintId, int columnWidth) {
+        BoardSprintAttrDTO create = new BoardSprintAttrDTO();
         create.setSprintId(sprintId);
         create.setColumnWidth(columnWidth);
         create.setProgramId(projectId);
@@ -34,7 +34,7 @@ public class BoardSprintAttrRepositoryImpl implements BoardSprintAttrRepository 
 
     @Override
     public void delete(Long projectId, Long sprintId) {
-        BoardSprintAttrDO delete = new BoardSprintAttrDO();
+        BoardSprintAttrDTO delete = new BoardSprintAttrDTO();
         delete.setSprintId(sprintId);
         delete.setProgramId(projectId);
         if (boardSprintAttrMapper.delete(delete) != 1) {
@@ -43,15 +43,15 @@ public class BoardSprintAttrRepositoryImpl implements BoardSprintAttrRepository 
     }
 
     @Override
-    public void update(BoardSprintAttrDO update) {
+    public void update(BoardSprintAttrDTO update) {
         if (boardSprintAttrMapper.updateByPrimaryKeySelective(update) != 1) {
             throw new CommonException(ERROR_SPRINTATTR_UPDATE);
         }
     }
 
     @Override
-    public BoardSprintAttrDO queryBySprintId(Long projectId, Long sprintId) {
-        BoardSprintAttrDO select = new BoardSprintAttrDO();
+    public BoardSprintAttrDTO queryBySprintId(Long projectId, Long sprintId) {
+        BoardSprintAttrDTO select = new BoardSprintAttrDTO();
         select.setSprintId(sprintId);
         select.setProgramId(projectId);
         return boardSprintAttrMapper.selectOne(select);

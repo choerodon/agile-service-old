@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.BoardTeamDTO;
-import io.choerodon.agile.api.vo.BoardTeamUpdateDTO;
+import io.choerodon.agile.api.vo.BoardTeamVO;
+import io.choerodon.agile.api.vo.BoardTeamUpdateVO;
 import io.choerodon.agile.app.service.BoardTeamService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -29,13 +29,13 @@ public class BoardTeamController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("移动公告板团队")
     @PutMapping(value = "/{boardTeamId}")
-    public ResponseEntity<BoardTeamDTO> update(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardTeamVO> update(@ApiParam(value = "项目id", required = true)
                                                @PathVariable(name = "project_id") Long projectId,
-                                               @ApiParam(value = "boardTeamId", required = true)
+                                              @ApiParam(value = "boardTeamId", required = true)
                                                @PathVariable Long boardTeamId,
-                                               @ApiParam(value = "updateDTO", required = true)
-                                               @RequestBody BoardTeamUpdateDTO updateDTO) {
-        return Optional.ofNullable(boardTeamService.update(projectId, boardTeamId, updateDTO))
+                                              @ApiParam(value = "updateDTO", required = true)
+                                               @RequestBody BoardTeamUpdateVO updateVO) {
+        return Optional.ofNullable(boardTeamService.update(projectId, boardTeamId, updateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.boardTeam.update"));
     }

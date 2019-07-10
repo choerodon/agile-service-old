@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
  * @author shinan.chen
  * @since 2019/5/13
  */
-public class BoardFeatureCreateDTO {
+public class BoardFeatureCreateVO {
 
     @ApiModelProperty(value = "是否拖动到第一个")
     @NotNull(message = "error.boardFeature.beforeNotNull")

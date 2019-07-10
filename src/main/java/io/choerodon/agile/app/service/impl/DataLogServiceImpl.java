@@ -53,8 +53,8 @@ public class DataLogServiceImpl implements DataLogService {
     }
 
     @Override
-    public DataLogVO create(Long projectId, DataLogCreateVO createDTO) {
-        DataLogDTO dataLogDTO = modelMapper.map(createDTO, DataLogDTO.class);
+    public DataLogVO create(Long projectId, DataLogCreateVO createVO) {
+        DataLogDTO dataLogDTO = modelMapper.map(createVO, DataLogDTO.class);
         dataLogDTO.setProjectId(projectId);
         if (dataLogMapper.insert(dataLogDTO) != 1) {
             throw new CommonException("error.dataLog.insert");

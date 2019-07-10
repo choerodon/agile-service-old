@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
  * @author shinan.chen
  * @since 2019/5/13
  */
-public class BoardDependCreateDTO {
+public class BoardDependCreateVO {
 
     @ApiModelProperty(value = "公告板特性id")
     @NotNull(message = "error.boardDepend.boardFeatureIdNotNull")

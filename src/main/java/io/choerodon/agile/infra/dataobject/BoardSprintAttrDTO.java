@@ -1,20 +1,24 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.choerodon.mybatis.entity.BaseDTO;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * @author shinan.chen
- * @since 2019/5/14
+ * @since 2019/5/13
  */
-public class BoardSprintAttrDTO {
+@Table(name = "agile_board_sprint_attr")
+public class BoardSprintAttrDTO extends BaseDTO {
 
-    @ApiModelProperty(value = "id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
-    @ApiModelProperty(value = "列宽")
     private Integer columnWidth;
-    @ApiModelProperty(value = "项目群id")
     private Long programId;
 
     public Long getId() {

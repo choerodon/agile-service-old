@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
-import io.choerodon.agile.api.vo.BoardFeatureInfoDTO;
-import io.choerodon.agile.infra.dataobject.BoardFeatureDO;
+import io.choerodon.agile.api.vo.BoardFeatureInfoVO;
+import io.choerodon.agile.infra.dataobject.BoardFeatureDTO;
 import io.choerodon.agile.infra.mapper.BoardFeatureMapper;
 import io.choerodon.agile.infra.repository.BoardFeatureRepository;
 import io.choerodon.core.exception.CommonException;
@@ -24,7 +24,7 @@ public class BoardFeatureRepositoryImpl implements BoardFeatureRepository {
     private static final String ERROR_BOARDFEATURE_UPDATE = "error.boardFeature.update";
 
     @Override
-    public BoardFeatureDO create(BoardFeatureDO boardFeature) {
+    public BoardFeatureDTO create(BoardFeatureDTO boardFeature) {
         if (boardFeatureMapper.insert(boardFeature) != 1) {
             throw new CommonException(ERROR_BOARDFEATURE_CREATE);
         }
@@ -39,15 +39,15 @@ public class BoardFeatureRepositoryImpl implements BoardFeatureRepository {
     }
 
     @Override
-    public void update(BoardFeatureDO boardFeature) {
+    public void update(BoardFeatureDTO boardFeature) {
         if (boardFeatureMapper.updateByPrimaryKeySelective(boardFeature) != 1) {
             throw new CommonException(ERROR_BOARDFEATURE_UPDATE);
         }
     }
 
     @Override
-    public BoardFeatureDO queryById(Long projectId, Long boardFeatureId) {
-        BoardFeatureDO boardFeature = boardFeatureMapper.selectByPrimaryKey(boardFeatureId);
+    public BoardFeatureDTO queryById(Long projectId, Long boardFeatureId) {
+        BoardFeatureDTO boardFeature = boardFeatureMapper.selectByPrimaryKey(boardFeatureId);
         if (boardFeature == null) {
             throw new CommonException(ERROR_BOARDFEATURE_NOTFOUND);
         }
@@ -58,8 +58,8 @@ public class BoardFeatureRepositoryImpl implements BoardFeatureRepository {
     }
 
     @Override
-    public BoardFeatureInfoDTO queryInfoById(Long projectId, Long boardFeatureId) {
-        BoardFeatureInfoDTO boardFeature = boardFeatureMapper.queryInfoById(projectId, boardFeatureId);
+    public BoardFeatureInfoVO queryInfoById(Long projectId, Long boardFeatureId) {
+        BoardFeatureInfoVO boardFeature = boardFeatureMapper.queryInfoById(projectId, boardFeatureId);
         if (boardFeature == null) {
             throw new CommonException(ERROR_BOARDFEATURE_NOTFOUND);
         }

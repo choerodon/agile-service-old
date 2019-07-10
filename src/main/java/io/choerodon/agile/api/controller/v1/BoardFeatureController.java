@@ -28,11 +28,11 @@ public class BoardFeatureController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建公告板特性")
     @PostMapping
-    public ResponseEntity<BoardFeatureInfoDTO> create(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardFeatureInfoVO> create(@ApiParam(value = "项目id", required = true)
                                                       @PathVariable(name = "project_id") Long projectId,
-                                                      @ApiParam(value = "createDTO", required = true)
-                                                      @RequestBody BoardFeatureCreateDTO createDTO) {
-        return Optional.ofNullable(boardFeatureService.create(projectId, createDTO))
+                                                     @ApiParam(value = "createDTO", required = true)
+                                                      @RequestBody BoardFeatureCreateVO createVO) {
+        return Optional.ofNullable(boardFeatureService.create(projectId, createVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.boardFeature.create"));
     }
@@ -40,13 +40,13 @@ public class BoardFeatureController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("移动公告板特性")
     @PutMapping(value = "/{boardFeatureId}")
-    public ResponseEntity<BoardFeatureInfoDTO> update(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardFeatureInfoVO> update(@ApiParam(value = "项目id", required = true)
                                                       @PathVariable(name = "project_id") Long projectId,
-                                                      @ApiParam(value = "boardFeatureId", required = true)
+                                                     @ApiParam(value = "boardFeatureId", required = true)
                                                       @PathVariable Long boardFeatureId,
-                                                      @ApiParam(value = "updateDTO", required = true)
-                                                      @RequestBody BoardFeatureUpdateDTO updateDTO) {
-        return Optional.ofNullable(boardFeatureService.update(projectId, boardFeatureId, updateDTO))
+                                                     @ApiParam(value = "updateDTO", required = true)
+                                                      @RequestBody BoardFeatureUpdateVO updateVO) {
+        return Optional.ofNullable(boardFeatureService.update(projectId, boardFeatureId, updateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.boardFeature.update"));
     }

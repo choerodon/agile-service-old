@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository;
 
 
-import io.choerodon.agile.infra.dataobject.BoardTeamDO;
+import io.choerodon.agile.infra.dataobject.BoardTeamDTO;
 
 import java.util.List;
 
@@ -10,13 +10,13 @@ import java.util.List;
  * @since 2019/5/20
  */
 public interface BoardTeamRepository {
-    BoardTeamDO create(BoardTeamDO create);
+    BoardTeamDTO create(BoardTeamDTO create);
 
     void delete(Long boardFeatureId);
 
-    void update(BoardTeamDO update);
+    void update(BoardTeamDTO update);
 
-    BoardTeamDO queryById(Long programId, Long boardTeamId);
+    BoardTeamDTO queryById(Long programId, Long boardTeamId);
 
-    List<BoardTeamDO> queryByProgramId(Long programId);
+    List<BoardTeamDTO> queryByProgramId(Long programId);
 }

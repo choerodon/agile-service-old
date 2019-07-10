@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.BoardDependMapper">
 
-    <resultMap id="boardDependInfo" type="io.choerodon.agile.api.vo.BoardDependInfoDTO">
+    <resultMap id="boardDependInfo" type="io.choerodon.agile.api.vo.BoardDependInfoVO">
         <id property="id" column="id"/>
         <id property="boardFeatureId" column="board_feature_id"/>
         <id property="dependBoardFeatureId" column="depend_board_feature_id"/>
@@ -11,7 +11,7 @@
 
         <id property="objectVersionNumber" column="object_version_number"/>
         <association property="boardFeature" columnPrefix="origin_"
-                     javaType="io.choerodon.agile.api.vo.BoardFeatureInfoDTO">
+                     javaType="io.choerodon.agile.api.vo.BoardFeatureInfoVO">
             <id property="id" column="id"/>
             <result property="featureId" column="feature_id"/>
             <result property="sprintId" column="sprint_id"/>
@@ -21,7 +21,7 @@
             <result property="programId" column="program_id"/>
         </association>
         <association property="dependBoardFeature" columnPrefix="depend_"
-                     javaType="io.choerodon.agile.api.vo.BoardFeatureInfoDTO">
+                     javaType="io.choerodon.agile.api.vo.BoardFeatureInfoVO">
             <id property="id" column="id"/>
             <result property="featureId" column="feature_id"/>
             <result property="sprintId" column="sprint_id"/>

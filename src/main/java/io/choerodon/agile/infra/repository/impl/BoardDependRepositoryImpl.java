@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
-import io.choerodon.agile.infra.dataobject.BoardDependDO;
+import io.choerodon.agile.infra.dataobject.BoardDependDTO;
 import io.choerodon.agile.infra.mapper.BoardDependMapper;
 import io.choerodon.agile.infra.repository.BoardDependRepository;
 import io.choerodon.core.exception.CommonException;
@@ -23,7 +23,7 @@ public class BoardDependRepositoryImpl implements BoardDependRepository {
     private static final String ERROR_BOARDDEPEND_UPDATE = "error.boardDepend.update";
 
     @Override
-    public BoardDependDO create(BoardDependDO boardDepend) {
+    public BoardDependDTO create(BoardDependDTO boardDepend) {
         if (boardDependMapper.insert(boardDepend) != 1) {
             throw new CommonException(ERROR_BOARDDEPEND_CREATE);
         }
@@ -38,15 +38,15 @@ public class BoardDependRepositoryImpl implements BoardDependRepository {
     }
 
     @Override
-    public void update(BoardDependDO boardDepend) {
+    public void update(BoardDependDTO boardDepend) {
         if (boardDependMapper.updateByPrimaryKeySelective(boardDepend) != 1) {
             throw new CommonException(ERROR_BOARDDEPEND_UPDATE);
         }
     }
 
     @Override
-    public BoardDependDO queryById(Long projectId, Long boardDependId) {
-        BoardDependDO boardDepend = boardDependMapper.selectByPrimaryKey(boardDependId);
+    public BoardDependDTO queryById(Long projectId, Long boardDependId) {
+        BoardDependDTO boardDepend = boardDependMapper.selectByPrimaryKey(boardDependId);
         if (boardDepend == null) {
             throw new CommonException(ERROR_BOARDDEPEND_NOTFOUND);
         }

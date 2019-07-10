@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.BoardDependCreateDTO;
-import io.choerodon.agile.api.vo.BoardDependDTO;
+import io.choerodon.agile.api.vo.BoardDependCreateVO;
+import io.choerodon.agile.api.vo.BoardDependVO;
 import io.choerodon.agile.app.service.BoardDependService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -29,11 +29,11 @@ public class BoardDependController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建公告板特性依赖")
     @PostMapping
-    public ResponseEntity<BoardDependDTO> create(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardDependVO> create(@ApiParam(value = "项目id", required = true)
                                                  @PathVariable(name = "project_id") Long projectId,
-                                                 @ApiParam(value = "createDTO", required = true)
-                                                 @RequestBody BoardDependCreateDTO createDTO) {
-        return Optional.ofNullable(boardDependService.create(projectId, createDTO))
+                                                @ApiParam(value = "createDTO", required = true)
+                                                 @RequestBody BoardDependCreateVO createVO) {
+        return Optional.ofNullable(boardDependService.create(projectId, createVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.boardDepend.create"));
     }

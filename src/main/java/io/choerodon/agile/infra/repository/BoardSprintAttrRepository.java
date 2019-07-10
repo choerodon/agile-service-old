@@ -1,18 +1,18 @@
 package io.choerodon.agile.infra.repository;
 
 
-import io.choerodon.agile.infra.dataobject.BoardSprintAttrDO;
+import io.choerodon.agile.infra.dataobject.BoardSprintAttrDTO;
 
 /**
  * @author shinan.chen
  * @since 2019/5/14
  */
 public interface BoardSprintAttrRepository {
-    BoardSprintAttrDO create(Long projectId, Long sprintId, int columnWidth);
+    BoardSprintAttrDTO create(Long projectId, Long sprintId, int columnWidth);
 
     void delete(Long projectId, Long sprintId);
 
-    void update(BoardSprintAttrDO update);
+    void update(BoardSprintAttrDTO update);
 
-    BoardSprintAttrDO queryBySprintId(Long projectId, Long sprintId);
+    BoardSprintAttrDTO queryBySprintId(Long projectId, Long sprintId);
 }

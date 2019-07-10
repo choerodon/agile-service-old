@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.BoardSprintAttrDTO;
+import io.choerodon.agile.api.vo.BoardSprintAttrVO;
 import io.choerodon.agile.app.service.BoardSprintAttrService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -28,11 +28,11 @@ public class BoardSprintAttrController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("修改公告板冲刺列宽")
     @GetMapping(value = "/update")
-    public ResponseEntity<BoardSprintAttrDTO> updateColumnWidth(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardSprintAttrVO> updateColumnWidth(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
-                                                                @ApiParam(value = "sprintId", required = true)
+                                                               @ApiParam(value = "sprintId", required = true)
                                                                 @RequestParam Long sprintId,
-                                                                @ApiParam(value = "columnWidth", required = true)
+                                                               @ApiParam(value = "columnWidth", required = true)
                                                                 @RequestParam Integer columnWidth) {
         return Optional.ofNullable(boardSprintAttrService.updateColumnWidth(projectId, sprintId, columnWidth))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))

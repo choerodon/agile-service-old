@@ -337,21 +337,21 @@ public class BoardServiceImpl implements BoardService {
         return sprintService.getActiveSprint(projectId);
     }
 
-    private BoardSprintDTO putCurrentSprint(SprintDTO activeSprint, Long organizationId) {
+    private BoardSprintVO putCurrentSprint(SprintDTO activeSprint, Long organizationId) {
         if (activeSprint != null) {
-            BoardSprintDTO boardSprintDTO = new BoardSprintDTO();
-            boardSprintDTO.setSprintId(activeSprint.getSprintId());
-            boardSprintDTO.setSprintName(activeSprint.getSprintName());
+            BoardSprintVO boardSprintVO = new BoardSprintVO();
+            boardSprintVO.setSprintId(activeSprint.getSprintId());
+            boardSprintVO.setSprintName(activeSprint.getSprintName());
             if (activeSprint.getEndDate() != null) {
                 Date startDate = new Date();
                 if (activeSprint.getStartDate().after(startDate)) {
                     startDate = activeSprint.getStartDate();
                 }
-                boardSprintDTO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(startDate, activeSprint.getEndDate(),
+                boardSprintVO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(startDate, activeSprint.getEndDate(),
                         workCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
                         workCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
             }
-            return boardSprintDTO;
+            return boardSprintVO;
         }
         return null;
     }

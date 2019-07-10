@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.repository.impl;
 
-import io.choerodon.agile.infra.dataobject.BoardTeamDO;
+import io.choerodon.agile.infra.dataobject.BoardTeamDTO;
 import io.choerodon.agile.infra.mapper.BoardTeamMapper;
 import io.choerodon.agile.infra.repository.BoardTeamRepository;
 import io.choerodon.core.exception.CommonException;
@@ -25,7 +25,7 @@ public class BoardTeamRepositoryImpl implements BoardTeamRepository {
     private static final String ERROR_BOARDTEAM_UPDATE = "error.boardTeam.update";
 
     @Override
-    public BoardTeamDO create(BoardTeamDO boardTeam) {
+    public BoardTeamDTO create(BoardTeamDTO boardTeam) {
         if (boardTeamMapper.insert(boardTeam) != 1) {
             throw new CommonException(ERROR_BOARDTEAM_CREATE);
         }
@@ -40,15 +40,15 @@ public class BoardTeamRepositoryImpl implements BoardTeamRepository {
     }
 
     @Override
-    public void update(BoardTeamDO boardTeam) {
+    public void update(BoardTeamDTO boardTeam) {
         if (boardTeamMapper.updateByPrimaryKeySelective(boardTeam) != 1) {
             throw new CommonException(ERROR_BOARDTEAM_UPDATE);
         }
     }
 
     @Override
-    public BoardTeamDO queryById(Long programId, Long boardTeamId) {
-        BoardTeamDO boardTeam = boardTeamMapper.selectByPrimaryKey(boardTeamId);
+    public BoardTeamDTO queryById(Long programId, Long boardTeamId) {
+        BoardTeamDTO boardTeam = boardTeamMapper.selectByPrimaryKey(boardTeamId);
         if (boardTeam == null) {
             throw new CommonException(ERROR_BOARDTEAM_NOTFOUND);
         }
@@ -59,8 +59,8 @@ public class BoardTeamRepositoryImpl implements BoardTeamRepository {
     }
 
     @Override
-    public List<BoardTeamDO> queryByProgramId(Long programId) {
-        BoardTeamDO select = new BoardTeamDO();
+    public List<BoardTeamDTO> queryByProgramId(Long programId) {
+        BoardTeamDTO select = new BoardTeamDTO();
         select.setProgramId(programId);
         return boardTeamMapper.select(select);
     }

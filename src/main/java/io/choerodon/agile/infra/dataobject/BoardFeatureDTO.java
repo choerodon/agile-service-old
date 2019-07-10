@@ -11,15 +11,26 @@ import javax.persistence.Table;
  * @author shinan.chen
  * @since 2019/5/13
  */
-@Table(name = "agile_board_sprint_attr")
-public class BoardSprintAttrDO extends BaseDTO {
+@Table(name = "agile_board_feature")
+public class BoardFeatureDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long featureId;
     private Long sprintId;
-    private Integer columnWidth;
+    private Long piId;
+    private Long teamProjectId;
+    private String rank;
     private Long programId;
+
+    public String getRank() {
+        return rank;
+    }
+
+    public void setRank(String rank) {
+        this.rank = rank;
+    }
 
     public Long getId() {
         return id;
@@ -27,6 +38,14 @@ public class BoardSprintAttrDO extends BaseDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getFeatureId() {
+        return featureId;
+    }
+
+    public void setFeatureId(Long featureId) {
+        this.featureId = featureId;
     }
 
     public Long getSprintId() {
@@ -37,12 +56,20 @@ public class BoardSprintAttrDO extends BaseDTO {
         this.sprintId = sprintId;
     }
 
-    public Integer getColumnWidth() {
-        return columnWidth;
+    public Long getPiId() {
+        return piId;
     }
 
-    public void setColumnWidth(Integer columnWidth) {
-        this.columnWidth = columnWidth;
+    public void setPiId(Long piId) {
+        this.piId = piId;
+    }
+
+    public Long getTeamProjectId() {
+        return teamProjectId;
+    }
+
+    public void setTeamProjectId(Long teamProjectId) {
+        this.teamProjectId = teamProjectId;
     }
 
     public Long getProgramId() {

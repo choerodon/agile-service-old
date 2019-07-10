@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.BoardTeamDTO
-import io.choerodon.agile.api.vo.BoardTeamUpdateDTO
+import io.choerodon.agile.api.vo.BoardTeamVO
+import io.choerodon.agile.api.vo.BoardTeamUpdateVO
 import io.choerodon.agile.api.vo.ProgramBoardFilterDTO
 import io.choerodon.agile.api.vo.ProgramBoardInfoDTO
 import io.choerodon.agile.app.service.BoardFeatureService
@@ -99,14 +99,14 @@ class BoardTeamControllerSpec extends Specification {
 
     def "update"() {
         given: '准备'
-        BoardTeamUpdateDTO update = new BoardTeamUpdateDTO()
+        BoardTeamUpdateVO update = new BoardTeamUpdateVO()
         update.before = true
         update.outsetId = 1L
         update.objectVersionNumber = 1L
 
         when: '移动公告板团队'
-        HttpEntity<BoardTeamUpdateDTO> httpEntity = new HttpEntity<>(update)
-        def entity = restTemplate.exchange(url + "/{boardTeamId}", HttpMethod.PUT, httpEntity, BoardTeamDTO.class, programId, 2L)
+        HttpEntity<BoardTeamUpdateVO> httpEntity = new HttpEntity<>(update)
+        def entity = restTemplate.exchange(url + "/{boardTeamId}", HttpMethod.PUT, httpEntity, BoardTeamVO.class, programId, 2L)
 
         then: '状态码为200，调用成功'
         def actRequest = false
