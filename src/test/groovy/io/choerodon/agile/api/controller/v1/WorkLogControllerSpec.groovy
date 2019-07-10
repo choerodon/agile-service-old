@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.WorkLogDTO
+import io.choerodon.agile.api.vo.WorkLogVO
 import io.choerodon.agile.app.service.UserService
 import io.choerodon.agile.infra.dataobject.UserDO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
@@ -61,7 +61,7 @@ class WorkLogControllerSpec extends Specification {
     def "createWorkLog"() {
 
         given:
-        WorkLogDTO workLogDTO = new WorkLogDTO()
+        WorkLogVO workLogDTO = new WorkLogVO()
         workLogDTO.projectId = projectId
         def workTime = 3
         def issueId = issueMapper.selectAll().get(0).issueId
@@ -76,7 +76,7 @@ class WorkLogControllerSpec extends Specification {
         def resultSuccess = restTemplate.exchange("/v1/projects/$projectId/work_log",
                 HttpMethod.POST,
                 workLogDTOEntity,
-                WorkLogDTO.class
+                WorkLogVO.class
         )
         workLogDTO.issueId = Integer.MAX_VALUE
         workLogDTOEntity = new HttpEntity<>(workLogDTO)
@@ -97,13 +97,13 @@ class WorkLogControllerSpec extends Specification {
         exceptionInfo.get("failed").toString() == "true"
 
         and:
-        workLogDTOList << ConvertHelper.convert(workLogMapper.selectByPrimaryKey(resultSuccess.body.logId), WorkLogDTO)
+        workLogDTOList << ConvertHelper.convert(workLogMapper.selectByPrimaryKey(resultSuccess.body.logId), WorkLogVO)
     }
 
     def "updateWorkLog"() {
 
         given:
-        WorkLogDTO workLogDTO = new WorkLogDTO()
+        WorkLogVO workLogDTO = new WorkLogVO()
         workLogDTO.projectId = projectId
         def workLogDTOEntity = new HttpEntity<>(workLogDTO)
         def resultFailure = restTemplate.exchange("/v1/projects/{projectId}/work_log/{logId}",
@@ -128,7 +128,7 @@ class WorkLogControllerSpec extends Specification {
         def resultSuccess = restTemplate.exchange("/v1/projects/{projectId}/work_log/{logId}",
                 HttpMethod.PATCH,
                 workLogDTOEntity,
-                WorkLogDTO.class,
+                WorkLogVO.class,
                 projectId,
                 workLog.logId
         )
@@ -154,7 +154,7 @@ class WorkLogControllerSpec extends Specification {
         assert exceptionInfo.get("error").toString() == "Internal Server Error"
 
         when:
-        def resultSuccess = restTemplate.getForEntity("/v1/projects/$projectId/work_log/${workLog.logId}", WorkLogDTO)
+        def resultSuccess = restTemplate.getForEntity("/v1/projects/$projectId/work_log/${workLog.logId}", WorkLogVO)
 
         then:
         resultSuccess.statusCode.is2xxSuccessful()

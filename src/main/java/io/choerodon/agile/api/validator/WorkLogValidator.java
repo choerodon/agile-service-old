@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.validator;
 
 
-import io.choerodon.agile.api.vo.WorkLogDTO;
+import io.choerodon.agile.api.vo.WorkLogVO;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.mapper.WorkLogMapper;
 import io.choerodon.core.exception.CommonException;
@@ -25,8 +25,8 @@ public class WorkLogValidator {
     private WorkLogValidator() {
     }
 
-    public static void checkCreateWorkLog(Long projectId, WorkLogDTO workLogDTO, IssueDTO issueDTO) {
-        if (!projectId.equals(workLogDTO.getProjectId())) {
+    public static void checkCreateWorkLog(Long projectId, WorkLogVO workLogVO, IssueDTO issueDTO) {
+        if (!projectId.equals(workLogVO.getProjectId())) {
             throw new CommonException(ERROR_PROJECTID_NOTNULL);
         }
         if (issueDTO == null) {
@@ -34,11 +34,11 @@ public class WorkLogValidator {
         }
     }
 
-    public static void checkUpdateWorkLog(WorkLogDTO workLogDTO) {
-        if (workLogDTO.getLogId() == null) {
+    public static void checkUpdateWorkLog(WorkLogVO workLogVO) {
+        if (workLogVO.getLogId() == null) {
             throw new CommonException(ERROR_LOGID_ISNULL);
         }
-        if (workLogDTO.getObjectVersionNumber() == null) {
+        if (workLogVO.getObjectVersionNumber() == null) {
             throw new CommonException(ERROR_OBJECTVERSIONNUMBER_ISNULL);
         }
     }

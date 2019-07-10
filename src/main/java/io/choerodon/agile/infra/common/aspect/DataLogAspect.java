@@ -340,13 +340,13 @@ public class DataLogAspect {
         Long projectId = (Long) args[0];
         Long logId = (Long) args[1];
         if (logId != null && projectId != null) {
-            WorkLogDO query = new WorkLogDO();
+            WorkLogDTO query = new WorkLogDTO();
             query.setProjectId(projectId);
             query.setLogId(logId);
-            WorkLogDO workLogDO = workLogMapper.selectOne(query);
-            if (workLogDO != null) {
-                createDataLog(workLogDO.getProjectId(), workLogDO.getIssueId(), FIELD_WORKLOGID,
-                        workLogDO.getLogId().toString(), null, workLogDO.getLogId().toString(), null);
+            WorkLogDTO workLogDTO = workLogMapper.selectOne(query);
+            if (workLogDTO != null) {
+                createDataLog(workLogDTO.getProjectId(), workLogDTO.getIssueId(), FIELD_WORKLOGID,
+                        workLogDTO.getLogId().toString(), null, workLogDTO.getLogId().toString(), null);
             }
         }
         return null;

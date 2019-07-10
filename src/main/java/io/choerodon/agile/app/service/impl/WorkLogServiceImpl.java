@@ -1,23 +1,26 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.WorkLogDTO;
+import io.choerodon.agile.api.vo.WorkLogVO;
 import io.choerodon.agile.api.validator.WorkLogValidator;
 import io.choerodon.agile.app.service.WorkLogService;
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
-import io.choerodon.agile.domain.agile.entity.WorkLogE;
+import io.choerodon.agile.infra.dataobject.WorkLogDTO;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.repository.WorkLogRepository;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
-import io.choerodon.agile.infra.dataobject.WorkLogDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.WorkLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.exception.CommonException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +41,8 @@ public class WorkLogServiceImpl implements WorkLogService {
     private static final String REDUCE = "reduce";
     private static final String REMAINING_TIME_FIELD = "remainingTime";
 
-    @Autowired
-    private WorkLogRepository workLogRepository;
+//    @Autowired
+//    private WorkLogRepository workLogRepository;
 
     @Autowired
     private WorkLogMapper workLogMapper;
@@ -52,6 +55,13 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Autowired
     private UserService userService;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     private void setTo(Long issueId, BigDecimal predictionTime) {
         IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
@@ -81,64 +91,95 @@ public class WorkLogServiceImpl implements WorkLogService {
     }
 
     @Override
-    public WorkLogDTO create(Long projectId, WorkLogDTO workLogDTO) {
-        IssueDTO issueDTO = issueMapper.selectByPrimaryKey(workLogDTO.getIssueId());
-        WorkLogValidator.checkCreateWorkLog(projectId, workLogDTO, issueDTO);
-        if (workLogDTO.getResidualPrediction() != null) {
-            switch (workLogDTO.getResidualPrediction()) {
+    public WorkLogVO createWorkLog(Long projectId, WorkLogVO workLogVO) {
+        IssueDTO issueDTO = issueMapper.selectByPrimaryKey(workLogVO.getIssueId());
+        WorkLogValidator.checkCreateWorkLog(projectId, workLogVO, issueDTO);
+        if (workLogVO.getResidualPrediction() != null) {
+            switch (workLogVO.getResidualPrediction()) {
                 case SELF_ADJUSTMENT:
-                    selfAdjustment(workLogDTO.getIssueId(), workLogDTO.getWorkTime());
+                    selfAdjustment(workLogVO.getIssueId(), workLogVO.getWorkTime());
                     break;
                 case NO_SET_PREDICTION_TIME:
                     break;
                 case SET_TO:
-                    setTo(workLogDTO.getIssueId(), workLogDTO.getPredictionTime());
+                    setTo(workLogVO.getIssueId(), workLogVO.getPredictionTime());
                     break;
                 case REDUCE:
-                    reducePrediction(workLogDTO.getIssueId(), workLogDTO.getPredictionTime());
+                    reducePrediction(workLogVO.getIssueId(), workLogVO.getPredictionTime());
                     break;
                 default:
                     break;
             }
         }
-        WorkLogE workLogE = ConvertHelper.convert(workLogDTO, WorkLogE.class);
-        workLogE = workLogRepository.create(workLogE);
-        return queryWorkLogById(workLogE.getProjectId(), workLogE.getLogId());
+//        workLogE = workLogRepository.create(workLogE);
+        WorkLogDTO res = create(modelMapper.map(workLogVO, WorkLogDTO.class));
+        return queryWorkLogById(res.getProjectId(), res.getLogId());
     }
 
     @Override
-    public WorkLogDTO update(Long projectId, Long logId, WorkLogDTO workLogDTO) {
-        WorkLogValidator.checkUpdateWorkLog(workLogDTO);
+    public WorkLogVO updateWorkLog(Long projectId, Long logId, WorkLogVO workLogVO) {
+        WorkLogValidator.checkUpdateWorkLog(workLogVO);
+        workLogVO.setProjectId(projectId);
+        WorkLogDTO res = update(modelMapper.map(workLogVO, WorkLogDTO.class));
+        return queryWorkLogById(res.getProjectId(), res.getLogId());
+    }
+
+    @Override
+    public void deleteWorkLog(Long projectId, Long logId) {
+        delete(projectId, logId);
+    }
+
+    @Override
+    public WorkLogVO queryWorkLogById(Long projectId, Long logId) {
+        WorkLogDTO workLogDTO = new WorkLogDTO();
         workLogDTO.setProjectId(projectId);
-        WorkLogE workLogE = ConvertHelper.convert(workLogDTO, WorkLogE.class);
-        workLogE = workLogRepository.update(workLogE);
-        return queryWorkLogById(workLogE.getProjectId(), workLogE.getLogId());
+        workLogDTO.setLogId(logId);
+        WorkLogVO workLogVO = ConvertHelper.convert(workLogMapper.selectOne(workLogDTO), WorkLogVO.class);
+        workLogVO.setUserName(userService.queryUserNameByOption(workLogVO.getUserId(), true).getRealName());
+        return workLogVO;
     }
 
     @Override
-    public void delete(Long projectId, Long logId) {
-        workLogRepository.delete(projectId, logId);
-    }
-
-    @Override
-    public WorkLogDTO queryWorkLogById(Long projectId, Long logId) {
-        WorkLogDO workLogDO = new WorkLogDO();
-        workLogDO.setProjectId(projectId);
-        workLogDO.setLogId(logId);
-        WorkLogDTO workLogDTO = ConvertHelper.convert(workLogMapper.selectOne(workLogDO), WorkLogDTO.class);
-        workLogDTO.setUserName(userService.queryUserNameByOption(workLogDTO.getUserId(), true).getRealName());
-        return workLogDTO;
-    }
-
-    @Override
-    public List<WorkLogDTO> queryWorkLogListByIssueId(Long projectId, Long issueId) {
-        List<WorkLogDTO> workLogDTOList = ConvertHelper.convertList(workLogMapper.queryByIssueId(issueId, projectId), WorkLogDTO.class);
-        List<Long> assigneeIds = workLogDTOList.stream().filter(workLogDTO -> workLogDTO.getUserId() != null && !Objects.equals(workLogDTO.getUserId(), 0L)).map(WorkLogDTO::getUserId).distinct().collect(Collectors.toList());
+    public List<WorkLogVO> queryWorkLogListByIssueId(Long projectId, Long issueId) {
+        List<WorkLogVO> workLogVOList = ConvertHelper.convertList(workLogMapper.queryByIssueId(issueId, projectId), WorkLogVO.class);
+        List<Long> assigneeIds = workLogVOList.stream().filter(workLogDTO -> workLogDTO.getUserId() != null && !Objects.equals(workLogDTO.getUserId(), 0L)).map(WorkLogVO::getUserId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
-        workLogDTOList.forEach(workLogDTO -> {
+        workLogVOList.forEach(workLogDTO -> {
             String assigneeName = usersMap.get(workLogDTO.getUserId()) != null ? usersMap.get(workLogDTO.getUserId()).getName() : null;
             workLogDTO.setUserName(assigneeName);
         });
-        return workLogDTOList;
+        return workLogVOList;
+    }
+
+    @Override
+    @DataLog(type = "createWorkLog")
+    public WorkLogDTO create(WorkLogDTO workLogDTO) {
+        if (workLogMapper.insert(workLogDTO) != 1) {
+            throw new CommonException("error.workLog.insert");
+        }
+        return workLogMapper.selectByPrimaryKey(workLogDTO.getLogId());
+    }
+
+    @Override
+    public WorkLogDTO update(WorkLogDTO workLogDTO) {
+        if (workLogMapper.updateByPrimaryKeySelective(workLogDTO) != 1) {
+            throw new CommonException("error.workLog.update");
+        }
+        return workLogMapper.selectByPrimaryKey(workLogDTO.getLogId());
+    }
+
+    @Override
+    @DataLog(type = "deleteWorkLog")
+    public void delete(Long projectId,Long logId) {
+        WorkLogDTO query = new WorkLogDTO();
+        query.setProjectId(projectId);
+        query.setLogId(logId);
+        WorkLogDTO workLogDTO = workLogMapper.selectOne(query);
+        if (workLogDTO == null) {
+            throw new CommonException("error.workLog.get");
+        }
+        if (workLogMapper.delete(workLogDTO) != 1) {
+            throw new CommonException("error.workLog.delete");
+        }
     }
 }

@@ -14,7 +14,7 @@ import java.util.Date;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_work_log")
-public class WorkLogDO extends BaseDTO {
+public class WorkLogDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

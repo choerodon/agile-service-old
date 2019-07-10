@@ -10,7 +10,7 @@ import java.util.Date;
  * Created by HuangFuqiang@choerodon.io on 2018/5/18.
  * Email: fuqianghuang01@gmail.com
  */
-public class WorkLogDTO {
+public class WorkLogVO {
 
     @ApiModelProperty(value = "工作日志主键id")
     private Long logId;
