@@ -729,8 +729,8 @@ class CreateIssue extends Component {
         );
       case 'assignee':
         return (
-          <React.Fragment>
-            <FormItem label="经办人" style={{ width: 520, display: 'inline-block' }}>
+          <div style={{ position: 'relative' }}>
+            <FormItem label="经办人" style={{ width: '100%', display: 'inline-block' }}>
               {getFieldDecorator('assigneedId', {})(
                 <Select
                   label="经办人"
@@ -762,6 +762,8 @@ class CreateIssue extends Component {
               onClick={this.assigneeMe}
               role="none"
               style={{
+                width: 100,
+                position: 'absolute',
                 display: 'inline-block',
                 color: 'rgba(63, 81, 181)',
                 marginLeft: 10,
@@ -771,7 +773,7 @@ class CreateIssue extends Component {
             >
               {'分派给我'}
             </span>
-          </React.Fragment>
+          </div>
         );
       case 'sprint':
         return (
