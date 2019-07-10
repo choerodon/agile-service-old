@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018/9/17
  */
-public class IssuePriorityDistributionChartDTO {
+public class IssuePriorityDistributionChartVO {
 
     @ApiModelProperty(value = "优先级名称")
     private String name;

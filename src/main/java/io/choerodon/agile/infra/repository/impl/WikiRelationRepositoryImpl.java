@@ -1,8 +1,8 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.WikiRelationE;
+import io.choerodon.agile.infra.dataobject.WikiRelationDTO;
 import io.choerodon.agile.infra.repository.WikiRelationRepository;
-import io.choerodon.agile.infra.dataobject.WikiRelationDO;
 import io.choerodon.agile.infra.mapper.WikiRelationMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -21,17 +21,17 @@ public class WikiRelationRepositoryImpl implements WikiRelationRepository {
 
     @Override
     public void create(WikiRelationE wikiRelationE) {
-        WikiRelationDO wikiRelationDO = ConvertHelper.convert(wikiRelationE, WikiRelationDO.class);
-        if (wikiRelationMapper.insert(wikiRelationDO) != 1) {
-            throw new CommonException("error.wikiRelationDO.insert");
+        WikiRelationDTO wikiRelationDTO = ConvertHelper.convert(wikiRelationE, WikiRelationDTO.class);
+        if (wikiRelationMapper.insert(wikiRelationDTO) != 1) {
+            throw new CommonException("error.wikiRelationDTO.insert");
         }
     }
 
     @Override
     public void delete(WikiRelationE wikiRelationE) {
-        WikiRelationDO wikiRelationDO = ConvertHelper.convert(wikiRelationE, WikiRelationDO.class);
-        if (wikiRelationMapper.delete(wikiRelationDO) != 1) {
-            throw new CommonException("error.wikiRelationDO.delete");
+        WikiRelationDTO wikiRelationDTO = ConvertHelper.convert(wikiRelationE, WikiRelationDTO.class);
+        if (wikiRelationMapper.delete(wikiRelationDTO) != 1) {
+            throw new CommonException("error.wikiRelationDTO.delete");
         }
     }
 }

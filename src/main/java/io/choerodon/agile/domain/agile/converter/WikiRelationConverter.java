@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.WikiRelationDTO;
+import io.choerodon.agile.api.vo.WikiRelationVO;
 import io.choerodon.agile.domain.agile.entity.WikiRelationE;
-import io.choerodon.agile.infra.dataobject.WikiRelationDO;
+import io.choerodon.agile.infra.dataobject.WikiRelationDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,47 +12,47 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class WikiRelationConverter implements ConvertorI<WikiRelationE, WikiRelationDO, WikiRelationDTO> {
+public class WikiRelationConverter implements ConvertorI<WikiRelationE, WikiRelationDTO, WikiRelationVO> {
 
     @Override
-    public WikiRelationE dtoToEntity(WikiRelationDTO wikiRelationDTO) {
+    public WikiRelationE dtoToEntity(WikiRelationVO wikiRelationVO) {
+        WikiRelationE wikiRelationE = new WikiRelationE();
+        BeanUtils.copyProperties(wikiRelationVO, wikiRelationE);
+        return wikiRelationE;
+    }
+
+    @Override
+    public WikiRelationVO entityToDto(WikiRelationE wikiRelationE) {
+        WikiRelationVO wikiRelationVO = new WikiRelationVO();
+        BeanUtils.copyProperties(wikiRelationE, wikiRelationVO);
+        return wikiRelationVO;
+    }
+
+    @Override
+    public WikiRelationE doToEntity(WikiRelationDTO wikiRelationDTO) {
         WikiRelationE wikiRelationE = new WikiRelationE();
         BeanUtils.copyProperties(wikiRelationDTO, wikiRelationE);
         return wikiRelationE;
     }
 
     @Override
-    public WikiRelationDTO entityToDto(WikiRelationE wikiRelationE) {
+    public WikiRelationDTO entityToDo(WikiRelationE wikiRelationE) {
         WikiRelationDTO wikiRelationDTO = new WikiRelationDTO();
         BeanUtils.copyProperties(wikiRelationE, wikiRelationDTO);
         return wikiRelationDTO;
     }
 
     @Override
-    public WikiRelationE doToEntity(WikiRelationDO wikiRelationDO) {
-        WikiRelationE wikiRelationE = new WikiRelationE();
-        BeanUtils.copyProperties(wikiRelationDO, wikiRelationE);
-        return wikiRelationE;
+    public WikiRelationVO doToDto(WikiRelationDTO wikiRelationDTO) {
+        WikiRelationVO wikiRelationVO = new WikiRelationVO();
+        BeanUtils.copyProperties(wikiRelationDTO, wikiRelationVO);
+        return wikiRelationVO;
     }
 
     @Override
-    public WikiRelationDO entityToDo(WikiRelationE wikiRelationE) {
-        WikiRelationDO wikiRelationDO = new WikiRelationDO();
-        BeanUtils.copyProperties(wikiRelationE, wikiRelationDO);
-        return wikiRelationDO;
-    }
-
-    @Override
-    public WikiRelationDTO doToDto(WikiRelationDO wikiRelationDO) {
+    public WikiRelationDTO dtoToDo(WikiRelationVO wikiRelationVO) {
         WikiRelationDTO wikiRelationDTO = new WikiRelationDTO();
-        BeanUtils.copyProperties(wikiRelationDO, wikiRelationDTO);
+        BeanUtils.copyProperties(wikiRelationVO, wikiRelationDTO);
         return wikiRelationDTO;
-    }
-
-    @Override
-    public WikiRelationDO dtoToDo(WikiRelationDTO wikiRelationDTO) {
-        WikiRelationDO wikiRelationDO = new WikiRelationDO();
-        BeanUtils.copyProperties(wikiRelationDTO, wikiRelationDO);
-        return wikiRelationDO;
     }
 }

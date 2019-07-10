@@ -2,8 +2,8 @@ package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.dataobject.GroupDataChartDO;
-import io.choerodon.agile.infra.dataobject.GroupDataChartListDO;
+import io.choerodon.agile.infra.dataobject.GroupDataChartDTO;
+import io.choerodon.agile.infra.dataobject.GroupDataChartListDTO;
 import io.choerodon.agile.infra.mapper.ReportMapper;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.domain.PageRequest;
@@ -25,24 +25,24 @@ public interface ReportService {
      * @param sprintId    sprintId
      * @param type        storyPoints、remainingEstimatedTime、originalEstimatedTime、issueCount
      * @param ordinalType asc、desc
-     * @return ReportIssueDTO
+     * @return ReportIssueVO
      */
-    List<ReportIssueDTO> queryBurnDownReport(Long projectId, Long sprintId, String type, String ordinalType);
+    List<ReportIssueVO> queryBurnDownReport(Long projectId, Long sprintId, String type, String ordinalType);
 
     /**
      * 查看累积流量图
      *
      * @param projectId               projectId
-     * @param cumulativeFlowFilterDTO cumulativeFlowFilterDTO
-     * @return CumulativeFlowDiagramDTO
+     * @param cumulativeFlowFilterVO cumulativeFlowFilterVO
+     * @return CumulativeFlowDiagramVO
      */
-    List<CumulativeFlowDiagramDTO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterDTO cumulativeFlowFilterDTO);
+    List<CumulativeFlowDiagramVO> queryCumulativeFlowDiagram(Long projectId, CumulativeFlowFilterVO cumulativeFlowFilterVO);
 
     PageInfo<IssueListVO> queryIssueByOptions(Long projectId, Long versionId, String status, String type, PageRequest pageRequest, Long organizationId);
 
     Map<String, Object> queryVersionLineChart(Long projectId, Long versionId, String type);
 
-    List<VelocitySprintDTO> queryVelocityChart(Long projectId, String type);
+    List<VelocitySprintVO> queryVelocityChart(Long projectId, String type);
 
     /**
      * 根据项目id和字段名称查询饼图
@@ -58,13 +58,13 @@ public interface ReportService {
      */
     List<PieChartVO> queryPieChart(Long projectId, String fieldName, Long organizationId, Date startDate, Date endDate, Long sprintId, Long versionId);
 
-    List<GroupDataChartDO> queryEpicChart(Long projectId, Long epicId, String type);
+    List<GroupDataChartDTO> queryEpicChart(Long projectId, Long epicId, String type);
 
-    List<GroupDataChartDO> queryVersionChart(Long projectId, Long versionId, String type);
+    List<GroupDataChartDTO> queryVersionChart(Long projectId, Long versionId, String type);
 
-    List<GroupDataChartListDO> queryEpicChartList(Long projectId, Long epicId, Long organizationId);
+    List<GroupDataChartListDTO> queryEpicChartList(Long projectId, Long epicId, Long organizationId);
 
-    List<GroupDataChartListDO> queryVersionChartList(Long projectId, Long versionId, Long organizationId);
+    List<GroupDataChartListDTO> queryVersionChartList(Long projectId, Long versionId, Long organizationId);
 
     /**
      * 查询燃尽图坐标信息
@@ -82,9 +82,9 @@ public interface ReportService {
      * @param projectId projectId
      * @param id        id
      * @param type      type
-     * @return BurnDownReportCoordinateDTO
+     * @return BurnDownReportCoordinateVO
      */
-    List<BurnDownReportCoordinateDTO> queryBurnDownCoordinateByType(Long projectId, Long id, String type);
+    List<BurnDownReportCoordinateVO> queryBurnDownCoordinateByType(Long projectId, Long id, String type);
 
     /**
      * 查询epic和版本燃尽图报告信息
@@ -92,9 +92,9 @@ public interface ReportService {
      * @param projectId projectId
      * @param id        id
      * @param type      type
-     * @return BurnDownReportDTO
+     * @return BurnDownReportVO
      */
-    BurnDownReportDTO queryBurnDownReportByType(Long projectId, Long id, String type, Long organizationId);
+    BurnDownReportVO queryBurnDownReportByType(Long projectId, Long id, String type, Long organizationId);
 
     void setReportMapper(ReportMapper reportMapper);
 
@@ -102,25 +102,25 @@ public interface ReportService {
      * 查询问题类型分布图
      *
      * @param projectId projectId
-     * @return IssueTypeDistributionChartDTO
+     * @return IssueTypeDistributionChartVO
      */
-    List<IssueTypeDistributionChartDTO> queryIssueTypeDistributionChart(Long projectId);
+    List<IssueTypeDistributionChartVO> queryIssueTypeDistributionChart(Long projectId);
 
     /**
      * 版本进度图,排序前5个版本
      *
      * @param projectId projectId
-     * @return IssueTypeDistributionChartDTO
+     * @return IssueTypeDistributionChartVO
      */
-    List<IssueTypeDistributionChartDTO> queryVersionProgressChart(Long projectId);
+    List<IssueTypeDistributionChartVO> queryVersionProgressChart(Long projectId);
 
     /**
      * 查询问题优先级分布图
      *
      * @param projectId projectId
-     * @return IssuePriorityDistributionChartDTO
+     * @return IssuePriorityDistributionChartVO
      */
-    List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(Long projectId, Long organizationId);
+    List<IssuePriorityDistributionChartVO> queryIssuePriorityDistributionChart(Long projectId, Long organizationId);
 
     /**
      * 修复累积流图

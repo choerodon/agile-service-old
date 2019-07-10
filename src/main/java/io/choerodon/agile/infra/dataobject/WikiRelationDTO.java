@@ -9,7 +9,7 @@ import javax.persistence.Table;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_wiki_relation")
-public class WikiRelationDO extends BaseDTO {
+public class WikiRelationDTO extends BaseDTO {
 
     private Long id;
 

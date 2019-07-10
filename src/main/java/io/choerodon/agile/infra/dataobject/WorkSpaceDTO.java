@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
-public class WorkSpaceDO {
+public class WorkSpaceDTO {
 
     private Long id;
     private String name;

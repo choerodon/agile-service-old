@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.vo;
 
-public class WorkSpaceDTO {
+public class WorkSpaceVO {
 
     private Long id;
 

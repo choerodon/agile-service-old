@@ -8,7 +8,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
  * @author dinghuang123@gmail.com
  * @since 2019/1/9
  */
-public class DataLogStatusChangeDO {
+public class DataLogStatusChangeDTO {
 
     private Long logId;
 
@@ -40,10 +40,10 @@ public class DataLogStatusChangeDO {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DataLogStatusChangeDO)) {
+        if (!(o instanceof DataLogStatusChangeDTO)) {
             return false;
         }
-        DataLogStatusChangeDO that = (DataLogStatusChangeDO) o;
+        DataLogStatusChangeDTO that = (DataLogStatusChangeDTO) o;
         return new EqualsBuilder()
                 .append(getLogId(), that.getLogId())
                 .append(getNewValue(), that.getNewValue())

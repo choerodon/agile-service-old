@@ -75,9 +75,9 @@
     </delete>
 
     <update id="batchUpdateErrorDataLog">
-        <foreach collection="dataLogStatusChangeDOS" item="dataLogStatusChangeDO" open="" close="" separator=";">
-            update agile_data_log set new_value = #{dataLogStatusChangeDO.newValue} where log_id =
-            #{dataLogStatusChangeDO.logId}
+        <foreach collection="dataLogStatusChangeDTOS" item="dataLogStatusChangeDTO" open="" close="" separator=";">
+            update agile_data_log set new_value = #{dataLogStatusChangeDTO.newValue} where log_id =
+            #{dataLogStatusChangeDTO.logId}
         </foreach>
     </update>
 

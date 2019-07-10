@@ -11,9 +11,9 @@ import java.util.Date;
  * @author dinghuang123@gmail.com
  * @since 2018/9/4
  */
-public class BurnDownReportCoordinateDTO implements Serializable {
+public class BurnDownReportCoordinateVO implements Serializable {
 
-    public BurnDownReportCoordinateDTO(BigDecimal start, BigDecimal add, BigDecimal done, BigDecimal left, String name, Date startDate, Date endDate) {
+    public BurnDownReportCoordinateVO(BigDecimal start, BigDecimal add, BigDecimal done, BigDecimal left, String name, Date startDate, Date endDate) {
         this.start = start;
         this.add = add;
         this.done = done;

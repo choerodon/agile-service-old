@@ -10,7 +10,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/7/2
  */
-public class CumulativeFlowDiagramDTO implements Serializable {
+public class CumulativeFlowDiagramVO implements Serializable {
 
     @ApiModelProperty(value = "列id")
     private Long columnId;

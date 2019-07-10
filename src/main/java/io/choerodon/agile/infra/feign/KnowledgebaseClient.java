@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.feign;
 
-import io.choerodon.agile.api.vo.WorkSpaceDTO;
-import io.choerodon.agile.infra.dataobject.WorkSpaceDO;
+import io.choerodon.agile.api.vo.WorkSpaceVO;
+import io.choerodon.agile.infra.dataobject.WorkSpaceDTO;
 import io.choerodon.agile.infra.feign.fallback.FoundationFeignClientFallback;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +16,9 @@ import java.util.List;
 public interface KnowledgebaseClient {
 
     @GetMapping("/v1/fix_data/all_project_space")
-    ResponseEntity<List<WorkSpaceDO>> queryAllSpaceByProject();
+    ResponseEntity<List<WorkSpaceDTO>> queryAllSpaceByProject();
 
     @PostMapping(value = "/v1/projects/{project_id}/work_space/query_by_space_ids")
-    ResponseEntity<List<WorkSpaceDTO>> querySpaceByIds(@PathVariable(value = "project_id") Long projectId,
-                                                       @RequestBody List<Long> spaceIds);
+    ResponseEntity<List<WorkSpaceVO>> querySpaceByIds(@PathVariable(value = "project_id") Long projectId,
+                                                      @RequestBody List<Long> spaceIds);
 }

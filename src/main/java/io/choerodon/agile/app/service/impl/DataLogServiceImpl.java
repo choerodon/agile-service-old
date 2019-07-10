@@ -5,14 +5,17 @@ import io.choerodon.agile.api.vo.DataLogVO;
 import io.choerodon.agile.api.vo.FieldDataLogDTO;
 import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.app.service.DataLogService;
+import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.DataLogDTO;
+import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.app.service.UserService;
+import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -22,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +53,7 @@ public class DataLogServiceImpl implements DataLogService {
     }
 
     @Override
-    public DataLogVO create(Long projectId, DataLogCreateVO createVO) {
+    public DataLogVO createDataLog(Long projectId, DataLogCreateVO createVO) {
         DataLogDTO dataLogDTO = modelMapper.map(createVO, DataLogDTO.class);
         dataLogDTO.setProjectId(projectId);
         if (dataLogMapper.insert(dataLogDTO) != 1) {
@@ -108,6 +108,29 @@ public class DataLogServiceImpl implements DataLogService {
                 dto.setIsCusLog(false);
             }
         }
+    }
+
+    @Override
+    public DataLogDTO create(DataLogDTO dataLogDTO) {
+        if (dataLogMapper.insert(dataLogDTO) != 1) {
+            throw new CommonException("error.dataLog.insert");
+        }
+        return dataLogMapper.selectByPrimaryKey(dataLogDTO.getLogId());
+    }
+
+    @Override
+    public void delete(DataLogDTO dataLogDTO) {
+        dataLogMapper.delete(dataLogDTO);
+    }
+
+    @Override
+    public void batchDeleteErrorDataLog(Set<Long> dataLogIds) {
+        dataLogMapper.batchDeleteErrorDataLog(dataLogIds);
+    }
+
+    @Override
+    public void batchUpdateErrorDataLog(Set<DataLogStatusChangeDTO> dataLogStatusChangeDTOS) {
+        dataLogMapper.batchUpdateErrorDataLog(dataLogStatusChangeDTOS);
     }
 
 }

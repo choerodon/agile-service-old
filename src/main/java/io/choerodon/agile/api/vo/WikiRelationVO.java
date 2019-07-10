@@ -4,7 +4,7 @@ package io.choerodon.agile.api.vo;
  * Created by HuangFuqiang@choerodon.io on 2018/12/03.
  * Email: fuqianghuang01@gmail.com
  */
-public class WikiRelationDTO {
+public class WikiRelationVO {
 
     private Long id;
 
@@ -18,7 +18,7 @@ public class WikiRelationDTO {
 
     private Long spaceId;
 
-    private WorkSpaceDTO workSpaceDTO;
+    private WorkSpaceVO workSpaceVO;
 
     public Long getId() {
         return id;
@@ -68,11 +68,11 @@ public class WikiRelationDTO {
         return spaceId;
     }
 
-    public void setWorkSpaceDTO(WorkSpaceDTO workSpaceDTO) {
-        this.workSpaceDTO = workSpaceDTO;
+    public void setWorkSpaceVO(WorkSpaceVO workSpaceVO) {
+        this.workSpaceVO = workSpaceVO;
     }
 
-    public WorkSpaceDTO getWorkSpaceDTO() {
-        return workSpaceDTO;
+    public WorkSpaceVO getWorkSpaceVO() {
+        return workSpaceVO;
     }
 }

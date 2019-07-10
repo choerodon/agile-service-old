@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  * Created by HuangFuqiang@choerodon.io on 2018/7/28.
  * Email: fuqianghuang01@gmail.com
  */
-public class GroupDataChartListDO {
+public class GroupDataChartListDTO {
 
     private Long issueId;
 

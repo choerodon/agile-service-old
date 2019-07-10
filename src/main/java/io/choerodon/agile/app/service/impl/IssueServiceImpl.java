@@ -128,6 +128,8 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private DataLogRepository dataLogRepository;
     @Autowired
+    private DataLogService dataLogService;
+    @Autowired
     private VersionIssueRelMapper versionIssueRelMapper;
     @Autowired
     private ComponentIssueRelMapper componentIssueRelMapper;
@@ -799,10 +801,10 @@ public class IssueServiceImpl implements IssueService {
 //    }
 
     private void dataLogDeleteByIssueId(Long projectId, Long issueId) {
-        DataLogE dataLogE = new DataLogE();
-        dataLogE.setProjectId(projectId);
-        dataLogE.setIssueId(issueId);
-        dataLogRepository.delete(dataLogE);
+        DataLogDTO dataLogDTO = new DataLogDTO();
+        dataLogDTO.setProjectId(projectId);
+        dataLogDTO.setIssueId(issueId);
+        dataLogService.delete(dataLogDTO);
     }
 
     private void deleteStoryMapWidth(Long issueId) {
@@ -1001,12 +1003,12 @@ public class IssueServiceImpl implements IssueService {
             Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
                     && sprintId.equals(activeSprintName.getSprintId()));
             if (condition) {
-                DataLogE dataLogE = new DataLogE();
-                dataLogE.setProjectId(projectId);
-                dataLogE.setField(FIELD_RANK);
-                dataLogE.setIssueId(issueId);
-                dataLogE.setNewString(rankStr);
-                dataLogRepository.create(dataLogE);
+                DataLogDTO dataLogDTO = new DataLogDTO();
+                dataLogDTO.setProjectId(projectId);
+                dataLogDTO.setField(FIELD_RANK);
+                dataLogDTO.setIssueId(issueId);
+                dataLogDTO.setNewString(rankStr);
+                dataLogService.create(dataLogDTO);
             }
         }
     }

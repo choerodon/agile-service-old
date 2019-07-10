@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.ReportIssueDTO;
-import io.choerodon.agile.domain.agile.entity.ReportIssueE;
-import io.choerodon.agile.infra.dataobject.ReportIssueDO;
+import io.choerodon.agile.api.vo.ReportIssueVO;
+import io.choerodon.agile.infra.dataobject.ReportIssueConvertDTO;
+import io.choerodon.agile.infra.dataobject.ReportIssueDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,47 +12,47 @@ import org.springframework.stereotype.Component;
  * @since 2018/6/20
  */
 @Component
-public class ReportIssueConverter implements ConvertorI<ReportIssueE, ReportIssueDO, ReportIssueDTO> {
+public class ReportIssueConverter implements ConvertorI<ReportIssueConvertDTO, ReportIssueDTO, ReportIssueVO> {
 
     @Override
-    public ReportIssueE dtoToEntity(ReportIssueDTO reportIssueDTO) {
-        ReportIssueE reportIssueE = new ReportIssueE();
-        BeanUtils.copyProperties(reportIssueDTO, reportIssueE);
-        return reportIssueE;
+    public ReportIssueConvertDTO dtoToEntity(ReportIssueVO reportIssueVO) {
+        ReportIssueConvertDTO reportIssueConvertDTO = new ReportIssueConvertDTO();
+        BeanUtils.copyProperties(reportIssueVO, reportIssueConvertDTO);
+        return reportIssueConvertDTO;
     }
 
     @Override
-    public ReportIssueE doToEntity(ReportIssueDO reportIssueDO) {
-        ReportIssueE reportIssueE = new ReportIssueE();
-        BeanUtils.copyProperties(reportIssueDO, reportIssueE);
-        return reportIssueE;
+    public ReportIssueConvertDTO doToEntity(ReportIssueDTO reportIssueDTO) {
+        ReportIssueConvertDTO reportIssueConvertDTO = new ReportIssueConvertDTO();
+        BeanUtils.copyProperties(reportIssueDTO, reportIssueConvertDTO);
+        return reportIssueConvertDTO;
     }
 
     @Override
-    public ReportIssueDTO entityToDto(ReportIssueE reportIssueE) {
+    public ReportIssueVO entityToDto(ReportIssueConvertDTO reportIssueConvertDTO) {
+        ReportIssueVO reportIssueVO = new ReportIssueVO();
+        BeanUtils.copyProperties(reportIssueConvertDTO, reportIssueVO);
+        return reportIssueVO;
+    }
+
+    @Override
+    public ReportIssueDTO entityToDo(ReportIssueConvertDTO reportIssueConvertDTO) {
         ReportIssueDTO reportIssueDTO = new ReportIssueDTO();
-        BeanUtils.copyProperties(reportIssueE, reportIssueDTO);
+        BeanUtils.copyProperties(reportIssueConvertDTO, reportIssueDTO);
         return reportIssueDTO;
     }
 
     @Override
-    public ReportIssueDO entityToDo(ReportIssueE reportIssueE) {
-        ReportIssueDO reportIssueDO = new ReportIssueDO();
-        BeanUtils.copyProperties(reportIssueE, reportIssueDO);
-        return reportIssueDO;
+    public ReportIssueVO doToDto(ReportIssueDTO reportIssueDTO) {
+        ReportIssueVO reportIssueVO = new ReportIssueVO();
+        BeanUtils.copyProperties(reportIssueDTO, reportIssueVO);
+        return reportIssueVO;
     }
 
     @Override
-    public ReportIssueDTO doToDto(ReportIssueDO reportIssueDO) {
+    public ReportIssueDTO dtoToDo(ReportIssueVO reportIssueVO) {
         ReportIssueDTO reportIssueDTO = new ReportIssueDTO();
-        BeanUtils.copyProperties(reportIssueDO, reportIssueDTO);
+        BeanUtils.copyProperties(reportIssueVO, reportIssueDTO);
         return reportIssueDTO;
-    }
-
-    @Override
-    public ReportIssueDO dtoToDo(ReportIssueDTO reportIssueDTO) {
-        ReportIssueDO reportIssueDO = new ReportIssueDO();
-        BeanUtils.copyProperties(reportIssueDTO, reportIssueDO);
-        return reportIssueDO;
     }
 }

@@ -3,7 +3,7 @@ package io.choerodon.agile.infra.repository.impl;
 import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.infra.dataobject.DataLogDTO;
-import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
+import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDTO;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -45,8 +45,8 @@ public class DataLogRepositoryImpl implements DataLogRepository {
     }
 
     @Override
-    public void batchUpdateErrorDataLog(Set<DataLogStatusChangeDO> dataLogStatusChangeDOS) {
-        dataLogMapper.batchUpdateErrorDataLog(dataLogStatusChangeDOS);
+    public void batchUpdateErrorDataLog(Set<DataLogStatusChangeDTO> dataLogStatusChangeDTOS) {
+        dataLogMapper.batchUpdateErrorDataLog(dataLogStatusChangeDTOS);
     }
 
 }

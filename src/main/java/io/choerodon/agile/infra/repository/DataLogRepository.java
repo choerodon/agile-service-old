@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository;
 
 import io.choerodon.agile.domain.agile.entity.DataLogE;
-import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
+import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDTO;
 
 import java.util.Set;
 
@@ -25,7 +25,7 @@ public interface DataLogRepository {
     /**
      * 更新脏数据
      *
-     * @param dataLogStatusChangeDOS dataLogStatusChangeDOS
+     * @param dataLogStatusChangeDTOS dataLogStatusChangeDTOS
      */
-    void batchUpdateErrorDataLog(Set<DataLogStatusChangeDO> dataLogStatusChangeDOS);
+    void batchUpdateErrorDataLog(Set<DataLogStatusChangeDTO> dataLogStatusChangeDTOS);
 }

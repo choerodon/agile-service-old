@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018/9/14
  */
-public class IssueTypeDistributionChartDTO {
+public class IssueTypeDistributionChartVO {
 
     @ApiModelProperty(value = "问题类型名称")
     private String name;

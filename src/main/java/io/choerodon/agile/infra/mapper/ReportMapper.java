@@ -20,9 +20,9 @@ public interface ReportMapper {
      * @param issueIdList issueIdList当前冲刺开启前的issueIdList
      * @param sprintDTO    sprintDTO
      * @param field       filed修改字段
-     * @return ReportIssueDO
+     * @return ReportIssueDTO
      */
-    List<ReportIssueDO> queryValueBeforeSprintStart(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
+    List<ReportIssueDTO> queryValueBeforeSprintStart(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取当前冲刺期间加入的issue(包含加入时间、加入时的字段值)
@@ -30,9 +30,9 @@ public interface ReportMapper {
      * @param issueIdAddList issueIdList当前冲刺期间加入的issueIdList
      * @param sprintDTO       sprintDTO
      * @param field          filed修改字段
-     * @return ReportIssueE
+     * @return ReportIssueConvertDTO
      */
-    List<ReportIssueDO> queryAddIssueValueDuringSprint(@Param("issueIdAddList") List<Long> issueIdAddList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
+    List<ReportIssueDTO> queryAddIssueValueDuringSprint(@Param("issueIdAddList") List<Long> issueIdAddList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取当前冲刺期间移除的issue(包含移除时间、移除时的字段值)
@@ -40,9 +40,9 @@ public interface ReportMapper {
      * @param issueIdRemoveList issueIdRemoveList
      * @param sprintDTO          sprintDTO
      * @param field             filed修改字段
-     * @return ReportIssueE
+     * @return ReportIssueConvertDTO
      */
-    List<ReportIssueDO> queryRemoveIssueValueDurationSprint(@Param("issueIdRemoveList") List<Long> issueIdRemoveList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
+    List<ReportIssueDTO> queryRemoveIssueValueDurationSprint(@Param("issueIdRemoveList") List<Long> issueIdRemoveList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取冲刺开启前的issue
@@ -75,7 +75,7 @@ public interface ReportMapper {
      * @param sprintDTO       sprintDTO
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryAddIssueDuringSprint(@Param("issueIdAddList") List<Long> issueIdAddList, @Param("sprintDTO") SprintDTO sprintDTO);
+    List<ReportIssueDTO> queryAddIssueDuringSprint(@Param("issueIdAddList") List<Long> issueIdAddList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 查询在冲刺期间移除的issue，包含issue移除的时间
@@ -84,7 +84,7 @@ public interface ReportMapper {
      * @param sprintDTO          sprintDTO
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryRemoveIssueDuringSprint(@Param("issueIdRemoveList") List<Long> issueIdRemoveList, @Param("sprintDTO") SprintDTO sprintDTO);
+    List<ReportIssueDTO> queryRemoveIssueDuringSprint(@Param("issueIdRemoveList") List<Long> issueIdRemoveList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 获取冲刺期间issue状态更改为done的issue
@@ -112,7 +112,7 @@ public interface ReportMapper {
      * @param field    field
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryAddIssueDoneValueDuringSprint(@Param("issueId") Long issueId, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
+    List<ReportIssueDTO> queryAddIssueDoneValueDuringSprint(@Param("issueId") Long issueId, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取冲刺期间done移动到非done状态的字段变更值（包含变更时间）
@@ -122,7 +122,7 @@ public interface ReportMapper {
      * @param field    field
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryRemoveIssueDoneValueDurationSprint(@Param("issueId") Long issueId, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
+    List<ReportIssueDTO> queryRemoveIssueDoneValueDurationSprint(@Param("issueId") Long issueId, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 获取开启冲刺前，issue状态为done的issueId
@@ -140,7 +140,7 @@ public interface ReportMapper {
      * @param sprintDTO           sprintDTO
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryAddIssueDoneDetailDuringSprint(@Param("issueIdAddDoneList") List<Long> issueIdAddDoneList, @Param("sprintDTO") SprintDTO sprintDTO);
+    List<ReportIssueDTO> queryAddIssueDoneDetailDuringSprint(@Param("issueIdAddDoneList") List<Long> issueIdAddDoneList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 冲刺期间issue从done移除的时间
@@ -149,7 +149,7 @@ public interface ReportMapper {
      * @param sprintDTO              sprintDTO
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryRemoveIssueDoneDetailDurationSprint(@Param("issueIdRemoveDoneList") List<Long> issueIdRemoveDoneList, @Param("sprintDTO") SprintDTO sprintDTO);
+    List<ReportIssueDTO> queryRemoveIssueDoneDetailDurationSprint(@Param("issueIdRemoveDoneList") List<Long> issueIdRemoveDoneList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 冲刺期间issue的字段值变化（包含变化时间）
@@ -159,33 +159,33 @@ public interface ReportMapper {
      * @param field        field
      * @return ReportIssueDOList
      */
-    List<ReportIssueDO> queryIssueChangeValueDurationSprint(@Param("issueAllList") List<Long> issueAllList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
+    List<ReportIssueDTO> queryIssueChangeValueDurationSprint(@Param("issueAllList") List<Long> issueAllList, @Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     /**
      * 冲刺开启前的issue数量统计信息
      *
      * @param issueIdList issueIdList
      * @param sprintDTO    sprintDTO
-     * @return ReportIssueDO
+     * @return ReportIssueDTO
      */
-    List<ReportIssueDO> queryAddIssueBeforeDuringSprint(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDTO") SprintDTO sprintDTO);
+    List<ReportIssueDTO> queryAddIssueBeforeDuringSprint(@Param("issueIdList") List<Long> issueIdList, @Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 查询冲刺结束后的issue数量统计信息
      *
      * @param sprintDTO sprintDTO
-     * @return ReportIssueDO
+     * @return ReportIssueDTO
      */
-    List<ReportIssueDO> queryIssueCountAfterSprint(@Param("sprintDTO") SprintDTO sprintDTO);
+    List<ReportIssueDTO> queryIssueCountAfterSprint(@Param("sprintDTO") SprintDTO sprintDTO);
 
     /**
      * 查询冲刺结束后的字段value统计信息
      *
      * @param sprintDTO sprintDTO
      * @param field    field
-     * @return ReportIssueDO
+     * @return ReportIssueDTO
      */
-    List<ReportIssueDO> queryIssueValueAfterSprint(@Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
+    List<ReportIssueDTO> queryIssueValueAfterSprint(@Param("sprintDTO") SprintDTO sprintDTO, @Param("field") String field);
 
     List<Long> queryReportIssueIds(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId, @Param("startDate") Date startDate, @Param("actualEndDate") Date actualEndDate, @Param("status") Boolean status);
 
@@ -335,33 +335,33 @@ public interface ReportMapper {
     Integer queryIssueCountByFieldName(@Param("projectId") Long projectId, @Param("fieldName") String fieldName,
                                        @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("sprintId") Long sprintId, @Param("versionId") Long versionId);
 
-    List<GroupDataChartListDO> selectEpicIssueList(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
+    List<GroupDataChartListDTO> selectEpicIssueList(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
 
-    List<GroupDataChartListDO> selectVersionIssueList(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    List<GroupDataChartListDTO> selectVersionIssueList(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<GroupDataChartDO> selectByStoryPointCompletedFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByStoryPointCompletedFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByStoryPointAllFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByStoryPointAllFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByStoryPointCountAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByStoryPointCountAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByStoryPointCountEstimate(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByStoryPointCountEstimate(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeRemainCompleted(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByRemainTimeRemainCompleted(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeWorkLogCompleted(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByRemainTimeWorkLogCompleted(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeRemainAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByRemainTimeRemainAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeWorkLogAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByRemainTimeWorkLogAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeCountAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByRemainTimeCountAll(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByRemainTimeCountEstimate(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByRemainTimeCountEstimate(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByIssueCountCompletedFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByIssueCountCompletedFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
-    List<GroupDataChartDO> selectByIssueCountAllFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
+    List<GroupDataChartDTO> selectByIssueCountAllFinal(@Param("projectId") Long projectId, @Param("id") Long id, @Param("chartType") String chartType);
 
     /**
      * 问题类型分布图
@@ -409,5 +409,5 @@ public interface ReportMapper {
      */
     Set<Long> queryRemoveIssueIds();
 
-    ReportIssueDO queryLastResolutionBeforeMoveOutSprint(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("outDate") Date outDate);
+    ReportIssueDTO queryLastResolutionBeforeMoveOutSprint(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("outDate") Date outDate);
 }

@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.mapper;
 
 import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.dataobject.DataLogDTO;
-import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDO;
+import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDTO;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
 import io.choerodon.mybatis.common.Mapper;
@@ -71,9 +71,9 @@ public interface DataLogMapper extends Mapper<DataLogDTO> {
     /**
      * 更新脏数据
      *
-     * @param dataLogStatusChangeDOS dataLogStatusChangeDOS
+     * @param dataLogStatusChangeDTOS dataLogStatusChangeDTOS
      */
-    void batchUpdateErrorDataLog(@Param("dataLogStatusChangeDOS") Set<DataLogStatusChangeDO> dataLogStatusChangeDOS);
+    void batchUpdateErrorDataLog(@Param("dataLogStatusChangeDTOS") Set<DataLogStatusChangeDTO> dataLogStatusChangeDTOS);
 
     void updateStatusRtDataLog(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("creationDate") Date creationDate, @Param("lastUpdateDate") Date lastUpdateDate, @Param("userId") Long userId);
 

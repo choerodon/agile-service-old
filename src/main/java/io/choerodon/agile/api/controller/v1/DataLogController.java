@@ -35,7 +35,7 @@ public class DataLogController {
                                                      @PathVariable(name = "project_id") Long projectId,
                                                    @ApiParam(value = "data log object", required = true)
                                                      @RequestBody DataLogCreateVO createVO) {
-        return Optional.ofNullable(dataLogService.create(projectId, createVO))
+        return Optional.ofNullable(dataLogService.createDataLog(projectId, createVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.dataLog.create"));
     }

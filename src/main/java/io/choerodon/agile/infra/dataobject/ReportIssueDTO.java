@@ -1,8 +1,7 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -10,7 +9,7 @@ import java.util.Date;
  * @author dinghuang123@gmail.com
  * @since 2018/6/20
  */
-public class ReportIssueDTO implements Serializable {
+public class ReportIssueDTO {
 
     private String issueNum;
 
@@ -54,28 +53,12 @@ public class ReportIssueDTO implements Serializable {
         this.issueNum = issueNum;
     }
 
-    public void setOldValue(BigDecimal oldValue) {
-        this.oldValue = oldValue;
-    }
-
-    public BigDecimal getOldValue() {
-        return oldValue;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public void setNewValue(BigDecimal newValue) {
-        this.newValue = newValue;
-    }
-
-    public BigDecimal getNewValue() {
-        return newValue;
     }
 
     public Boolean getStatistical() {
@@ -100,6 +83,22 @@ public class ReportIssueDTO implements Serializable {
 
     public void setParentIssueNum(String parentIssueNum) {
         this.parentIssueNum = parentIssueNum;
+    }
+
+    public void setNewValue(BigDecimal newValue) {
+        this.newValue = newValue;
+    }
+
+    public BigDecimal getNewValue() {
+        return newValue;
+    }
+
+    public void setOldValue(BigDecimal oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public BigDecimal getOldValue() {
+        return oldValue;
     }
 
     @Override

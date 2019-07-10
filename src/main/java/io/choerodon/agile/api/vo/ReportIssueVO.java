@@ -1,15 +1,16 @@
-package io.choerodon.agile.domain.agile.entity;
+package io.choerodon.agile.api.vo;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/6/19
+ * @since 2018/6/20
  */
-public class ReportIssueE {
+public class ReportIssueVO implements Serializable {
 
     private String issueNum;
 
@@ -45,6 +46,22 @@ public class ReportIssueE {
         this.date = date;
     }
 
+    public String getIssueNum() {
+        return issueNum;
+    }
+
+    public void setIssueNum(String issueNum) {
+        this.issueNum = issueNum;
+    }
+
+    public void setOldValue(BigDecimal oldValue) {
+        this.oldValue = oldValue;
+    }
+
+    public BigDecimal getOldValue() {
+        return oldValue;
+    }
+
     public String getType() {
         return type;
     }
@@ -53,28 +70,12 @@ public class ReportIssueE {
         this.type = type;
     }
 
-    public BigDecimal getOldValue() {
-        return oldValue;
-    }
-
-    public void setOldValue(BigDecimal oldValue) {
-        this.oldValue = oldValue;
-    }
-
-    public BigDecimal getNewValue() {
-        return newValue;
-    }
-
     public void setNewValue(BigDecimal newValue) {
         this.newValue = newValue;
     }
 
-    public String getIssueNum() {
-        return issueNum;
-    }
-
-    public void setIssueNum(String issueNum) {
-        this.issueNum = issueNum;
+    public BigDecimal getNewValue() {
+        return newValue;
     }
 
     public Boolean getStatistical() {
@@ -104,21 +105,5 @@ public class ReportIssueE {
     @Override
     public String toString() {
         return StringUtil.getToString(this);
-    }
-
-    public void initStartSprint(Date startDate) {
-        this.date = startDate;
-        this.type = "startSprint";
-        this.oldValue = new BigDecimal(0);
-        this.newValue = new BigDecimal(0);
-        this.statistical = true;
-    }
-
-    public void initEndSprint(Date actualEndDate) {
-        this.date = actualEndDate;
-        this.type = "endSprint";
-        this.oldValue = new BigDecimal(0);
-        this.newValue = new BigDecimal(0);
-        this.statistical = true;
     }
 }

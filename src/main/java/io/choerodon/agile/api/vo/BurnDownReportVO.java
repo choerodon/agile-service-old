@@ -10,7 +10,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/9/10
  */
-public class BurnDownReportDTO {
+public class BurnDownReportVO {
 
     @ApiModelProperty(value = "冲刺列表")
     private List<SprintBurnDownReportDTO> sprintBurnDownReportDTOS;

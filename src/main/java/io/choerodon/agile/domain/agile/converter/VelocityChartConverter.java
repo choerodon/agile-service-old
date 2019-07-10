@@ -1,6 +1,6 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.VelocitySprintDTO;
+import io.choerodon.agile.api.vo.VelocitySprintVO;
 import io.choerodon.agile.infra.dataobject.VelocitySprintDO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
@@ -11,13 +11,13 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class VelocityChartConverter implements ConvertorI<Object, VelocitySprintDO, VelocitySprintDTO>{
+public class VelocityChartConverter implements ConvertorI<Object, VelocitySprintDO, VelocitySprintVO>{
 
     @Override
-    public VelocitySprintDTO doToDto(VelocitySprintDO velocitySprintDO) {
-        VelocitySprintDTO velocitySprintDTO = new VelocitySprintDTO();
-        BeanUtils.copyProperties(velocitySprintDO, velocitySprintDTO);
-        return velocitySprintDTO;
+    public VelocitySprintVO doToDto(VelocitySprintDO velocitySprintDO) {
+        VelocitySprintVO velocitySprintVO = new VelocitySprintVO();
+        BeanUtils.copyProperties(velocitySprintDO, velocitySprintVO);
+        return velocitySprintVO;
     }
 
 }

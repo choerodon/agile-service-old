@@ -197,7 +197,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<ReportIssueDTO> reportIssueDTOList = entity.body
+        List<ReportIssueVO> reportIssueDTOList = entity.body
 
         expect: '验证期望值'
         reportIssueDTOList.size() == expectSize
@@ -236,7 +236,7 @@ class ReportControllerSpec extends Specification {
 
     def 'queryCumulativeFlowDiagram'() {
         given: '查询参数'
-        CumulativeFlowFilterDTO cumulativeFlowFilterDTO = new CumulativeFlowFilterDTO()
+        CumulativeFlowFilterVO cumulativeFlowFilterDTO = new CumulativeFlowFilterVO()
         cumulativeFlowFilterDTO.startDate = startDate
         cumulativeFlowFilterDTO.endDate = endDate
         cumulativeFlowFilterDTO.boardId = 1
@@ -252,7 +252,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<CumulativeFlowDiagramDTO> result = entity.body
+        List<CumulativeFlowDiagramVO> result = entity.body
 
         expect: '验证期望值'
         result.size() == 3
@@ -315,7 +315,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<BurnDownReportCoordinateDTO> burnDownReportCoordinateDTOList = entity.body
+        List<BurnDownReportCoordinateVO> burnDownReportCoordinateDTOList = entity.body
 
         expect: '验证期望值'
         burnDownReportCoordinateDTOList.size() == expectSize
@@ -394,7 +394,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<VelocitySprintDTO> velocitySprintDTOList = entity.body
+        List<VelocitySprintVO> velocitySprintDTOList = entity.body
 
         expect: '验证期望值'
         velocitySprintDTOList.size() == expectSize
@@ -445,7 +445,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<GroupDataChartDO> groupDataChartDOList = entity.body
+        List<GroupDataChartDTO> groupDataChartDOList = entity.body
 
         expect: '验证期望值'
         groupDataChartDOList.size() == expectSize
@@ -465,7 +465,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<GroupDataChartListDO> groupDataChartListDOList = entity.body
+        List<GroupDataChartListDTO> groupDataChartListDOList = entity.body
 
         expect: '验证期望值'
         groupDataChartListDOList.size() == 2
@@ -479,7 +479,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<GroupDataChartDO> groupDataChartDOList = entity.body
+        List<GroupDataChartDTO> groupDataChartDOList = entity.body
 
         expect: '验证期望值'
         groupDataChartDOList.size() == expectSize
@@ -499,7 +499,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<GroupDataChartListDO> groupDataChartListDOList = entity.body
+        List<GroupDataChartListDTO> groupDataChartListDOList = entity.body
 
         expect: '验证期望值'
         groupDataChartListDOList.size() == 2
@@ -508,7 +508,7 @@ class ReportControllerSpec extends Specification {
 
     def 'queryBurnDownReportByType'() {
         when: 'Epic和版本燃耗图报告信息'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_report_type/{id}?type={type}&&organizationId={organizationId}', BurnDownReportDTO, projectId, id, type, organizationId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_report_type/{id}?type={type}&&organizationId={organizationId}', BurnDownReportVO, projectId, id, type, organizationId)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()
@@ -536,7 +536,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOList = entity.body
+        List<IssueTypeDistributionChartVO> issueTypeDistributionChartDTOList = entity.body
 
         expect: '验证期望值'
         issueTypeDistributionChartDTOList.size() == 3
@@ -551,7 +551,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOList = entity.body
+        List<IssueTypeDistributionChartVO> issueTypeDistributionChartDTOList = entity.body
 
         expect: '验证期望值'
         issueTypeDistributionChartDTOList.size() == 2
@@ -566,7 +566,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<IssuePriorityDistributionChartDTO> issuePriorityDistributionChartDTOList = entity.body
+        List<IssuePriorityDistributionChartVO> issuePriorityDistributionChartDTOList = entity.body
 
         expect: '验证期望值'
         issuePriorityDistributionChartDTOList.size() == 1

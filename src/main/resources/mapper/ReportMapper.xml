@@ -39,7 +39,7 @@
             AND aisr2.sprint_id = #{sprintDTO.sprintId}
     </select>
 
-    <select id="queryValueBeforeSprintStart" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+    <select id="queryValueBeforeSprintStart" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         IFNULL(a.new_string,0) as new_value,
         d.issue_id,
@@ -105,7 +105,7 @@
 
     </select>
 
-    <select id="queryAddIssueValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+    <select id="queryAddIssueValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         select
         ifnull(bbb.new_value,0) AS new_value,
         bbb.issue_id as issue_id,
@@ -192,7 +192,7 @@
     </select>
 
     <select id="queryRemoveIssueValueDurationSprint"
-            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         a.*,
         0 as new_value,
@@ -261,7 +261,7 @@
         ai2.project_id
     </select>
 
-    <select id="queryAddIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+    <select id="queryAddIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         ai.issue_id,
         abd.date,
@@ -334,7 +334,7 @@
         ai2.project_id
     </select>
 
-    <select id="queryRemoveIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+    <select id="queryRemoveIssueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         adl.issue_id,
         adl.creation_date AS date,
@@ -439,7 +439,7 @@
         </foreach>
     </select>
 
-    <select id="queryAddIssueDoneValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+    <select id="queryAddIssueDoneValueDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         a.*,
         0 as new_value,
@@ -473,7 +473,7 @@
         ON api2.project_id = ai2.project_id
     </select>
 
-    <select id="queryRemoveIssueDoneValueDurationSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+    <select id="queryRemoveIssueDoneValueDurationSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         a.*,
         0 as old_value,
@@ -539,7 +539,7 @@
         )
     </select>
 
-    <select id="queryAddIssueDoneDetailDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+    <select id="queryAddIssueDoneDetailDuringSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         adl.issue_id,
         adl.creation_date AS date,
@@ -574,7 +574,7 @@
     </select>
 
     <select id="queryRemoveIssueDoneDetailDurationSprint"
-            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         adl.issue_id,
         adl.creation_date AS date,
@@ -610,7 +610,7 @@
     </select>
 
     <select id="queryIssueChangeValueDurationSprint"
-            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         adl.issue_id,
         adl.creation_date AS date,
@@ -638,7 +638,7 @@
     </select>
 
     <select id="queryAddIssueBeforeDuringSprint"
-            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
         ai.issue_id,
         #{sprintDTO.startDate} AS date,
@@ -660,7 +660,7 @@
     </select>
 
     <select id="queryIssueCountAfterSprint"
-            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
             c.*,
             CONCAT_WS('-', api.project_code, ai.issue_num)   AS issue_num,
@@ -703,7 +703,7 @@
     </select>
 
     <select id="queryIssueValueAfterSprint"
-            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+            resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
         SELECT
             c.*,
             CONCAT_WS('-', api.project_code, ai.issue_num)   AS issue_num,
@@ -1838,7 +1838,7 @@
         </if>
     </select>
 
-    <select id="selectEpicIssueList" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartListDO">
+    <select id="selectEpicIssueList" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartListDTO">
         SELECT
             ai.issue_id,
             CONCAT_WS(
@@ -1890,7 +1890,7 @@
         AND ai.apply_type = 'agile'
     </select>
 
-    <select id="selectVersionIssueList" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartListDO">
+    <select id="selectVersionIssueList" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartListDTO">
         SELECT
             ai.issue_id,
             CONCAT_WS(
@@ -1945,7 +1945,7 @@
             AND ai.apply_type = 'agile'
     </select>
 
-    <select id="selectByStoryPointCompletedFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByStoryPointCompletedFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t11.group_day AS group_day,
         IFNULL(SUM(t11.story_points + 0), 0) AS completed_story_points
@@ -2097,7 +2097,7 @@
         t11.group_day
     </select>
 
-    <select id="selectByStoryPointAllFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByStoryPointAllFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t2.group_day AS group_day,
         IFNULL(SUM(adl2.new_string + 0), 0) AS all_story_points
@@ -2170,7 +2170,7 @@
         t2.group_day
     </select>
 
-    <select id="selectByStoryPointCountAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByStoryPointCountAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t2.group_day,
         COUNT(adl3.issue_id) AS issue_count
@@ -2246,7 +2246,7 @@
         GROUP BY t2.group_day
     </select>
 
-    <select id="selectByStoryPointCountEstimate" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByStoryPointCountEstimate" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t3.group_day AS group_day,
         COUNT(adl.issue_id) AS un_estimate_issue_count
@@ -2320,7 +2320,7 @@
         t3.group_day
     </select>
 
-    <select id="selectByRemainTimeRemainCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByRemainTimeRemainCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t11.group_day AS group_day,
         IFNULL(SUM(t11.remain_time + 0), 0) AS completed_remain_times
@@ -2476,7 +2476,7 @@
         t11.group_day
     </select>
 
-    <select id="selectByRemainTimeWorkLogCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByRemainTimeWorkLogCompleted" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t11.group_day AS group_day,
         IFNULL(SUM(t11.work_time + 0), 0) AS completed_remain_times
@@ -2630,7 +2630,7 @@
         t11.group_day
     </select>
 
-    <select id="selectByRemainTimeRemainAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByRemainTimeRemainAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t2.group_day AS group_day,
         IFNULL(SUM(adl2.new_string + 0), 0) AS all_remain_times
@@ -2703,7 +2703,7 @@
         t2.group_day
     </select>
 
-    <select id="selectByRemainTimeWorkLogAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByRemainTimeWorkLogAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t2.group_day AS group_day,
         IFNULL(SUM(adl2.new_string + 0), 0) AS all_remain_times
@@ -2776,7 +2776,7 @@
         t2.group_day
     </select>
 
-    <select id="selectByRemainTimeCountAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByRemainTimeCountAll" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t2.group_day,
         COUNT(adl3.issue_id) AS issue_count
@@ -2853,7 +2853,7 @@
         t2.group_day
     </select>
 
-    <select id="selectByRemainTimeCountEstimate" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByRemainTimeCountEstimate" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t3.group_day,
         COUNT(adl.issue_id) AS un_estimate_issue_count
@@ -2928,7 +2928,7 @@
         t3.group_day
     </select>
 
-    <select id="selectByIssueCountCompletedFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByIssueCountCompletedFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t2.group_day,
         COUNT(adl3.issue_id) AS issue_completed_count
@@ -3081,7 +3081,7 @@
         t2.group_day
     </select>
 
-    <select id="selectByIssueCountAllFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDO">
+    <select id="selectByIssueCountAllFinal" resultType="io.choerodon.agile.infra.dataobject.GroupDataChartDTO">
         SELECT
         t2.group_day,
         COUNT(adl3.issue_id) AS issue_count
@@ -3297,7 +3297,7 @@
         )a order by a.issue_id
     </select>
 
-    <select id="queryLastResolutionBeforeMoveOutSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDO">
+    <select id="queryLastResolutionBeforeMoveOutSprint" resultType="io.choerodon.agile.infra.dataobject.ReportIssueDTO">
     SELECT
     a.*
     FROM agile_data_log a

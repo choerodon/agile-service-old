@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.common.aspect;
 
 import io.choerodon.agile.api.vo.PriorityVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.app.service.UserService;
@@ -139,6 +140,8 @@ public class DataLogAspect {
     private IssueMapper issueMapper;
     @Autowired
     private DataLogRepository dataLogRepository;
+    @Autowired
+    private DataLogService dataLogService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -1540,15 +1543,15 @@ public class DataLogAspect {
 
     private void createDataLog(Long projectId, Long issueId, String field, String oldString,
                                String newString, String oldValue, String newValue) {
-        DataLogE dataLogE = new DataLogE();
-        dataLogE.setProjectId(projectId);
-        dataLogE.setIssueId(issueId);
-        dataLogE.setField(field);
-        dataLogE.setOldString(oldString);
-        dataLogE.setNewString(newString);
-        dataLogE.setOldValue(oldValue);
-        dataLogE.setNewValue(newValue);
-        dataLogRepository.create(dataLogE);
+        DataLogDTO dataLogDTO = new DataLogDTO();
+        dataLogDTO.setProjectId(projectId);
+        dataLogDTO.setIssueId(issueId);
+        dataLogDTO.setField(field);
+        dataLogDTO.setOldString(oldString);
+        dataLogDTO.setNewString(newString);
+        dataLogDTO.setOldValue(oldValue);
+        dataLogDTO.setNewValue(newValue);
+        dataLogService.create(dataLogDTO);
     }
 
 }

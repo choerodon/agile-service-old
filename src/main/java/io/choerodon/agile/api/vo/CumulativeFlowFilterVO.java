@@ -10,7 +10,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/7/2
  */
-public class CumulativeFlowFilterDTO {
+public class CumulativeFlowFilterVO {
 
     @ApiModelProperty(value = "开始时间")
     private Date startDate;
