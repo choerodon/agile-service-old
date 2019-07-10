@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.vo.IssueStatusVO;
 import io.choerodon.agile.api.vo.StatusAndIssuesDTO;
-import io.choerodon.agile.api.vo.StatusMoveDTO;
+import io.choerodon.agile.api.vo.StatusMoveVO;
 import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -92,8 +92,8 @@ public class IssueStatusController {
                                                             @ApiParam(value = "状态statusId", required = true)
                                                              @PathVariable Long statusId,
                                                             @ApiParam(value = "status move object", required = true)
-                                                             @RequestBody StatusMoveDTO statusMoveDTO) {
-        return Optional.ofNullable(issueStatusService.moveStatusToColumn(projectId, statusId, statusMoveDTO))
+                                                             @RequestBody StatusMoveVO statusMoveVO) {
+        return Optional.ofNullable(issueStatusService.moveStatusToColumn(projectId, statusId, statusMoveVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }
@@ -106,8 +106,8 @@ public class IssueStatusController {
                                                                   @ApiParam(value = "状态id", required = true)
                                                                    @PathVariable Long statusId,
                                                                   @ApiParam(value = "status move object", required = true)
-                                                                   @RequestBody StatusMoveDTO statusMoveDTO) {
-        return Optional.ofNullable(issueStatusService.moveStatusToUnCorrespond(projectId, statusId, statusMoveDTO))
+                                                                   @RequestBody StatusMoveVO statusMoveVO) {
+        return Optional.ofNullable(issueStatusService.moveStatusToUnCorrespond(projectId, statusId, statusMoveVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(ERROR_STATUS_GET));
     }

@@ -806,11 +806,11 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void deleteStoryMapWidth(Long issueId) {
-        StoryMapWidthDO selectMapWidthDO = new StoryMapWidthDO();
+        StoryMapWidthDTO selectMapWidthDO = new StoryMapWidthDTO();
         selectMapWidthDO.setIssueId(issueId);
         selectMapWidthDO.setType("feature");
-        List<StoryMapWidthDO> storyMapWidthDOList = storyMapWidthMapper.select(selectMapWidthDO);
-        if (storyMapWidthDOList != null && !storyMapWidthDOList.isEmpty()) {
+        List<StoryMapWidthDTO> storyMapWidthDTOList = storyMapWidthMapper.select(selectMapWidthDO);
+        if (storyMapWidthDTOList != null && !storyMapWidthDTOList.isEmpty()) {
             storyMapWidthMapper.delete(selectMapWidthDO);
         }
     }

@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.StoryMapWidthDTO;
+import io.choerodon.agile.api.vo.StoryMapWidthVO;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/6/3.
@@ -8,7 +8,7 @@ import io.choerodon.agile.api.vo.StoryMapWidthDTO;
  */
 public interface StoryMapWidthService {
 
-    StoryMapWidthDTO create(Long projectId, StoryMapWidthDTO storyMapWidthDTO);
+    StoryMapWidthVO create(Long projectId, StoryMapWidthVO storyMapWidthVO);
 
-    StoryMapWidthDTO update(Long projectId, StoryMapWidthDTO storyMapWidthDTO);
+    StoryMapWidthVO update(Long projectId, StoryMapWidthVO storyMapWidthVO);
 }

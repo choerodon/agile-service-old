@@ -9,7 +9,7 @@ import javax.persistence.*;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_quick_filter")
-public class QuickFilterDO extends BaseDTO {
+public class QuickFilterDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

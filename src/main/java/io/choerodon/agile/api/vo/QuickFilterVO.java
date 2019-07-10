@@ -8,7 +8,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/6/13.
  * Email: fuqianghuang01@gmail.com
  */
-public class QuickFilterDTO {
+public class QuickFilterVO {
 
     @ApiModelProperty(value = "主键id")
     private Long filterId;
@@ -23,7 +23,7 @@ public class QuickFilterDTO {
     private String expressQuery;
 
     @ApiModelProperty(value = "快速搜索创建传值")
-    private List<QuickFilterValueDTO> quickFilterValueDTOList;
+    private List<QuickFilterValueVO> quickFilterValueVOList;
 
     @ApiModelProperty(value = "多个表达式之间的关系")
     private List<String> relationOperations;
@@ -88,12 +88,12 @@ public class QuickFilterDTO {
         return objectVersionNumber;
     }
 
-    public void setQuickFilterValueDTOList(List<QuickFilterValueDTO> quickFilterValueDTOList) {
-        this.quickFilterValueDTOList = quickFilterValueDTOList;
+    public void setQuickFilterValueVOList(List<QuickFilterValueVO> quickFilterValueVOList) {
+        this.quickFilterValueVOList = quickFilterValueVOList;
     }
 
-    public List<QuickFilterValueDTO> getQuickFilterValueDTOList() {
-        return quickFilterValueDTOList;
+    public List<QuickFilterValueVO> getQuickFilterValueVOList() {
+        return quickFilterValueVOList;
     }
 
     public void setRelationOperations(List<String> relationOperations) {

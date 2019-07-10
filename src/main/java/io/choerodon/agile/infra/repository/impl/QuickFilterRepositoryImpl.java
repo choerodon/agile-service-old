@@ -1,8 +1,8 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.QuickFilterE;
+import io.choerodon.agile.infra.dataobject.QuickFilterDTO;
 import io.choerodon.agile.infra.repository.QuickFilterRepository;
-import io.choerodon.agile.infra.dataobject.QuickFilterDO;
 import io.choerodon.agile.infra.mapper.QuickFilterMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -21,26 +21,26 @@ public class QuickFilterRepositoryImpl implements QuickFilterRepository {
 
     @Override
     public QuickFilterE create(QuickFilterE quickFilterE) {
-        QuickFilterDO quickFilterDO = ConvertHelper.convert(quickFilterE, QuickFilterDO.class);
-        if (quickFilterMapper.insert(quickFilterDO) != 1) {
+        QuickFilterDTO quickFilterDTO = ConvertHelper.convert(quickFilterE, QuickFilterDTO.class);
+        if (quickFilterMapper.insert(quickFilterDTO) != 1) {
             throw new CommonException("error.quickFilter.insert");
         }
-        return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterDO.getFilterId()), QuickFilterE.class);
+        return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterDTO.getFilterId()), QuickFilterE.class);
     }
 
     @Override
     public QuickFilterE update(QuickFilterE quickFilterE) {
-        QuickFilterDO quickFilterDO = ConvertHelper.convert(quickFilterE, QuickFilterDO.class);
-        if (quickFilterMapper.updateByPrimaryKeySelective(quickFilterDO) != 1) {
+        QuickFilterDTO quickFilterDTO = ConvertHelper.convert(quickFilterE, QuickFilterDTO.class);
+        if (quickFilterMapper.updateByPrimaryKeySelective(quickFilterDTO) != 1) {
             throw new CommonException("error.quickFilter.update");
         }
-        return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterDO.getFilterId()), QuickFilterE.class);
+        return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterDTO.getFilterId()), QuickFilterE.class);
     }
 
     @Override
     public void deleteById(Long filterId) {
-        QuickFilterDO quickFilterDO = quickFilterMapper.selectByPrimaryKey(filterId);
-        if (quickFilterDO == null) {
+        QuickFilterDTO quickFilterDTO = quickFilterMapper.selectByPrimaryKey(filterId);
+        if (quickFilterDTO == null) {
             throw new CommonException("error.quickFilter.get");
         }
         if (quickFilterMapper.deleteByPrimaryKey(filterId) != 1) {

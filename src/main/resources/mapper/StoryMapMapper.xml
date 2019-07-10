@@ -18,7 +18,7 @@
         order by ai.issue_id desc
     </select>
 
-    <resultMap id="epicWithFeatureListMap" type="io.choerodon.agile.infra.dataobject.EpicWithFeatureDO">
+    <resultMap id="epicWithFeatureListMap" type="io.choerodon.agile.infra.dataobject.EpicWithFeatureDTO">
         <id column="ai_issue_id" property="issueId"/>
         <id column="ai_issue_num" property="issueNum"/>
         <id column="ai_type_code" property="typeCode"/>
@@ -128,7 +128,7 @@
         and ai.issue_id = af.issue_id
     </select>
 
-    <resultMap id="storyListMap" type="io.choerodon.agile.infra.dataobject.StoryMapStoryDO">
+    <resultMap id="storyListMap" type="io.choerodon.agile.infra.dataobject.StoryMapStoryDTO">
         <id column="ai_issue_id" property="issueId"/>
         <id column="ai_issue_num" property="issueNum"/>
         <id column="ai_summary" property="summary"/>
@@ -137,7 +137,7 @@
         <id column="ai_issue_type_id" property="issueTypeId"/>
         <id column="ai_status_id" property="statusId"/>
         <id column="ai_completed" property="completed"/>
-        <collection property="storyMapVersionDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.StoryMapVersionDO">
+        <collection property="storyMapVersionDTOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.StoryMapVersionDTO">
             <id property="versionId" column="version_version_id"/>
             <id property="name" column="version_name"/>
         </collection>

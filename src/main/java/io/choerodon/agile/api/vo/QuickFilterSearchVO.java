@@ -9,7 +9,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2019/1/23
  */
-public class QuickFilterSearchDTO {
+public class QuickFilterSearchVO {
 
     @ApiModelProperty(value = "搜索名称")
     private String filterName;

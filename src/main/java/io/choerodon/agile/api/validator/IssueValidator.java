@@ -330,11 +330,11 @@ public class IssueValidator {
         }
     }
 
-    public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO) {
-        if (storyMapMoveDTO.getSprintId() != null && storyMapMoveDTO.getVersionId() != null) {
-            throw new CommonException(ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL);
-        }
-    }
+//    public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO) {
+//        if (storyMapMoveDTO.getSprintId() != null && storyMapMoveDTO.getVersionId() != null) {
+//            throw new CommonException(ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL);
+//        }
+//    }
 
     public static void checkParentIdUpdate(IssueDTO issueDTO, IssueDTO parentIssueDTO) {
         if (issueDTO == null) {

@@ -141,15 +141,15 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         columnStatusRelService.delete(columnStatusRelDTO);
     }
 
-    public void createColumnStatusRel(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
+    public void createColumnStatusRel(Long projectId, Long statusId, StatusMoveVO statusMoveVO) {
         ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
         columnStatusRelDTO.setStatusId(statusId);
         columnStatusRelDTO.setProjectId(projectId);
-        columnStatusRelDTO.setColumnId(statusMoveDTO.getColumnId());
+        columnStatusRelDTO.setColumnId(statusMoveVO.getColumnId());
         if (columnStatusRelMapper.select(columnStatusRelDTO).isEmpty()) {
             ColumnStatusRelDTO columnStatusRel = new ColumnStatusRelDTO();
-            columnStatusRel.setColumnId(statusMoveDTO.getColumnId());
-            columnStatusRel.setPosition(statusMoveDTO.getPosition());
+            columnStatusRel.setColumnId(statusMoveVO.getColumnId());
+            columnStatusRel.setPosition(statusMoveVO.getPosition());
             columnStatusRel.setStatusId(statusId);
             columnStatusRel.setProjectId(projectId);
             columnStatusRelService.create(columnStatusRel);
@@ -157,19 +157,19 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     @Override
-    public IssueStatusVO moveStatusToColumn(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
-        if (!checkColumnStatusRelExist(projectId, statusId, statusMoveDTO.getOriginColumnId())) {
-            deleteColumnStatusRel(projectId, statusId, statusMoveDTO.getOriginColumnId());
+    public IssueStatusVO moveStatusToColumn(Long projectId, Long statusId, StatusMoveVO statusMoveVO) {
+        if (!checkColumnStatusRelExist(projectId, statusId, statusMoveVO.getOriginColumnId())) {
+            deleteColumnStatusRel(projectId, statusId, statusMoveVO.getOriginColumnId());
         }
-        createColumnStatusRel(projectId, statusId, statusMoveDTO);
+        createColumnStatusRel(projectId, statusId, statusMoveVO);
         return ConvertHelper.convert(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusVO.class);
     }
 
     @Override
-    public IssueStatusVO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
+    public IssueStatusVO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveVO statusMoveVO) {
         ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
         columnStatusRelDTO.setStatusId(statusId);
-        columnStatusRelDTO.setColumnId(statusMoveDTO.getColumnId());
+        columnStatusRelDTO.setColumnId(statusMoveVO.getColumnId());
         columnStatusRelDTO.setProjectId(projectId);
         columnStatusRelService.delete(columnStatusRelDTO);
         return modelMapper.map(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusVO.class);

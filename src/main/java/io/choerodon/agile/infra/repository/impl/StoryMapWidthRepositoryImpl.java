@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.StoryMapWidthE;
-import io.choerodon.agile.infra.dataobject.StoryMapWidthDO;
+import io.choerodon.agile.infra.dataobject.StoryMapWidthDTO;
 import io.choerodon.agile.infra.mapper.StoryMapWidthMapper;
 import io.choerodon.agile.infra.repository.StoryMapWidthRepository;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -21,20 +21,20 @@ public class StoryMapWidthRepositoryImpl implements StoryMapWidthRepository {
 
     @Override
     public StoryMapWidthE create(StoryMapWidthE storyMapWidthE) {
-        StoryMapWidthDO storyMapWidthDO = ConvertHelper.convert(storyMapWidthE, StoryMapWidthDO.class);
-        if (storyMapWidthMapper.insert(storyMapWidthDO) != 1) {
-            throw new CommonException("error.storyMapWidthDO.insert");
+        StoryMapWidthDTO storyMapWidthDTO = ConvertHelper.convert(storyMapWidthE, StoryMapWidthDTO.class);
+        if (storyMapWidthMapper.insert(storyMapWidthDTO) != 1) {
+            throw new CommonException("error.storyMapWidthDTO.insert");
         }
-        return ConvertHelper.convert(storyMapWidthMapper.selectByPrimaryKey(storyMapWidthDO.getId()), StoryMapWidthE.class);
+        return ConvertHelper.convert(storyMapWidthMapper.selectByPrimaryKey(storyMapWidthDTO.getId()), StoryMapWidthE.class);
     }
 
     @Override
     public StoryMapWidthE updateBySelective(StoryMapWidthE storyMapWidthE) {
-        StoryMapWidthDO storyMapWidthDO = ConvertHelper.convert(storyMapWidthE, StoryMapWidthDO.class);
-        if (storyMapWidthMapper.updateByPrimaryKeySelective(storyMapWidthDO) != 1) {
-            throw new CommonException("error.storyMapWidthDO.update");
+        StoryMapWidthDTO storyMapWidthDTO = ConvertHelper.convert(storyMapWidthE, StoryMapWidthDTO.class);
+        if (storyMapWidthMapper.updateByPrimaryKeySelective(storyMapWidthDTO) != 1) {
+            throw new CommonException("error.storyMapWidthDTO.update");
         }
-        return ConvertHelper.convert(storyMapWidthMapper.selectByPrimaryKey(storyMapWidthDO.getId()), StoryMapWidthE.class);
+        return ConvertHelper.convert(storyMapWidthMapper.selectByPrimaryKey(storyMapWidthDTO.getId()), StoryMapWidthE.class);
     }
 
 

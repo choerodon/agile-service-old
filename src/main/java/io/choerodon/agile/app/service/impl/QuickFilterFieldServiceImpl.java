@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.QuickFilterFieldDTO;
+import io.choerodon.agile.api.vo.QuickFilterFieldVO;
 import io.choerodon.agile.app.service.QuickFilterFieldService;
 import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -20,8 +20,8 @@ public class QuickFilterFieldServiceImpl implements QuickFilterFieldService {
     private QuickFilterFieldMapper quickFilterFieldMapper;
 
     @Override
-    public List<QuickFilterFieldDTO> list(Long projectId) {
-        return ConvertHelper.convertList(quickFilterFieldMapper.selectAll(), QuickFilterFieldDTO.class);
+    public List<QuickFilterFieldVO> list(Long projectId) {
+        return ConvertHelper.convertList(quickFilterFieldMapper.selectAll(), QuickFilterFieldVO.class);
     }
 
 }

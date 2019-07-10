@@ -1,4 +1,4 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
 import java.util.List;
 
@@ -23,10 +23,6 @@ public class StoryMapStoryDTO {
     private Long issueTypeId;
 
     private Long statusId;
-
-    private IssueTypeVO issueTypeVO;
-
-    private StatusMapVO statusMapVO;
 
     private List<StoryMapVersionDTO> storyMapVersionDTOList;
 
@@ -92,22 +88,6 @@ public class StoryMapStoryDTO {
 
     public void setStatusId(Long statusId) {
         this.statusId = statusId;
-    }
-
-    public IssueTypeVO getIssueTypeVO() {
-        return issueTypeVO;
-    }
-
-    public void setIssueTypeVO(IssueTypeVO issueTypeVO) {
-        this.issueTypeVO = issueTypeVO;
-    }
-
-    public StatusMapVO getStatusMapVO() {
-        return statusMapVO;
-    }
-
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
-        this.statusMapVO = statusMapVO;
     }
 
     public void setCompleted(Boolean completed) {

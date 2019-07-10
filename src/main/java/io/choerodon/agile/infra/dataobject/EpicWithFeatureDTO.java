@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.dataobject;
 
 import java.util.List;
 
-public class EpicWithFeatureDO {
+public class EpicWithFeatureDTO {
 
     private Long issueId;
 

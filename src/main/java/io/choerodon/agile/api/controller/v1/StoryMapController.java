@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.SearchVO;
-import io.choerodon.agile.api.vo.StoryMapDragDTO;
+import io.choerodon.agile.api.vo.StoryMapDragVO;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -60,8 +60,8 @@ public class StoryMapController {
     public ResponseEntity storyMapMove(@ApiParam(value = "项目id", required = true)
                                        @PathVariable(name = "project_id") Long projectId,
                                        @ApiParam(value = "story map drag DTO", required = true)
-                                       @RequestBody StoryMapDragDTO storyMapDragDTO) {
-        storyMapService.storyMapMove(projectId, storyMapDragDTO);
+                                       @RequestBody StoryMapDragVO storyMapDragVO) {
+        storyMapService.storyMapMove(projectId, storyMapDragVO);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 

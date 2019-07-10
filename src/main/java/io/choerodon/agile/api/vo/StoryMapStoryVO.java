@@ -1,4 +1,4 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2019/6/6.
  * Email: fuqianghuang01@gmail.com
  */
-public class StoryMapStoryDO {
+public class StoryMapStoryVO {
 
     private Long issueId;
 
@@ -24,7 +24,11 @@ public class StoryMapStoryDO {
 
     private Long statusId;
 
-    private List<StoryMapVersionDO> storyMapVersionDOList;
+    private IssueTypeVO issueTypeVO;
+
+    private StatusMapVO statusMapVO;
+
+    private List<StoryMapVersionVO> storyMapVersionVOList;
 
     public Long getIssueId() {
         return issueId;
@@ -66,12 +70,12 @@ public class StoryMapStoryDO {
         this.featureId = featureId;
     }
 
-    public void setStoryMapVersionDOList(List<StoryMapVersionDO> storyMapVersionDOList) {
-        this.storyMapVersionDOList = storyMapVersionDOList;
+    public void setStoryMapVersionVOList(List<StoryMapVersionVO> storyMapVersionVOList) {
+        this.storyMapVersionVOList = storyMapVersionVOList;
     }
 
-    public List<StoryMapVersionDO> getStoryMapVersionDOList() {
-        return storyMapVersionDOList;
+    public List<StoryMapVersionVO> getStoryMapVersionVOList() {
+        return storyMapVersionVOList;
     }
 
     public Long getIssueTypeId() {
@@ -88,6 +92,22 @@ public class StoryMapStoryDO {
 
     public void setStatusId(Long statusId) {
         this.statusId = statusId;
+    }
+
+    public IssueTypeVO getIssueTypeVO() {
+        return issueTypeVO;
+    }
+
+    public void setIssueTypeVO(IssueTypeVO issueTypeVO) {
+        this.issueTypeVO = issueTypeVO;
+    }
+
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
+    }
+
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
     public void setCompleted(Boolean completed) {

@@ -9,7 +9,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2019/6/3.
  * Email: fuqianghuang01@gmail.com
  */
-public class StoryMapDragDTO {
+public class StoryMapDragVO {
 
     @ApiModelProperty(value = "要关联的史诗id")
     private Long epicId;

@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.QuickFilterDTO;
-import io.choerodon.agile.api.vo.QuickFilterSearchDTO;
-import io.choerodon.agile.api.vo.QuickFilterSequenceDTO;
+import io.choerodon.agile.api.vo.QuickFilterSearchVO;
+import io.choerodon.agile.api.vo.QuickFilterVO;
+import io.choerodon.agile.api.vo.QuickFilterSequenceVO;
 
 import java.util.List;
 
@@ -13,31 +13,31 @@ import java.util.List;
  */
 public interface QuickFilterService {
 
-    QuickFilterDTO create(Long projectId, QuickFilterDTO quickFilterDTO);
+    QuickFilterVO create(Long projectId, QuickFilterVO quickFilterVO);
 
-    QuickFilterDTO update(Long projectId, Long filterId, QuickFilterDTO quickFilterDTO);
+    QuickFilterVO update(Long projectId, Long filterId, QuickFilterVO quickFilterVO);
 
     void deleteById(Long projectId, Long filterId);
 
-    QuickFilterDTO queryById(Long projectId, Long filterId);
+    QuickFilterVO queryById(Long projectId, Long filterId);
 
     /**
      * 分页搜索过滤条件
      *
      * @param projectId            projectId
-     * @param quickFilterSearchDTO quickFilterSearchDTO
-     * @return QuickFilterDTO
+     * @param quickFilterSearchVO quickFilterSearchVO
+     * @return QuickFilterVO
      */
-    List<QuickFilterDTO> listByProjectId(Long projectId, QuickFilterSearchDTO quickFilterSearchDTO);
+    List<QuickFilterVO> listByProjectId(Long projectId, QuickFilterSearchVO quickFilterSearchVO);
 
     /**
      * 拖动排序
      *
      * @param projectId              projectId
-     * @param quickFilterSequenceDTO quickFilterSequenceDTO
-     * @return QuickFilterDTO
+     * @param quickFilterSequenceVO quickFilterSequenceVO
+     * @return QuickFilterVO
      */
-    QuickFilterDTO dragFilter(Long projectId, QuickFilterSequenceDTO quickFilterSequenceDTO);
+    QuickFilterVO dragFilter(Long projectId, QuickFilterSequenceVO quickFilterSequenceVO);
 
     Boolean checkName(Long projectId, String quickFilterName);
 }

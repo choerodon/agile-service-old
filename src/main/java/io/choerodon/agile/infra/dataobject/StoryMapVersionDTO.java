@@ -1,4 +1,4 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/6/6.

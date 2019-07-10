@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
  * @author dinghuang123@gmail.com
  * @since 2018/8/14
  */
-public class QuickFilterSequenceDTO {
+public class QuickFilterSequenceVO {
 
     private static final String FILTER_ID_NOT_NULL_ERROR = "error.filterId.NotNull";
     private static final String OBJECT_VERSION_NUMBER_NULL_ERROR = "error.objectVersionNumber.NotNull";

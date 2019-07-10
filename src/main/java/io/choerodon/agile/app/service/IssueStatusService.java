@@ -2,10 +2,9 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.IssueStatusVO;
 import io.choerodon.agile.api.vo.StatusAndIssuesDTO;
-import io.choerodon.agile.api.vo.StatusMoveDTO;
+import io.choerodon.agile.api.vo.StatusMoveVO;
 import io.choerodon.agile.api.vo.event.AddStatusWithProject;
 import io.choerodon.agile.api.vo.event.StatusPayload;
-import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.infra.dataobject.IssueStatusDTO;
 
 import java.util.List;
@@ -20,11 +19,11 @@ public interface IssueStatusService {
 
     IssueStatusVO createStatusByStateMachine(Long projectId, IssueStatusVO issueStatusVO);
 
-    IssueStatusVO moveStatusToColumn(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
+    IssueStatusVO moveStatusToColumn(Long projectId, Long statusId, StatusMoveVO statusMoveVO);
 
     List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType);
 
-    IssueStatusVO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO);
+    IssueStatusVO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveVO statusMoveVO);
 
     void deleteStatus(Long projectId, Long statusId, String applyType);
 

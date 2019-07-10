@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/6/14.
  * Email: fuqianghuang01@gmail.com
  */
-public class QuickFilterValueDTO {
+public class QuickFilterValueVO {
 
     @ApiModelProperty(value = "快速搜索字段编码")
     private String fieldCode;

@@ -1,21 +1,12 @@
-package io.choerodon.agile.infra.dataobject;
-
-import io.choerodon.mybatis.entity.BaseDTO;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+package io.choerodon.agile.api.vo;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/6/3.
  * Email: fuqianghuang01@gmail.com
  */
-@Table(name = "agile_storymap_width")
-public class StoryMapWidthDO extends BaseDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class StoryMapWidthVO {
+
     private Long id;
 
     private String type;
@@ -25,6 +16,8 @@ public class StoryMapWidthDO extends BaseDTO {
     private Long issueId;
 
     private Long width;
+
+    private Long objectVersionNumber;
 
     public Long getId() {
         return id;
@@ -64,5 +57,13 @@ public class StoryMapWidthDO extends BaseDTO {
 
     public void setWidth(Long width) {
         this.width = width;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
     }
 }

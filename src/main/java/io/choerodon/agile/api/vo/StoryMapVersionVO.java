@@ -1,10 +1,10 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2019/6/6.
  * Email: fuqianghuang01@gmail.com
  */
-public class StoryMapVersionDO {
+public class StoryMapVersionVO {
 
     private Long versionId;
 

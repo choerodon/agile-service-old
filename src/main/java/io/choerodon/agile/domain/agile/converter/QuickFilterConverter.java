@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.QuickFilterDTO;
+import io.choerodon.agile.api.vo.QuickFilterVO;
 import io.choerodon.agile.domain.agile.entity.QuickFilterE;
-import io.choerodon.agile.infra.dataobject.QuickFilterDO;
+import io.choerodon.agile.infra.dataobject.QuickFilterDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,47 +12,47 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class QuickFilterConverter implements ConvertorI<QuickFilterE, QuickFilterDO, QuickFilterDTO> {
+public class QuickFilterConverter implements ConvertorI<QuickFilterE, QuickFilterDTO, QuickFilterVO> {
 
     @Override
-    public QuickFilterE dtoToEntity(QuickFilterDTO quickFilterDTO) {
+    public QuickFilterE dtoToEntity(QuickFilterVO quickFilterVO) {
+        QuickFilterE quickFilterE = new QuickFilterE();
+        BeanUtils.copyProperties(quickFilterVO, quickFilterE);
+        return quickFilterE;
+    }
+
+    @Override
+    public QuickFilterVO entityToDto(QuickFilterE quickFilterE) {
+        QuickFilterVO quickFilterVO = new QuickFilterVO();
+        BeanUtils.copyProperties(quickFilterE, quickFilterVO);
+        return quickFilterVO;
+    }
+
+    @Override
+    public QuickFilterE doToEntity(QuickFilterDTO quickFilterDTO) {
         QuickFilterE quickFilterE = new QuickFilterE();
         BeanUtils.copyProperties(quickFilterDTO, quickFilterE);
         return quickFilterE;
     }
 
     @Override
-    public QuickFilterDTO entityToDto(QuickFilterE quickFilterE) {
+    public QuickFilterDTO entityToDo(QuickFilterE quickFilterE) {
         QuickFilterDTO quickFilterDTO = new QuickFilterDTO();
         BeanUtils.copyProperties(quickFilterE, quickFilterDTO);
         return quickFilterDTO;
     }
 
     @Override
-    public QuickFilterE doToEntity(QuickFilterDO quickFilterDO) {
-        QuickFilterE quickFilterE = new QuickFilterE();
-        BeanUtils.copyProperties(quickFilterDO, quickFilterE);
-        return quickFilterE;
+    public QuickFilterVO doToDto(QuickFilterDTO quickFilterDTO) {
+        QuickFilterVO quickFilterVO = new QuickFilterVO();
+        BeanUtils.copyProperties(quickFilterDTO, quickFilterVO);
+        return quickFilterVO;
     }
 
     @Override
-    public QuickFilterDO entityToDo(QuickFilterE quickFilterE) {
-        QuickFilterDO quickFilterDO = new QuickFilterDO();
-        BeanUtils.copyProperties(quickFilterE, quickFilterDO);
-        return quickFilterDO;
-    }
-
-    @Override
-    public QuickFilterDTO doToDto(QuickFilterDO quickFilterDO) {
+    public QuickFilterDTO dtoToDo(QuickFilterVO quickFilterVO) {
         QuickFilterDTO quickFilterDTO = new QuickFilterDTO();
-        BeanUtils.copyProperties(quickFilterDO, quickFilterDTO);
+        BeanUtils.copyProperties(quickFilterVO, quickFilterDTO);
         return quickFilterDTO;
-    }
-
-    @Override
-    public QuickFilterDO dtoToDo(QuickFilterDTO quickFilterDTO) {
-        QuickFilterDO quickFilterDO = new QuickFilterDO();
-        BeanUtils.copyProperties(quickFilterDTO, quickFilterDO);
-        return quickFilterDO;
     }
 }

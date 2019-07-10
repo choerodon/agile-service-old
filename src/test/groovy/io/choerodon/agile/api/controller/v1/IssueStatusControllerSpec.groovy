@@ -3,7 +3,7 @@ package io.choerodon.agile.api.controller.v1
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.IssueStatusVO
 import io.choerodon.agile.api.vo.StatusInfoVO
-import io.choerodon.agile.api.vo.StatusMoveDTO
+import io.choerodon.agile.api.vo.StatusMoveVO
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDTO
 import io.choerodon.agile.infra.dataobject.IssueStatusDTO
 import io.choerodon.agile.infra.feign.IssueFeignClient
@@ -117,7 +117,7 @@ class IssueStatusControllerSpec extends Specification {
         issueStatusDO.setName(statusName)
         issueStatusDO.projectId = projectId
         statusId = issueStatusMapper.selectOne(issueStatusDO).id
-        StatusMoveDTO statusMoveDTO = new StatusMoveDTO()
+        StatusMoveVO statusMoveDTO = new StatusMoveVO()
         statusMoveDTO.columnId = 1L
         statusMoveDTO.originColumnId = 0L
         statusMoveDTO.position = 1
@@ -131,7 +131,7 @@ class IssueStatusControllerSpec extends Specification {
         columnStatusRelDO.position = 1
 
         when:
-        HttpEntity<StatusMoveDTO> statusMoveDTOHttpEntity = new HttpEntity<>(statusMoveDTO)
+        HttpEntity<StatusMoveVO> statusMoveDTOHttpEntity = new HttpEntity<>(statusMoveDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/{id}/move_to_column",
                 HttpMethod.POST,
                 statusMoveDTOHttpEntity,
@@ -149,7 +149,7 @@ class IssueStatusControllerSpec extends Specification {
 
     def 'moveStatusToUnCorrespond'() {
         given:
-        StatusMoveDTO statusMoveDTO = new StatusMoveDTO()
+        StatusMoveVO statusMoveDTO = new StatusMoveVO()
         statusMoveDTO.columnId = 1L
 
         and:
@@ -160,7 +160,7 @@ class IssueStatusControllerSpec extends Specification {
         columnStatusRelDO.position = 1
 
         when:
-        HttpEntity<StatusMoveDTO> statusMoveDTOHttpEntity = new HttpEntity<>(statusMoveDTO)
+        HttpEntity<StatusMoveVO> statusMoveDTOHttpEntity = new HttpEntity<>(statusMoveDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/{id}/move_to_uncorrespond",
                 HttpMethod.POST,
                 statusMoveDTOHttpEntity,

@@ -12,7 +12,7 @@ import javax.persistence.Table;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_quick_filter_field")
-public class QuickFilterFieldDO extends BaseDTO {
+public class QuickFilterFieldDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,12 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.StoryMapValidator;
 import io.choerodon.agile.app.assembler.StoryMapAssembler;
+import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.StoryMapMapper;
 import io.choerodon.agile.infra.mapper.StoryMapWidthMapper;
-import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.app.service.VersionIssueRelService;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -29,8 +29,11 @@ public class StoryMapServiceImpl implements StoryMapService {
     @Autowired
     private StoryMapMapper storyMapMapper;
 
+//    @Autowired
+//    private IssueRepository issueRepository;
+
     @Autowired
-    private IssueRepository issueRepository;
+    private IssueAccessDataService issueAccessDataService;
 
     @Autowired
     private StoryMapValidator storyMapValidator;
@@ -63,10 +66,10 @@ public class StoryMapServiceImpl implements StoryMapService {
         return result;
     }
 
-    private List<StoryMapWidthDTO> setStoryMapWidth(Long projectId) {
-        List<StoryMapWidthDO> storyMapWidthDOList = storyMapWidthMapper.selectByProjectId(projectId);
-        if (storyMapWidthDOList != null && !storyMapWidthDOList.isEmpty()) {
-            return ConvertHelper.convertList(storyMapWidthDOList, StoryMapWidthDTO.class);
+    private List<StoryMapWidthVO> setStoryMapWidth(Long projectId) {
+        List<StoryMapWidthDTO> storyMapWidthDTOList = storyMapWidthMapper.selectByProjectId(projectId);
+        if (storyMapWidthDTOList != null && !storyMapWidthDTOList.isEmpty()) {
+            return ConvertHelper.convertList(storyMapWidthDTOList, StoryMapWidthVO.class);
         } else {
             return new ArrayList<>();
         }
@@ -94,10 +97,10 @@ public class StoryMapServiceImpl implements StoryMapService {
         if (epicIds.isEmpty()) {
             result.put("epicWithFeature", new ArrayList<>());
         } else {
-            List<EpicWithFeatureDO> epicWithFeatureDOList = storyMapMapper.selectEpicWithFeatureList(projectId, epicIds);
-            result.put("epicWithFeature", epicWithFeatureDOList);
-            epicWithFeatureDOList.forEach(epicWithFeatureDO -> {
-                List<FeatureCommonDTO> featureCommonDTOList = epicWithFeatureDO.getFeatureCommonDTOList();
+            List<EpicWithFeatureDTO> epicWithFeatureDTOList = storyMapMapper.selectEpicWithFeatureList(projectId, epicIds);
+            result.put("epicWithFeature", epicWithFeatureDTOList);
+            epicWithFeatureDTOList.forEach(epicWithFeatureDTO -> {
+                List<FeatureCommonDTO> featureCommonDTOList = epicWithFeatureDTO.getFeatureCommonDTOList();
                 featureIds.addAll(featureCommonDTOList.stream().map(FeatureCommonDTO::getIssueId).collect(Collectors.toList()));
             });
         }
@@ -117,29 +120,29 @@ public class StoryMapServiceImpl implements StoryMapService {
     @Override
     public JSONObject queryStoryMapDemand(Long projectId, SearchVO searchVO) {
         JSONObject result = new JSONObject(true);
-        List<StoryMapStoryDO> storyMapStoryDOList = storyMapMapper.selectDemandStoryList(projectId, searchVO);
-        result.put("demandStoryList", storyMapAssembler.storyMapStoryDOToDTO(projectId, storyMapStoryDOList));
+        List<StoryMapStoryDTO> storyMapStoryDTOList = storyMapMapper.selectDemandStoryList(projectId, searchVO);
+        result.put("demandStoryList", storyMapAssembler.storyMapStoryDOToDTO(projectId, storyMapStoryDTOList));
         return result;
     }
 
-    private void dragToEpic(Long projectId, Long epicId, StoryMapDragDTO storyMapDragDTO) {
+    private void dragToEpic(Long projectId, Long epicId, StoryMapDragVO storyMapDragVO) {
         storyMapValidator.checkEpicExist(epicId);
-        List<Long> issueIds = storyMapDragDTO.getEpicIssueIds();
+        List<Long> issueIds = storyMapDragVO.getEpicIssueIds();
         if (issueIds != null && !issueIds.isEmpty()) {
-            issueRepository.batchIssueToEpic(projectId, epicId, issueIds);
+            issueAccessDataService.batchIssueToEpic(projectId, epicId, issueIds);
         }
     }
 
-    private void dragToFeature(Long projectId, Long featureId, StoryMapDragDTO storyMapDragDTO) {
+    private void dragToFeature(Long projectId, Long featureId, StoryMapDragVO storyMapDragVO) {
         storyMapValidator.checkFeatureExist(featureId);
-        List<Long> issueIds = storyMapDragDTO.getFeatureIssueIds();
+        List<Long> issueIds = storyMapDragVO.getFeatureIssueIds();
         if (issueIds != null && !issueIds.isEmpty()) {
-            issueRepository.batchStoryToFeature(projectId, featureId, issueIds, null);
+            issueAccessDataService.batchStoryToFeature(projectId, featureId, issueIds, null);
         }
     }
 
-    private void dragToVersion(Long projectId, Long versionId, StoryMapDragDTO storyMapDragDTO) {
-        List<VersionIssueRelDTO> versionIssueRelDTOList = storyMapDragDTO.getVersionIssueRelDTOList();
+    private void dragToVersion(Long projectId, Long versionId, StoryMapDragVO storyMapDragVO) {
+        List<VersionIssueRelDTO> versionIssueRelDTOList = storyMapDragVO.getVersionIssueRelDTOList();
         if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
             for (VersionIssueRelDTO versionIssueRelDTO : versionIssueRelDTOList) {
                 VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
@@ -151,32 +154,32 @@ public class StoryMapServiceImpl implements StoryMapService {
             }
         }
         storyMapValidator.checkVersionExist(versionId);
-        List<Long> issueIds = storyMapDragDTO.getVersionIssueIds();
+        List<Long> issueIds = storyMapDragVO.getVersionIssueIds();
         if (issueIds == null || issueIds.isEmpty()) {
             return;
         }
         if (!Objects.equals(versionId, 0L)) {
             VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
             versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
-            issueRepository.batchIssueToVersion(versionIssueRelE);
+            issueAccessDataService.batchIssueToVersion(versionIssueRelE);
         }
     }
 
     @Override
-    public void storyMapMove(Long projectId, StoryMapDragDTO storyMapDragDTO) {
-        Long epicId = storyMapDragDTO.getEpicId();
-        Long featureId = storyMapDragDTO.getFeatureId();
-        Long versionId = storyMapDragDTO.getVersionId();
+    public void storyMapMove(Long projectId, StoryMapDragVO storyMapDragVO) {
+        Long epicId = storyMapDragVO.getEpicId();
+        Long featureId = storyMapDragVO.getFeatureId();
+        Long versionId = storyMapDragVO.getVersionId();
         // 排除featureId不在epicId下的情况
         storyMapValidator.checkFeatureUnderEpic(featureId, epicId);
         if (epicId != null) {
-            dragToEpic(projectId, epicId, storyMapDragDTO);
+            dragToEpic(projectId, epicId, storyMapDragVO);
         }
         if (featureId != null) {
-            dragToFeature(projectId, featureId, storyMapDragDTO);
+            dragToFeature(projectId, featureId, storyMapDragVO);
         }
         if (versionId != null) {
-            dragToVersion(projectId, versionId, storyMapDragDTO);
+            dragToVersion(projectId, versionId, storyMapDragVO);
         }
     }
 

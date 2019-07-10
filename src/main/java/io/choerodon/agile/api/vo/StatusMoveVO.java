@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/5/16.
  * Email: fuqianghuang01@gmail.com
  */
-public class StatusMoveDTO {
+public class StatusMoveVO {
 
     @ApiModelProperty(value = "状态位置")
     private Integer position;

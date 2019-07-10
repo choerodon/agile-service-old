@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.QuickFilterFieldDTO;
+import io.choerodon.agile.api.vo.QuickFilterFieldVO;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface QuickFilterFieldService {
 
-    List<QuickFilterFieldDTO> list(Long projectId);
+    List<QuickFilterFieldVO> list(Long projectId);
 }
