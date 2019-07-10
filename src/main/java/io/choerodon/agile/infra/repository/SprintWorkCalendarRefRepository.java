@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.repository;
 
-import io.choerodon.agile.infra.dataobject.WorkCalendarRefDO;
+import io.choerodon.agile.infra.dataobject.WorkCalendarRefDTO;
 
 /**
  * @author dinghuang123@gmail.com
@@ -11,10 +11,10 @@ public interface SprintWorkCalendarRefRepository {
     /**
      * 创建
      *
-     * @param workCalendarRefDO sprintWorkCalendarRefDO
+     * @param workCalendarRefDTO sprintWorkCalendarRefDO
      * @return SprintWorkCalendarRefDO
      */
-    WorkCalendarRefDO create(WorkCalendarRefDO workCalendarRefDO);
+    WorkCalendarRefDTO create(WorkCalendarRefDTO workCalendarRefDTO);
 
     /**
      * 删除冲刺工作日历

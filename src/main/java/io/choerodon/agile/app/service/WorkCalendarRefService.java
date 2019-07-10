@@ -1,8 +1,9 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.SprintWorkCalendarDTO;
-import io.choerodon.agile.api.vo.WorkCalendarRefCreateDTO;
-import io.choerodon.agile.api.vo.WorkCalendarRefDTO;
+import io.choerodon.agile.api.vo.WorkCalendarRefCreateVO;
+import io.choerodon.agile.api.vo.WorkCalendarRefVO;
+import io.choerodon.agile.infra.dataobject.WorkCalendarRefDTO;
 
 import java.util.List;
 
@@ -25,19 +26,19 @@ public interface WorkCalendarRefService {
      *
      * @param projectId projectId
      * @param year      year
-     * @return List<WorkCalendarRefDTO>
+     * @return List<WorkCalendarRefVO>
      */
-    List<WorkCalendarRefDTO> queryProjectWorkCalendarRefs(Long projectId, Integer year);
+    List<WorkCalendarRefVO> queryProjectWorkCalendarRefs(Long projectId, Integer year);
 
     /**
      * 创建工作日历
      *
      * @param projectId                      projectId
      * @param sprintId                       sprintId
-     * @param workCalendarRefCreateDTO workCalendarRefCreateDTO
-     * @return WorkCalendarRefDTO
+     * @param workCalendarRefCreateVO workCalendarRefCreateVO
+     * @return WorkCalendarRefVO
      */
-    WorkCalendarRefDTO createWorkCalendarRef(Long projectId, Long sprintId, WorkCalendarRefCreateDTO workCalendarRefCreateDTO);
+    WorkCalendarRefVO createWorkCalendarRef(Long projectId, Long sprintId, WorkCalendarRefCreateVO workCalendarRefCreateVO);
 
     /**
      * 删除工作日历
@@ -46,4 +47,6 @@ public interface WorkCalendarRefService {
      * @param calendarId calendarId
      */
     void deleteWorkCalendarRef(Long projectId, Long calendarId);
+
+    WorkCalendarRefDTO create(WorkCalendarRefDTO workCalendarRefDTO);
 }

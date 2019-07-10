@@ -11,7 +11,7 @@ import java.util.List;
  * @since 2018/10/12
  */
 @Table(name = "agile_time_zone_work_calendar")
-public class TimeZoneWorkCalendarDO extends BaseDTO {
+public class TimeZoneWorkCalendarDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,14 +30,14 @@ public class TimeZoneWorkCalendarDO extends BaseDTO {
     private Boolean sundayWork;
 
     @Transient
-    private List<TimeZoneWorkCalendarRefDO>  timeZoneWorkCalendarRefDOS;
+    private List<TimeZoneWorkCalendarRefDTO> timeZoneWorkCalendarRefDTOS;
 
-    public List<TimeZoneWorkCalendarRefDO> getTimeZoneWorkCalendarRefDOS() {
-        return timeZoneWorkCalendarRefDOS;
+    public List<TimeZoneWorkCalendarRefDTO> getTimeZoneWorkCalendarRefDTOS() {
+        return timeZoneWorkCalendarRefDTOS;
     }
 
-    public void setTimeZoneWorkCalendarRefDOS(List<TimeZoneWorkCalendarRefDO> timeZoneWorkCalendarRefDOS) {
-        this.timeZoneWorkCalendarRefDOS = timeZoneWorkCalendarRefDOS;
+    public void setTimeZoneWorkCalendarRefDTOS(List<TimeZoneWorkCalendarRefDTO> timeZoneWorkCalendarRefDTOS) {
+        this.timeZoneWorkCalendarRefDTOS = timeZoneWorkCalendarRefDTOS;
     }
 
     public Long getOrganizationId() {

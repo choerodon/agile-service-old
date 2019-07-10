@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by jian_zhang02@163.com on 2018/5/16.
  */
-public class SprintSearchDTO {
+public class SprintSearchVO {
     private Long sprintId;
     private String sprintName;
     private String sprintGoal;

@@ -14,7 +14,7 @@ import java.util.Objects;
  * @since 2018/10/9
  */
 @Table(name = "agile_work_calendar_holiday_ref")
-public class WorkCalendarHolidayRefDO extends BaseDTO {
+public class WorkCalendarHolidayRefDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,10 +81,10 @@ public class WorkCalendarHolidayRefDO extends BaseDTO {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof WorkCalendarHolidayRefDO)) {
+        if (!(o instanceof WorkCalendarHolidayRefDTO)) {
             return false;
         }
-        WorkCalendarHolidayRefDO that = (WorkCalendarHolidayRefDO) o;
+        WorkCalendarHolidayRefDTO that = (WorkCalendarHolidayRefDTO) o;
         return Objects.equals(getCalendarId(), that.getCalendarId()) &&
                 Objects.equals(getHoliday(), that.getHoliday()) &&
                 Objects.equals(getYear(), that.getYear()) &&

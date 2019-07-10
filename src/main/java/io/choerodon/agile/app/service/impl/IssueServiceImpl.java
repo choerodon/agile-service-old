@@ -697,9 +697,9 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private void handleIssueStatus(Long projectId, IssueConvertDTO oldIssue, IssueConvertDTO issueConvertDTO, List<String> fieldList, List<Long> issueIds) {
-        SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
+        SprintSearchDTO sprintSearchDTO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (oldIssue.getApplyType().equals(SchemeApplyType.AGILE)) {
-            if (sprintSearchDO == null || !Objects.equals(issueConvertDTO.getSprintId(), sprintSearchDO.getSprintId())) {
+            if (sprintSearchDTO == null || !Objects.equals(issueConvertDTO.getSprintId(), sprintSearchDTO.getSprintId())) {
                 Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, oldIssue.getIssueTypeId()).getBody();
                 if (stateMachineId == null) {
                     throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
@@ -1061,8 +1061,8 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public void batchHandleIssueStatus(Long projectId, List<Long> moveIssueIds, Long sprintId) {
-        SprintSearchDO sprintSearchDO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
-        if (sprintSearchDO == null || !Objects.equals(sprintId, sprintSearchDO.getSprintId())) {
+        SprintSearchDTO sprintSearchDTO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
+        if (sprintSearchDTO == null || !Objects.equals(sprintId, sprintSearchDTO.getSprintId())) {
             List<IssueConvertDTO> issueConvertDTOList = issueAssembler.toTargetList(issueMapper.queryIssueByIssueIdsAndSubIssueIds(moveIssueIds), IssueConvertDTO.class);
             Map<Long, IssueTypeWithStateMachineIdDTO> issueTypeWithStateMachineIdDTOMap = ConvertUtil.queryIssueTypesWithStateMachineIdByProjectId(projectId, AGILE);
             issueConvertDTOList.forEach(issueE -> {

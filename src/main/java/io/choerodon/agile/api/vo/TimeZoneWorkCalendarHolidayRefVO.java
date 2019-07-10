@@ -9,7 +9,7 @@ import java.util.Objects;
  * @author dinghuang123@gmail.com
  * @since 2018/10/17
  */
-public class TimeZoneWorkCalendarHolidayRefDTO {
+public class TimeZoneWorkCalendarHolidayRefVO {
 
     @ApiModelProperty(value = "节假日名称")
     private String name;
@@ -57,10 +57,10 @@ public class TimeZoneWorkCalendarHolidayRefDTO {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof WorkCalendarHolidayRefDTO)) {
+        if (!(o instanceof WorkCalendarHolidayRefVO)) {
             return false;
         }
-        WorkCalendarHolidayRefDTO that = (WorkCalendarHolidayRefDTO) o;
+        WorkCalendarHolidayRefVO that = (WorkCalendarHolidayRefVO) o;
         return Objects.equals(getName(), that.getName()) &&
                 Objects.equals(getHoliday(), that.getHoliday()) &&
                 Objects.equals(getStatus(), that.getStatus());

@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
+import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,10 @@ public class TimeZoneWorkCalendarValidator {
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
 
     public void verifyCreateTimeZoneWorkCalendarRef(Long organizationId, Long timeZoneId) {
-        TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO();
-        timeZoneWorkCalendarDO.setOrganizationId(organizationId);
-        timeZoneWorkCalendarDO.setTimeZoneId(timeZoneId);
-        TimeZoneWorkCalendarDO query = timeZoneWorkCalendarMapper.selectOne(timeZoneWorkCalendarDO);
+        TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO = new TimeZoneWorkCalendarDTO();
+        timeZoneWorkCalendarDTO.setOrganizationId(organizationId);
+        timeZoneWorkCalendarDTO.setTimeZoneId(timeZoneId);
+        TimeZoneWorkCalendarDTO query = timeZoneWorkCalendarMapper.selectOne(timeZoneWorkCalendarDTO);
         if (query == null) {
             throw new CommonException("error.TimeZoneWorkCalendar.notFound");
         }

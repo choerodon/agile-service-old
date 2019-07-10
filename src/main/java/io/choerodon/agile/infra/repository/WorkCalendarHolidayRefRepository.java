@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.repository;
 
-import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO;
+import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDTO;
 
 /**
  * @author dinghuang123@gmail.com
@@ -8,6 +8,6 @@ import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO;
  */
 public interface WorkCalendarHolidayRefRepository {
 
-    WorkCalendarHolidayRefDO create(WorkCalendarHolidayRefDO workCalendarHolidayRefDO);
+    WorkCalendarHolidayRefDTO create(WorkCalendarHolidayRefDTO workCalendarHolidayRefDTO);
 
 }

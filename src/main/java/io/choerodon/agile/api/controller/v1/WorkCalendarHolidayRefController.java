@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 
-import io.choerodon.agile.api.vo.WorkCalendarHolidayRefDTO;
+import io.choerodon.agile.api.vo.WorkCalendarHolidayRefVO;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -42,9 +42,9 @@ public class WorkCalendarHolidayRefController {
     @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR, InitRoleCode.ORGANIZATION_MEMBER})
     @ApiOperation("根据年份查询工作日历假期(包含查询年份和下一年份数据)")
     @GetMapping
-    public ResponseEntity<List<WorkCalendarHolidayRefDTO>> queryWorkCalendarHolidayRelByYear(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<WorkCalendarHolidayRefVO>> queryWorkCalendarHolidayRelByYear(@ApiParam(value = "项目id", required = true)
                                                                                              @PathVariable(name = "organization_id") Long organizationId,
-                                                                                             @ApiParam(value = "要查询的年份", required = true)
+                                                                                            @ApiParam(value = "要查询的年份", required = true)
                                                                                              @RequestParam Integer year) {
         return Optional.ofNullable(workCalendarHolidayRefService.queryWorkCalendarHolidayRelByYear(year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

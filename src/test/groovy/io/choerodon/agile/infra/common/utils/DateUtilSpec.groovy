@@ -1,8 +1,8 @@
 package io.choerodon.agile.infra.common.utils
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDO
+import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO
+import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDTO
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -31,17 +31,17 @@ class DateUtilSpec extends Specification {
         given: '设置feign调用mockito'
         def timeZoneWorkCalendarMapper = Mock(TimeZoneWorkCalendarMapper.class)
         dateUtil.setTimeZoneWorkCalendarMapper(timeZoneWorkCalendarMapper)
-        TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO()
+        TimeZoneWorkCalendarDTO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDTO()
         timeZoneWorkCalendarDO.saturdayWork = true
         timeZoneWorkCalendarDO.sundayWork = true
         timeZoneWorkCalendarDO.useHoliday = true
-        List<TimeZoneWorkCalendarRefDO> timeZoneWorkCalendarRefDOS = new ArrayList<>()
-        TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO()
+        List<TimeZoneWorkCalendarRefDTO> timeZoneWorkCalendarRefDOS = new ArrayList<>()
+        TimeZoneWorkCalendarRefDTO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDTO()
         timeZoneWorkCalendarRefDO.status = 0
         timeZoneWorkCalendarRefDO.workDay = "2018-10-1"
         timeZoneWorkCalendarRefDO.year = 2018
         timeZoneWorkCalendarRefDOS.add(timeZoneWorkCalendarRefDO)
-        timeZoneWorkCalendarDO.timeZoneWorkCalendarRefDOS = timeZoneWorkCalendarRefDOS
+        timeZoneWorkCalendarDO.timeZoneWorkCalendarRefDTOS = timeZoneWorkCalendarRefDOS
         timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(1) >> timeZoneWorkCalendarDO
     }
 
@@ -62,17 +62,17 @@ class DateUtilSpec extends Specification {
         and: "Mock"
         def timeZoneWorkCalendarMapper = Mock(TimeZoneWorkCalendarMapper.class)
         dateUtil.setTimeZoneWorkCalendarMapper(timeZoneWorkCalendarMapper)
-        TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO()
+        TimeZoneWorkCalendarDTO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDTO()
         timeZoneWorkCalendarDO.saturdayWork = true
         timeZoneWorkCalendarDO.sundayWork = true
         timeZoneWorkCalendarDO.useHoliday = true
-        List<TimeZoneWorkCalendarRefDO> timeZoneWorkCalendarRefDOS = new ArrayList<>()
-        TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO()
+        List<TimeZoneWorkCalendarRefDTO> timeZoneWorkCalendarRefDOS = new ArrayList<>()
+        TimeZoneWorkCalendarRefDTO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDTO()
         timeZoneWorkCalendarRefDO.status = 0
         timeZoneWorkCalendarRefDO.workDay = "2018-10-1"
         timeZoneWorkCalendarRefDO.year = 2018
         timeZoneWorkCalendarRefDOS.add(timeZoneWorkCalendarRefDO)
-        timeZoneWorkCalendarDO.timeZoneWorkCalendarRefDOS = timeZoneWorkCalendarRefDOS
+        timeZoneWorkCalendarDO.timeZoneWorkCalendarRefDTOS = timeZoneWorkCalendarRefDOS
         timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(1) >> timeZoneWorkCalendarDO
 
         when: '获取不同时间'
@@ -99,17 +99,17 @@ class DateUtilSpec extends Specification {
         and: "Mock"
         def timeZoneWorkCalendarMapper = Mock(TimeZoneWorkCalendarMapper.class)
         dateUtil.setTimeZoneWorkCalendarMapper(timeZoneWorkCalendarMapper)
-        TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO()
+        TimeZoneWorkCalendarDTO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDTO()
         timeZoneWorkCalendarDO.saturdayWork = true
         timeZoneWorkCalendarDO.sundayWork = true
         timeZoneWorkCalendarDO.useHoliday = true
-        List<TimeZoneWorkCalendarRefDO> timeZoneWorkCalendarRefDOS = new ArrayList<>()
-        TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO()
+        List<TimeZoneWorkCalendarRefDTO> timeZoneWorkCalendarRefDOS = new ArrayList<>()
+        TimeZoneWorkCalendarRefDTO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDTO()
         timeZoneWorkCalendarRefDO.status = 0
         timeZoneWorkCalendarRefDO.workDay = "2018-10-1"
         timeZoneWorkCalendarRefDO.year = 2018
         timeZoneWorkCalendarRefDOS.add(timeZoneWorkCalendarRefDO)
-        timeZoneWorkCalendarDO.timeZoneWorkCalendarRefDOS = timeZoneWorkCalendarRefDOS
+        timeZoneWorkCalendarDO.timeZoneWorkCalendarRefDTOS = timeZoneWorkCalendarRefDOS
 
         when: '根据参数查询用户信息'
         timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(1) >> timeZoneWorkCalendarDO

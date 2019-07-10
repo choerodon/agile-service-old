@@ -3,23 +3,27 @@ package io.choerodon.agile.api.vo;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 
+
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/10/15
+ * @since 2018/10/12
  */
-public class TimeZoneWorkCalendarUpdateDTO {
+public class TimeZoneWorkCalendarVO {
 
-    @ApiModelProperty(value = "地区编码")
+    @ApiModelProperty(value = "时区主键id")
+    private Long timeZoneId;
+
+    @ApiModelProperty(value = "地址code")
     private String areaCode;
 
-    @ApiModelProperty(value = "时区编码")
+    @ApiModelProperty(value = "时区code")
     private String timeZoneCode;
-
-    @ApiModelProperty(value = "workTypeCode")
-    private String workTypeCode;
 
     @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
+
+    @ApiModelProperty(value = "组织id")
+    private Long organizationId;
 
     @ApiModelProperty(value = "是否使用法定节假日")
     private Boolean useHoliday;
@@ -54,12 +58,28 @@ public class TimeZoneWorkCalendarUpdateDTO {
         this.sundayWork = sundayWork;
     }
 
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
     public Long getObjectVersionNumber() {
         return objectVersionNumber;
     }
 
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public Long getTimeZoneId() {
+        return timeZoneId;
+    }
+
+    public void setTimeZoneId(Long timeZoneId) {
+        this.timeZoneId = timeZoneId;
     }
 
     public String getAreaCode() {
@@ -76,14 +96,6 @@ public class TimeZoneWorkCalendarUpdateDTO {
 
     public void setTimeZoneCode(String timeZoneCode) {
         this.timeZoneCode = timeZoneCode;
-    }
-
-    public String getWorkTypeCode() {
-        return workTypeCode;
-    }
-
-    public void setWorkTypeCode(String workTypeCode) {
-        this.workTypeCode = workTypeCode;
     }
 
     @Override

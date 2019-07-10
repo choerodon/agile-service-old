@@ -9,7 +9,7 @@ import java.util.Objects;
  * @author dinghuang123@gmail.com
  * @since 2018/10/9
  */
-public class WorkCalendarHolidayRefDTO {
+public class WorkCalendarHolidayRefVO {
 
     @ApiModelProperty(value = "主键id")
     private Long calendarId;
@@ -68,10 +68,10 @@ public class WorkCalendarHolidayRefDTO {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof WorkCalendarHolidayRefDTO)) {
+        if (!(o instanceof WorkCalendarHolidayRefVO)) {
             return false;
         }
-        WorkCalendarHolidayRefDTO that = (WorkCalendarHolidayRefDTO) o;
+        WorkCalendarHolidayRefVO that = (WorkCalendarHolidayRefVO) o;
         return Objects.equals(getCalendarId(), that.getCalendarId()) &&
                 Objects.equals(getName(), that.getName()) &&
                 Objects.equals(getHoliday(), that.getHoliday()) &&

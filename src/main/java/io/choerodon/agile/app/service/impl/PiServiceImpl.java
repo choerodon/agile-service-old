@@ -185,11 +185,11 @@ public class PiServiceImpl implements PiService {
         return w;
     }
 
-    private Boolean judgeBeWork(Date date, List<WorkCalendarHolidayRefDTO> calendarDays) {
+    private Boolean judgeBeWork(Date date, List<WorkCalendarHolidayRefVO> calendarDays) {
         SimpleDateFormat formatter = new SimpleDateFormat(YYYY_MM_DD);
         String dateString = formatter.format(date);
         int week = getWeekOfDate(date);
-        for (WorkCalendarHolidayRefDTO value : calendarDays) {
+        for (WorkCalendarHolidayRefVO value : calendarDays) {
             if (dateString.equals(value.getHoliday()) && Objects.equals(value.getStatus(), 1)) {
                 return true;
             } else if (dateString.equals(value.getHoliday()) && Objects.equals(value.getStatus(), 0)) {
@@ -203,7 +203,7 @@ public class PiServiceImpl implements PiService {
     }
 
     private List<Date> getWorkDaysAfter(Date startDate, Long piWorkDays, Boolean overlap) {
-        List<WorkCalendarHolidayRefDTO> calendarDays = workCalendarHolidayRefService.queryByYearIncludeLastAndNext(getCurrentYear());
+        List<WorkCalendarHolidayRefVO> calendarDays = workCalendarHolidayRefService.queryByYearIncludeLastAndNext(getCurrentYear());
         int ago = 0;
         int sumDays = overlap ? 0 : 1;
         List<Date> result = new ArrayList<>();

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper">
 
-    <resultMap id="timeZoneDetail" type="io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO">
+    <resultMap id="timeZoneDetail" type="io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO">
         <id property="timeZoneId" column="time_zone_id"/>
         <id property="areaCode" column="area_code"/>
         <id property="timeZoneCode" column="time_zone_code"/>
@@ -11,8 +11,8 @@
         <id property="saturdayWork" column="saturday_work"/>
         <id property="sundayWork" column="sunday_work"/>
         <id property="objectVersionNumber" column="object_version_number"/>
-        <collection property="timeZoneWorkCalendarRefDOS" column="time_zone_id"
-                    ofType="io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO"
+        <collection property="timeZoneWorkCalendarRefDTOS" column="time_zone_id"
+                    ofType="io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO"
                     select="queryTimeZoneRefByTimeZoneId"/>
     </resultMap>
 
@@ -21,7 +21,7 @@
     </select>
 
     <select id="queryTimeZoneRefByTimeZoneId"
-            resultType="io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDO">
+            resultType="io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDTO">
         SELECT * from agile_time_zone_work_calendar_ref where time_zone_id = #{timeZoneId}
     </select>
 

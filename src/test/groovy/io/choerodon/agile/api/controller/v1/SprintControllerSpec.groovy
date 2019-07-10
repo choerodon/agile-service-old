@@ -12,10 +12,10 @@ import io.choerodon.agile.api.vo.SprintCompleteVO
 import io.choerodon.agile.api.vo.SprintCompleteMessageVO
 import io.choerodon.agile.api.vo.SprintDetailVO
 import io.choerodon.agile.api.vo.SprintNameVO
-import io.choerodon.agile.api.vo.SprintSearchDTO
+import io.choerodon.agile.api.vo.SprintSearchVO
 import io.choerodon.agile.api.vo.SprintUpdateVO
-import io.choerodon.agile.api.vo.WorkCalendarRefDTO
 import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDetailVO
+import io.choerodon.agile.api.vo.WorkCalendarRefVO
 import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.app.service.UserService
@@ -199,7 +199,7 @@ class SprintControllerSpec extends Specification {
 
         and: '返回值'
         BackLogIssueDTO backLogIssueDTO = result.get("backlogData") as BackLogIssueDTO
-        List<SprintSearchDTO> searchDTOList = result.get("sprintData") as List<SprintSearchDTO>
+        List<SprintSearchVO> searchDTOList = result.get("sprintData") as List<SprintSearchVO>
 
         expect: '期望值'
         backLogIssueDTO.backlogIssueCount == 0
@@ -345,11 +345,11 @@ class SprintControllerSpec extends Specification {
         sprintUpdateDTO.objectVersionNumber = sprintDO.objectVersionNumber
         sprintUpdateDTO.startDate = sprintDO.startDate
         sprintUpdateDTO.endDate = sprintDO.endDate
-        List<WorkCalendarRefDTO> dateList = new ArrayList<>()
-        WorkCalendarRefDTO sprintWorkCalendarRefDTO = new WorkCalendarRefDTO()
+        List<WorkCalendarRefVO> dateList = new ArrayList<>()
+        WorkCalendarRefVO sprintWorkCalendarRefDTO = new WorkCalendarRefVO()
         sprintWorkCalendarRefDTO.status = 1
         sprintWorkCalendarRefDTO.workDay = "2018-10-1"
-        WorkCalendarRefDTO sprintWorkCalendarRefDTOTwo = new WorkCalendarRefDTO()
+        WorkCalendarRefVO sprintWorkCalendarRefDTOTwo = new WorkCalendarRefVO()
         sprintWorkCalendarRefDTOTwo.status = 0
         sprintWorkCalendarRefDTOTwo.workDay = "2018-10-2"
         dateList.add(sprintWorkCalendarRefDTO)

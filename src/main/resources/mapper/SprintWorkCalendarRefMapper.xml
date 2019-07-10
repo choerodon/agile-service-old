@@ -14,7 +14,7 @@
         and status = 0
     </select>
 
-    <select id="queryWithNextYearByYear" resultType="io.choerodon.agile.infra.dataobject.WorkCalendarRefDO">
+    <select id="queryWithNextYearByYear" resultType="io.choerodon.agile.infra.dataobject.WorkCalendarRefDTO">
         select * from agile_work_calendar_ref where 1 = 1
         <choose>
             <when test="sprintId != null and sprintId != 0">

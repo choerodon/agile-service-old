@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.SprintMapper">
 
-    <resultMap type="io.choerodon.agile.infra.dataobject.SprintSearchDO" id="SprintSearchDO">
+    <resultMap type="io.choerodon.agile.infra.dataobject.SprintSearchDTO" id="SprintSearchDO">
         <id column="sprint_id" property="sprintId"/>
         <id column="sprint_name" property="sprintName"/>
         <id column="sprint_goal" property="sprintGoal"/>
@@ -25,7 +25,7 @@
         </collection>
     </resultMap>
 
-    <resultMap type="io.choerodon.agile.infra.dataobject.SprintSearchDO" id="SprintSearchNoIssueDO">
+    <resultMap type="io.choerodon.agile.infra.dataobject.SprintSearchDTO" id="SprintSearchNoIssueDO">
         <id column="sprint_id" property="sprintId"/>
         <id column="sprint_name" property="sprintName"/>
         <id column="sprint_goal" property="sprintGoal"/>
@@ -174,7 +174,7 @@
         WHERE sp.project_id = #{projectId} AND sp.status_code = 'started'
     </sql>
 
-    <select id="queryActiveSprintNoIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintSearchDO">
+    <select id="queryActiveSprintNoIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintSearchDTO">
         select
         spa.*
         from

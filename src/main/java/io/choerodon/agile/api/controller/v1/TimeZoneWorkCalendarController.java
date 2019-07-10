@@ -33,7 +33,7 @@ public class TimeZoneWorkCalendarController {
     @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation("获取时区设置")
     @GetMapping
-    public ResponseEntity<TimeZoneWorkCalendarDTO> queryTimeZoneWorkCalendar(@ApiParam(value = "组织id", required = true)
+    public ResponseEntity<TimeZoneWorkCalendarVO> queryTimeZoneWorkCalendar(@ApiParam(value = "组织id", required = true)
                                                                              @PathVariable(name = "organization_id") Long organizationId) {
         return Optional.ofNullable(timeZoneWorkCalendarService.queryTimeZoneWorkCalendar(organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -43,13 +43,13 @@ public class TimeZoneWorkCalendarController {
     @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation("修改时区设置")
     @PutMapping(value = "/{timeZoneId}")
-    public ResponseEntity<TimeZoneWorkCalendarDTO> updateTimeZoneWorkCalendar(@ApiParam(value = "组织id", required = true)
+    public ResponseEntity<TimeZoneWorkCalendarVO> updateTimeZoneWorkCalendar(@ApiParam(value = "组织id", required = true)
                                                                               @PathVariable(name = "organization_id") Long organizationId,
-                                                                              @ApiParam(value = "时区id", required = true)
+                                                                             @ApiParam(value = "时区id", required = true)
                                                                               @PathVariable(name = "timeZoneId") Long timeZoneId,
-                                                                              @ApiParam(value = "timeZoneWorkCalendar", required = true)
-                                                                              @RequestBody TimeZoneWorkCalendarUpdateDTO timeZoneWorkCalendarUpdateDTO) {
-        return Optional.ofNullable(timeZoneWorkCalendarService.updateTimeZoneWorkCalendar(organizationId, timeZoneId, timeZoneWorkCalendarUpdateDTO))
+                                                                             @ApiParam(value = "timeZoneWorkCalendar", required = true)
+                                                                              @RequestBody TimeZoneWorkCalendarUpdateVO timeZoneWorkCalendarUpdateVO) {
+        return Optional.ofNullable(timeZoneWorkCalendarService.updateTimeZoneWorkCalendar(organizationId, timeZoneId, timeZoneWorkCalendarUpdateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.TimeZoneWorkCalendarController.updateTimeZoneWorkCalendar"));
     }
@@ -57,14 +57,14 @@ public class TimeZoneWorkCalendarController {
     @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation("创建时区工作日历")
     @PostMapping("/ref/{timeZoneId}")
-    public ResponseEntity<TimeZoneWorkCalendarRefDTO> createTimeZoneWorkCalendarRef(@ApiParam(value = "组织id", required = true)
+    public ResponseEntity<TimeZoneWorkCalendarRefVO> createTimeZoneWorkCalendarRef(@ApiParam(value = "组织id", required = true)
                                                                                     @PathVariable(name = "organization_id") Long organizationId,
-                                                                                    @ApiParam(value = "时区id", required = true)
+                                                                                   @ApiParam(value = "时区id", required = true)
                                                                                     @PathVariable(name = "timeZoneId") Long timeZoneId,
-                                                                                    @ApiParam(value = "日期", required = true)
-                                                                                    @RequestBody TimeZoneWorkCalendarRefCreateDTO timeZoneWorkCalendarRefCreateDTO) {
+                                                                                   @ApiParam(value = "日期", required = true)
+                                                                                    @RequestBody TimeZoneWorkCalendarRefCreateVO timeZoneWorkCalendarRefCreateVO) {
         timeZoneWorkCalendarValidator.verifyCreateTimeZoneWorkCalendarRef(organizationId, timeZoneId);
-        return Optional.ofNullable(timeZoneWorkCalendarService.createTimeZoneWorkCalendarRef(organizationId, timeZoneId, timeZoneWorkCalendarRefCreateDTO))
+        return Optional.ofNullable(timeZoneWorkCalendarService.createTimeZoneWorkCalendarRef(organizationId, timeZoneId, timeZoneWorkCalendarRefCreateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.TimeZoneWorkCalendarController.createTimeZoneWorkCalendarRef"));
     }
@@ -83,11 +83,11 @@ public class TimeZoneWorkCalendarController {
     @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation("获取时区工作日历")
     @GetMapping(value = "/ref/{timeZoneId}")
-    public ResponseEntity<List<TimeZoneWorkCalendarRefDTO>> queryTimeZoneWorkCalendarRefByTimeZoneId(@ApiParam(value = "组织id", required = true)
+    public ResponseEntity<List<TimeZoneWorkCalendarRefVO>> queryTimeZoneWorkCalendarRefByTimeZoneId(@ApiParam(value = "组织id", required = true)
                                                                                                      @PathVariable(name = "organization_id") Long organizationId,
-                                                                                                     @ApiParam(value = "时区id", required = true)
+                                                                                                    @ApiParam(value = "时区id", required = true)
                                                                                                      @PathVariable(name = "timeZoneId") Long timeZoneId,
-                                                                                                     @ApiParam(value = "年份", required = true)
+                                                                                                    @ApiParam(value = "年份", required = true)
                                                                                                      @RequestParam(name = "year") Integer year) {
         return Optional.ofNullable(timeZoneWorkCalendarService.queryTimeZoneWorkCalendarRefByTimeZoneId(organizationId, timeZoneId, year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

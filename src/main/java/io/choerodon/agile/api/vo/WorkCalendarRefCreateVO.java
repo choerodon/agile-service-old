@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018/10/18
  */
-public class WorkCalendarRefCreateDTO {
+public class WorkCalendarRefCreateVO {
 
     @ApiModelProperty(value = "日期")
     private String workDay;

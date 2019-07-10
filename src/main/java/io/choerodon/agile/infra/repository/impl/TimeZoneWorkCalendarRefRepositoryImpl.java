@@ -1,8 +1,8 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarRefE;
+import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDTO;
 import io.choerodon.agile.infra.repository.TimeZoneWorkCalendarRefRepository;
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarRefMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -26,19 +26,19 @@ public class TimeZoneWorkCalendarRefRepositoryImpl implements TimeZoneWorkCalend
 
     @Override
     public TimeZoneWorkCalendarRefE create(TimeZoneWorkCalendarRefE timeZoneWorkCalendarRefRefE) {
-        TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = ConvertHelper.convert(timeZoneWorkCalendarRefRefE, TimeZoneWorkCalendarRefDO.class);
-        if (timeZoneWorkCalendarRefMapper.insert(timeZoneWorkCalendarRefDO) != 1) {
+        TimeZoneWorkCalendarRefDTO timeZoneWorkCalendarRefDTO = ConvertHelper.convert(timeZoneWorkCalendarRefRefE, TimeZoneWorkCalendarRefDTO.class);
+        if (timeZoneWorkCalendarRefMapper.insert(timeZoneWorkCalendarRefDTO) != 1) {
             throw new CommonException(CREATE_ERROR);
         }
-        return ConvertHelper.convert(timeZoneWorkCalendarRefMapper.selectByPrimaryKey(timeZoneWorkCalendarRefDO), TimeZoneWorkCalendarRefE.class);
+        return ConvertHelper.convert(timeZoneWorkCalendarRefMapper.selectByPrimaryKey(timeZoneWorkCalendarRefDTO), TimeZoneWorkCalendarRefE.class);
     }
 
     @Override
     public int delete(Long organizationId, Long calendarId) {
-        TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO();
-        timeZoneWorkCalendarRefDO.setOrganizationId(organizationId);
-        timeZoneWorkCalendarRefDO.setCalendarId(calendarId);
-        int isDelete = timeZoneWorkCalendarRefMapper.delete(timeZoneWorkCalendarRefDO);
+        TimeZoneWorkCalendarRefDTO timeZoneWorkCalendarRefDTO = new TimeZoneWorkCalendarRefDTO();
+        timeZoneWorkCalendarRefDTO.setOrganizationId(organizationId);
+        timeZoneWorkCalendarRefDTO.setCalendarId(calendarId);
+        int isDelete = timeZoneWorkCalendarRefMapper.delete(timeZoneWorkCalendarRefDTO);
         if (isDelete != 1) {
             throw new CommonException(DELETE_ERROR);
         }
@@ -47,9 +47,9 @@ public class TimeZoneWorkCalendarRefRepositoryImpl implements TimeZoneWorkCalend
 
     @Override
     public void batchDeleteByTimeZoneId(Long organizationId, Long timeZoneId) {
-        TimeZoneWorkCalendarRefDO timeZoneWorkCalendarRefDO = new TimeZoneWorkCalendarRefDO();
-        timeZoneWorkCalendarRefDO.setOrganizationId(organizationId);
-        timeZoneWorkCalendarRefDO.setTimeZoneId(timeZoneId);
-        timeZoneWorkCalendarRefMapper.delete(timeZoneWorkCalendarRefDO);
+        TimeZoneWorkCalendarRefDTO timeZoneWorkCalendarRefDTO = new TimeZoneWorkCalendarRefDTO();
+        timeZoneWorkCalendarRefDTO.setOrganizationId(organizationId);
+        timeZoneWorkCalendarRefDTO.setTimeZoneId(timeZoneId);
+        timeZoneWorkCalendarRefMapper.delete(timeZoneWorkCalendarRefDTO);
     }
 }

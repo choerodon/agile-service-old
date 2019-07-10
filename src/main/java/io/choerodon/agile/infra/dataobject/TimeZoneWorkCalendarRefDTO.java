@@ -14,7 +14,7 @@ import java.util.Objects;
  * @since 2018/10/15
  */
 @Table(name = "agile_time_zone_work_calendar_ref")
-public class TimeZoneWorkCalendarRefDO extends BaseDTO {
+public class TimeZoneWorkCalendarRefDTO extends BaseDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long calendarId;
@@ -82,10 +82,10 @@ public class TimeZoneWorkCalendarRefDO extends BaseDTO {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof TimeZoneWorkCalendarRefDO)) {
+        if (!(o instanceof TimeZoneWorkCalendarRefDTO)) {
             return false;
         }
-        TimeZoneWorkCalendarRefDO that = (TimeZoneWorkCalendarRefDO) o;
+        TimeZoneWorkCalendarRefDTO that = (TimeZoneWorkCalendarRefDTO) o;
         return Objects.equals(getCalendarId(), that.getCalendarId()) &&
                 Objects.equals(getTimeZoneId(), that.getTimeZoneId()) &&
                 Objects.equals(getWorkDay(), that.getWorkDay()) &&

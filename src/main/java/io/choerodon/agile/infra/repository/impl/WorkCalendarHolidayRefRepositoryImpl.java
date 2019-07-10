@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDTO;
 import io.choerodon.agile.infra.repository.WorkCalendarHolidayRefRepository;
-import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO;
 import io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ public class WorkCalendarHolidayRefRepositoryImpl implements WorkCalendarHoliday
     private WorkCalendarHolidayRefMapper workCalendarHolidayRefMapper;
 
     @Override
-    public WorkCalendarHolidayRefDO create(WorkCalendarHolidayRefDO workCalendarHolidayRefDO) {
-        if (workCalendarHolidayRefMapper.insert(workCalendarHolidayRefDO) != 1) {
+    public WorkCalendarHolidayRefDTO create(WorkCalendarHolidayRefDTO workCalendarHolidayRefDTO) {
+        if (workCalendarHolidayRefMapper.insert(workCalendarHolidayRefDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        return workCalendarHolidayRefDO;
+        return workCalendarHolidayRefDTO;
     }
 }

@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018/10/16
  */
-public class WorkCalendarRefDTO {
+public class WorkCalendarRefVO {
 
     @ApiModelProperty(value = "日历主键id")
     private Long calendarId;

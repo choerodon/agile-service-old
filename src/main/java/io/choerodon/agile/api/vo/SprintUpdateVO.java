@@ -34,7 +34,7 @@ public class SprintUpdateVO {
     private Long projectId;
 
     @ApiModelProperty(value = "冲刺下的日历变更")
-    private List<WorkCalendarRefDTO> workDates;
+    private List<WorkCalendarRefVO> workDates;
 
     @ApiModelProperty(value = "版本号")
     @NotNull(message = OBJECT_VERSION_NUMBER_NULL_ERROR)
@@ -96,11 +96,11 @@ public class SprintUpdateVO {
         this.objectVersionNumber = objectVersionNumber;
     }
 
-    public List<WorkCalendarRefDTO> getWorkDates() {
+    public List<WorkCalendarRefVO> getWorkDates() {
         return workDates;
     }
 
-    public void setWorkDates(List<WorkCalendarRefDTO> workDates) {
+    public void setWorkDates(List<WorkCalendarRefVO> workDates) {
         this.workDates = workDates;
     }
 

@@ -34,7 +34,7 @@ public interface SprintMapper extends Mapper<SprintDTO> {
 
     String queryMinRank(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<SprintSearchDO> queryPlanSprint(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<SprintSearchDTO> queryPlanSprint(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     int queryIssueCount(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
@@ -60,9 +60,9 @@ public interface SprintMapper extends Mapper<SprintDTO> {
 
     List<IssueSearchDTO> queryBacklogIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    SprintSearchDO queryActiveSprintNoIssueIds(@Param("projectId") Long projectId);
+    SprintSearchDTO queryActiveSprintNoIssueIds(@Param("projectId") Long projectId);
 
-    List<SprintSearchDO> queryPlanSprintNoIssueIds(@Param("projectId") Long projectId);
+    List<SprintSearchDTO> queryPlanSprintNoIssueIds(@Param("projectId") Long projectId);
 
     List<SprintDTO> queryUnClosedSprint(Long projectId);
 

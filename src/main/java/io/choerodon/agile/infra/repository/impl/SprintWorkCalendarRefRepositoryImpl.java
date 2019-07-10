@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.infra.repository.SprintWorkCalendarRefRepository;
-import io.choerodon.agile.infra.dataobject.WorkCalendarRefDO;
+import io.choerodon.agile.infra.dataobject.WorkCalendarRefDTO;
 import io.choerodon.agile.infra.mapper.WorkCalendarRefMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,19 +23,19 @@ public class SprintWorkCalendarRefRepositoryImpl implements SprintWorkCalendarRe
     private WorkCalendarRefMapper workCalendarRefMapper;
 
     @Override
-    public WorkCalendarRefDO create(WorkCalendarRefDO workCalendarRefDO) {
-        if (workCalendarRefMapper.insert(workCalendarRefDO) != 1) {
+    public WorkCalendarRefDTO create(WorkCalendarRefDTO workCalendarRefDTO) {
+        if (workCalendarRefMapper.insert(workCalendarRefDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        return workCalendarRefDO;
+        return workCalendarRefDTO;
     }
 
     @Override
     public void delete(Long projectId, Long calendarId) {
-        WorkCalendarRefDO workCalendarRefDO = new WorkCalendarRefDO();
-        workCalendarRefDO.setProjectId(projectId);
-        workCalendarRefDO.setCalendarId(calendarId);
-        if (workCalendarRefMapper.delete(workCalendarRefDO) != 1) {
+        WorkCalendarRefDTO workCalendarRefDTO = new WorkCalendarRefDTO();
+        workCalendarRefDTO.setProjectId(projectId);
+        workCalendarRefDTO.setCalendarId(calendarId);
+        if (workCalendarRefMapper.delete(workCalendarRefDTO) != 1) {
             throw new CommonException(DELETE_ERROR);
         }
     }

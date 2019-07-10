@@ -20,9 +20,9 @@ public class TimeZoneWorkCalendarRefDetailVO {
     @ApiModelProperty(value = "所有的周日是否上班")
     private Boolean sundayWork;
 
-    private Set<TimeZoneWorkCalendarRefCreateDTO> timeZoneWorkCalendarDTOS;
+    private Set<TimeZoneWorkCalendarRefCreateVO> timeZoneWorkCalendarDTOS;
 
-    private Set<TimeZoneWorkCalendarHolidayRefDTO> workHolidayCalendarDTOS;
+    private Set<TimeZoneWorkCalendarHolidayRefVO> workHolidayCalendarDTOS;
 
     public Boolean getUseHoliday() {
         return useHoliday;
@@ -48,19 +48,19 @@ public class TimeZoneWorkCalendarRefDetailVO {
         this.sundayWork = sundayWork;
     }
 
-    public Set<TimeZoneWorkCalendarRefCreateDTO> getTimeZoneWorkCalendarDTOS() {
+    public Set<TimeZoneWorkCalendarRefCreateVO> getTimeZoneWorkCalendarDTOS() {
         return timeZoneWorkCalendarDTOS;
     }
 
-    public void setTimeZoneWorkCalendarDTOS(Set<TimeZoneWorkCalendarRefCreateDTO> timeZoneWorkCalendarDTOS) {
+    public void setTimeZoneWorkCalendarDTOS(Set<TimeZoneWorkCalendarRefCreateVO> timeZoneWorkCalendarDTOS) {
         this.timeZoneWorkCalendarDTOS = timeZoneWorkCalendarDTOS;
     }
 
-    public Set<TimeZoneWorkCalendarHolidayRefDTO> getWorkHolidayCalendarDTOS() {
+    public Set<TimeZoneWorkCalendarHolidayRefVO> getWorkHolidayCalendarDTOS() {
         return workHolidayCalendarDTOS;
     }
 
-    public void setWorkHolidayCalendarDTOS(Set<TimeZoneWorkCalendarHolidayRefDTO> workHolidayCalendarDTOS) {
+    public void setWorkHolidayCalendarDTOS(Set<TimeZoneWorkCalendarHolidayRefVO> workHolidayCalendarDTOS) {
         this.workHolidayCalendarDTOS = workHolidayCalendarDTOS;
     }
 

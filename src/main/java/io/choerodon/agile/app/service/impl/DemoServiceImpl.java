@@ -327,11 +327,11 @@ public class DemoServiceImpl implements DemoService {
         return Integer.parseInt(sdf.format(date));
     }
 
-    private Boolean judgeBeWork(Date date, List<WorkCalendarHolidayRefDTO> calendarDays) {
+    private Boolean judgeBeWork(Date date, List<WorkCalendarHolidayRefVO> calendarDays) {
         int week = getWeekOfDate(date);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = formatter.format(date);
-        for (WorkCalendarHolidayRefDTO value : calendarDays) {
+        for (WorkCalendarHolidayRefVO value : calendarDays) {
             if (dateString.equals(value.getHoliday()) && Objects.equals(value.getStatus(), 1)) {
                 return true;
             } else if (dateString.equals(value.getHoliday()) && Objects.equals(value.getStatus(), 0)) {
@@ -351,7 +351,7 @@ public class DemoServiceImpl implements DemoService {
      * @return
      */
     private List<Date> getWorkDays(Date endDate) {
-        List<WorkCalendarHolidayRefDTO> calendarDays = workCalendarHolidayRefService.queryByYearIncludeLastAndNext(getCurrentYear());
+        List<WorkCalendarHolidayRefVO> calendarDays = workCalendarHolidayRefService.queryByYearIncludeLastAndNext(getCurrentYear());
         int sumDays = 0;
         int ago = -1;
         List<Date> result = new ArrayList<>();
@@ -376,7 +376,7 @@ public class DemoServiceImpl implements DemoService {
      * @return
      */
     private List<Date> getWorkDaysAfter(Date startDate) {
-        List<WorkCalendarHolidayRefDTO> calendarDays = workCalendarHolidayRefService.queryByYearIncludeLastAndNext(getCurrentYear());
+        List<WorkCalendarHolidayRefVO> calendarDays = workCalendarHolidayRefService.queryByYearIncludeLastAndNext(getCurrentYear());
         int sumDays = 0;
         int ago = 0;
         List<Date> result = new ArrayList<>();

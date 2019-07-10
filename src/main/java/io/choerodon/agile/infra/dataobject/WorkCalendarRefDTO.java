@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @since 2018/10/10
  */
 @Table(name = "agile_work_calendar_ref")
-public class WorkCalendarRefDO extends BaseDTO {
+public class WorkCalendarRefDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
