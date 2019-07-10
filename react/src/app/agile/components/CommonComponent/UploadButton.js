@@ -79,10 +79,7 @@ class UploadButton extends React.Component {
         fileList={fileList}
         className="upload-button"
       >
-        <Button type={funcType || 'primary'}>
-          <Icon type="file_upload" />
-          {'上传附件'}
-        </Button>
+        <Button funcType="raised" type={funcType || 'primary'} style={{ color: 'white' }} icon="file_upload" shape="circle" />
       </Upload>
     );
   }

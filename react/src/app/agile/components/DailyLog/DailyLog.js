@@ -8,7 +8,6 @@ import { NumericInput } from '../CommonComponent';
 import { beforeTextUpload } from '../../common/utils';
 import { createWorklog } from '../../api/NewIssueApi';
 import WYSIWYGEditor from '../WYSIWYGEditor';
-import FullEditor from '../FullEditor';
 import './DailyLog.scss';
 
 const DATA_FORMAT = 'YYYY-MM-DD HH:mm:ss';
@@ -419,15 +418,6 @@ class DailyLog extends Component {
             </div>
 
             <div className="c7n-sidebar-info">
-              <div style={{ display: 'flex', marginBottom: '13px', alignItems: 'center' }}>
-                <div style={{ fontWeight: 'bold' }}>工作说明</div>
-                <div style={{ marginLeft: '80px' }}>
-                  <Button className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })} style={{ display: 'flex', alignItems: 'center' }}>
-                    <Icon type="zoom_out_map" style={{ color: '#3f51b5', fontSize: '18px', marginRight: '12px' }} />
-                    <span style={{ color: '#3f51b5' }}>全屏编辑</span>
-                  </Button>
-                </div>
-              </div>
               {
                 !edit && (
                   <div className="clear-p-mw">
@@ -443,17 +433,7 @@ class DailyLog extends Component {
               }
             </div>
           </section>
-        </div>
-        {
-          edit ? (
-            <FullEditor
-              initValue={delta}
-              visible={edit}
-              onCancel={() => this.setState({ edit: false })}
-              onOk={callback}
-            />
-          ) : null
-        }
+        </div>        
       </Sidebar>
     );
   }

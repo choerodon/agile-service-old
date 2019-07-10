@@ -670,7 +670,7 @@ class CreateIssue extends Component {
       case 'issueType':
         return (
           [
-            <FormItem label="问题类型" style={{ width: 520 }}>
+            <FormItem label="问题类型">
               {getFieldDecorator('typeId', {
                 rules: [{ required: true, message: '问题类型为必输项' }],
                 initialValue: defaultTypeId || '',
@@ -707,7 +707,7 @@ class CreateIssue extends Component {
               )}
             </FormItem>,
             newIssueTypeCode === 'feature' ? (
-              <FormItem style={{ width: 520 }}>
+              <FormItem>
                 {getFieldDecorator('featureType', {
                   rules: [{ required: true, message: '特性类型为必输项' }],
                   initialValue: 'business',
@@ -775,7 +775,7 @@ class CreateIssue extends Component {
         );
       case 'sprint':
         return (
-          <FormItem label="冲刺" style={{ width: 520 }}>
+          <FormItem label="冲刺">
             {getFieldDecorator('sprintId', {})(
               <Select
                 label="冲刺"
@@ -811,7 +811,7 @@ class CreateIssue extends Component {
         );
       case 'priority':
         return (
-          <FormItem label="优先级" style={{ width: 520 }}>
+          <FormItem label="优先级">
             {getFieldDecorator('priorityId', {
               rules: [{ required: true, message: '优先级为必选项' }],
               initialValue: defaultPriority ? defaultPriority.id : '',
@@ -833,7 +833,7 @@ class CreateIssue extends Component {
         );
       case 'label':
         return (
-          <FormItem label="标签" style={{ width: 520 }}>
+          <FormItem label="标签">
             {getFieldDecorator('issueLabel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
               normalize: value => (value ? value.map(s => s.toString().substr(0, 10)) : value), // 限制最长10位
@@ -867,7 +867,7 @@ class CreateIssue extends Component {
         );
       case 'fixVersion':
         return (
-          <FormItem label="版本" style={{ width: 520 }}>
+          <FormItem label="版本">
             {getFieldDecorator('fixVersionIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
             })(
@@ -907,7 +907,7 @@ class CreateIssue extends Component {
       case 'epic':
         return (
           newIssueTypeCode !== 'issue_epic' && (
-            <FormItem label="史诗" style={{ width: 520 }}>
+            <FormItem label="史诗">
               {getFieldDecorator('epicId', {})(
                 <Select
                   label="史诗"
@@ -949,7 +949,7 @@ class CreateIssue extends Component {
         );
       case 'component':
         return (
-          <FormItem label="模块" style={{ width: 520 }}>
+          <FormItem label="模块">
             {getFieldDecorator('componentIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
             })(
@@ -988,7 +988,7 @@ class CreateIssue extends Component {
         );
       case 'summary':
         return (
-          <FormItem label="概要" style={{ width: 520 }}>
+          <FormItem label="概要">
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '概要为必输项', whitespace: true }],
             })(
@@ -999,7 +999,7 @@ class CreateIssue extends Component {
       case 'epicName':
         return (
           newIssueTypeCode === 'issue_epic' && (
-            <FormItem label="史诗名称" style={{ width: 520 }}>
+            <FormItem label="史诗名称">
               {getFieldDecorator('epicName', {
                 rules: [{ required: true, message: '史诗名称为必输项' }, {
                   validator: this.checkEpicNameRepeat,
@@ -1068,7 +1068,7 @@ class CreateIssue extends Component {
         );
       case 'description':
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
+          <FormItem label={fieldName}>
             {getFieldDecorator(fieldCode)(
               <WYSIWYGEditor
                 style={{ height: 200, width: '100%' }}
@@ -1078,7 +1078,7 @@ class CreateIssue extends Component {
         );
       default:
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
+          <FormItem label={fieldName}>
             {getFieldDecorator(fieldCode, {
               rules: [{ required, message: `${fieldName}为必填项` }],
               initialValue: this.transformValue(fieldType, defaultValue),
@@ -1131,15 +1131,15 @@ class CreateIssue extends Component {
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/create-issue/"
         >
           <Spin spinning={loading}>
-            <Form layout="vertical">
+            <Form layout="vertical" style={{ width: 520 }}>
               {fields && fields.map(field => this.getFieldComponent(field))}
               {
                 newIssueTypeCode !== 'issue_epic' && (
                   issueLinkArr && issueLinkArr.length > 0 && (
                     issueLinkArr.map((item, index, arr) => (
-                      <Row gutter={16} style={{ width: 520 }}>
-                        <Col span={8}>
-                          <FormItem label="关系">
+                      <div style={{ display: 'flex' }}>
+                        <div style={{ flex: 1, display: 'flex' }}>
+                          <FormItem label="关系" style={{ width: '30%' }}>
                             {getFieldDecorator(`linkTypeId[${item}]`, {
                             })(
                               <Select
@@ -1159,9 +1159,7 @@ class CreateIssue extends Component {
                               </Select>,
                             )}
                           </FormItem>
-                        </Col>
-                        <Col span={12}>
-                          <FormItem label="问题">
+                          <FormItem label="问题" style={{ marginLeft: 20, width: 'calc(70% - 20px)' }}>
                             {getFieldDecorator(`linkIssues[${item}]`, {
                             })(
                               <Select
@@ -1185,7 +1183,7 @@ class CreateIssue extends Component {
                                       flex: 1,
                                       width: 'calc(100% - 30px)',
                                       alignItems: 'center',
-                                      verticalAlign: 'bottom',
+                                      verticalAlign: 'middle',
                                     }}
                                     >
                                       <TypeTag
@@ -1211,8 +1209,8 @@ class CreateIssue extends Component {
                               </Select>,
                             )}
                           </FormItem>
-                        </Col>
-                        <Col span={4} style={{ marginTop: 10 }}>
+                        </div>
+                        <div style={{ marginTop: 10, width: 70, marginLeft: 20 }}>
                           <Button
                             shape="circle"
                             icon="add"
@@ -1238,8 +1236,9 @@ class CreateIssue extends Component {
                               />
                             ) : null
                           }
-                        </Col>
-                      </Row>
+
+                        </div>
+                      </div>
                     )))
                 )
               }

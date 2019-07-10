@@ -181,23 +181,30 @@ const { AppState } = stores;
         <div className="c7n-subTask-quickCreate">
           {expand
             ? (
-              <span style={{ position: 'relative' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Input
+                  autoFocus
+                  className="hidden-label"
                   placeholder="在此输入子任务概要"
                   maxLength={44}
                   onChange={this.onSummaryChange}
                 />
-                <div style={{
-                  textAlign: 'right',
-                  lineHeight: '20px',
-                  position: 'absolute',
-                  right: '0px',
-                }}
+                <Button
+                  type="primary"
+                  funcType="raised"
+                  style={{ margin: '0 10px' }}
+                  // loading={loading}
+                  onClick={this.handleSave}
                 >
-                  <Icon type="done" className="c7n-subTask-icon" onClick={this.handleSave} />
-                  <Icon type="close" className="c7n-subTask-icon" onClick={this.handleCancel} />
-                </div>
-              </span>
+                    确定
+                </Button>
+                <Button
+                  funcType="raised"
+                  onClick={this.handleCancel}
+                >
+                    取消
+                </Button>               
+              </div>
             ) : (
               <Button
                 className="leftBtn"

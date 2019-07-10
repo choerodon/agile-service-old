@@ -181,9 +181,8 @@ class TextEditToggle extends Component {
       throw new Error('使用Form功能时，Edit的children必须是Component');
     }
     // console.log(targetElement.type.name === 'Select');
-    // 替换成自动打开的Select
-    console.log(targetElement);
-    if (targetElement.type.name === 'Select') {
+    // 替换成自动打开的Select 
+    if (targetElement.type.displayName === 'Select') {
       return <DefaultOpenSelect {...targetElement.props} />;
     }
     return targetElement;
