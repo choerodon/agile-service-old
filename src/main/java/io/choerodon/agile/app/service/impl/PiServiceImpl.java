@@ -8,7 +8,6 @@ import io.choerodon.agile.app.assembler.PiAssembler;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
-import io.choerodon.agile.domain.agile.entity.ArtE;
 import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
@@ -223,12 +222,15 @@ public class PiServiceImpl implements PiService {
     }
 
     private void updateArtPiCodeNumber(Long programId, Long artId, Long piCodeNumber, Long objectVersionNumber) {
-        ArtE artE = new ArtE();
-        artE.setId(artId);
-        artE.setProgramId(programId);
-        artE.setPiCodeNumber(piCodeNumber);
-        artE.setObjectVersionNumber(objectVersionNumber);
-        artRepository.updateBySelective(artE);
+        ArtDTO artDTO = new ArtDTO();
+        artDTO.setId(artId);
+        artDTO.setProgramId(programId);
+        artDTO.setPiCodeNumber(piCodeNumber);
+        artDTO.setObjectVersionNumber(objectVersionNumber);
+//        artRepository.updateBySelective(artE);
+        if (artMapper.updateByPrimaryKeySelective(artDTO) != 1) {
+            throw new CommonException("error.art.update");
+        }
     }
 
     private Long getPiWorkDays(ArtDTO artDTO) {
