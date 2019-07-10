@@ -127,7 +127,7 @@ class ReportControllerSpec extends Specification {
         and:
         Mockito.when(userRepository.queryUsersMap(Matchers.anyListOf(Long.class), Matchers.anyBoolean())).thenReturn(userMessageDOMap)
         Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
-        ProjectDTO projectDTO = new ProjectDTO()
+        ProjectVO projectDTO = new ProjectVO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
         projectDTO.setId(1L)

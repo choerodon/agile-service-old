@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.ProjectDTO;
+import io.choerodon.agile.api.vo.ProjectVO;
 import io.choerodon.agile.api.vo.RankVO;
 import io.choerodon.agile.api.validator.RankValidator;
 import io.choerodon.agile.app.service.RankService;
@@ -46,7 +46,7 @@ public class RankServiceImpl implements RankService {
     private List<Long> getEpicIds(Long projectId) {
         List<Long> epicIds = new ArrayList<>();
         // get program epic
-        ProjectDTO program = userService.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
+        ProjectVO program = userService.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         if (program != null) {
             List<Long> programEpicIds = rankMapper.selectEpicIdsByProgram(program.getId());
             if (programEpicIds != null && !programEpicIds.isEmpty()) {
@@ -65,7 +65,7 @@ public class RankServiceImpl implements RankService {
     private List<Long> getFeatureIds(Long projectId) {
         List<Long> featureIds = new ArrayList<>();
         // get program feature
-        ProjectDTO program = userService.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
+        ProjectVO program = userService.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         if (program != null) {
             List<Long> programFeatureIds = rankMapper.selectFeatureIdsByProgram(program.getId());
             if (programFeatureIds != null && !programFeatureIds.isEmpty()) {

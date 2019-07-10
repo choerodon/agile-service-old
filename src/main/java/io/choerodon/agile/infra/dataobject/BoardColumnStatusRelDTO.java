@@ -9,7 +9,7 @@ import javax.persistence.Table;
  * @since 2019/5/6
  */
 @Table(name = "agile_board_column_status_rel")
-public class BoardColumnStatusRelDO extends BaseDTO {
+public class BoardColumnStatusRelDTO extends BaseDTO {
     private int position;
     private Long statusId;
     private Long columnId;

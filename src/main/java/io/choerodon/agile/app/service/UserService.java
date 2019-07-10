@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.agile.api.vo.ProjectDTO;
+import io.choerodon.agile.api.vo.ProjectVO;
 import io.choerodon.agile.api.vo.RoleAssignmentSearchDTO;
 import io.choerodon.agile.api.vo.RoleDTO;
 import io.choerodon.agile.api.vo.UserDTO;
@@ -42,9 +42,9 @@ public interface UserService {
      * 根据项目id查询项目信息
      *
      * @param projectId projectId
-     * @return ProjectDTO
+     * @return ProjectVO
      */
-    ProjectDTO queryProject(Long projectId);
+    ProjectVO queryProject(Long projectId);
 
     List<RoleDTO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO);
 
@@ -52,5 +52,5 @@ public interface UserService {
 
     List<UserDO> listUsersByIds(Long[] ids);
 
-    ProjectDTO getGroupInfoByEnableProject(Long organizationId, Long projectId);
+    ProjectVO getGroupInfoByEnableProject(Long organizationId, Long projectId);
 }

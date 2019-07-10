@@ -43,11 +43,11 @@ public class FeignConfigure {
     @Primary
     UserFeignClient userFeignClient() {
         UserFeignClient userFeignClient = Mockito.mock(UserFeignClientFallback.class);
-        ProjectDTO projectDTO = new ProjectDTO();
-        projectDTO.setId(1L);
-        projectDTO.setName("test");
-        projectDTO.setOrganizationId(1L);
-        Mockito.when(userFeignClient.queryProject(Matchers.anyLong())).thenReturn(new ResponseEntity<>(projectDTO, HttpStatus.OK));
+        ProjectVO projectVO = new ProjectVO();
+        projectVO.setId(1L);
+        projectVO.setName("test");
+        projectVO.setOrganizationId(1L);
+        Mockito.when(userFeignClient.queryProject(Matchers.anyLong())).thenReturn(new ResponseEntity<>(projectVO, HttpStatus.OK));
         List<ProjectRelationshipVO> rel = new ArrayList<>(2);
         ProjectRelationshipVO rel1 = new ProjectRelationshipVO();
         rel1.setProjectId(2L);

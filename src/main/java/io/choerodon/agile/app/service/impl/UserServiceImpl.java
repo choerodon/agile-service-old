@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.agile.api.vo.ProjectDTO;
+import io.choerodon.agile.api.vo.ProjectVO;
 import io.choerodon.agile.api.vo.RoleAssignmentSearchDTO;
 import io.choerodon.agile.api.vo.RoleDTO;
 import io.choerodon.agile.api.vo.UserDTO;
@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ProjectDTO queryProject(Long projectId) {
+    public ProjectVO queryProject(Long projectId) {
         return userFeignClient.queryProject(projectId).getBody();
     }
 
@@ -104,8 +104,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ProjectDTO getGroupInfoByEnableProject(Long organizationId, Long projectId) {
-        ResponseEntity<ProjectDTO> projectDTOResponseEntity = userFeignClient.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
+    public ProjectVO getGroupInfoByEnableProject(Long organizationId, Long projectId) {
+        ResponseEntity<ProjectVO> projectDTOResponseEntity = userFeignClient.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         return projectDTOResponseEntity != null ? projectDTOResponseEntity.getBody() : null;
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
  * @author shinan.chen
  * @since 2019/5/14
  */
-public class ProgramBoardTeamInfoDTO {
+public class ProgramBoardTeamInfoVO {
 
     @ApiModelProperty(value = "公告板团队id")
     private Long boardTeamId;
@@ -21,7 +21,7 @@ public class ProgramBoardTeamInfoDTO {
     @ApiModelProperty(value = "乐观锁")
     private Long objectVersionNumber;
     @ApiModelProperty(value = "团队冲刺信息")
-    private List<ProgramBoardTeamSprintInfoDTO> teamSprints;
+    private List<ProgramBoardTeamSprintInfoVO> teamSprints;
 
     public Long getBoardTeamId() {
         return boardTeamId;
@@ -39,11 +39,11 @@ public class ProgramBoardTeamInfoDTO {
         this.objectVersionNumber = objectVersionNumber;
     }
 
-    public List<ProgramBoardTeamSprintInfoDTO> getTeamSprints() {
+    public List<ProgramBoardTeamSprintInfoVO> getTeamSprints() {
         return teamSprints;
     }
 
-    public void setTeamSprints(List<ProgramBoardTeamSprintInfoDTO> teamSprints) {
+    public void setTeamSprints(List<ProgramBoardTeamSprintInfoVO> teamSprints) {
         this.teamSprints = teamSprints;
     }
 

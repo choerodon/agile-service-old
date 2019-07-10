@@ -42,7 +42,7 @@ public interface UserFeignClient {
      * @return 查询到的项目
      */
     @GetMapping(value = "/v1/projects/{id}")
-    ResponseEntity<ProjectDTO> queryProject(@PathVariable("id") Long id);
+    ResponseEntity<ProjectVO> queryProject(@PathVariable("id") Long id);
 
     /**
      * 根据projectId和param模糊查询loginName和realName两列
@@ -77,8 +77,8 @@ public interface UserFeignClient {
                                                                   @RequestParam(name = "only_select_enable") Boolean onlySelectEnable);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/projects/{project_id}/program")
-    ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(@PathVariable(name = "organization_id") Long organizationId,
-                                                           @PathVariable(name = "project_id") Long projectId);
+    ResponseEntity<ProjectVO> getGroupInfoByEnableProject(@PathVariable(name = "organization_id") Long organizationId,
+                                                          @PathVariable(name = "project_id") Long projectId);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/roles")
     ResponseEntity<PageInfo<UserWithRoleVO>> pagingQueryUsersWithProjectLevelRoles(

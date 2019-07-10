@@ -9,16 +9,16 @@ import java.util.List;
  * @author shinan.chen
  * @since 2019/5/14
  */
-public class ProgramBoardInfoDTO {
+public class ProgramBoardInfoVO {
 
     @ApiModelProperty(value = "piId")
     private Long piId;
     @ApiModelProperty(value = "pi编码")
     private String piCode;
     @ApiModelProperty(value = "冲刺信息")
-    private List<ProgramBoardSprintInfoDTO> sprints;
+    private List<ProgramBoardSprintInfoVO> sprints;
     @ApiModelProperty(value = "团队信息")
-    private List<ProgramBoardTeamInfoDTO> teamProjects;
+    private List<ProgramBoardTeamInfoVO> teamProjects;
     @ApiModelProperty(value = "依赖关系")
     private List<BoardDependInfoVO> boardDepends;
 
@@ -27,7 +27,7 @@ public class ProgramBoardInfoDTO {
     @ApiModelProperty(value = "团队筛选列表")
     private List<TeamProjectDTO> filterTeamList;
 
-    public ProgramBoardInfoDTO() {
+    public ProgramBoardInfoVO() {
         sprints = new ArrayList<>();
         teamProjects = new ArrayList<>();
         boardDepends = new ArrayList<>();
@@ -51,19 +51,19 @@ public class ProgramBoardInfoDTO {
         this.piCode = piCode;
     }
 
-    public List<ProgramBoardSprintInfoDTO> getSprints() {
+    public List<ProgramBoardSprintInfoVO> getSprints() {
         return sprints;
     }
 
-    public void setSprints(List<ProgramBoardSprintInfoDTO> sprints) {
+    public void setSprints(List<ProgramBoardSprintInfoVO> sprints) {
         this.sprints = sprints;
     }
 
-    public List<ProgramBoardTeamInfoDTO> getTeamProjects() {
+    public List<ProgramBoardTeamInfoVO> getTeamProjects() {
         return teamProjects;
     }
 
-    public void setTeamProjects(List<ProgramBoardTeamInfoDTO> teamProjects) {
+    public void setTeamProjects(List<ProgramBoardTeamInfoVO> teamProjects) {
         this.teamProjects = teamProjects;
     }
 

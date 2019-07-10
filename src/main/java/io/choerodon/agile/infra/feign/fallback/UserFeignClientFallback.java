@@ -32,7 +32,7 @@ public class UserFeignClientFallback implements UserFeignClient {
     }
 
     @Override
-    public ResponseEntity<ProjectDTO> queryProject(Long id) {
+    public ResponseEntity<ProjectVO> queryProject(Long id) {
         throw new CommonException(QUERY_ERROR);
     }
 
@@ -62,7 +62,7 @@ public class UserFeignClientFallback implements UserFeignClient {
     }
 
     @Override
-    public ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(Long organizationId, Long projectId) {
+    public ResponseEntity<ProjectVO> getGroupInfoByEnableProject(Long organizationId, Long projectId) {
         throw new CommonException("error.groupInfo.get");
     }
 

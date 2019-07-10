@@ -141,7 +141,7 @@ class IssueControllerSpec extends Specification {
         siteMsgUtil.issueSolve(*_) >> null
 
         userRepository.getGroupInfoByEnableProject(*_) >> null
-        ProjectDTO projectDTO = new ProjectDTO()
+        ProjectVO projectDTO = new ProjectVO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
         projectDTO.setId(1L)
@@ -600,7 +600,7 @@ class IssueControllerSpec extends Specification {
 //        searchDTO.content = '测试'
 //
 //        and: 'mock userFeignClient'
-//        ProjectDTO projectDTO = new ProjectDTO()
+//        ProjectVO projectDTO = new ProjectVO()
 //        projectDTO.name = '测试项目'
 //        projectDTO.code = '测试项目Code'
 //

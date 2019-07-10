@@ -441,8 +441,8 @@ public class DemoServiceImpl implements DemoService {
         Long userId2 = demoProjectPayload.getUserA().getId();
 
         // 查询项目信息
-        ProjectDTO projectDTO = userFeignClient.queryProject(projectId).getBody();
-        Long organizationId = projectDTO.getOrganizationId();
+        ProjectVO projectVO = userFeignClient.queryProject(projectId).getBody();
+        Long organizationId = projectVO.getOrganizationId();
 
         // 创建第一个冲刺
         SprintDetailVO sprintDetailVO = sprintService.createSprint(projectId);

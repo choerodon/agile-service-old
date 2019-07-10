@@ -39,11 +39,11 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDTO> {
 
     List queryColumnStatusRelByProjectId(@Param("projectId") Long projectId);
 
-//    BoardColumnCheckDO selectColumnByColumnId(@Param("projectId") Long projectId,
+//    BoardColumnCheckDTO selectColumnByColumnId(@Param("projectId") Long projectId,
 //                                              @Param("columnId") Long columnId,
 //                                              @Param("activeSprintId") Long activeSprintId);
 
-//    BoardColumnCheckDO selectColumnByColumnIdWithoutSub(@Param("projectId") Long projectId,
+//    BoardColumnCheckDTO selectColumnByColumnIdWithoutSub(@Param("projectId") Long projectId,
 //                                                        @Param("columnId") Long columnId,
 //                                                        @Param("activeSprintId") Long activeSprintId);
 
@@ -102,5 +102,5 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDTO> {
                                                 @Param("activePiId") Long activePiId,
                                                 @Param("searchVO")SearchVO searchVO);
 
-    List<BoardColumnStatusRelDO> queryRelByColumnIds(@Param("columnIds") List<Long> columnIds);
+    List<BoardColumnStatusRelDTO> queryRelByColumnIds(@Param("columnIds") List<Long> columnIds);
 }

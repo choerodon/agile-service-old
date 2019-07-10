@@ -65,9 +65,9 @@ public class BoardFeatureController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取公告板所有信息")
     @PostMapping(value = "/query_board_info")
-    public ResponseEntity<ProgramBoardInfoDTO> queryBoardInfo(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProgramBoardInfoVO> queryBoardInfo(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId,
-                                                              @RequestBody ProgramBoardFilterDTO boardFilter) {
+                                                             @RequestBody ProgramBoardFilterVO boardFilter) {
         return Optional.ofNullable(boardFeatureService.queryBoardInfo(projectId, boardFilter))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.boardFeature.queryBoardInfo"));

@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author shinan.chen
  * @since 2019/5/14
  */
-public class ProgramBoardSprintInfoDTO {
+public class ProgramBoardSprintInfoVO {
 
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;

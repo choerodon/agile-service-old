@@ -20,7 +20,7 @@ public interface BoardFeatureService {
 
     void deleteByFeatureId(Long projectId, Long featureId);
 
-    ProgramBoardInfoDTO queryBoardInfo(Long programId, ProgramBoardFilterDTO boardFilter);
+    ProgramBoardInfoVO queryBoardInfo(Long programId, ProgramBoardFilterVO boardFilter);
 
     void checkId(Long projectId, Long boardFeatureId);
 }

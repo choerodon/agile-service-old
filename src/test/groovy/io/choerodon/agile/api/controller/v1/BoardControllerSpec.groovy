@@ -76,7 +76,7 @@ class BoardControllerSpec extends Specification {
 
 //    def setup() {
 //        given:
-//        ProjectDTO projectDTO = new ProjectDTO()
+//        ProjectVO projectDTO = new ProjectVO()
 //        projectDTO.code = "AG"
 //        projectDTO.name = "AG"
 //        projectDTO.organizationId = 1L

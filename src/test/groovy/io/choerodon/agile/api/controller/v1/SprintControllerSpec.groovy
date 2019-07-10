@@ -7,7 +7,7 @@ import io.choerodon.agile.api.vo.BackLogIssueDTO
 import io.choerodon.agile.api.vo.IssueCreateVO
 import io.choerodon.agile.api.vo.IssueListVO
 import io.choerodon.agile.api.vo.IssueVO
-import io.choerodon.agile.api.vo.ProjectDTO
+import io.choerodon.agile.api.vo.ProjectVO
 import io.choerodon.agile.api.vo.SprintCompleteVO
 import io.choerodon.agile.api.vo.SprintCompleteMessageVO
 import io.choerodon.agile.api.vo.SprintDetailVO
@@ -105,7 +105,7 @@ class SprintControllerSpec extends Specification {
 
     def setup() {
         given: '设置feign调用mockito'
-        ProjectDTO projectDTO = new ProjectDTO()
+        ProjectVO projectDTO = new ProjectVO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
         Mockito.when(userRepository.queryProject(Matchers.anyLong())).thenReturn(projectDTO)

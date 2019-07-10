@@ -8,7 +8,7 @@ import java.util.List;
  * @author shinan.chen
  * @since 2019/5/14
  */
-public class ProgramBoardFilterDTO {
+public class ProgramBoardFilterVO {
 
     @ApiModelProperty(value = "只显示有依赖关系的公告板特性")
     private Boolean onlyDependFeature;

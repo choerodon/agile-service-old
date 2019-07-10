@@ -3,8 +3,8 @@ package io.choerodon.agile.api.controller.v1
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.BoardTeamVO
 import io.choerodon.agile.api.vo.BoardTeamUpdateVO
-import io.choerodon.agile.api.vo.ProgramBoardFilterDTO
-import io.choerodon.agile.api.vo.ProgramBoardInfoDTO
+import io.choerodon.agile.api.vo.ProgramBoardFilterVO
+import io.choerodon.agile.api.vo.ProgramBoardInfoVO
 import io.choerodon.agile.app.service.BoardFeatureService
 import io.choerodon.agile.infra.dataobject.ArtDTO
 import io.choerodon.agile.infra.dataobject.PiDTO
@@ -52,7 +52,7 @@ class BoardTeamControllerSpec extends Specification {
     @Shared
     Long sprintId
     @Shared
-    ProgramBoardInfoDTO infoDTO
+    ProgramBoardInfoVO infoDTO
 
     def url = '/v1/projects/{project_id}/board_team'
 
@@ -85,7 +85,7 @@ class BoardTeamControllerSpec extends Specification {
     def setup() {
         println "执行初始化"
         initProgram()
-        ProgramBoardFilterDTO filter = new ProgramBoardFilterDTO()
+        ProgramBoardFilterVO filter = new ProgramBoardFilterVO()
         filter.onlyDependFeature = false
         filter.onlyOtherTeamDependFeature = false
         infoDTO = boardFeatureService.queryBoardInfo(programId, filter)

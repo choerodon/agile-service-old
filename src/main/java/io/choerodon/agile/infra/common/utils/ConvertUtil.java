@@ -22,7 +22,7 @@ public class ConvertUtil {
         throw new IllegalStateException("Utility class");
     }
 
-    private static final Map<Long, ProjectDTO> ORGANIZATION_MAP = new ConcurrentHashMap<>();
+    private static final Map<Long, ProjectVO> ORGANIZATION_MAP = new ConcurrentHashMap<>();
 
     /**
      * 根据projectId获取issue类型Map
@@ -69,15 +69,15 @@ public class ConvertUtil {
         return queryProject(projectId).getName();
     }
 
-    private static ProjectDTO queryProject(Long projectId) {
-        ProjectDTO projectDTO = ORGANIZATION_MAP.get(projectId);
-        if (projectDTO != null) {
-            return projectDTO;
+    private static ProjectVO queryProject(Long projectId) {
+        ProjectVO projectVO = ORGANIZATION_MAP.get(projectId);
+        if (projectVO != null) {
+            return projectVO;
         } else {
-            projectDTO = SpringBeanUtil.getBean(UserFeignClient.class).queryProject(projectId).getBody();
-            if (projectDTO != null) {
-                ORGANIZATION_MAP.put(projectId, projectDTO);
-                return projectDTO;
+            projectVO = SpringBeanUtil.getBean(UserFeignClient.class).queryProject(projectId).getBody();
+            if (projectVO != null) {
+                ORGANIZATION_MAP.put(projectId, projectVO);
+                return projectVO;
             } else {
                 throw new CommonException("error.queryProject.notFound");
             }

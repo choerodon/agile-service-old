@@ -4,7 +4,7 @@ package io.choerodon.agile.api.controller.v1
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.IssueCreateVO
 import io.choerodon.agile.api.vo.IssueVO
-import io.choerodon.agile.api.vo.ProjectDTO
+import io.choerodon.agile.api.vo.ProjectVO
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.api.vo.event.ProjectConfig
 import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue
@@ -54,7 +54,7 @@ class StateMachineControllerSpec extends Specification {
 
     def setup() {
         given: '设置feign调用mockito'
-        ProjectDTO projectDTO = new ProjectDTO()
+        ProjectVO projectDTO = new ProjectVO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
         projectDTO.setId(1L)

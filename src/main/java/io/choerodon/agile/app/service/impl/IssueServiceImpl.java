@@ -730,7 +730,7 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public List<EpicDataVO> listEpic(Long projectId) {
         List<EpicDataVO> epicDataList = epicDataAssembler.toTargetList(issueMapper.queryEpicList(projectId), EpicDataVO.class);
-        ProjectDTO program = userService.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
+        ProjectVO program = userService.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         List<EpicDataVO> programEpics = null;
         if (program != null) {
             programEpics = epicDataAssembler.toTargetList(issueMapper.selectEpicByProgram(program.getId(), projectId), EpicDataVO.class);
@@ -1294,7 +1294,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueFeatureVO> listFeatureSelectData(Long projectId, Long organizationId, Long epicId) {
-        ProjectDTO program = userService.getGroupInfoByEnableProject(organizationId, projectId);
+        ProjectVO program = userService.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
             return issueAssembler.toTargetList(issueMapper.queryIssueFeatureSelectList(program.getId(), projectId, epicId), IssueFeatureVO.class);
         } else {
@@ -1320,7 +1320,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueFeatureVO> listFeature(Long projectId, Long organizationId) {
-        ProjectDTO program = userService.getGroupInfoByEnableProject(organizationId, projectId);
+        ProjectVO program = userService.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
             List<IssueDTO> programFeatureList = issueMapper.queryIssueFeatureSelectList(program.getId(), projectId, null);
             List<IssueFeatureVO> issueFeatureVOList = issueAssembler.toTargetList(programFeatureList, IssueFeatureVO.class);
@@ -1679,7 +1679,7 @@ public class IssueServiceImpl implements IssueService {
         projectInfoDTO.setProjectId(projectId);
         projectInfoDTO = projectInfoMapper.selectOne(projectInfoDTO);
         String projectCode = projectInfoDTO.getProjectCode();
-        ProjectDTO project = userService.queryProject(projectId);
+        ProjectVO project = userService.queryProject(projectId);
         if (project == null) {
             throw new CommonException(PROJECT_ERROR);
         }
@@ -1728,7 +1728,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public void exportProgramIssues(Long programId, SearchVO searchVO, HttpServletRequest request, HttpServletResponse response, Long organizationId) {
-        ProjectDTO project = userService.queryProject(programId);
+        ProjectVO project = userService.queryProject(programId);
         if (project == null) {
             throw new CommonException(PROJECT_ERROR);
         }

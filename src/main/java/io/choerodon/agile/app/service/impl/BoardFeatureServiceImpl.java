@@ -181,8 +181,8 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     }
 
     @Override
-    public ProgramBoardInfoDTO queryBoardInfo(Long programId, ProgramBoardFilterDTO boardFilter) {
-        ProgramBoardInfoDTO programBoardInfo = new ProgramBoardInfoDTO();
+    public ProgramBoardInfoVO queryBoardInfo(Long programId, ProgramBoardFilterVO boardFilter) {
+        ProgramBoardInfoVO programBoardInfo = new ProgramBoardInfoVO();
         Long organizationId = ConvertUtil.getOrganizationId(programId);
         //获取当前活跃的art
         ArtDTO activeArt = artMapper.selectActiveArt(programId);
@@ -222,9 +222,9 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         sprints = (List<SprintDTO>) result.get(SPRINTS);
         projectRelationships = (List<ProjectRelationshipVO>) result.get(PROJECTRELATIONSHIPS);
 
-        List<ProgramBoardSprintInfoDTO> sprintInfos = new ArrayList<>(sprints.size());
+        List<ProgramBoardSprintInfoVO> sprintInfos = new ArrayList<>(sprints.size());
         for (SprintDTO sprint : sprints) {
-            ProgramBoardSprintInfoDTO sprintInfo = new ProgramBoardSprintInfoDTO();
+            ProgramBoardSprintInfoVO sprintInfo = new ProgramBoardSprintInfoVO();
             sprintInfo.setSprintId(sprint.getSprintId());
             sprintInfo.setSprintName(sprint.getSprintName());
             Integer columnWidth = columnWidthMap.getOrDefault(sprint.getSprintId(), 1);
@@ -236,9 +236,9 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             boardFeatureInfo.setIssueTypeVO(issueTypeMap.get(boardFeatureInfo.getIssueTypeId()));
         }
         Map<Long, Map<Long, List<BoardFeatureInfoVO>>> teamFeatureInfoMap = boardFeatureInfos.stream().collect(Collectors.groupingBy(BoardFeatureInfoVO::getTeamProjectId, Collectors.groupingBy(BoardFeatureInfoVO::getSprintId)));
-        List<ProgramBoardTeamInfoDTO> teamProjects = new ArrayList<>(projectRelationships.size());
+        List<ProgramBoardTeamInfoVO> teamProjects = new ArrayList<>(projectRelationships.size());
         handleTeamData(programId, projectRelationships, teamFeatureInfoMap, teamProjects, sprints);
-        Collections.sort(teamProjects, Comparator.comparing(ProgramBoardTeamInfoDTO::getRank).reversed());
+        Collections.sort(teamProjects, Comparator.comparing(ProgramBoardTeamInfoVO::getRank).reversed());
         programBoardInfo.setSprints(sprintInfos);
         programBoardInfo.setTeamProjects(teamProjects);
         programBoardInfo.setBoardDepends(boardDependInfos);
@@ -255,7 +255,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
      * @param projectRelationships
      * @return
      */
-    private Map<String, Object> handleBoardFilter(ProgramBoardFilterDTO boardFilter, List<BoardDependInfoVO> boardDependInfos, List<BoardFeatureInfoVO> boardFeatureInfos, List<SprintDTO> sprints, List<ProjectRelationshipVO> projectRelationships) {
+    private Map<String, Object> handleBoardFilter(ProgramBoardFilterVO boardFilter, List<BoardDependInfoVO> boardDependInfos, List<BoardFeatureInfoVO> boardFeatureInfos, List<SprintDTO> sprints, List<ProjectRelationshipVO> projectRelationships) {
         Map<String, Object> result = new HashMap<>(3);
         //只显示有依赖关系的公告板特性
         if (boardFilter.getOnlyDependFeature()) {
@@ -354,7 +354,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
      * @param teamFeatureInfoMap
      * @param teamProjects
      */
-    private void handleTeamData(Long programId, List<ProjectRelationshipVO> projectRelationshipVOS, Map<Long, Map<Long, List<BoardFeatureInfoVO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoDTO> teamProjects, List<SprintDTO> sprints) {
+    private void handleTeamData(Long programId, List<ProjectRelationshipVO> projectRelationshipVOS, Map<Long, Map<Long, List<BoardFeatureInfoVO>>> teamFeatureInfoMap, List<ProgramBoardTeamInfoVO> teamProjects, List<SprintDTO> sprints) {
         Map<Long, BoardTeamDTO> teamMap = boardTeamService.queryByProgramId(programId).stream().collect(Collectors.toMap(BoardTeamDTO::getTeamProjectId, x -> x));
         for (ProjectRelationshipVO relationshipDTO : projectRelationshipVOS) {
             //判断boardTeam数据是否存在
@@ -364,24 +364,24 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             }
             //获取每个团队每个冲刺的公告板特性信息
             Map<Long, List<BoardFeatureInfoVO>> sprintFeatureInfoMap = teamFeatureInfoMap.get(relationshipDTO.getProjectId());
-            List<ProgramBoardTeamSprintInfoDTO> teamSprintInfos = new ArrayList<>(sprints.size());
+            List<ProgramBoardTeamSprintInfoVO> teamSprintInfos = new ArrayList<>(sprints.size());
             if (sprintFeatureInfoMap != null) {
                 for (SprintDTO sprint : sprints) {
                     List<BoardFeatureInfoVO> boardFeatures = sprintFeatureInfoMap.getOrDefault(sprint.getSprintId(), new ArrayList<>());
-                    ProgramBoardTeamSprintInfoDTO teamSprintInfo = new ProgramBoardTeamSprintInfoDTO();
+                    ProgramBoardTeamSprintInfoVO teamSprintInfo = new ProgramBoardTeamSprintInfoVO();
                     teamSprintInfo.setSprintId(sprint.getSprintId());
                     teamSprintInfo.setBoardFeatures(boardFeatures);
                     teamSprintInfos.add(teamSprintInfo);
                 }
             } else {
                 for (SprintDTO sprint : sprints) {
-                    ProgramBoardTeamSprintInfoDTO teamSprintInfo = new ProgramBoardTeamSprintInfoDTO();
+                    ProgramBoardTeamSprintInfoVO teamSprintInfo = new ProgramBoardTeamSprintInfoVO();
                     teamSprintInfo.setSprintId(sprint.getSprintId());
                     teamSprintInfo.setBoardFeatures(new ArrayList<>());
                     teamSprintInfos.add(teamSprintInfo);
                 }
             }
-            ProgramBoardTeamInfoDTO teamProject = new ProgramBoardTeamInfoDTO();
+            ProgramBoardTeamInfoVO teamProject = new ProgramBoardTeamInfoVO();
             teamProject.setProjectId(relationshipDTO.getProjectId());
             teamProject.setProjectName(relationshipDTO.getProjName());
             teamProject.setObjectVersionNumber(team.getObjectVersionNumber());

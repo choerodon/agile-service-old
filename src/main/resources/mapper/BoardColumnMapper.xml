@@ -193,7 +193,7 @@
             abcsr.project_id = #{projectId} and abcsr.status_id != 0
     </select>
 
-    <!--<select id="selectColumnByColumnId" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">-->
+    <!--<select id="selectColumnByColumnId" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDTOO">-->
         <!--SELECT-->
             <!--abc.name,-->
             <!--abc.min_num,-->
@@ -214,7 +214,7 @@
             <!--abc.column_id = #{columnId}-->
     <!--</select>-->
 
-    <!--<select id="selectColumnByColumnIdWithoutSub" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">-->
+    <!--<select id="selectColumnByColumnIdWithoutSub" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDTOO">-->
         <!--SELECT-->
             <!--abc.min_num,-->
             <!--abc.max_num,-->
@@ -519,7 +519,7 @@
         )
     </select>
 
-    <select id="queryRelByColumnIds" resultType="io.choerodon.agile.infra.dataobject.BoardColumnStatusRelDO">
+    <select id="queryRelByColumnIds" resultType="io.choerodon.agile.infra.dataobject.BoardColumnStatusRelDTO">
         select * from agile_board_column_status_rel abcsr
         where abcsr.column_id IN
         <foreach collection="columnIds" item="columnId"

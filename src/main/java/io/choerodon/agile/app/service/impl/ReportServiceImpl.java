@@ -377,8 +377,8 @@ public class ReportServiceImpl implements ReportService {
     private void handleCumulativeFlowChangeDuringDate(Long projectId, Date startDate, Date endDate, List<Long> columnIds, List<Long> allIssueIds, List<ColumnChangeDTO> result) {
         List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.toTargetList
                 (reportMapper.queryChangeIssueDuringDate(projectId, startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
-        List<BoardColumnStatusRelDO> relDOs = boardColumnMapper.queryRelByColumnIds(columnIds);
-        Map<Long, Long> relMap = relDOs.stream().collect(Collectors.toMap(BoardColumnStatusRelDO::getStatusId, BoardColumnStatusRelDO::getColumnId));
+        List<BoardColumnStatusRelDTO> relDOs = boardColumnMapper.queryRelByColumnIds(columnIds);
+        Map<Long, Long> relMap = relDOs.stream().collect(Collectors.toMap(BoardColumnStatusRelDTO::getStatusId, BoardColumnStatusRelDTO::getColumnId));
         changeIssueDuringDate.parallelStream().forEach(changeDto -> {
             Long columnTo = relMap.get(Long.parseLong(changeDto.getNewValue()));
             Long columnFrom = relMap.get(Long.parseLong(changeDto.getOldValue()));

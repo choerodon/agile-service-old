@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository
 //package io.choerodon.agile.domain.agile.repository
 //
 //import io.choerodon.agile.AgileTestConfiguration
-//import io.choerodon.agile.api.vo.ProjectDTO
+//import io.choerodon.agile.api.vo.ProjectVO
 //import io.choerodon.agile.infra.dataobject.UserDO
 //import io.choerodon.agile.infra.dataobject.UserMessageDO
 //import io.choerodon.agile.infra.feign.UserFeignClient
@@ -98,16 +98,16 @@ package io.choerodon.agile.infra.repository
 //        userService = new UserRepositoryImpl(userFeignClient)
 //
 //        and: '给定返回参数'
-//        ProjectDTO mock = new ProjectDTO()
+//        ProjectVO mock = new ProjectVO()
 //        mock.id = 1
-//        ResponseEntity<ProjectDTO> responseEntity = new ResponseEntity<>(mock, HttpStatus.OK)
+//        ResponseEntity<ProjectVO> responseEntity = new ResponseEntity<>(mock, HttpStatus.OK)
 //
 //        and: '方法参数'
 //        List<Long> assigneeIdList = new ArrayList<>()
 //        assigneeIdList.add(1L)
 //
 //        when: '根据用户id列表查询用户信息'
-//        ProjectDTO projectDTO = userService.queryProject(1)
+//        ProjectVO projectDTO = userService.queryProject(1)
 //
 //        then: '判断mock交互并且设置返回值'
 //        1 * userFeignClient.queryProject(_) >> responseEntity

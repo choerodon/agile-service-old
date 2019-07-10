@@ -80,7 +80,7 @@ public class StoryMapServiceImpl implements StoryMapService {
         JSONObject result = new JSONObject(true);
         List<Long> epicIds = new ArrayList<>();
         // get program epic
-        ProjectDTO program = userService.getGroupInfoByEnableProject(organizationId, projectId);
+        ProjectVO program = userService.getGroupInfoByEnableProject(organizationId, projectId);
         if (program != null) {
             List<Long> programEpicIds = storyMapMapper.selectEpicIdsByProgram(program.getId());
             if (programEpicIds != null && !programEpicIds.isEmpty()) {

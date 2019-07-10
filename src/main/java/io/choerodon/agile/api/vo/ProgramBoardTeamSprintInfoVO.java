@@ -8,7 +8,7 @@ import java.util.List;
  * @author shinan.chen
  * @since 2019/5/14
  */
-public class ProgramBoardTeamSprintInfoDTO {
+public class ProgramBoardTeamSprintInfoVO {
 
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
