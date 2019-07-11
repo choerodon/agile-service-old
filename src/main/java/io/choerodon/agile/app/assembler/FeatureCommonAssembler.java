@@ -8,9 +8,13 @@ import io.choerodon.agile.infra.dataobject.FeatureCommonDTO;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.core.convertor.ConvertHelper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +31,13 @@ public class FeatureCommonAssembler {
     @Autowired
     private UserService userService;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     public List<FeatureCommonVO> featureCommonDOToDTO(List<FeatureCommonDTO> featureCommonDTOList, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<FeatureCommonVO> result = new ArrayList<>();
         List<Long> reporterIds = new ArrayList<>();
@@ -34,8 +45,8 @@ public class FeatureCommonAssembler {
         Map<Long, UserMessageDTO> userMessageDOMap = userService.queryUsersMap(
                 reporterIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
         featureCommonDTOList.forEach(featureCommonDO -> {
-            FeatureCommonVO featureCommonVO = ConvertHelper.convert(featureCommonDO, FeatureCommonVO.class);
-            featureCommonVO.setPiNameVOList(ConvertHelper.convertList(featureCommonDO.getPiNameDTOList(), PiNameVO.class));
+            FeatureCommonVO featureCommonVO = modelMapper.map(featureCommonDO, FeatureCommonVO.class);
+            featureCommonVO.setPiNameVOList(modelMapper.map(featureCommonDO.getPiNameDTOList(), new TypeToken<List<PiNameVO>>(){}.getType()));
             featureCommonVO.setStatusMapVO(statusMapDTOMap.get(featureCommonDO.getStatusId()));
             featureCommonVO.setIssueTypeVO(issueTypeDTOMap.get(featureCommonDO.getIssueTypeId()));
             UserMessageDTO userMessageDTO = userMessageDOMap.get(featureCommonDO.getReporterId());

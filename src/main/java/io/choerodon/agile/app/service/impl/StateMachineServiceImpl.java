@@ -10,7 +10,6 @@ import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.RankService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.api.vo.event.CreateIssuePayload;
 import io.choerodon.agile.api.vo.event.CreateSubIssuePayload;
 import io.choerodon.agile.api.vo.event.ProjectConfig;
@@ -27,7 +26,6 @@ import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.agile.infra.mapper.RankMapper;
 import io.choerodon.agile.app.service.FeatureService;
 import io.choerodon.agile.app.service.PiFeatureService;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.annotation.Condition;
@@ -178,13 +176,13 @@ public class StateMachineServiceImpl implements StateMachineService {
         //获取项目信息
         ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
         projectInfoDTO.setProjectId(projectId);
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoE.class);
-        if (projectInfoE == null) {
+        ProjectInfoDTO projectInfo = modelMapper.map(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoDTO.class);
+        if (projectInfo == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }
         //创建issue
         issueConvertDTO.setApplyType(applyType);
-        issueService.handleInitIssue(issueConvertDTO, initStatusId, projectInfoE);
+        issueService.handleInitIssue(issueConvertDTO, initStatusId, projectInfo);
         Long issueId = issueAccessDataService.create(issueConvertDTO).getIssueId();
         // 创建史诗，初始化排序
         if ("issue_epic".equals(issueCreateVO.getTypeCode())) {
@@ -206,11 +204,11 @@ public class StateMachineServiceImpl implements StateMachineService {
             initRank(issueCreateVO, issueId, "feature");
         }
 
-        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateVO, issueConvertDTO, projectInfoE);
+        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateVO, issueConvertDTO, projectInfo);
         InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createIssuePayload));
         //通过状态机客户端创建实例, 反射验证/条件/后置动作
         stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
-        issueService.afterCreateIssue(issueId, issueConvertDTO, issueCreateVO, projectInfoE);
+        issueService.afterCreateIssue(issueId, issueConvertDTO, issueCreateVO, projectInfo);
         return issueService.queryIssueCreate(issueCreateVO.getProjectId(), issueId);
     }
 
@@ -238,21 +236,21 @@ public class StateMachineServiceImpl implements StateMachineService {
         //获取项目信息
         ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
         projectInfoDTO.setProjectId(subIssueConvertDTO.getProjectId());
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoE.class);
-        if (projectInfoE == null) {
+        ProjectInfoDTO projectInfo = modelMapper.map(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoDTO.class);
+        if (projectInfo == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }
         //创建issue
         subIssueConvertDTO.setApplyType(SchemeApplyType.AGILE);
         //初始化subIssue
-        issueService.handleInitSubIssue(subIssueConvertDTO, initStatusId, projectInfoE);
+        issueService.handleInitSubIssue(subIssueConvertDTO, initStatusId, projectInfo);
         Long issueId = issueAccessDataService.create(subIssueConvertDTO).getIssueId();
 
-        CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateVO, subIssueConvertDTO, projectInfoE);
+        CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateVO, subIssueConvertDTO, projectInfo);
         InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createSubIssuePayload));
         //通过状态机客户端创建实例, 反射验证/条件/后置动作
         stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
-        issueService.afterCreateSubIssue(issueId, subIssueConvertDTO, issueSubCreateVO, projectInfoE);
+        issueService.afterCreateSubIssue(issueId, subIssueConvertDTO, issueSubCreateVO, projectInfo);
         return issueService.queryIssueSubByCreate(subIssueConvertDTO.getProjectId(), issueId);
     }
 

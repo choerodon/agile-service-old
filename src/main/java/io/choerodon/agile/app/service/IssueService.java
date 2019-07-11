@@ -8,8 +8,8 @@ import com.alibaba.fastjson.JSONObject;
 
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
-import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
+import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.base.domain.PageRequest;
@@ -26,11 +26,11 @@ public interface IssueService {
 
     IssueVO queryIssueCreate(Long projectId, Long issueId);
 
-    void handleInitIssue(IssueConvertDTO issueConvertDTO, Long statusId, ProjectInfoE projectInfoE);
+    void handleInitIssue(IssueConvertDTO issueConvertDTO, Long statusId, ProjectInfoDTO projectInfoDTO);
 
-    void afterCreateIssue(Long issueId, IssueConvertDTO issueConvertDTO, IssueCreateVO issueCreateVO, ProjectInfoE projectInfoE);
+    void afterCreateIssue(Long issueId, IssueConvertDTO issueConvertDTO, IssueCreateVO issueCreateVO, ProjectInfoDTO projectInfoDTO);
 
-    void afterCreateSubIssue(Long issueId, IssueConvertDTO subIssueConvertDTO, IssueSubCreateVO issueSubCreateVO, ProjectInfoE projectInfoE);
+    void afterCreateSubIssue(Long issueId, IssueConvertDTO subIssueConvertDTO, IssueSubCreateVO issueSubCreateVO, ProjectInfoDTO projectInfoDTO);
 
     /**
      * 查询单个issue
@@ -99,7 +99,7 @@ public interface IssueService {
 
     void batchDeleteIssuesAgile(Long projectId, List<Long> issueIds);
 
-    void handleInitSubIssue(IssueConvertDTO subIssueConvertDTO, Long statusId, ProjectInfoE projectInfoE);
+    void handleInitSubIssue(IssueConvertDTO subIssueConvertDTO, Long statusId, ProjectInfoDTO projectInfoDTO);
 
     IssueSubVO queryIssueSubByCreate(Long projectId, Long issueId);
 

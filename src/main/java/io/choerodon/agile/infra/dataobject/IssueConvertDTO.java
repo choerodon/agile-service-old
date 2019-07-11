@@ -1,7 +1,5 @@
 package io.choerodon.agile.infra.dataobject;
 
-
-import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.IssueNumUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
@@ -322,7 +320,7 @@ public class IssueConvertDTO {
      * @param subIssueConvertDTO subIssueConvertDTO
      * @return IssueConvertDTO
      */
-    public IssueConvertDTO initializationSubIssue(IssueConvertDTO subIssueConvertDTO, Long statusId, ProjectInfoE projectInfoE) {
+    public IssueConvertDTO initializationSubIssue(IssueConvertDTO subIssueConvertDTO, Long statusId, ProjectInfoDTO projectInfoDTO) {
         subIssueConvertDTO.setAssigneerCondtiion(subIssueConvertDTO.getAssigneeId() == null);
         subIssueConvertDTO.setStatusId(statusId);
         subIssueConvertDTO.setParentIssueId(this.issueId);
@@ -330,9 +328,9 @@ public class IssueConvertDTO {
         subIssueConvertDTO.setTypeCode(SUB_TASK);
         subIssueConvertDTO.setEpicId(0L);
         subIssueConvertDTO.initializationReporter();
-        subIssueConvertDTO.initializationIssueNum(projectInfoE.getProjectId());
+        subIssueConvertDTO.initializationIssueNum(projectInfoDTO.getProjectId());
         subIssueConvertDTO.initializationIssueUser();
-        subIssueConvertDTO.initializationDefaultSetting(projectInfoE);
+        subIssueConvertDTO.initializationDefaultSetting(projectInfoDTO);
         return subIssueConvertDTO;
     }
 
@@ -350,7 +348,7 @@ public class IssueConvertDTO {
      *
      * @param statusId statusId
      */
-    public void initializationIssue(Long statusId, ProjectInfoE projectInfoE) {
+    public void initializationIssue(Long statusId, ProjectInfoDTO projectInfoDTO) {
         this.statusId = statusId;
         this.parentIssueId = 0L;
         if (this.epicId == null) {
@@ -362,21 +360,21 @@ public class IssueConvertDTO {
         initializationReporter();
         initializationIssueUser();
         //项目默认设置
-        initializationDefaultSetting(projectInfoE);
+        initializationDefaultSetting(projectInfoDTO);
         //编号设置
-        initializationIssueNum(projectInfoE.getProjectId());
+        initializationIssueNum(projectInfoDTO.getProjectId());
     }
 
-    private void initializationDefaultSetting(ProjectInfoE projectInfoE) {
-        if (this.assigneeId == null && projectInfoE.getDefaultAssigneeType() != null) {
-            if (DEFAULT_ASSIGNEE.equals(projectInfoE.getDefaultAssigneeType())) {
-                this.assigneeId = projectInfoE.getDefaultAssigneeId();
-            } else if (CURRENT_USER.equals(projectInfoE.getDefaultAssigneeType())) {
+    private void initializationDefaultSetting(ProjectInfoDTO projectInfoDTO) {
+        if (this.assigneeId == null && projectInfoDTO.getDefaultAssigneeType() != null) {
+            if (DEFAULT_ASSIGNEE.equals(projectInfoDTO.getDefaultAssigneeType())) {
+                this.assigneeId = projectInfoDTO.getDefaultAssigneeId();
+            } else if (CURRENT_USER.equals(projectInfoDTO.getDefaultAssigneeType())) {
                 this.assigneeId = DetailsHelper.getUserDetails().getUserId();
             }
         }
-        if (this.priorityCode == null && projectInfoE.getDefaultPriorityCode() != null) {
-            this.priorityCode = projectInfoE.getDefaultPriorityCode();
+        if (this.priorityCode == null && projectInfoDTO.getDefaultPriorityCode() != null) {
+            this.priorityCode = projectInfoDTO.getDefaultPriorityCode();
         }
     }
 

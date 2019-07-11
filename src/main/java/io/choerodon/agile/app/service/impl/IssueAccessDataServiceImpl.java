@@ -3,8 +3,6 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
-import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
-import io.choerodon.agile.domain.service.IIssueService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -12,10 +10,13 @@ import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.entity.Criteria;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,21 +33,25 @@ public class IssueAccessDataServiceImpl implements IssueAccessDataService {
     private IssueMapper issueMapper;
 
     @Autowired
-    private IIssueService iIssueService;
-
-    @Autowired
     private RedisUtil redisUtil;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     @Override
     @DataLog(type = "issue")
     public IssueConvertDTO update(IssueConvertDTO issueConvertDTO, String[] fieldList) {
-        IssueDTO issueDTO = ConvertHelper.convert(issueConvertDTO, IssueDTO.class);
+        IssueDTO issueDTO = modelMapper.map(issueConvertDTO, IssueDTO.class);
         Criteria criteria = new Criteria();
         criteria.update(fieldList);
         if (issueMapper.updateByPrimaryKeyOptions(issueDTO, criteria) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueConvertDTO.class);
+        return modelMapper.map(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueConvertDTO.class);
     }
 
     @Override
@@ -54,11 +59,11 @@ public class IssueAccessDataServiceImpl implements IssueAccessDataService {
     public IssueConvertDTO create(IssueConvertDTO issueConvertDTO) {
         //临时存个优先级code
         issueConvertDTO.setPriorityCode("priority-" + issueConvertDTO.getPriorityId());
-        IssueDTO issueDTO = ConvertHelper.convert(issueConvertDTO, IssueDTO.class);
+        IssueDTO issueDTO = modelMapper.map(issueConvertDTO, IssueDTO.class);
         if (issueMapper.insert(issueDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueConvertDTO.class);
+        return modelMapper.map(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueConvertDTO.class);
     }
 
     @Override
@@ -166,11 +171,11 @@ public class IssueAccessDataServiceImpl implements IssueAccessDataService {
 
     @Override
     public IssueConvertDTO updateSelective(IssueConvertDTO issueConvertDTO) {
-        IssueDTO issueDTO = ConvertHelper.convert(issueConvertDTO, IssueDTO.class);
+        IssueDTO issueDTO = modelMapper.map(issueConvertDTO, IssueDTO.class);
         if (issueMapper.updateByPrimaryKeySelective(issueDTO) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        return ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueConvertDTO.class);
+        return modelMapper.map(issueMapper.selectByPrimaryKey(issueDTO.getIssueId()), IssueConvertDTO.class);
 
     }
 

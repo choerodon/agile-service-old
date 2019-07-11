@@ -287,26 +287,26 @@ public class IssueServiceImpl implements IssueService {
 
 
     @Override
-    public void afterCreateIssue(Long issueId, IssueConvertDTO issueConvertDTO, IssueCreateVO issueCreateVO, ProjectInfoE projectInfoE) {
-        handleCreateIssueRearAction(issueConvertDTO, issueId, projectInfoE, issueCreateVO.getLabelIssueRelVOList(), issueCreateVO.getComponentIssueRelVOList(), issueCreateVO.getVersionIssueRelVOList(), issueCreateVO.getIssueLinkCreateVOList());
+    public void afterCreateIssue(Long issueId, IssueConvertDTO issueConvertDTO, IssueCreateVO issueCreateVO, ProjectInfoDTO projectInfoDTO) {
+        handleCreateIssueRearAction(issueConvertDTO, issueId, projectInfoDTO, issueCreateVO.getLabelIssueRelVOList(), issueCreateVO.getComponentIssueRelVOList(), issueCreateVO.getVersionIssueRelVOList(), issueCreateVO.getIssueLinkCreateVOList());
     }
 
-    private void handleCreateIssueRearAction(IssueConvertDTO issueConvertDTO, Long issueId, ProjectInfoE projectInfoE, List<LabelIssueRelVO> labelIssueRelVOList, List<ComponentIssueRelVO> componentIssueRelVOList, List<VersionIssueRelVO> versionIssueRelVOList, List<IssueLinkCreateVO> issueLinkCreateVOList) {
+    private void handleCreateIssueRearAction(IssueConvertDTO issueConvertDTO, Long issueId, ProjectInfoDTO projectInfoDTO, List<LabelIssueRelVO> labelIssueRelVOList, List<ComponentIssueRelVO> componentIssueRelVOList, List<VersionIssueRelVO> versionIssueRelVOList, List<IssueLinkCreateVO> issueLinkCreateVOList) {
         //处理冲刺
         handleCreateSprintRel(issueConvertDTO.getSprintId(), issueConvertDTO.getProjectId(), issueId);
         handleCreateLabelIssue(labelIssueRelVOList, issueId);
-        handleCreateComponentIssueRel(componentIssueRelVOList, projectInfoE.getProjectId(), issueId, projectInfoE, issueConvertDTO.getAssigneerCondtiion());
-        handleCreateVersionIssueRel(versionIssueRelVOList, projectInfoE.getProjectId(), issueId);
-        handleCreateIssueLink(issueLinkCreateVOList, projectInfoE.getProjectId(), issueId);
+        handleCreateComponentIssueRel(componentIssueRelVOList, projectInfoDTO.getProjectId(), issueId, projectInfoDTO, issueConvertDTO.getAssigneerCondtiion());
+        handleCreateVersionIssueRel(versionIssueRelVOList, projectInfoDTO.getProjectId(), issueId);
+        handleCreateIssueLink(issueLinkCreateVOList, projectInfoDTO.getProjectId(), issueId);
     }
 
     @Override
-    public void afterCreateSubIssue(Long issueId, IssueConvertDTO subIssueConvertDTO, IssueSubCreateVO issueSubCreateVO, ProjectInfoE projectInfoE) {
-        handleCreateIssueRearAction(subIssueConvertDTO, issueId, projectInfoE, issueSubCreateVO.getLabelIssueRelVOList(), issueSubCreateVO.getComponentIssueRelVOList(), issueSubCreateVO.getVersionIssueRelVOList(), issueSubCreateVO.getIssueLinkCreateVOList());
+    public void afterCreateSubIssue(Long issueId, IssueConvertDTO subIssueConvertDTO, IssueSubCreateVO issueSubCreateVO, ProjectInfoDTO projectInfoDTO) {
+        handleCreateIssueRearAction(subIssueConvertDTO, issueId, projectInfoDTO, issueSubCreateVO.getLabelIssueRelVOList(), issueSubCreateVO.getComponentIssueRelVOList(), issueSubCreateVO.getVersionIssueRelVOList(), issueSubCreateVO.getIssueLinkCreateVOList());
     }
 
     @Override
-    public void handleInitIssue(IssueConvertDTO issueConvertDTO, Long statusId, ProjectInfoE projectInfoE) {
+    public void handleInitIssue(IssueConvertDTO issueConvertDTO, Long statusId, ProjectInfoDTO projectInfoDTO) {
         //如果是epic，初始化颜色
         if (ISSUE_EPIC.equals(issueConvertDTO.getTypeCode())) {
             List<LookupValueDTO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
@@ -316,7 +316,7 @@ public class IssueServiceImpl implements IssueService {
             issueConvertDTO.setEpicSequence(sequence == null ? 0 : sequence + 1);
         }
         //初始化创建issue设置issue编号、项目默认设置
-        issueConvertDTO.initializationIssue(statusId, projectInfoE);
+        issueConvertDTO.initializationIssue(statusId, projectInfoDTO);
         projectInfoService.updateIssueMaxNum(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueNum());
         //初始化排序
         if (issueConvertDTO.isIssueRank()) {
@@ -925,10 +925,10 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public void handleInitSubIssue(IssueConvertDTO subIssueConvertDTO, Long statusId, ProjectInfoE projectInfoE) {
+    public void handleInitSubIssue(IssueConvertDTO subIssueConvertDTO, Long statusId, ProjectInfoDTO projectInfoDTO) {
         IssueConvertDTO parentIssueConvertDTO = modelMapper.map(issueMapper.queryIssueSprintNotClosed(subIssueConvertDTO.getProjectId(), subIssueConvertDTO.getParentIssueId()), IssueConvertDTO.class);
         //设置初始状态,跟随父类状态
-        subIssueConvertDTO = parentIssueConvertDTO.initializationSubIssue(subIssueConvertDTO, statusId, projectInfoE);
+        subIssueConvertDTO = parentIssueConvertDTO.initializationSubIssue(subIssueConvertDTO, statusId, projectInfoDTO);
         projectInfoService.updateIssueMaxNum(subIssueConvertDTO.getProjectId(), subIssueConvertDTO.getIssueNum());
         //初始化排序
         if (subIssueConvertDTO.isIssueRank()) {
@@ -1479,18 +1479,18 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleCreateComponentIssueRel(List<ComponentIssueRelVO> componentIssueRelVOList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Boolean assigneeCondition) {
+    private void handleCreateComponentIssueRel(List<ComponentIssueRelVO> componentIssueRelVOList, Long projectId, Long issueId, ProjectInfoDTO projectInfoDTO, Boolean assigneeCondition) {
         if (componentIssueRelVOList != null && !componentIssueRelVOList.isEmpty()) {
-            handleComponentIssueRelWithHandleAssignee(modelMapper.map(componentIssueRelVOList, new TypeToken<ComponentIssueRelDTO>(){}.getType()), projectId, issueId, projectInfoE, assigneeCondition);
+            handleComponentIssueRelWithHandleAssignee(modelMapper.map(componentIssueRelVOList, new TypeToken<ComponentIssueRelDTO>(){}.getType()), projectId, issueId, projectInfoDTO, assigneeCondition);
         }
     }
 
-    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Boolean assigneeCondition) {
+    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoDTO projectInfoDTO, Boolean assigneeCondition) {
         componentIssueRelDTOList.forEach(componentIssueRelDTO -> {
             handleComponentIssueRel(componentIssueRelDTO, projectId, issueId);
             //issue经办人可以根据模块策略进行区分
             if (assigneeCondition) {
-                handleComponentIssue(componentIssueRelDTO, issueId, projectInfoE);
+                handleComponentIssue(componentIssueRelDTO, issueId, projectInfoDTO);
             }
         });
     }
@@ -1516,7 +1516,7 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleComponentIssue(ComponentIssueRelDTO componentIssueRelDTO, Long issueId, ProjectInfoE projectInfoE) {
+    private void handleComponentIssue(ComponentIssueRelDTO componentIssueRelDTO, Long issueId, ProjectInfoDTO projectInfoDTO) {
         IssueComponentDTO issueComponentDTO = modelMapper.map(issueComponentMapper.selectByPrimaryKey(
                 componentIssueRelDTO.getComponentId()), IssueComponentDTO.class);
         if (ISSUE_MANAGER_TYPE.equals(issueComponentDTO.getDefaultAssigneeRole()) && issueComponentDTO.getManagerId() !=
@@ -1524,7 +1524,7 @@ public class IssueServiceImpl implements IssueService {
             //如果模块有选择模块负责人或者经办人的话，对应的issue的负责人要修改
             IssueConvertDTO issueConvertDTO = modelMapper.map(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
             Boolean condition = (issueConvertDTO.getAssigneeId() == null || issueConvertDTO.getAssigneeId() == 0) ||
-                    (projectInfoE.getDefaultAssigneeType() != null);
+                    (projectInfoDTO.getDefaultAssigneeType() != null);
             if (condition) {
                 issueConvertDTO.setAssigneeId(issueComponentDTO.getManagerId());
                 issueAccessDataService.update(issueConvertDTO, new String[]{"assigneeId"});

@@ -6,16 +6,18 @@ import io.choerodon.agile.api.validator.StoryMapValidator;
 import io.choerodon.agile.app.assembler.StoryMapAssembler;
 import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.StoryMapService;
-import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.StoryMapMapper;
 import io.choerodon.agile.infra.mapper.StoryMapWidthMapper;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.app.service.VersionIssueRelService;
-import io.choerodon.core.convertor.ConvertHelper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,6 +52,13 @@ public class StoryMapServiceImpl implements StoryMapService {
     @Autowired
     private StoryMapAssembler storyMapAssembler;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
 
     private List<FeatureCommonDTO> setFeatureWithoutEpicByProgram(Long programId, Long projectId, List<Long> featureIds) {
         List<FeatureCommonDTO> result = new ArrayList<>();
@@ -69,7 +78,7 @@ public class StoryMapServiceImpl implements StoryMapService {
     private List<StoryMapWidthVO> setStoryMapWidth(Long projectId) {
         List<StoryMapWidthDTO> storyMapWidthDTOList = storyMapWidthMapper.selectByProjectId(projectId);
         if (storyMapWidthDTOList != null && !storyMapWidthDTOList.isEmpty()) {
-            return ConvertHelper.convertList(storyMapWidthDTOList, StoryMapWidthVO.class);
+            return modelMapper.map(storyMapWidthDTOList, new TypeToken<List<StoryMapWidthVO>>(){}.getType());
         } else {
             return new ArrayList<>();
         }
