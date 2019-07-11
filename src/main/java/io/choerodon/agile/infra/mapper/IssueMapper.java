@@ -578,4 +578,6 @@ public interface IssueMapper extends Mapper<IssueDO> {
     List<IssueDO> selectByFeatureIds(@Param("featureIds") List<Long> featureIds);
 
     List<EpicDataDO> selectEpicByProgram(@Param("programId") Long programId);
+
+    IssueNumDO queryIssueByIssueNum (@Param("projectId") Long projectId, @Param("issueNum") String issueNum);
 }

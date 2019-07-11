@@ -2510,4 +2510,10 @@ public class IssueServiceImpl implements IssueService {
         }
         return featureCommonDTOS;
     }
+
+    @Override
+    public IssueNumDTO queryIssueByIssueNum(Long projectId, String issueNum) {
+        IssueNumDO issueNumDO = issueMapper.queryIssueByIssueNum(projectId, issueNum);
+        return issueAssembler.oneIssueNumDoToDto(issueNumDO, projectId);
+    }
 }

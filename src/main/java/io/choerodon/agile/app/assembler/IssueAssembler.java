@@ -383,6 +383,14 @@ public class IssueAssembler extends AbstractAssembler {
         return issueNumDTOS;
     }
 
+    public IssueNumDTO oneIssueNumDoToDto(IssueNumDO issueNumDO, Long projectId) {
+        Map<Long, IssueTypeDTO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
+        IssueNumDTO issueNumDTO = new IssueNumDTO();
+        BeanUtils.copyProperties(issueNumDO, issueNumDTO);
+        issueNumDTO.setIssueTypeDTO(issueTypeDTOMap.get(issueNumDO.getIssueTypeId()));
+        return issueNumDTO;
+    }
+
     public List<UnfinishedIssueDTO> unfinishedIssueDoToDto(List<UnfinishedIssueDO> unfinishedIssueDOS, Long projectId) {
         List<UnfinishedIssueDTO> unfinishedIssueDTOS = new ArrayList<>(unfinishedIssueDOS.size());
         if (!unfinishedIssueDOS.isEmpty()) {

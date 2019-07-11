@@ -317,4 +317,6 @@ public interface IssueService {
     PageInfo<FeatureCommonDTO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchDTO searchDTO);
 
     List<FeatureCommonDTO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId);
+
+    IssueNumDTO queryIssueByIssueNum(Long projectId, String issueNum);
 }
