@@ -5,7 +5,7 @@ import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.dataobject.ColumnDTO;
-import io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO;
+import io.choerodon.agile.infra.dataobject.IssueBurnDownReportDTO;
 import io.choerodon.agile.infra.dataobject.SprintDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -44,16 +44,16 @@ public class ReportAssembler extends AbstractAssembler {
         return sprintBurnDownReportVO;
     }
 
-    public List<IssueBurnDownReportVO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS, Map<Long, IssueTypeVO> issueTypeDTOMap,
+    public List<IssueBurnDownReportVO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDTO> issueBurnDownReportDTOS, Map<Long, IssueTypeVO> issueTypeDTOMap,
                                                                   Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
-        List<IssueBurnDownReportVO> issueBurnDownReportVOS = new ArrayList<>(issueBurnDownReportDOS.size());
-        if (!issueBurnDownReportDOS.isEmpty()) {
-            issueBurnDownReportDOS.forEach(issueBurnDownReportDO -> {
+        List<IssueBurnDownReportVO> issueBurnDownReportVOS = new ArrayList<>(issueBurnDownReportDTOS.size());
+        if (!issueBurnDownReportDTOS.isEmpty()) {
+            issueBurnDownReportDTOS.forEach(issueBurnDownReportDTO -> {
                 IssueBurnDownReportVO issueBurnDownReportVO = new IssueBurnDownReportVO();
-                BeanUtils.copyProperties(issueBurnDownReportDO, issueBurnDownReportVO);
-                issueBurnDownReportVO.setPriorityVO(priorityDTOMap.get(issueBurnDownReportDO.getPriorityId()));
-                issueBurnDownReportVO.setStatusMapVO(statusMapDTOMap.get(issueBurnDownReportDO.getStatusId()));
-                issueBurnDownReportVO.setIssueTypeVO(issueTypeDTOMap.get(issueBurnDownReportDO.getIssueTypeId()));
+                BeanUtils.copyProperties(issueBurnDownReportDTO, issueBurnDownReportVO);
+                issueBurnDownReportVO.setPriorityVO(priorityDTOMap.get(issueBurnDownReportDTO.getPriorityId()));
+                issueBurnDownReportVO.setStatusMapVO(statusMapDTOMap.get(issueBurnDownReportDTO.getStatusId()));
+                issueBurnDownReportVO.setIssueTypeVO(issueTypeDTOMap.get(issueBurnDownReportDTO.getIssueTypeId()));
                 issueBurnDownReportVOS.add(issueBurnDownReportVO);
             });
         }

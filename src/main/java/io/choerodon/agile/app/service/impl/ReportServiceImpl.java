@@ -619,7 +619,7 @@ public class ReportServiceImpl implements ReportService {
             versionIssueChangeDO.setIssueIds(versionIssueChangeDO.getRemoveIssueIds());
             return versionIssueChangeDO;
         }).collect(Collectors.toList());
-        List<IssueChangeDO> versionRemoveChangeIssues = versionRemoveChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionRemoveChangeIssue, field);
+        List<IssueChangeDTO> versionRemoveChangeIssues = versionRemoveChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionRemoveChangeIssue, field);
         List<IssueChangeVO> removeIssues = issueAssembler.toTargetList(versionRemoveChangeIssues, IssueChangeVO.class);
         Map<Date, List<IssueChangeVO>> removeIssuesMap = removeIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(removeIssuesMap.keySet());
@@ -632,7 +632,7 @@ public class ReportServiceImpl implements ReportService {
             versionIssueChangeDO.setIssueIds(versionIssueChangeDO.getAddIssueIds());
             return versionIssueChangeDO;
         }).collect(Collectors.toList());
-        List<IssueChangeDO> versionAddChangeIssues = versionAddChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionAddChangeIssue, field);
+        List<IssueChangeDTO> versionAddChangeIssues = versionAddChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionAddChangeIssue, field);
         List<IssueChangeVO> addIssues = issueAssembler.toTargetList(versionAddChangeIssues, IssueChangeVO.class);
         Map<Date, List<IssueChangeVO>> addIssuesMap = addIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(addIssuesMap.keySet());
@@ -1391,19 +1391,19 @@ public class ReportServiceImpl implements ReportService {
                 sorted(Comparator.comparing(ReportIssueConvertDTO::getDate)).collect(Collectors.toList()));
     }
 
-    private BigDecimal calculateStoryPoints(List<IssueBurnDownReportDO> issueDOS) {
+    private BigDecimal calculateStoryPoints(List<IssueBurnDownReportDTO> issueDOS) {
         BigDecimal sum = new BigDecimal(0);
-        for (IssueBurnDownReportDO issueBurnDownReportDO : issueDOS) {
-            sum = sum.add(issueBurnDownReportDO.getStoryPoints());
+        for (IssueBurnDownReportDTO issueBurnDownReportDTO : issueDOS) {
+            sum = sum.add(issueBurnDownReportDTO.getStoryPoints());
         }
         return sum;
     }
 
-    private BigDecimal calculateCompletedStoryPoints(List<IssueBurnDownReportDO> issueDOS) {
+    private BigDecimal calculateCompletedStoryPoints(List<IssueBurnDownReportDTO> issueDOS) {
         BigDecimal sum = new BigDecimal(0);
-        for (IssueBurnDownReportDO issueBurnDownReportDO : issueDOS) {
-            if (issueBurnDownReportDO.getCompleted()) {
-                sum = sum.add(issueBurnDownReportDO.getStoryPoints());
+        for (IssueBurnDownReportDTO issueBurnDownReportDTO : issueDOS) {
+            if (issueBurnDownReportDTO.getCompleted()) {
+                sum = sum.add(issueBurnDownReportDTO.getStoryPoints());
             }
         }
         return sum;
@@ -1413,7 +1413,7 @@ public class ReportServiceImpl implements ReportService {
     @SuppressWarnings("unchecked")
     @Cacheable(cacheNames = AGILE, key = "'BurnDownCoordinateByType' + #projectId + ':' + #type  + ':' + #id")
     public List<BurnDownReportCoordinateVO> queryBurnDownCoordinateByType(Long projectId, Long id, String type) {
-        List<IssueBurnDownReportDO> issueDOList = E_PIC.equals(type) ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
+        List<IssueBurnDownReportDTO> issueDOList = E_PIC.equals(type) ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
         if (issueDOList != null && !issueDOList.isEmpty()) {
             if (issueDOList.stream().noneMatch(issueDO -> issueDO.getStoryPoints() != null)) {
                 return new ArrayList<>();
@@ -1421,7 +1421,7 @@ public class ReportServiceImpl implements ReportService {
                 JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);
                 List<SprintDTO> sprintDTOList = (List<SprintDTO>) jsonObject.get(SPRINT_DO_LIST);
                 Date startDate = (Date) jsonObject.get(START_DATE);
-                List<IssueBurnDownReportDO> issueDOS = issueDOList.stream().filter(issueDO -> issueDO.getStoryPoints() != null).collect(Collectors.toList());
+                List<IssueBurnDownReportDTO> issueDOS = issueDOList.stream().filter(issueDO -> issueDO.getStoryPoints() != null).collect(Collectors.toList());
                 List<BurnDownReportCoordinateVO> reportCoordinateDTOS = new ArrayList<>();
                 if (sprintDTOList != null && !sprintDTOList.isEmpty()) {
                     handleBurnDownCoordinateByTypeExistSprint(issueDOS, reportCoordinateDTOS, startDate, sprintDTOList, type);
@@ -1476,30 +1476,30 @@ public class ReportServiceImpl implements ReportService {
     public BurnDownReportVO queryBurnDownReportByType(Long projectId, Long id, String type, Long organizationId) {
         BurnDownReportVO burnDownReportVO = new BurnDownReportVO();
         Boolean typeCondition = "Epic".equals(type);
-        List<IssueBurnDownReportDO> issueDOList = typeCondition ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
+        List<IssueBurnDownReportDTO> issueDOList = typeCondition ? issueMapper.queryIssueByEpicId(projectId, id) : issueMapper.queryIssueByVersionId(projectId, id);
         burnDownReportVO.setJsonObject(new JSONObject());
         handleBurnDownReportTypeData(burnDownReportVO, id, projectId, typeCondition);
         if (issueDOList != null && !issueDOList.isEmpty()) {
             Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
             Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
-            List<IssueBurnDownReportDO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
+            List<IssueBurnDownReportDTO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
             burnDownReportVO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
             JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);
             List<SprintDTO> sprintDTOList = (List<SprintDTO>) jsonObject.get(SPRINT_DO_LIST);
             if (sprintDTOList != null && !sprintDTOList.isEmpty()) {
-                List<IssueBurnDownReportDO> completeIssues = issueDOList.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null).collect(Collectors.toList());
+                List<IssueBurnDownReportDTO> completeIssues = issueDOList.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null).collect(Collectors.toList());
                 handleBurnDownReportSprintData(sprintDTOList, completeIssues, burnDownReportVO, priorityMap, statusMapDTOMap, issueTypeDTOMap);
             }
         }
         return burnDownReportVO;
     }
 
-    private void handleBurnDownReportSprintData(List<SprintDTO> sprintDTOList, List<IssueBurnDownReportDO> completeIssues, BurnDownReportVO burnDownReportVO, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    private void handleBurnDownReportSprintData(List<SprintDTO> sprintDTOList, List<IssueBurnDownReportDTO> completeIssues, BurnDownReportVO burnDownReportVO, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<SprintBurnDownReportVO> sprintBurnDownReportVOS = new ArrayList<>();
         if (sprintDTOList.size() == 1) {
             SprintBurnDownReportVO sprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(0));
-            List<IssueBurnDownReportDO> singleCompleteIssues = completeIssues.stream().filter(issueDO ->
+            List<IssueBurnDownReportDTO> singleCompleteIssues = completeIssues.stream().filter(issueDO ->
                     issueDO.getDoneDate().after(sprintBurnDownReportVO.getStartDate())).collect(Collectors.toList());
             sprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
             sprintBurnDownReportVOS.add(sprintBurnDownReportVO);
@@ -1508,12 +1508,12 @@ public class ReportServiceImpl implements ReportService {
                 SprintBurnDownReportVO sprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i));
                 Date startDateOne = sprintBurnDownReportVO.getStartDate();
                 Date startDateTwo = sprintDTOList.get(i + 1).getStartDate();
-                List<IssueBurnDownReportDO> duringSprintCompleteIssues = handleDuringSprintIncompleteIssues(completeIssues, startDateOne, startDateTwo);
+                List<IssueBurnDownReportDTO> duringSprintCompleteIssues = handleDuringSprintIncompleteIssues(completeIssues, startDateOne, startDateTwo);
                 sprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
                 sprintBurnDownReportVOS.add(sprintBurnDownReportVO);
                 if (i == sprintDTOList.size() - 2) {
                     SprintBurnDownReportVO lastSprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i + 1));
-                    List<IssueBurnDownReportDO> lastCompleteIssues = completeIssues.stream().filter(issueDO ->
+                    List<IssueBurnDownReportDTO> lastCompleteIssues = completeIssues.stream().filter(issueDO ->
                             issueDO.getDoneDate().after(lastSprintBurnDownReportVO.getStartDate())).collect(Collectors.toList());
                     lastSprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
                     lastSprintBurnDownReportVO.setEndDate(lastSprintBurnDownReportVO.getEndDate() == null ? new Date() : lastSprintBurnDownReportVO.getEndDate());
@@ -1524,9 +1524,9 @@ public class ReportServiceImpl implements ReportService {
         burnDownReportVO.setSprintBurnDownReportVOS(sprintBurnDownReportVOS);
     }
 
-    private List<IssueBurnDownReportDO> handleDuringSprintIncompleteIssues(List<IssueBurnDownReportDO> completeIssues, Date startDateOne, Date startDateTwo) {
-        List<IssueBurnDownReportDO> duringSprintIncompleteIssues = new ArrayList<>();
-        for (IssueBurnDownReportDO issueDO : completeIssues) {
+    private List<IssueBurnDownReportDTO> handleDuringSprintIncompleteIssues(List<IssueBurnDownReportDTO> completeIssues, Date startDateOne, Date startDateTwo) {
+        List<IssueBurnDownReportDTO> duringSprintIncompleteIssues = new ArrayList<>();
+        for (IssueBurnDownReportDTO issueDO : completeIssues) {
             if (issueDO.getDoneDate().after(startDateOne) && issueDO.getDoneDate().before(startDateTwo)) {
                 duringSprintIncompleteIssues.add(issueDO);
             }
@@ -1553,11 +1553,11 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void handleBurnDownCoordinateByTypeExistSprint(List<IssueBurnDownReportDO> issueDOS, List<BurnDownReportCoordinateVO> reportCoordinateDTOS,
+    private void handleBurnDownCoordinateByTypeExistSprint(List<IssueBurnDownReportDTO> issueDOS, List<BurnDownReportCoordinateVO> reportCoordinateDTOS,
                                                            Date startDate, List<SprintDTO> sprintDTOList, String type) {
-        List<IssueBurnDownReportDO> issueFilters = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().before(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
+        List<IssueBurnDownReportDTO> issueFilters = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().before(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
         BigDecimal addNum = calculateStoryPoints(issueFilters);
-        List<IssueBurnDownReportDO> issueCompletedFilters = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().before(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
+        List<IssueBurnDownReportDTO> issueCompletedFilters = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().before(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
         BigDecimal done = calculateStoryPoints(issueCompletedFilters);
         reportCoordinateDTOS.add(new BurnDownReportCoordinateVO(new BigDecimal(0), addNum, done, addNum.subtract(done),
                 type + "开始时的预估", startDate, sprintDTOList.get(0).getStartDate()));
@@ -1568,7 +1568,7 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void handleSprintMultitude(List<BurnDownReportCoordinateVO> reportCoordinateDTOS, List<IssueBurnDownReportDO> issueDOS, List<SprintDTO> sprintDTOList) {
+    private void handleSprintMultitude(List<BurnDownReportCoordinateVO> reportCoordinateDTOS, List<IssueBurnDownReportDTO> issueDOS, List<SprintDTO> sprintDTOList) {
         for (int i = 0; i < sprintDTOList.size() - 1; i++) {
             Date startDateOne = sprintDTOList.get(i).getStartDate();
             Date startDateTwo = sprintDTOList.get(i + 1).getStartDate();
@@ -1576,9 +1576,9 @@ public class ReportServiceImpl implements ReportService {
             handleReportCoordinateDuringSprint(issueDOS, startDateOne, startDateTwo, reportCoordinateDTOS, endDate, sprintDTOList.get(i).getSprintName());
             if (i == sprintDTOList.size() - 2) {
                 BigDecimal startLast = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
-                List<IssueBurnDownReportDO> addList = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(startDateTwo)).collect(Collectors.toList());
+                List<IssueBurnDownReportDTO> addList = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(startDateTwo)).collect(Collectors.toList());
                 BigDecimal addLast = calculateStoryPoints(addList);
-                List<IssueBurnDownReportDO> doneList = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateTwo)).collect(Collectors.toList());
+                List<IssueBurnDownReportDTO> doneList = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate() != null && issueDO.getDoneDate().after(startDateTwo)).collect(Collectors.toList());
                 BigDecimal doneLast = calculateStoryPoints(doneList);
                 BigDecimal left = startLast.add(addLast).subtract(doneLast);
                 endDate = sprintDTOList.get(i + 1).getActualEndDate() == null ? sprintDTOList.get(i + 1).getEndDate() : sprintDTOList.get(i + 1).getActualEndDate();
@@ -1589,11 +1589,11 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void handleReportCoordinateDuringSprint(List<IssueBurnDownReportDO> issueDOS, Date startDateOne, Date startDateTwo, List<BurnDownReportCoordinateVO> reportCoordinateDTOS, Date endDate, String sprintName) {
+    private void handleReportCoordinateDuringSprint(List<IssueBurnDownReportDTO> issueDOS, Date startDateOne, Date startDateTwo, List<BurnDownReportCoordinateVO> reportCoordinateDTOS, Date endDate, String sprintName) {
         BigDecimal addNum = new BigDecimal(0);
         BigDecimal done = new BigDecimal(0);
         BigDecimal start = reportCoordinateDTOS.get(reportCoordinateDTOS.size() - 1).getLeft();
-        for (IssueBurnDownReportDO issueDO : issueDOS) {
+        for (IssueBurnDownReportDTO issueDO : issueDOS) {
             if (issueDO.getAddDate().after(startDateOne) && issueDO.getAddDate().before(startDateTwo)) {
                 addNum = addNum.add(issueDO.getStoryPoints());
             }
@@ -1610,11 +1610,11 @@ public class ReportServiceImpl implements ReportService {
     }
 
 
-    private void handleSprintSingle(List<BurnDownReportCoordinateVO> reportCoordinateDTOS, List<IssueBurnDownReportDO> issueDOS, List<SprintDTO> sprintDTOList) {
+    private void handleSprintSingle(List<BurnDownReportCoordinateVO> reportCoordinateDTOS, List<IssueBurnDownReportDTO> issueDOS, List<SprintDTO> sprintDTOList) {
         BigDecimal start = reportCoordinateDTOS.get(0).getLeft();
-        List<IssueBurnDownReportDO> addList = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
+        List<IssueBurnDownReportDTO> addList = issueDOS.stream().filter(issueDO -> issueDO.getAddDate().after(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
         BigDecimal addNum = calculateStoryPoints(addList);
-        List<IssueBurnDownReportDO> doneList = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().after(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
+        List<IssueBurnDownReportDTO> doneList = issueDOS.stream().filter(issueDO -> issueDO.getCompleted() && issueDO.getDoneDate().after(sprintDTOList.get(0).getStartDate())).collect(Collectors.toList());
         BigDecimal done = calculateStoryPoints(doneList);
         Date endDate = sprintDTOList.get(0).getActualEndDate() == null ? sprintDTOList.get(0).getEndDate() : sprintDTOList.get(0).getActualEndDate();
         reportCoordinateDTOS.add(new BurnDownReportCoordinateVO(start, addNum, done, start.add(addNum).subtract(done),

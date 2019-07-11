@@ -70,7 +70,7 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDTO> {
      */
     List<ColumnAndIssueDTO> queryColumnsByIssueIds(@Param("issueIds") List<Long> issueIds, @Param("boardId") Long boardId);
 
-    List<EpicIdWithNameDO> selectEpicBatchByIds(@Param("epicIds") List<Long> epicIds);
+    List<EpicIdWithNameDTO> selectEpicBatchByIds(@Param("epicIds") List<Long> epicIds);
 
     /**
      * 根据看板id和projectId查询列idList

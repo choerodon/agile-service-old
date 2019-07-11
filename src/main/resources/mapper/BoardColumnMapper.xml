@@ -273,7 +273,7 @@
         ORDER BY abc.sequence
     </select>
 
-    <select id="selectEpicBatchByIds" resultType="io.choerodon.agile.infra.dataobject.EpicIdWithNameDO">
+    <select id="selectEpicBatchByIds" resultType="io.choerodon.agile.infra.dataobject.EpicIdWithNameDTO">
         SELECT
         issue_id AS epic_id,
         epic_name AS epic_name

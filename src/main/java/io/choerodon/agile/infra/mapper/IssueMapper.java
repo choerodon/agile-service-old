@@ -376,7 +376,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      * @param epicId    epicId
      * @return IssueDTO
      */
-    List<IssueBurnDownReportDO> queryIssueByEpicId(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
+    List<IssueBurnDownReportDTO> queryIssueByEpicId(@Param("projectId") Long projectId, @Param("epicId") Long epicId);
 
     /**
      * 查询版本下的所有issue
@@ -385,7 +385,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      * @param versionId versionId
      * @return IssueDTO
      */
-    List<IssueBurnDownReportDO> queryIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
+    List<IssueBurnDownReportDTO> queryIssueByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
     /**
      * 根据ids查询所有issue

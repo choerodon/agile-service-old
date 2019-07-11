@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by jian_zhang02@163.com on 2018/7/5.
  */
-public class IssueChangeDO {
+public class IssueChangeDTO {
     private Long issueId;
     private String issueNum;
     private String oldValue;

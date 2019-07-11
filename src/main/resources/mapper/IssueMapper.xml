@@ -2860,7 +2860,7 @@
         where avir.issue_id = #{issueId} and avir.project_id = #{projectId}
     </select>
 
-    <select id="queryIssueByEpicId" resultType="io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO">
+    <select id="queryIssueByEpicId" resultType="io.choerodon.agile.infra.dataobject.IssueBurnDownReportDTO">
         SELECT
             aaa.issue_id,
             aaa.issue_num,
@@ -2939,7 +2939,7 @@
             aaa.add_date IS NOT NULL order by aaa.add_date asc
     </select>
 
-    <select id="queryIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO">
+    <select id="queryIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.IssueBurnDownReportDTO">
        SELECT
             aaa.issue_id,
             aaa.issue_num,

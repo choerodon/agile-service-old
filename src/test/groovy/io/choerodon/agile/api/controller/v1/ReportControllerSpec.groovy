@@ -335,8 +335,8 @@ class ReportControllerSpec extends Specification {
         versionIssueChangeDO.addIssueIds = [1]
         versionIssueChangeDO.removeIssueIds = [2]
         versionIssueChangeDOList.add(versionIssueChangeDO)
-        List<IssueChangeDO> issueChangeDOS = new ArrayList<>()
-        IssueChangeDO issueChangeDO = new IssueChangeDO()
+        List<IssueChangeDTO> issueChangeDOS = new ArrayList<>()
+        IssueChangeDTO issueChangeDO = new IssueChangeDTO()
         issueChangeDO.changeDate = new Date()
         issueChangeDO.issueId = 1
         issueChangeDO.issueNum = 'AG-1'

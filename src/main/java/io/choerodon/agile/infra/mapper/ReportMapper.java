@@ -261,11 +261,11 @@ public interface ReportMapper {
 
     List<Long> queryIssueIdByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<IssueChangeDO> queryChangeFieldIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("field") String field);
+    List<IssueChangeDTO> queryChangeFieldIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("field") String field);
 
     List<VersionIssueChangeDO> queryCompletedChangeIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("completed") Boolean completed);
 
-    List<IssueChangeDO> queryChangIssue(@Param("projectId") Long projectId, @Param("changeIssues") List<VersionIssueChangeDO> changeIssues, @Param("field") String field);
+    List<IssueChangeDTO> queryChangIssue(@Param("projectId") Long projectId, @Param("changeIssues") List<VersionIssueChangeDO> changeIssues, @Param("field") String field);
 
     Integer queryTotalField(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("field") String field);
 

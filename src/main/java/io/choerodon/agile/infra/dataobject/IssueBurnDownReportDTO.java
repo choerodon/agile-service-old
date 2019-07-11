@@ -10,7 +10,7 @@ import java.util.Date;
  * @author dinghuang123@gmail.com
  * @since 2018/9/5
  */
-public class IssueBurnDownReportDO {
+public class IssueBurnDownReportDTO {
 
     private Long issueId;
 

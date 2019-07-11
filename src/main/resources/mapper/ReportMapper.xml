@@ -1128,7 +1128,7 @@
               AND ai.issue_id = avir.issue_id AND ai.type_code IN ('task', 'bug', 'issue_epic', 'story')
     </select>
 
-    <select id="queryChangeFieldIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
+    <select id="queryChangeFieldIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDTO">
         SELECT adl.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         adl.old_string AS old_value, adl.new_string AS new_value,
         adl.creation_date AS change_date, IFNULL(adl.new_string, 0) - IFNULL(adl.old_string, 0) AS change_field,
@@ -1202,7 +1202,7 @@
         )
     </select>
 
-    <select id="queryChangIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDO">
+    <select id="queryChangIssue" resultType="io.choerodon.agile.infra.dataobject.IssueChangeDTO">
         SELECT adl.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
         b.old_value AS old_value, b.new_value AS new_value,
         adl.creation_date AS change_date, ai.type_code AS type_code,
