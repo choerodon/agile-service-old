@@ -4,7 +4,6 @@ import io.choerodon.agile.api.vo.IssueLinkTypeCreateVO;
 import io.choerodon.agile.api.vo.IssueLinkTypeVO;
 import io.choerodon.agile.api.vo.IssueLinkTypeSearchVO;
 import com.github.pagehelper.PageInfo;
-import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import io.choerodon.base.domain.PageRequest;
 

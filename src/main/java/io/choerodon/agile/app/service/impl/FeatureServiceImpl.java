@@ -1,10 +1,8 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.app.service.FeatureService;
 import io.choerodon.agile.infra.dataobject.FeatureDTO;
 import io.choerodon.agile.infra.mapper.FeatureMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -9,7 +9,7 @@ import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
-import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
+import io.choerodon.agile.infra.dataobject.BatchRemovePiDTO;
 import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
@@ -623,8 +623,8 @@ public class PiServiceImpl implements PiService {
             if (moveIssueVO.getUpdateStatusId() != null) {
                 batchUpdateStatus(programId, piId, moveIssueIdsFilter, moveIssueVO.getUpdateStatusId(), moveIssueVO.getStatusCategoryCode(), customUserDetails.getUserId());
             }
-            BatchRemovePiE batchRemovePiE = new BatchRemovePiE(programId, piId, moveIssueIdsFilter);
-            issueAccessDataService.removeFeatureFromPiByIssueIds(batchRemovePiE);
+            BatchRemovePiDTO batchRemovePiDTO = new BatchRemovePiDTO(programId, piId, moveIssueIdsFilter);
+            issueAccessDataService.removeFeatureFromPiByIssueIds(batchRemovePiDTO);
             if (piId != null && !Objects.equals(piId, 0L)) {
                 issueAccessDataService.batchFeatureToPi(programId, piId, moveIssueIdsFilter, new Date(), customUserDetails.getUserId());
             }

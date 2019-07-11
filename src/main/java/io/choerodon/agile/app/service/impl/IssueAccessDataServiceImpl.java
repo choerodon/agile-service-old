@@ -1,13 +1,12 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.app.service.IssueAccessDataService;
-import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
-import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
+import io.choerodon.agile.infra.dataobject.BatchRemovePiDTO;
+import io.choerodon.agile.infra.dataobject.BatchRemoveSprintDTO;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.IssueMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.entity.Criteria;
 import org.modelmapper.ModelMapper;
@@ -149,14 +148,14 @@ public class IssueAccessDataServiceImpl implements IssueAccessDataService {
 
     @Override
     @DataLog(type = "batchRemoveSprint", single = false)
-    public int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE) {
-        return issueMapper.removeIssueFromSprintByIssueIds(batchRemoveSprintE.getProjectId(), batchRemoveSprintE.getIssueIds());
+    public int removeIssueFromSprintByIssueIds(BatchRemoveSprintDTO batchRemoveSprintDTO) {
+        return issueMapper.removeIssueFromSprintByIssueIds(batchRemoveSprintDTO.getProjectId(), batchRemoveSprintDTO.getIssueIds());
     }
 
     @Override
     @DataLog(type = "batchRemovePi", single = false)
-    public int removeFeatureFromPiByIssueIds(BatchRemovePiE batchRemovePiE) {
-        return issueMapper.removeFeatureFromPiByIssueIds(batchRemovePiE.getProgramId(), batchRemovePiE.getIssueIds());
+    public int removeFeatureFromPiByIssueIds(BatchRemovePiDTO batchRemovePiDTO) {
+        return issueMapper.removeFeatureFromPiByIssueIds(batchRemovePiDTO.getProgramId(), batchRemovePiDTO.getIssueIds());
     }
 
     @Override

@@ -1,7 +1,7 @@
 //package io.choerodon.agile.infra.repository.impl;
 //
-//import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
-//import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
+//import io.choerodon.agile.infra.dataobject.BatchRemovePiDTO;
+//import io.choerodon.agile.infra.dataobject.BatchRemoveSprintDTO;
 //import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 //import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 //import io.choerodon.agile.infra.dataobject.IssueDTO;
@@ -155,13 +155,13 @@
 //
 //    @Override
 //    @DataLog(type = "batchRemoveSprint", single = false)
-//    public int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE) {
+//    public int removeIssueFromSprintByIssueIds(BatchRemoveSprintDTO batchRemoveSprintE) {
 //        return issueMapper.removeIssueFromSprintByIssueIds(batchRemoveSprintE.getProjectId(), batchRemoveSprintE.getIssueIds());
 //    }
 //
 //    @Override
 //    @DataLog(type = "batchRemovePi", single = false)
-//    public int removeFeatureFromPiByIssueIds(BatchRemovePiE batchRemovePiE) {
+//    public int removeFeatureFromPiByIssueIds(BatchRemovePiDTO batchRemovePiE) {
 //        return issueMapper.removeFeatureFromPiByIssueIds(batchRemovePiE.getProgramId(), batchRemovePiE.getIssueIds());
 //    }
 //

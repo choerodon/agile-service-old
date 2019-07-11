@@ -1,8 +1,8 @@
-package io.choerodon.agile.domain.agile.entity;
+package io.choerodon.agile.infra.dataobject;
 
 import java.util.List;
 
-public class BatchRemovePiE {
+public class BatchRemovePiDTO {
 
     private Long programId;
 
@@ -10,7 +10,7 @@ public class BatchRemovePiE {
 
     private List<Long> issueIds;
 
-    public BatchRemovePiE(Long programId, Long piId, List<Long> issueIds) {
+    public BatchRemovePiDTO(Long programId, Long piId, List<Long> issueIds) {
         this.programId = programId;
         this.piId = piId;
         this.issueIds = issueIds;

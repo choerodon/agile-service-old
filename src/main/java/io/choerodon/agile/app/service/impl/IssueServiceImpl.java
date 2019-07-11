@@ -15,7 +15,6 @@ import io.choerodon.agile.api.validator.ProductVersionValidator;
 import io.choerodon.agile.api.validator.SprintValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
-import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.api.vo.event.IssuePayload;
 import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
@@ -32,7 +31,6 @@ import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.base.domain.PageRequest;
 import io.choerodon.base.domain.Sort;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.CustomUserDetails;
@@ -665,8 +663,8 @@ public class IssueServiceImpl implements IssueService {
             Boolean condition = (!Objects.equals(oldIssue.getSprintId(), issueUpdateVO.getSprintId()));
             issueIds.add(issueConvertDTO.getIssueId());
             if (condition) {
-                BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, issueConvertDTO.getSprintId(), issueIds);
-                issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+                BatchRemoveSprintDTO batchRemoveSprintDTO = new BatchRemoveSprintDTO(projectId, issueConvertDTO.getSprintId(), issueIds);
+                issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintDTO);
 //                //不是活跃冲刺，修改冲刺状态回到第一个状态
 //                handleIssueStatus(projectId, oldIssue, issueConvertDTO, fieldList, issueIds);
             }
@@ -1052,8 +1050,8 @@ public class IssueServiceImpl implements IssueService {
                 .filter(issueDO -> issueDO.getSprintId() == null ? sprintId != 0 : !issueDO.getSprintId().equals(sprintId)).collect(Collectors.toList());
         if (issueSearchDTOList != null && !issueSearchDTOList.isEmpty()) {
             List<Long> moveIssueIdsFilter = issueSearchDTOList.stream().map(IssueSearchDTO::getIssueId).collect(Collectors.toList());
-            BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIdsFilter);
-            issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+            BatchRemoveSprintDTO batchRemoveSprintDTO = new BatchRemoveSprintDTO(projectId, sprintId, moveIssueIdsFilter);
+            issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintDTO);
             if (sprintId != null && !Objects.equals(sprintId, 0L)) {
                 issueAccessDataService.issueToDestinationByIds(projectId, sprintId, moveIssueIdsFilter, new Date(), customUserDetails.getUserId());
             }
@@ -1209,7 +1207,7 @@ public class IssueServiceImpl implements IssueService {
 //        if (subBugIds != null && !subBugIds.isEmpty()) {
 //            moveIssueIds.addAll(subBugIds);
 //        }
-//        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, moveIssueIds);
+//        BatchRemoveSprintDTO batchRemoveSprintE = new BatchRemoveSprintDTO(projectId, sprintId, moveIssueIds);
 //        issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
 //        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
 //            issueAccessDataService.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
@@ -2008,8 +2006,8 @@ public class IssueServiceImpl implements IssueService {
         issueSprintRelDTO.setProjectId(projectId);
         if (issueSprintRelMapper.selectOne(issueSprintRelDTO) == null) {
             if (issueMapper.selectUnCloseSprintId(projectId, issueId) != null) {
-                BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, issueIds);
-                issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+                BatchRemoveSprintDTO batchRemoveSprintDTO = new BatchRemoveSprintDTO(projectId, sprintId, issueIds);
+                issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintDTO);
                 issueAccessDataService.issueToDestinationByIds(projectId, sprintId, issueIds, new Date(), customUserDetails.getUserId());
             } else {
                 issueSprintRelService.createIssueSprintRel(modelMapper.map(issueSprintRelDTO, IssueSprintRelDTO.class));
@@ -2044,8 +2042,8 @@ public class IssueServiceImpl implements IssueService {
                     insertSprintWhenTransform(issueConvertDTO.getIssueId(), sprintId, projectId, issueIds);
                 } else {
                     if (issueMapper.selectUnCloseSprintId(projectId, issueConvertDTO.getIssueId()) != null) {
-                        BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, issueIds);
-                        issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
+                        BatchRemoveSprintDTO batchRemoveSprintDTO = new BatchRemoveSprintDTO(projectId, sprintId, issueIds);
+                        issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintDTO);
                     }
                 }
                 return queryIssueSub(projectId, organizationId, issueConvertDTO.getIssueId());

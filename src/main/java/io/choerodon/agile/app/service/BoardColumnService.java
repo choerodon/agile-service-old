@@ -4,7 +4,6 @@ import io.choerodon.agile.api.vo.BoardColumnVO;
 import io.choerodon.agile.api.vo.ColumnSortVO;
 import io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO;
 import io.choerodon.agile.api.vo.event.RemoveStatusWithProject;
-import io.choerodon.agile.domain.agile.entity.BoardE;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.dataobject.BoardColumnDTO;
 import io.choerodon.agile.infra.dataobject.BoardDTO;

@@ -1,6 +1,5 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.domain.agile.entity.IssueLinkE;
 import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;

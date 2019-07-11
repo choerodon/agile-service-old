@@ -5,7 +5,6 @@ import io.choerodon.agile.api.vo.IssueLinkVO;
 import io.choerodon.agile.api.validator.IssueLinkValidator;
 import io.choerodon.agile.app.assembler.IssueLinkAssembler;
 import io.choerodon.agile.app.service.IssueLinkService;
-import io.choerodon.agile.domain.agile.entity.IssueLinkE;
 import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
 import io.choerodon.core.exception.CommonException;
@@ -81,7 +80,7 @@ public class IssueLinkServiceImpl implements IssueLinkService {
         }
         IssueLinkDTO query = new IssueLinkDTO();
         query.setIssueId(issueLinkDTO.getIssueId());
-        return modelMapper.map(issueLinkMapper.select(query), new TypeToken<IssueLinkE>(){}.getType());
+        return modelMapper.map(issueLinkMapper.select(query), new TypeToken<IssueLinkDTO>(){}.getType());
     }
 
     @Override

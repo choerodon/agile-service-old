@@ -1,6 +1,5 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDTO;
 
 /**

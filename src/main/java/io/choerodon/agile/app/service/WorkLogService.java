@@ -1,7 +1,6 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.WorkLogVO;
-import io.choerodon.agile.domain.agile.entity.WorkLogE;
 import io.choerodon.agile.infra.dataobject.WorkLogDTO;
 
 import java.util.List;

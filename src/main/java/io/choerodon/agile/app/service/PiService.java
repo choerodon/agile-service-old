@@ -2,7 +2,6 @@ package io.choerodon.agile.app.service;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.dataobject.PiDTO;
 import io.choerodon.agile.infra.dataobject.PiNameDTO;

@@ -2,7 +2,6 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.IssueLinkCreateVO;
 import io.choerodon.agile.api.vo.IssueLinkVO;
-import io.choerodon.agile.domain.agile.entity.IssueLinkE;
 import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
 
 import java.util.List;

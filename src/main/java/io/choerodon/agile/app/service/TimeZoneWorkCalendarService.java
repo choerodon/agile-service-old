@@ -1,7 +1,6 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 //package io.choerodon.agile.infra.repository;
 //
-//import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
-//import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
+//import io.choerodon.agile.infra.dataobject.BatchRemovePiDTO;
+//import io.choerodon.agile.infra.dataobject.BatchRemoveSprintDTO;
 //import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 //import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 //import io.choerodon.agile.infra.dataobject.IssueDTO;
@@ -75,9 +75,9 @@
 //
 //    int batchUpdateMapIssueRank(Long projectId, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS);
 //
-//    int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE);
+//    int removeIssueFromSprintByIssueIds(BatchRemoveSprintDTO batchRemoveSprintE);
 //
-//    int removeFeatureFromPiByIssueIds(BatchRemovePiE batchRemovePiE);
+//    int removeFeatureFromPiByIssueIds(BatchRemovePiDTO batchRemovePiE);
 //
 //    int deleteIssueFromSprintByIssueId(Long projectId, Long issueId);
 //

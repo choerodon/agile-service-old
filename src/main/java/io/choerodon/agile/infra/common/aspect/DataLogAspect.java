@@ -12,7 +12,6 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -507,15 +506,15 @@ public class DataLogAspect {
     }
 
     private void batchDeleteVersionByVersion(Object[] args) {
-        ProductVersionE productVersionE = null;
+        ProductVersionDTO productVersion = null;
         for (Object arg : args) {
-            if (arg instanceof ProductVersionE) {
-                productVersionE = (ProductVersionE) arg;
+            if (arg instanceof ProductVersionDTO) {
+                productVersion = (ProductVersionDTO) arg;
             }
         }
-        if (productVersionE != null) {
-            List<VersionIssueDTO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(productVersionE.getProjectId(), Collections.singletonList(productVersionE.getVersionId()));
-            handleBatchDeleteVersion(versionIssues, productVersionE.getProjectId(), productVersionE.getVersionId());
+        if (productVersion != null) {
+            List<VersionIssueDTO> versionIssues = productVersionMapper.queryIssueForLogByVersionIds(productVersion.getProjectId(), Collections.singletonList(productVersion.getVersionId()));
+            handleBatchDeleteVersion(versionIssues, productVersion.getProjectId(), productVersion.getVersionId());
         }
     }
 
@@ -550,22 +549,22 @@ public class DataLogAspect {
     }
 
     private void batchUpdateIssueStatusDataLog(Object[] args) {
-        IssueStatusE issueStatusE = null;
+        IssueStatusDTO issueStatus = null;
         for (Object arg : args) {
-            if (arg instanceof IssueStatusE) {
-                issueStatusE = (IssueStatusE) arg;
+            if (arg instanceof IssueStatusDTO) {
+                issueStatus = (IssueStatusDTO) arg;
             }
         }
-        if (issueStatusE != null && issueStatusE.getCompleted() != null) {
-            Long projectId = issueStatusE.getProjectId();
+        if (issueStatus != null && issueStatus.getCompleted() != null) {
+            Long projectId = issueStatus.getProjectId();
             IssueDTO query = new IssueDTO();
-            query.setStatusId(issueStatusE.getStatusId());
+            query.setStatusId(issueStatus.getStatusId());
             query.setProjectId(projectId);
-            StatusMapVO statusMapVO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), issueStatusE.getStatusId()).getBody();
+            StatusMapVO statusMapVO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), issueStatus.getStatusId()).getBody();
             List<IssueDTO> issueDTOS = issueMapper.select(query);
             if (issueDTOS != null && !issueDTOS.isEmpty()) {
                 Long userId = DetailsHelper.getUserDetails().getUserId();
-                dataLogMapper.batchCreateStatusLogByIssueDOS(projectId, issueDTOS, userId, statusMapVO, issueStatusE.getCompleted());
+                dataLogMapper.batchCreateStatusLogByIssueDOS(projectId, issueDTOS, userId, statusMapVO, issueStatus.getCompleted());
                 dataLogRedisUtil.handleBatchDeleteRedisCache(issueDTOS, projectId);
             }
 
@@ -573,34 +572,34 @@ public class DataLogAspect {
     }
 
     private void handleUpdateCommentDataLog(Object[] args) {
-        IssueCommentE issueCommentE = null;
+        IssueCommentDTO issueComment = null;
         for (Object arg : args) {
-            if (arg instanceof IssueCommentE) {
-                issueCommentE = (IssueCommentE) arg;
+            if (arg instanceof IssueCommentDTO) {
+                issueComment = (IssueCommentDTO) arg;
             }
         }
-        if (issueCommentE != null) {
-            IssueCommentDTO issueCommentDTO = issueCommentMapper.selectByPrimaryKey(issueCommentE.getCommentId());
+        if (issueComment != null) {
+            IssueCommentDTO issueCommentDTO = issueCommentMapper.selectByPrimaryKey(issueComment.getCommentId());
             createDataLog(issueCommentDTO.getProjectId(), issueCommentDTO.getIssueId(), FIELD_COMMENT,
-                    issueCommentDTO.getCommentText(), issueCommentE.getCommentText(), issueCommentE.getCommentId().toString(),
-                    issueCommentE.getCommentId().toString());
+                    issueCommentDTO.getCommentText(), issueComment.getCommentText(), issueComment.getCommentId().toString(),
+                    issueComment.getCommentId().toString());
 
         }
     }
 
     private Object handleCreateWorkLogDataLog(Object[] args, ProceedingJoinPoint pjp) {
-        WorkLogE workLogE = null;
+        WorkLogDTO workLog = null;
         Object result = null;
         for (Object arg : args) {
-            if (arg instanceof WorkLogE) {
-                workLogE = (WorkLogE) arg;
+            if (arg instanceof WorkLogDTO) {
+                workLog = (WorkLogDTO) arg;
             }
         }
-        if (workLogE != null) {
+        if (workLog != null) {
             try {
                 result = pjp.proceed();
-                workLogE = (WorkLogE) result;
-                DataLogDTO dataLogDTO = dataLogMapper.selectLastWorkLogById(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_TIMESPENT);
+                workLog = (WorkLogDTO) result;
+                DataLogDTO dataLogDTO = dataLogMapper.selectLastWorkLogById(workLog.getProjectId(), workLog.getIssueId(), FIELD_TIMESPENT);
                 String oldString = null;
                 String newString;
                 String oldValue = null;
@@ -609,16 +608,16 @@ public class DataLogAspect {
                     oldValue = dataLogDTO.getNewValue();
                     oldString = dataLogDTO.getNewString();
                     BigDecimal newTime = new BigDecimal(dataLogDTO.getNewValue());
-                    newValue = newTime.add(workLogE.getWorkTime()).toString();
-                    newString = newTime.add(workLogE.getWorkTime()).toString();
+                    newValue = newTime.add(workLog.getWorkTime()).toString();
+                    newString = newTime.add(workLog.getWorkTime()).toString();
                 } else {
-                    newValue = workLogE.getWorkTime().toString();
-                    newString = workLogE.getWorkTime().toString();
+                    newValue = workLog.getWorkTime().toString();
+                    newString = workLog.getWorkTime().toString();
                 }
-                createDataLog(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_TIMESPENT,
+                createDataLog(workLog.getProjectId(), workLog.getIssueId(), FIELD_TIMESPENT,
                         oldString, newString, oldValue, newValue);
-                createDataLog(workLogE.getProjectId(), workLogE.getIssueId(), FIELD_WORKLOGID,
-                        null, workLogE.getLogId().toString(), null, workLogE.getLogId().toString());
+                createDataLog(workLog.getProjectId(), workLog.getIssueId(), FIELD_WORKLOGID,
+                        null, workLog.getLogId().toString(), null, workLog.getLogId().toString());
             } catch (Throwable e) {
                 throw new CommonException(ERROR_METHOD_EXECUTE, e);
             }
@@ -668,19 +667,19 @@ public class DataLogAspect {
     }
 
     private Object handleCreateCommentDataLog(Object[] args, ProceedingJoinPoint pjp) {
-        IssueCommentE issueCommentE = null;
+        IssueCommentDTO issueComment = null;
         Object result = null;
         for (Object arg : args) {
-            if (arg instanceof IssueCommentE) {
-                issueCommentE = (IssueCommentE) arg;
+            if (arg instanceof IssueCommentDTO) {
+                issueComment = (IssueCommentDTO) arg;
             }
         }
-        if (issueCommentE != null) {
+        if (issueComment != null) {
             try {
                 result = pjp.proceed();
-                issueCommentE = (IssueCommentE) result;
-                createDataLog(issueCommentE.getProjectId(), issueCommentE.getIssueId(), FIELD_COMMENT,
-                        null, issueCommentE.getCommentText(), null, issueCommentE.getCommentId().toString());
+                issueComment = (IssueCommentDTO) result;
+                createDataLog(issueComment.getProjectId(), issueComment.getIssueId(), FIELD_COMMENT,
+                        null, issueComment.getCommentText(), null, issueComment.getCommentId().toString());
             } catch (Throwable e) {
                 throw new CommonException(ERROR_METHOD_EXECUTE, e);
             }
@@ -706,7 +705,7 @@ public class DataLogAspect {
         IssueAttachmentDTO issueAttachmentDTO = null;
         Object result = null;
         for (Object arg : args) {
-            if (arg instanceof IssueAttachmentE) {
+            if (arg instanceof IssueAttachmentDTO) {
                 issueAttachmentDTO = (IssueAttachmentDTO) arg;
             }
         }
@@ -724,20 +723,20 @@ public class DataLogAspect {
     }
 
     private void batchDeleteVersionDataLog(Object[] args) {
-        VersionIssueRelE versionIssueRelE = null;
+        VersionIssueRelDTO versionIssueRel = null;
         for (Object arg : args) {
-            if (arg instanceof VersionIssueRelE) {
-                versionIssueRelE = (VersionIssueRelE) arg;
+            if (arg instanceof VersionIssueRelDTO) {
+                versionIssueRel = (VersionIssueRelDTO) arg;
             }
         }
-        if (versionIssueRelE != null) {
+        if (versionIssueRel != null) {
             List<ProductVersionDTO> productVersionDTOS = productVersionMapper.queryVersionRelByIssueIdAndTypeArchivedExceptInfluence(
-                    versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
-            Long issueId = versionIssueRelE.getIssueId();
-            String field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                    versionIssueRel.getProjectId(), versionIssueRel.getIssueId(), versionIssueRel.getRelationType());
+            Long issueId = versionIssueRel.getIssueId();
+            String field = FIX_VERSION.equals(versionIssueRel.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             productVersionDTOS.forEach(productVersionDO -> createDataLog(productVersionDO.getProjectId(), issueId, field,
                     productVersionDO.getName(), null, productVersionDO.getVersionId().toString(), null));
-            dataLogRedisUtil.deleteByBatchDeleteVersionDataLog(versionIssueRelE.getProjectId(), productVersionDTOS);
+            dataLogRedisUtil.deleteByBatchDeleteVersionDataLog(versionIssueRel.getProjectId(), productVersionDTOS);
         }
     }
 
@@ -763,15 +762,15 @@ public class DataLogAspect {
     }
 
     private Object handleLabelCreateDataLog(Object[] args, ProceedingJoinPoint pjp) {
-        LabelIssueRelE labelIssueRelE = null;
+        LabelIssueRelDTO labelIssueRel = null;
         Object result = null;
         for (Object arg : args) {
-            if (arg instanceof LabelIssueRelE) {
-                labelIssueRelE = (LabelIssueRelE) arg;
+            if (arg instanceof LabelIssueRelDTO) {
+                labelIssueRel = (LabelIssueRelDTO) arg;
             }
         }
-        if (labelIssueRelE != null) {
-            result = createLabelDataLog(labelIssueRelE.getIssueId(), labelIssueRelE.getProjectId(), pjp);
+        if (labelIssueRel != null) {
+            result = createLabelDataLog(labelIssueRel.getIssueId(), labelIssueRel.getProjectId(), pjp);
         }
         return result;
     }
@@ -834,28 +833,28 @@ public class DataLogAspect {
     }
 
     private void batchRemoveSprintDataLog(Object[] args) {
-        BatchRemoveSprintE batchRemoveSprintE = null;
+        BatchRemoveSprintDTO batchRemoveSprintDTO = null;
         for (Object arg : args) {
-            if (arg instanceof BatchRemoveSprintE) {
-                batchRemoveSprintE = (BatchRemoveSprintE) arg;
+            if (arg instanceof BatchRemoveSprintDTO) {
+                batchRemoveSprintDTO = (BatchRemoveSprintDTO) arg;
             }
         }
-        if (batchRemoveSprintE != null) {
-            handleBatchRemoveSprint(batchRemoveSprintE.getProjectId(), batchRemoveSprintE.getIssueIds(), batchRemoveSprintE.getSprintId());
+        if (batchRemoveSprintDTO != null) {
+            handleBatchRemoveSprint(batchRemoveSprintDTO.getProjectId(), batchRemoveSprintDTO.getIssueIds(), batchRemoveSprintDTO.getSprintId());
         }
     }
 
     private void batchRemovePiDataLog(Object[] args) {
-        BatchRemovePiE batchRemovePiE = null;
+        BatchRemovePiDTO batchRemovePiDTO = null;
         for (Object arg : args) {
-            if (arg instanceof BatchRemovePiE) {
-                batchRemovePiE = (BatchRemovePiE) arg;
+            if (arg instanceof BatchRemovePiDTO) {
+                batchRemovePiDTO = (BatchRemovePiDTO) arg;
             }
         }
-        if (batchRemovePiE != null) {
-            Long programId = batchRemovePiE.getProgramId();
-            Long piId = batchRemovePiE.getPiId();
-            for (Long issueId : batchRemovePiE.getIssueIds()) {
+        if (batchRemovePiDTO != null) {
+            Long programId = batchRemovePiDTO.getProgramId();
+            Long piId = batchRemovePiDTO.getPiId();
+            for (Long issueId : batchRemovePiDTO.getIssueIds()) {
                 List<PiNameDTO> piNameDTOList = piMapper.selectclosePiListByIssueId(programId, issueId);
                 PiNameDTO currentPiNameDTO = piMapper.selectCurrentPiListByIssueId(programId, issueId);
                 PiDTO targetPi = piMapper.selectByPrimaryKey(piId);
@@ -981,17 +980,17 @@ public class DataLogAspect {
     }
 
     private void handleComponentCreateDataLog(Object[] args) {
-        ComponentIssueRelE componentIssueRelE = null;
+        ComponentIssueRelDTO componentIssueRelDTO = null;
         for (Object arg : args) {
-            if (arg instanceof ComponentIssueRelE) {
-                componentIssueRelE = (ComponentIssueRelE) arg;
+            if (arg instanceof ComponentIssueRelDTO) {
+                componentIssueRelDTO = (ComponentIssueRelDTO) arg;
             }
         }
-        if (componentIssueRelE != null) {
-            createDataLog(componentIssueRelE.getProjectId(), componentIssueRelE.getIssueId(), FIELD_COMPONENT,
-                    null, issueComponentMapper.selectByPrimaryKey(componentIssueRelE.getComponentId()).getName(),
-                    null, componentIssueRelE.getComponentId().toString());
-            redisUtil.deleteRedisCache(new String[]{PIECHART + componentIssueRelE.getProjectId() + ':' + COMPONENT + "*"});
+        if (componentIssueRelDTO != null) {
+            createDataLog(componentIssueRelDTO.getProjectId(), componentIssueRelDTO.getIssueId(), FIELD_COMPONENT,
+                    null, issueComponentMapper.selectByPrimaryKey(componentIssueRelDTO.getComponentId()).getName(),
+                    null, componentIssueRelDTO.getComponentId().toString());
+            redisUtil.deleteRedisCache(new String[]{PIECHART + componentIssueRelDTO.getProjectId() + ':' + COMPONENT + "*"});
         }
     }
 
@@ -1062,23 +1061,23 @@ public class DataLogAspect {
     }
 
     private void handleVersionCreateDataLog(Object[] args) {
-        VersionIssueRelE versionIssueRelE = null;
+        VersionIssueRelDTO versionIssueRel = null;
         for (Object arg : args) {
-            if (arg instanceof VersionIssueRelE) {
-                versionIssueRelE = (VersionIssueRelE) arg;
+            if (arg instanceof VersionIssueRelDTO) {
+                versionIssueRel = (VersionIssueRelDTO) arg;
             }
         }
-        if (versionIssueRelE != null) {
+        if (versionIssueRel != null) {
             String field;
-            if (versionIssueRelE.getRelationType() == null) {
+            if (versionIssueRel.getRelationType() == null) {
                 field = FIELD_FIX_VERSION;
             } else {
-                field = FIX_VERSION.equals(versionIssueRelE.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                field = FIX_VERSION.equals(versionIssueRel.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             }
-            dataLogRedisUtil.deleteByHandleBatchDeleteVersion(versionIssueRelE.getProjectId(), versionIssueRelE.getVersionId());
-            createDataLog(versionIssueRelE.getProjectId(), versionIssueRelE.getIssueId(), field,
-                    null, productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId()).getName(),
-                    null, versionIssueRelE.getVersionId().toString());
+            dataLogRedisUtil.deleteByHandleBatchDeleteVersion(versionIssueRel.getProjectId(), versionIssueRel.getVersionId());
+            createDataLog(versionIssueRel.getProjectId(), versionIssueRel.getIssueId(), field,
+                    null, productVersionMapper.selectByPrimaryKey(versionIssueRel.getVersionId()).getName(),
+                    null, versionIssueRel.getVersionId().toString());
         }
     }
 
@@ -1124,20 +1123,20 @@ public class DataLogAspect {
 
 
     private void batchToVersionDataLog(Object[] args) {
-        VersionIssueRelE versionIssueRelE = null;
+        VersionIssueRelDTO versionIssueRel = null;
         for (Object arg : args) {
-            if (arg instanceof VersionIssueRelE) {
-                versionIssueRelE = (VersionIssueRelE) arg;
+            if (arg instanceof VersionIssueRelDTO) {
+                versionIssueRel = (VersionIssueRelDTO) arg;
             }
         }
-        if (versionIssueRelE != null) {
-            ProductVersionDTO productVersionDTO = productVersionMapper.selectByPrimaryKey(versionIssueRelE.getVersionId());
+        if (versionIssueRel != null) {
+            ProductVersionDTO productVersionDTO = productVersionMapper.selectByPrimaryKey(versionIssueRel.getVersionId());
             if (productVersionDTO == null) {
                 throw new CommonException("error.productVersion.get");
             }
-            if (versionIssueRelE.getIssueIds() != null && !versionIssueRelE.getIssueIds().isEmpty()) {
+            if (versionIssueRel.getIssueIds() != null && !versionIssueRel.getIssueIds().isEmpty()) {
                 Long userId = DetailsHelper.getUserDetails().getUserId();
-                dataLogMapper.batchCreateVersionDataLog(versionIssueRelE.getProjectId(), productVersionDTO, versionIssueRelE.getIssueIds(), userId);
+                dataLogMapper.batchCreateVersionDataLog(versionIssueRel.getProjectId(), productVersionDTO, versionIssueRel.getIssueIds(), userId);
                 redisUtil.deleteRedisCache(new String[]{VERSION_CHART + productVersionDTO.getProjectId() + ':' + productVersionDTO.getVersionId() + ":" + "*",
                         BURN_DOWN_COORDINATE_BY_TYPE + productVersionDTO.getProjectId() + ":" + VERSION + ":" + productVersionDTO.getVersionId()
                 });
@@ -1188,31 +1187,31 @@ public class DataLogAspect {
     }
 
     private void handleSprintDataLog(Object[] args) {
-        IssueSprintRelE issueSprintRelE = null;
+        IssueSprintRelDTO issueSprintRel = null;
         for (Object arg : args) {
-            if (arg instanceof IssueSprintRelE) {
-                issueSprintRelE = (IssueSprintRelE) arg;
+            if (arg instanceof IssueSprintRelDTO) {
+                issueSprintRel = (IssueSprintRelDTO) arg;
             }
         }
-        if (issueSprintRelE != null) {
-            SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(issueSprintRelE.getSprintId());
-            createDataLog(issueSprintRelE.getProjectId(), issueSprintRelE.getIssueId(),
-                    FIELD_SPRINT, null, sprintDTO.getSprintName(), null, issueSprintRelE.getSprintId().toString());
+        if (issueSprintRel != null) {
+            SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(issueSprintRel.getSprintId());
+            createDataLog(issueSprintRel.getProjectId(), issueSprintRel.getIssueId(),
+                    FIELD_SPRINT, null, sprintDTO.getSprintName(), null, issueSprintRel.getSprintId().toString());
             dataLogRedisUtil.deleteByHandleSprintDataLog(sprintDTO);
         }
     }
 
     private void handlePiDataLog(Object[] args) {
-        PiFeatureE piFeatureE = null;
+        PiFeatureDTO piFeature = null;
         for (Object arg : args) {
-            if (arg instanceof PiFeatureE) {
-                piFeatureE = (PiFeatureE) arg;
+            if (arg instanceof PiFeatureDTO) {
+                piFeature = (PiFeatureDTO) arg;
             }
         }
-        if (piFeatureE != null) {
-            List<PiNameDTO> piNameDTOList = piMapper.selectclosePiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
-            PiNameDTO currentPiNameDTO = piMapper.selectCurrentPiListByIssueId(piFeatureE.getProgramId(), piFeatureE.getIssueId());
-            PiDTO targetPi = piMapper.selectByPrimaryKey(piFeatureE.getPiId());
+        if (piFeature != null) {
+            List<PiNameDTO> piNameDTOList = piMapper.selectclosePiListByIssueId(piFeature.getProgramId(), piFeature.getIssueId());
+            PiNameDTO currentPiNameDTO = piMapper.selectCurrentPiListByIssueId(piFeature.getProgramId(), piFeature.getIssueId());
+            PiDTO targetPi = piMapper.selectByPrimaryKey(piFeature.getPiId());
             String oldString = "";
             String oldvalue = "";
             String newString = "";
@@ -1231,7 +1230,7 @@ public class DataLogAspect {
                 newString = newString + ("".equals(newString) ? targetPi.getCode() + "-" + targetPi.getName() : "," + targetPi.getCode() + "-" + targetPi.getName());
                 newValue = newValue + ("".equals(newValue) ? targetPi.getId() : "," + targetPi.getId().toString());
             }
-            createDataLog(piFeatureE.getProgramId(), piFeatureE.getIssueId(), FIELD_PI,
+            createDataLog(piFeature.getProgramId(), piFeature.getIssueId(), FIELD_PI,
                     "".equals(oldString) ? null : oldString,
                     "".equals(newString) ? null : newString,
                     "".equals(oldvalue) ? null : oldvalue,

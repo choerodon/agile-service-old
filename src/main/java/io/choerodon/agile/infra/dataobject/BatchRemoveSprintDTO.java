@@ -1,4 +1,4 @@
-package io.choerodon.agile.domain.agile.entity;
+package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
 
@@ -8,7 +8,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/7/25
  */
-public class BatchRemoveSprintE {
+public class BatchRemoveSprintDTO {
 
     private Long projectId;
 
@@ -16,7 +16,7 @@ public class BatchRemoveSprintE {
 
     private List<Long> issueIds;
 
-    public BatchRemoveSprintE(Long projectId, Long sprintId, List<Long> issueIds) {
+    public BatchRemoveSprintDTO(Long projectId, Long sprintId, List<Long> issueIds) {
         this.projectId = projectId;
         this.sprintId = sprintId;
         this.issueIds = issueIds;

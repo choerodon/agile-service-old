@@ -3,11 +3,9 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.IssueLabelVO;
 import io.choerodon.agile.app.service.IssueLabelService;
-import io.choerodon.agile.domain.agile.entity.IssueLabelE;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueLabelDTO;
 import io.choerodon.agile.infra.mapper.IssueLabelMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;

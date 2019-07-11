@@ -1,8 +1,7 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
-import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
-import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
+import io.choerodon.agile.infra.dataobject.BatchRemovePiDTO;
+import io.choerodon.agile.infra.dataobject.BatchRemoveSprintDTO;
 import io.choerodon.agile.infra.dataobject.*;
 
 import java.util.Date;
@@ -65,9 +64,9 @@ public interface IssueAccessDataService {
 
     int batchUpdateMapIssueRank(Long projectId, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS);
 
-    int removeIssueFromSprintByIssueIds(BatchRemoveSprintE batchRemoveSprintE);
+    int removeIssueFromSprintByIssueIds(BatchRemoveSprintDTO batchRemoveSprintDTO);
 
-    int removeFeatureFromPiByIssueIds(BatchRemovePiE batchRemovePiE);
+    int removeFeatureFromPiByIssueIds(BatchRemovePiDTO batchRemovePiDTO);
 
     int deleteIssueFromSprintByIssueId(Long projectId, Long issueId);
 
