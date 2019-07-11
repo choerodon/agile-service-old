@@ -7,12 +7,15 @@ import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.core.convertor.ConvertHelper;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,6 +30,13 @@ public class IssueAssembler extends AbstractAssembler {
     @Autowired
     private SprintNameAssembler sprintNameAssembler;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     /**
      * issueDetailDO转换到IssueDTO
      *
@@ -36,16 +46,16 @@ public class IssueAssembler extends AbstractAssembler {
     public IssueVO issueDetailDoToDto(IssueDetailDTO issueDetailDTO, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         IssueVO issueVO = new IssueVO();
         BeanUtils.copyProperties(issueDetailDTO, issueVO);
-        issueVO.setFeatureVO(ConvertHelper.convert(issueDetailDTO.getFeatureDTO(), FeatureVO.class));
-        issueVO.setComponentIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getComponentIssueRelDTOList(), ComponentIssueRelVO.class));
+        issueVO.setFeatureVO(modelMapper.map(issueDetailDTO.getFeatureDTO(), FeatureVO.class));
+        issueVO.setComponentIssueRelVOList(modelMapper.map(issueDetailDTO.getComponentIssueRelDTOList(), new TypeToken<List<ComponentIssueRelVO>>(){}.getType()));
         issueVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameVO.class));
         issueVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameVO.class));
         issueVO.setActivePi(sprintNameAssembler.toTarget(issueDetailDTO.getActivePi(), PiNameVO.class));
         issueVO.setClosePi(sprintNameAssembler.toTargetList(issueDetailDTO.getClosePi(), PiNameVO.class));
-        issueVO.setVersionIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getVersionIssueRelDTOList(), VersionIssueRelVO.class));
-        issueVO.setLabelIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getLabelIssueRelDTOList(), LabelIssueRelVO.class));
-        issueVO.setIssueAttachmentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueAttachmentDTOList(), IssueAttachmentVO.class));
-        issueVO.setIssueCommentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueCommentDTOList(), IssueCommentVO.class));
+        issueVO.setVersionIssueRelVOList(modelMapper.map(issueDetailDTO.getVersionIssueRelDTOList(), new TypeToken<List<VersionIssueRelVO>>(){}.getType()));
+        issueVO.setLabelIssueRelVOList(modelMapper.map(issueDetailDTO.getLabelIssueRelDTOList(), new TypeToken<List<LabelIssueRelVO>>(){}.getType()));
+        issueVO.setIssueAttachmentVOList(modelMapper.map(issueDetailDTO.getIssueAttachmentDTOList(), new TypeToken<List<IssueAttachmentVO>>(){}.getType()));
+        issueVO.setIssueCommentVOList(modelMapper.map(issueDetailDTO.getIssueCommentDTOList(), new TypeToken<List<IssueCommentVO>>(){}.getType()));
         issueVO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDTO.getSubIssueDTOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
         issueVO.setSubBugDTOList(issueDoToSubIssueDto(issueDetailDTO.getSubBugDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
         issueVO.setPriorityVO(priorityDTOMap.get(issueVO.getPriorityId()));
@@ -218,13 +228,13 @@ public class IssueAssembler extends AbstractAssembler {
     public IssueSubVO issueDetailDoToIssueSubDto(IssueDetailDTO issueDetailDTO) {
         IssueSubVO issueSubVO = new IssueSubVO();
         BeanUtils.copyProperties(issueDetailDTO, issueSubVO);
-        issueSubVO.setComponentIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getComponentIssueRelDTOList(), ComponentIssueRelVO.class));
-        issueSubVO.setVersionIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getVersionIssueRelDTOList(), VersionIssueRelVO.class));
+        issueSubVO.setComponentIssueRelVOList(modelMapper.map(issueDetailDTO.getComponentIssueRelDTOList(), new TypeToken<List<ComponentIssueRelVO>>(){}.getType()));
+        issueSubVO.setVersionIssueRelVOList(modelMapper.map(issueDetailDTO.getVersionIssueRelDTOList(), new TypeToken<List<VersionIssueRelVO>>(){}.getType()));
         issueSubVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameVO.class));
         issueSubVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameVO.class));
-        issueSubVO.setLabelIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getLabelIssueRelDTOList(), LabelIssueRelVO.class));
-        issueSubVO.setIssueAttachmentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueAttachmentDTOList(), IssueAttachmentVO.class));
-        issueSubVO.setIssueCommentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueCommentDTOList(), IssueCommentVO.class));
+        issueSubVO.setLabelIssueRelVOList(modelMapper.map(issueDetailDTO.getLabelIssueRelDTOList(), new TypeToken<List<LabelIssueRelVO>>(){}.getType()));
+        issueSubVO.setIssueAttachmentVOList(modelMapper.map(issueDetailDTO.getIssueAttachmentDTOList(), new TypeToken<List<IssueAttachmentVO>>(){}.getType()));
+        issueSubVO.setIssueCommentVOList(modelMapper.map(issueDetailDTO.getIssueCommentDTOList(), new TypeToken<List<IssueCommentVO>>(){}.getType()));
         List<Long> assigneeIdList = new ArrayList<>();
         assigneeIdList.add(issueDetailDTO.getAssigneeId());
         assigneeIdList.add(issueDetailDTO.getReporterId());
@@ -388,9 +398,9 @@ public class IssueAssembler extends AbstractAssembler {
                 issueComponentDetailDTO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
                 issueComponentDetailDTO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
                 issueComponentDetailDTO.setPriorityVO(priorityDTOMap.get(issueDO.getPriorityId()));
-                issueComponentDetailDTO.setComponentIssueRelVOList(ConvertHelper.convertList(issueDO.getComponentIssueRelDTOList(), ComponentIssueRelVO.class));
-                issueComponentDetailDTO.setVersionIssueRelVOList(ConvertHelper.convertList(issueDO.getVersionIssueRelDTOList(), VersionIssueRelVO.class));
-                issueComponentDetailDTO.setLabelIssueRelVOList(ConvertHelper.convertList(issueDO.getLabelIssueRelDTOList(), LabelIssueRelVO.class));
+                issueComponentDetailDTO.setComponentIssueRelVOList(modelMapper.map(issueDO.getComponentIssueRelDTOList(), new TypeToken<List<ComponentIssueRelVO>>(){}.getType()));
+                issueComponentDetailDTO.setVersionIssueRelVOList(modelMapper.map(issueDO.getVersionIssueRelDTOList(),new TypeToken<List<VersionIssueRelVO>>(){}.getType()));
+                issueComponentDetailDTO.setLabelIssueRelVOList(modelMapper.map(issueDO.getLabelIssueRelDTOList(), new TypeToken<List<LabelIssueRelVO>>(){}.getType()));
                 issueComponentDetailDTOS.add(issueComponentDetailDTO);
             });
         }

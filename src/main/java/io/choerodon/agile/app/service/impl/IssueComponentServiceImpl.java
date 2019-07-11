@@ -24,6 +24,7 @@ import com.github.pagehelper.PageHelper;
 import io.choerodon.base.domain.PageRequest;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,7 +84,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         }
         IssueComponentValidator.checkCreateComponent(projectId, issueComponentVO);
         IssueComponentDTO issueComponentDTO = modelMapper.map(issueComponentVO, IssueComponentDTO.class);
-        return ConvertHelper.convert(createBase(issueComponentDTO), IssueComponentVO.class);
+        return modelMapper.map(createBase(issueComponentDTO), IssueComponentVO.class);
     }
 
     private Boolean checkNameUpdate(Long projectId, Long componentId, String componentName) {
@@ -143,7 +144,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         if (issueComponentDTO == null) {
             throw new CommonException("error.component.get");
         }
-        return ConvertHelper.convert(issueComponentDTO, IssueComponentVO.class);
+        return modelMapper.map(issueComponentDTO, IssueComponentVO.class);
     }
 
     @Override
@@ -196,13 +197,13 @@ public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Override
     public List<IssueVO> queryIssuesByComponentId(Long projectId, Long componentId) {
-        return ConvertHelper.convertList(issueComponentMapper.queryIssuesByComponentId(projectId, componentId), IssueVO.class);
+        return modelMapper.map(issueComponentMapper.queryIssuesByComponentId(projectId, componentId), new TypeToken<List<IssueVO>>(){}.getType());
     }
 
     @Override
     public List<ComponentForListVO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest) {
-        List<ComponentForListVO> componentForListDTOList = ConvertHelper.convertList(
-                issueComponentMapper.queryComponentWithIssueNum(projectId, componentId, noIssueTest), ComponentForListVO.class);
+        List<ComponentForListVO> componentForListDTOList = modelMapper.map(
+                issueComponentMapper.queryComponentWithIssueNum(projectId, componentId, noIssueTest), new TypeToken<List<ComponentForListVO>>(){}.getType());
         List<Long> assigneeIds = componentForListDTOList.stream().filter(componentForListVO -> componentForListVO.getManagerId() != null
                 && !Objects.equals(componentForListVO.getManagerId(), 0L)).map(ComponentForListVO::getManagerId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);

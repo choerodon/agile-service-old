@@ -87,7 +87,7 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
         IssueLinkTypeDTO issueLinkTypeDTO = new IssueLinkTypeDTO();
         issueLinkTypeDTO.setProjectId(projectId);
         issueLinkTypeDTO.setLinkTypeId(linkTypeId);
-        return ConvertHelper.convert(issueLinkTypeMapper.selectOne(issueLinkTypeDTO), IssueLinkTypeVO.class);
+        return modelMapper.map(issueLinkTypeMapper.selectOne(issueLinkTypeDTO), IssueLinkTypeVO.class);
     }
 
     @Override

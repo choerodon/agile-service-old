@@ -16,6 +16,8 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
@@ -97,6 +100,12 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private SprintMapper sprintMapper;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     @Override
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
@@ -590,7 +599,7 @@ public class ExcelServiceImpl implements ExcelService {
     public FileOperationHistoryVO queryLatestRecode(Long projectId) {
         Long userId = DetailsHelper.getUserDetails().getUserId();
         FileOperationHistoryDTO result = fileOperationHistoryMapper.queryLatestRecode(projectId, userId);
-        return result == null ? new FileOperationHistoryVO() : ConvertHelper.convert(result, FileOperationHistoryVO.class);
+        return result == null ? new FileOperationHistoryVO() : modelMapper.map(result, FileOperationHistoryVO.class);
     }
 
 

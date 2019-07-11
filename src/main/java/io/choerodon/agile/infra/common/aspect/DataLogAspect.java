@@ -20,11 +20,14 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.*;
@@ -171,6 +174,13 @@ public class DataLogAspect {
     private WorkLogMapper workLogMapper;
     @Autowired
     private PiMapper piMapper;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     /**
      * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
@@ -1153,7 +1163,7 @@ public class DataLogAspect {
                     //选择EPIC要生成日志
                     Long epicId = issueConvertDTO.getEpicId();
                     issueConvertDTO.setEpicId(null);
-                    createIssueEpicLog(epicId, ConvertHelper.convert(issueConvertDTO, IssueDTO.class));
+                    createIssueEpicLog(epicId, modelMapper.map(issueConvertDTO, IssueDTO.class));
                 }
                 Boolean storyCondition = issueConvertDTO.getStoryPoints() != null && issueConvertDTO.getStoryPoints().compareTo(BigDecimal.ZERO) != 0;
                 Boolean remainingTimeCondition = issueConvertDTO.getRemainingTime() != null && issueConvertDTO.getRemainingTime().compareTo(new BigDecimal(0)) > 0;

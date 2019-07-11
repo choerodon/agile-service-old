@@ -160,7 +160,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             deleteColumnStatusRel(projectId, statusId, statusMoveVO.getOriginColumnId());
         }
         createColumnStatusRel(projectId, statusId, statusMoveVO);
-        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusVO.class);
+        return modelMapper.map(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusVO.class);
     }
 
     @Override
@@ -198,7 +198,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         }
         List<StatusAndIssuesVO> statusAndIssuesVOList = new ArrayList<>();
         if (statusAndIssuesDTOList != null) {
-            statusAndIssuesVOList = ConvertHelper.convertList(statusAndIssuesDTOList, StatusAndIssuesVO.class);
+            statusAndIssuesVOList = modelMapper.map(statusAndIssuesDTOList, new TypeToken<List<StatusAndIssuesVO>>(){}.getType());
         }
         return statusAndIssuesVOList;
     }

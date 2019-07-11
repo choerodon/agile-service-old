@@ -544,7 +544,7 @@ public class BoardServiceImpl implements BoardService {
                 }
             }
         }
-        return ConvertHelper.convert(issueDTO, FeatureMoveVO.class);
+        return modelMapper.map(issueDTO, FeatureMoveVO.class);
     }
 
     @DataLog(type = "pi")

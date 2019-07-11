@@ -2128,7 +2128,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueInfoVO> listByIssueIds(Long projectId, List<Long> issueIds) {
-        return ConvertHelper.convertList(issueMapper.listByIssueIds(projectId, issueIds), IssueInfoVO.class);
+        return modelMapper.map(issueMapper.listByIssueIds(projectId, issueIds), new TypeToken<List<IssueInfoVO>>(){}.getType());
     }
 
     @Override

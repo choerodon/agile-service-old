@@ -16,6 +16,7 @@ import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.entity.Criteria;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,7 +77,7 @@ public class IssueCommentServiceImpl implements IssueCommentService {
 
     @Override
     public List<IssueCommentVO> queryIssueCommentList(Long projectId, Long issueId) {
-        return ConvertHelper.convertList(issueCommentMapper.queryIssueCommentList(projectId, issueId), IssueCommentVO.class);
+        return modelMapper.map(issueCommentMapper.queryIssueCommentList(projectId, issueId), new TypeToken<List<IssueCommentVO>>(){}.getType());
     }
 
     private IssueCommentDTO getCommentById(Long projectId, Long commentId) {
@@ -107,10 +108,10 @@ public class IssueCommentServiceImpl implements IssueCommentService {
         IssueCommentDTO issueCommentDTO = new IssueCommentDTO();
         issueCommentDTO.setProjectId(projectId);
         issueCommentDTO.setCommentId(commentId);
-        IssueCommentVO issueCommentVO = ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDTO), IssueCommentVO.class);
+        IssueCommentVO issueCommentVO = modelMapper.map(issueCommentMapper.selectOne(issueCommentDTO), IssueCommentVO.class);
         issueCommentVO.setUserName(userService.queryUserNameByOption(issueCommentVO.getUserId(), true).getRealName());
         issueCommentVO.setUserImageUrl(userService.queryUserNameByOption(issueCommentVO.getUserId(), true).getImageUrl());
-        return ConvertHelper.convert(issueCommentMapper.selectOne(issueCommentDTO), IssueCommentVO.class);
+        return modelMapper.map(issueCommentMapper.selectOne(issueCommentDTO), IssueCommentVO.class);
     }
 
     @DataLog(type = "createComment")

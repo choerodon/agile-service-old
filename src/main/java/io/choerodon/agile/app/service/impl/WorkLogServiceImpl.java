@@ -15,6 +15,7 @@ import io.choerodon.agile.infra.mapper.WorkLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     }
 
     private void setTo(Long issueId, BigDecimal predictionTime) {
-        IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
+        IssueConvertDTO issueConvertDTO = modelMapper.map(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
         issueConvertDTO.setRemainingTime(predictionTime);
         issueAccessDataService.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
     }
@@ -78,7 +79,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     }
 
     private void reducePrediction(Long issueId, BigDecimal predictionTime) {
-        IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
+        IssueConvertDTO issueConvertDTO = modelMapper.map(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
         if (issueConvertDTO.getRemainingTime() != null) {
             issueConvertDTO.setRemainingTime(getRemainTime(issueConvertDTO, predictionTime));
             issueAccessDataService.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
@@ -86,7 +87,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     }
 
     private void selfAdjustment(Long issueId, BigDecimal workTime) {
-        IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
+        IssueConvertDTO issueConvertDTO = modelMapper.map(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
         if (issueConvertDTO.getRemainingTime() != null) {
             issueConvertDTO.setRemainingTime(getRemainTime(issueConvertDTO, workTime));
             issueAccessDataService.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
@@ -137,14 +138,14 @@ public class WorkLogServiceImpl implements WorkLogService {
         WorkLogDTO workLogDTO = new WorkLogDTO();
         workLogDTO.setProjectId(projectId);
         workLogDTO.setLogId(logId);
-        WorkLogVO workLogVO = ConvertHelper.convert(workLogMapper.selectOne(workLogDTO), WorkLogVO.class);
+        WorkLogVO workLogVO = modelMapper.map(workLogMapper.selectOne(workLogDTO), WorkLogVO.class);
         workLogVO.setUserName(userService.queryUserNameByOption(workLogVO.getUserId(), true).getRealName());
         return workLogVO;
     }
 
     @Override
     public List<WorkLogVO> queryWorkLogListByIssueId(Long projectId, Long issueId) {
-        List<WorkLogVO> workLogVOList = ConvertHelper.convertList(workLogMapper.queryByIssueId(issueId, projectId), WorkLogVO.class);
+        List<WorkLogVO> workLogVOList = modelMapper.map(workLogMapper.queryByIssueId(issueId, projectId), new TypeToken<List<WorkLogVO>>(){}.getType());
         List<Long> assigneeIds = workLogVOList.stream().filter(workLogDTO -> workLogDTO.getUserId() != null && !Objects.equals(workLogDTO.getUserId(), 0L)).map(WorkLogVO::getUserId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
         workLogVOList.forEach(workLogDTO -> {

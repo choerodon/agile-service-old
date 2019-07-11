@@ -22,11 +22,11 @@ import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.base.domain.PageRequest;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -561,7 +561,7 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     public List<SprintUnClosedVO> queryUnClosedSprint(Long projectId) {
-        return ConvertHelper.convertList(sprintMapper.queryUnClosedSprint(projectId), SprintUnClosedVO.class);
+        return modelMapper.map(sprintMapper.queryUnClosedSprint(projectId), new TypeToken<List<SprintUnClosedVO>>(){}.getType());
     }
 
     @Override
@@ -569,7 +569,7 @@ public class SprintServiceImpl implements SprintService {
         ActiveSprintVO result = new ActiveSprintVO();
         SprintDTO activeSprint = getActiveSprint(projectId);
         if (activeSprint != null) {
-            result = ConvertHelper.convert(activeSprint, ActiveSprintVO.class);
+            result = modelMapper.map(activeSprint, ActiveSprintVO.class);
             if (result.getEndDate() != null) {
                 Date startDate = new Date();
                 if (result.getStartDate().after(startDate)) {

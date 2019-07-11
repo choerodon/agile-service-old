@@ -6,12 +6,12 @@ import io.choerodon.agile.api.vo.QuickFilterSearchVO;
 import io.choerodon.agile.api.vo.QuickFilterValueVO;
 import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.agile.infra.dataobject.QuickFilterDTO;
-import io.choerodon.agile.infra.repository.QuickFilterRepository;
 import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper;
 import io.choerodon.agile.infra.mapper.QuickFilterMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -246,14 +246,14 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         if (quickFilterDTO == null) {
             throw new CommonException("error.quickFilter.get");
         }
-        return ConvertHelper.convert(quickFilterDTO, QuickFilterVO.class);
+        return modelMapper.map(quickFilterDTO, QuickFilterVO.class);
     }
 
     @Override
     public List<QuickFilterVO> listByProjectId(Long projectId, QuickFilterSearchVO quickFilterSearchVO) {
         List<QuickFilterDTO> quickFilterDTOList = quickFilterMapper.queryFiltersByProjectId(projectId, quickFilterSearchVO.getFilterName(), quickFilterSearchVO.getContents());
         if (quickFilterDTOList != null && !quickFilterDTOList.isEmpty()) {
-            return ConvertHelper.convertList(quickFilterDTOList, QuickFilterVO.class);
+            return modelMapper.map(quickFilterDTOList, new TypeToken<List<QuickFilterVO>>(){}.getType());
         } else {
             return new ArrayList<>();
         }
@@ -277,7 +277,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
             }
             handleSequence(quickFilterSequenceVO, projectId, quickFilterDTO);
         }
-        return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceVO.getFilterId()), QuickFilterVO.class);
+        return modelMapper.map(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceVO.getFilterId()), QuickFilterVO.class);
 
     }
 
