@@ -366,30 +366,3 @@ export function configTheme({
     maxTagPlaceholder: renderPlaceHolder,
   };
 }
-export function fieldGroups(fields, singleGroups = []) {
-  const points = singleGroups.map(fieldCode => findIndex(fields, { fieldCode })).filter(point => point !== -1).sort((a, b) => a - b);
-  let parts = [];
-  if (points.length > 0) {
-    points.forEach((point, index) => {
-      const beforePart = fields.slice(points[index - 1] || 0, point);
-      const middlePart = [fields[point]];
-      const afterPart = fields.slice(point + 1, points[index + 1] || fields.length);
-      if (index === 0) {
-        parts.push(beforePart);
-      }
-      if (point !== -1) {
-        parts.push(middlePart);
-      }
-
-      parts.push(afterPart);
-    });
-  } else {
-    parts = [fields];
-  }
-
-  let groups = [];
-  parts.forEach((part) => {
-    groups = [...groups, ...chunk(part, 2)];
-  });
-  return groups;
-}

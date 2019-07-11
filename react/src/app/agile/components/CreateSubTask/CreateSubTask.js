@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import { stores } from '@choerodon/boot';
 import _ from 'lodash';
 import {
-  Select, Form, Input, Button, Modal, Icon, InputNumber,
+  Select, Form, Input, Modal, InputNumber,
   Checkbox, TimePicker, Row, Col, Radio, DatePicker, Spin,
 } from 'choerodon-ui';
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
-import { handleFileUpload, beforeTextUpload, fieldGroups } from '../../common/utils';
+import { handleFileUpload, beforeTextUpload } from '../../common/utils';
 import {
   loadIssue, loadLabels, loadPriorities, loadVersions,
   createSubIssue, getFields, createFieldValue,
@@ -41,8 +41,6 @@ class CreateSubIssue extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      delta: '',
-      edit: false,
       createLoading: false,
       fileList: [],
       sprint: {},
@@ -468,16 +466,17 @@ class CreateSubIssue extends Component {
     } = field;
     const {
       originPriorities, defaultPriorityId,
-      edit, delta, originUsers, selectLoading, estimatedTime,
+      originUsers, selectLoading, estimatedTime,
       originFixVersions, originLabels, sprint,
     } = this.state;
     switch (field.fieldCode) {
       case 'assignee':
         return (
-          <div style={{ display: 'flex' }}>
-            <FormItem label="经办人" style={{ flex: 1 }}>
+          <FormItem label="经办人">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               {getFieldDecorator('assigneedId', {})(
                 <Select
+                  style={{ flex: 1 }}
                   label="经办人"
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   loading={selectLoading}
@@ -502,21 +501,20 @@ class CreateSubIssue extends Component {
                   ))}
                 </Select>,
               )}
-            </FormItem>
-            <span
-              onClick={this.assigneeMe}
-              role="none"
-              style={{
-                display: 'inline-block',
-                color: 'rgba(63, 81, 181)',
-                marginLeft: 10,
-                marginTop: 15,
-                cursor: 'pointer',
-              }}
-            >
-              {'分派给我'}
-            </span>
-          </div>
+              <span
+                onClick={this.assigneeMe}
+                role="none"
+                style={{
+                  display: 'inline-block',
+                  color: 'rgba(63, 81, 181)',
+                  marginLeft: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                {'分派给我'}
+              </span>
+            </div>
+          </FormItem>
         );
       case 'sprint':
         return (
@@ -619,7 +617,7 @@ class CreateSubIssue extends Component {
         return '';
       case 'summary':
         return (
-          <FormItem label="子任务概要">
+          <FormItem label="子任务概要" className="c7nagile-line">
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '子任务概要为必输项' }],
             })(
@@ -658,7 +656,7 @@ class CreateSubIssue extends Component {
         return '';
       case 'description':
         return (
-          <FormItem label={fieldName}>
+          <FormItem label={fieldName} className="c7nagile-line">
             {getFieldDecorator(fieldCode)(
               <WYSIWYGEditor
                 style={{ height: 200, width: '100%' }}
@@ -705,8 +703,6 @@ class CreateSubIssue extends Component {
       fileList,
       loading,
     } = this.state;
-    const singleGroups = ['description', 'summary'];
-    const groups = fieldGroups(fields || [], singleGroups);
     return (
       <Sidebar
         className="c7n-createSubIssue"
@@ -732,11 +728,9 @@ class CreateSubIssue extends Component {
             <div style={{ paddingBottom: 8, marginBottom: 12 }}>
               <Input label="父任务概要" value={parentSummary} disabled />
             </div>
-            {groups.map(group => (
-              <div className="c7nagile-line">
-                {group.map(field => <div className={singleGroups.includes(field.fieldCode) ? 'c7nagile-total' : 'c7nagile-half'}>{this.getFieldComponent(field)}</div>)}
-              </div>
-            ))}
+            <div className="c7nagile-createIssue-fields">
+              {fields && fields.map(field => this.getFieldComponent(field))}
+            </div>
           </Form>
 
           <div className="sign-upload" style={{ marginTop: 20 }}>

@@ -166,7 +166,7 @@ class TransformSubIssue extends Component {
           title={`将问题“${issueNum}”转化为子任务`}
           description="请在下面输入父任务和状态，表示为该子任务选择一个父任务和状态，实现其他类型问题与子任务之间的互转。"
         >
-          <Form layout="vertical">
+          <Form layout="vertical" className="c7nagile-form">
             <FormItem label="父任务" style={{ width: 520 }}>
               {getFieldDecorator('issuesId', {
                 rules: [{ required: true, message: '请选择父任务' }],

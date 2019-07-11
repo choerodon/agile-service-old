@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { stores, axios, Content } from '@choerodon/boot';
 import _ from 'lodash';
 import {
-  Select, Form, Input, Button, Modal, Icon, InputNumber,
+  Select, Form, Input, Button, Modal, InputNumber,
   Checkbox, TimePicker, Row, Col, Radio, DatePicker, Spin,
 } from 'choerodon-ui';
 import moment from 'moment';
@@ -321,16 +321,16 @@ class CreateIssue extends Component {
         const exitComponents = originComponents;
         const componentIssueRelDTOList = _.map(componentIssueRel
           && componentIssueRel.filter(v => v && v.trim()), (component) => {
-            const target = _.find(exitComponents, { name: component.trim() });
-            if (target) {
-              return target;
-            } else {
-              return ({
-                name: component.trim(),
-                projectId: AppState.currentMenuType.id,
-              });
-            }
-          });
+          const target = _.find(exitComponents, { name: component.trim() });
+          if (target) {
+            return target;
+          } else {
+            return ({
+              name: component.trim(),
+              projectId: AppState.currentMenuType.id,
+            });
+          }
+        });
         const exitLabels = originLabels;
         const labelIssueRelDTOList = _.map(issueLabel, (label) => {
           const target = _.find(exitLabels, { labelName: label });
@@ -346,20 +346,20 @@ class CreateIssue extends Component {
         const exitFixVersions = originFixVersions;
         const fixVersionIssueRelDTOList = _.map(fixVersionIssueRel
           && fixVersionIssueRel.filter(v => v && v.trim()), (version) => {
-            const target = _.find(exitFixVersions, { name: version.trim() });
-            if (target) {
-              return {
-                ...target,
-                relationType: 'fix',
-              };
-            } else {
-              return ({
-                name: version.trim(),
-                relationType: 'fix',
-                projectId: AppState.currentMenuType.id,
-              });
-            }
-          });
+          const target = _.find(exitFixVersions, { name: version.trim() });
+          if (target) {
+            return {
+              ...target,
+              relationType: 'fix',
+            };
+          } else {
+            return ({
+              name: version.trim(),
+              relationType: 'fix',
+              projectId: AppState.currentMenuType.id,
+            });
+          }
+        });
         const issueLinkCreateDTOList = [];
         if (linkTypeId) {
           Object.keys(linkTypeId).forEach((link) => {
@@ -1114,9 +1114,7 @@ class CreateIssue extends Component {
     const {
       createLoading, selectLoading, fields, loading,
       fileList, newIssueTypeCode, issueLinkArr, originIssues, links,
-    } = this.state;
-    const singleGroups = ['description', 'summary', 'epicName'];
-    const groups = fieldGroups(fields || [], singleGroups);
+    } = this.state;    
     return (
       <Sidebar
         className="c7n-createIssue"
@@ -1135,11 +1133,6 @@ class CreateIssue extends Component {
         >
           <Spin spinning={loading}>
             <Form layout="vertical" style={{ width: 670 }} className="c7nagile-form">
-              {/* {groups.map(group => (
-                <div className="c7nagile-line">
-                  {group.map(field => <div className={singleGroups.includes(field.fieldCode) ? 'c7nagile-total' : 'c7nagile-half'}>{this.getFieldComponent(field)}</div>)}
-                </div>
-              ))} */}
               <div className="c7nagile-createIssue-fields">
                 {fields && fields.map(field => this.getFieldComponent(field))}
               </div>
