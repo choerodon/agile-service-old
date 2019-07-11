@@ -7,7 +7,6 @@ import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
-import io.choerodon.core.convertor.ConvertHelper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;

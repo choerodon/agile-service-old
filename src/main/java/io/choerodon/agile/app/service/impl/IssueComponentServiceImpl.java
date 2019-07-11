@@ -9,7 +9,6 @@ import io.choerodon.agile.app.service.ComponentIssueRelService;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.convertor.ConvertPageHelper;
 
 import com.github.pagehelper.PageInfo;

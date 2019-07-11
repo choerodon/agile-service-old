@@ -8,7 +8,6 @@ import io.choerodon.agile.app.service.QuickFilterService;
 import io.choerodon.agile.infra.dataobject.QuickFilterDTO;
 import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper;
 import io.choerodon.agile.infra.mapper.QuickFilterMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;

@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import io.choerodon.agile.app.assembler.IssueLinkTypeAssembler;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 
 import javax.annotation.PostConstruct;
 

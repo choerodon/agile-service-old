@@ -7,7 +7,6 @@ import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDTO;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
-import io.choerodon.core.convertor.ConvertHelper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;

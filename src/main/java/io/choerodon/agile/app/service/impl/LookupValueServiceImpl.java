@@ -6,7 +6,6 @@ import io.choerodon.agile.api.vo.LookupValueVO;
 import io.choerodon.agile.app.service.LookupValueService;
 import io.choerodon.agile.infra.dataobject.LookupTypeWithValuesDTO;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
