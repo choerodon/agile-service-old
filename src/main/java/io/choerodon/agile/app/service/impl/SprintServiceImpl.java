@@ -236,21 +236,21 @@ public class SprintServiceImpl implements SprintService {
         List<Long> issueIds = issueMapper.querySprintIssueIdsByCondition(projectId, customUserDetails.getUserId(),
                 StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)), filterSql, assigneeFilterIds);
         //待办事项查询相关issue的issueIds，包含已完成的issue
-        List<IssueIdSprintIdDTO> issueIdSprintIdDTOs = issueMapper.querySprintAllIssueIdsByCondition(projectId, customUserDetails.getUserId(),
+        List<IssueIdSprintIdVO> issueIdSprintIdVOS = issueMapper.querySprintAllIssueIdsByCondition(projectId, customUserDetails.getUserId(),
                 StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)), filterSql, assigneeFilterIds);
         List<SprintSearchVO> sprintSearches = new ArrayList<>();
-        BackLogIssueDTO backLogIssueDTO = new BackLogIssueDTO();
+        BackLogIssueVO backLogIssueVO = new BackLogIssueVO();
         Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
         setStatusIsCompleted(projectId, statusMapDTOMap);
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        if (issueIdSprintIdDTOs != null && !issueIdSprintIdDTOs.isEmpty()) {
-            handleSprintIssueData(issueIdSprintIdDTOs, issueIds, sprintSearches, backLogIssueDTO, projectId, priorityMap, statusMapDTOMap, issueTypeDTOMap);
+        if (issueIdSprintIdVOS != null && !issueIdSprintIdVOS.isEmpty()) {
+            handleSprintIssueData(issueIdSprintIdVOS, issueIds, sprintSearches, backLogIssueVO, projectId, priorityMap, statusMapDTOMap, issueTypeDTOMap);
         } else {
             handleSprintNoIssue(sprintSearches, projectId);
         }
         backlog.put(SPRINT_DATA, sprintSearches);
-        backlog.put(BACKLOG_DATA, backLogIssueDTO);
+        backlog.put(BACKLOG_DATA, backLogIssueVO);
         return backlog;
     }
 
@@ -280,14 +280,14 @@ public class SprintServiceImpl implements SprintService {
         }
     }
 
-    private void handleSprintIssueData(List<IssueIdSprintIdDTO> issueIdSprintIdDTOs, List<Long> issueIds, List<SprintSearchVO> sprintSearches, BackLogIssueDTO backLogIssueDTO, Long projectId, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
-        List<Long> allIssueIds = issueIdSprintIdDTOs.stream().map(IssueIdSprintIdDTO::getIssueId).collect(Collectors.toList());
+    private void handleSprintIssueData(List<IssueIdSprintIdVO> issueIdSprintIdVOS, List<Long> issueIds, List<SprintSearchVO> sprintSearches, BackLogIssueVO backLogIssueVO, Long projectId, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+        List<Long> allIssueIds = issueIdSprintIdVOS.stream().map(IssueIdSprintIdVO::getIssueId).collect(Collectors.toList());
         //查询出所有经办人用户id
         Set<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(projectId, allIssueIds);
         Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(new ArrayList<>(assigneeIds), true);
         SprintSearchDTO sprintSearchDTO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDTO != null) {
-            List<Long> activeSprintIssueIds = issueIdSprintIdDTOs.stream().filter(x -> sprintSearchDTO.getSprintId().equals(x.getSprintId())).map(IssueIdSprintIdDTO::getIssueId).collect(Collectors.toList());
+            List<Long> activeSprintIssueIds = issueIdSprintIdVOS.stream().filter(x -> sprintSearchDTO.getSprintId().equals(x.getSprintId())).map(IssueIdSprintIdVO::getIssueId).collect(Collectors.toList());
             sprintSearchDTO.setIssueSearchDTOList(!activeSprintIssueIds.isEmpty() ? sprintMapper.queryActiveSprintIssueSearchByIssueIds(projectId, activeSprintIssueIds, sprintSearchDTO.getSprintId()) : new ArrayList<>());
             sprintSearchDTO.setAssigneeIssueDTOList(sprintMapper.queryAssigneeIssueByActiveSprintId(projectId, sprintSearchDTO.getSprintId()));
             SprintSearchVO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDTO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
@@ -308,8 +308,8 @@ public class SprintServiceImpl implements SprintService {
         }
         if (issueIds != null && !issueIds.isEmpty()) {
             List<IssueSearchDTO> backLogIssue = sprintMapper.queryBacklogIssues(projectId, issueIds);
-            backLogIssueDTO.setBackLogIssue(issueSearchAssembler.doListToDTO(backLogIssue, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
-            backLogIssueDTO.setBacklogIssueCount(backLogIssue.size());
+            backLogIssueVO.setBackLogIssue(issueSearchAssembler.doListToDTO(backLogIssue, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
+            backLogIssueVO.setBacklogIssueCount(backLogIssue.size());
         }
     }
 

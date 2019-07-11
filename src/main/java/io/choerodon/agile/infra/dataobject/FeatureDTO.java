@@ -12,7 +12,7 @@ import javax.persistence.Table;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_feature")
-public class FeatureDO extends BaseDTO {
+public class FeatureDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

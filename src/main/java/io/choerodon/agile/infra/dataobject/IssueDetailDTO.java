@@ -48,7 +48,7 @@ public class IssueDetailDTO {
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
-    private List<ComponentIssueRelDO> componentIssueRelDOList;
+    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
     private List<IssueLinkDTO> issueLinkDTOList;
 
@@ -100,7 +100,7 @@ public class IssueDetailDTO {
 
     private String issueTypeCode;
 
-    private FeatureDO featureDO;
+    private FeatureDTO featureDTO;
 
     private Long featureId;
 
@@ -246,12 +246,12 @@ public class IssueDetailDTO {
         this.labelIssueRelDTOList = labelIssueRelDTOList;
     }
 
-    public List<ComponentIssueRelDO> getComponentIssueRelDOList() {
-        return componentIssueRelDOList;
+    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
+        return componentIssueRelDTOList;
     }
 
-    public void setComponentIssueRelDOList(List<ComponentIssueRelDO> componentIssueRelDOList) {
-        this.componentIssueRelDOList = componentIssueRelDOList;
+    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
+        this.componentIssueRelDTOList = componentIssueRelDTOList;
     }
 
     public List<IssueLinkDTO> getIssueLinkDTOList() {
@@ -430,12 +430,12 @@ public class IssueDetailDTO {
         this.applyType = applyType;
     }
 
-    public void setFeatureDO(FeatureDO featureDO) {
-        this.featureDO = featureDO;
+    public void setFeatureDTO(FeatureDTO featureDTO) {
+        this.featureDTO = featureDTO;
     }
 
-    public FeatureDO getFeatureDO() {
-        return featureDO;
+    public FeatureDTO getFeatureDTO() {
+        return featureDTO;
     }
 
     public Long getFeatureId() {

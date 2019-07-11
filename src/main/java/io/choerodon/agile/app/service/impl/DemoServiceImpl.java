@@ -204,13 +204,13 @@ public class DemoServiceImpl implements DemoService {
     private void updateComponent(Long projectId, Long issueId, Long componentId) {
         IssueUpdateVO issueUpdateVO = new IssueUpdateVO();
         issueUpdateVO.setIssueId(issueId);
-        List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>();
-        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
-        componentIssueRelDTO.setIssueId(issueId);
-        componentIssueRelDTO.setComponentId(componentId);
-        componentIssueRelDTO.setProjectId(projectId);
-        componentIssueRelDTOList.add(componentIssueRelDTO);
-        issueUpdateVO.setComponentIssueRelDTOList(componentIssueRelDTOList);
+        List<ComponentIssueRelVO> componentIssueRelVOList = new ArrayList<>();
+        ComponentIssueRelVO componentIssueRelVO = new ComponentIssueRelVO();
+        componentIssueRelVO.setIssueId(issueId);
+        componentIssueRelVO.setComponentId(componentId);
+        componentIssueRelVO.setProjectId(projectId);
+        componentIssueRelVOList.add(componentIssueRelVO);
+        issueUpdateVO.setComponentIssueRelVOList(componentIssueRelVOList);
         List<String> fieldList = new ArrayList<>();
         issueService.updateIssue(projectId, issueUpdateVO, fieldList);
     }

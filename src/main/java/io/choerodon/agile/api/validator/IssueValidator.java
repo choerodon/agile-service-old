@@ -262,10 +262,10 @@ public class IssueValidator {
     }
 
     public Boolean existComponentIssueRel(ComponentIssueRelE componentIssueRelE) {
-        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
-        componentIssueRelDO.setIssueId(componentIssueRelE.getIssueId());
-        componentIssueRelDO.setComponentId(componentIssueRelE.getComponentId());
-        return componentIssueRelMapper.selectOne(componentIssueRelDO) == null;
+        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
+        componentIssueRelDTO.setIssueId(componentIssueRelE.getIssueId());
+        componentIssueRelDTO.setComponentId(componentIssueRelE.getComponentId());
+        return componentIssueRelMapper.selectOne(componentIssueRelDTO) == null;
     }
 
     public Boolean existLabelIssue(LabelIssueRelE labelIssueRelE) {

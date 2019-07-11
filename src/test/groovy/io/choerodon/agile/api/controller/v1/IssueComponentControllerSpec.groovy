@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.ComponentForListDTO
+import io.choerodon.agile.api.vo.ComponentForListVO
 import io.choerodon.agile.api.vo.IssueComponentVO
 import io.choerodon.agile.api.vo.IssueVO
 import io.choerodon.agile.app.service.UserService
@@ -186,7 +186,7 @@ class IssueComponentControllerSpec extends Specification {
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
-        List<ComponentForListDTO> result = entity.body.getList()
+        List<ComponentForListVO> result = entity.body.getList()
 
         and: '设置值'
         result.size() == expectSize
@@ -204,7 +204,7 @@ class IssueComponentControllerSpec extends Specification {
 
         then: '请求结果'
         entity.statusCode.is2xxSuccessful()
-        List<ComponentForListDTO> result = entity.body
+        List<ComponentForListVO> result = entity.body
 
         and: '设置值'
         result.size() == expectSize

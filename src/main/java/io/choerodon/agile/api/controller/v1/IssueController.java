@@ -565,8 +565,8 @@ public class IssueController {
     public ResponseEntity<EpicDataVO> dragEpic(@ApiParam(value = "项目id", required = true)
                                                 @PathVariable(name = "project_id") Long projectId,
                                                @ApiParam(value = "排序对象", required = true)
-                                                @RequestBody EpicSequenceDTO epicSequenceDTO) {
-        return Optional.ofNullable(issueService.dragEpic(projectId, epicSequenceDTO))
+                                                @RequestBody EpicSequenceVO epicSequenceVO) {
+        return Optional.ofNullable(issueService.dragEpic(projectId, epicSequenceVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issueController.dragEpic"));
     }

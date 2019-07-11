@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.infra.repository.FeatureRepository;
-import io.choerodon.agile.infra.dataobject.FeatureDO;
+import io.choerodon.agile.infra.dataobject.FeatureDTO;
 import io.choerodon.agile.infra.mapper.FeatureMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -22,27 +22,27 @@ public class FeatureRepositoryImpl implements FeatureRepository {
 
     @Override
     public FeatureE create(FeatureE featureE) {
-        FeatureDO featureDO = ConvertHelper.convert(featureE, FeatureDO.class);
-        if (featureMapper.insert(featureDO) != 1) {
+        FeatureDTO featureDTO = ConvertHelper.convert(featureE, FeatureDTO.class);
+        if (featureMapper.insert(featureDTO) != 1) {
             throw new CommonException("error.feature.insert");
         }
-        return ConvertHelper.convert(featureMapper.selectByPrimaryKey(featureDO.getId()), FeatureE.class);
+        return ConvertHelper.convert(featureMapper.selectByPrimaryKey(featureDTO.getId()), FeatureE.class);
     }
 
     @Override
     public FeatureE updateSelective(FeatureE featureE) {
-        FeatureDO featureDO = ConvertHelper.convert(featureE, FeatureDO.class);
-        if (featureMapper.updateByPrimaryKeySelective(featureDO) != 1) {
+        FeatureDTO featureDTO = ConvertHelper.convert(featureE, FeatureDTO.class);
+        if (featureMapper.updateByPrimaryKeySelective(featureDTO) != 1) {
             throw new CommonException("error.feature.update");
         }
-        return ConvertHelper.convert(featureMapper.selectByPrimaryKey(featureDO.getId()), FeatureE.class);
+        return ConvertHelper.convert(featureMapper.selectByPrimaryKey(featureDTO.getId()), FeatureE.class);
     }
 
     @Override
     public void delete(Long issueId) {
-        FeatureDO featureDO = new FeatureDO();
-        featureDO.setIssueId(issueId);
-        FeatureDO res = featureMapper.selectOne(featureDO);
+        FeatureDTO featureDTO = new FeatureDTO();
+        featureDTO.setIssueId(issueId);
+        FeatureDTO res = featureMapper.selectOne(featureDTO);
         if (res == null) {
             throw new CommonException("error.feature.exist");
         }

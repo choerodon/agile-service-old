@@ -233,17 +233,17 @@ public class ExcelServiceImpl implements ExcelService {
             issueCreateVO.setEpicName(summary);
             issueCreateVO.setEpicName(epicName);
         }
-        List<ComponentIssueRelDTO> componentIssueRelDTOList = null;
+        List<ComponentIssueRelVO> componentIssueRelVOList = null;
         if (!(componentName == null || "".equals(componentName))) {
-            componentIssueRelDTOList = new ArrayList<>();
-            ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
-            componentIssueRelDTO.setComponentId(componentMap.get(componentName));
-            componentIssueRelDTOList.add(componentIssueRelDTO);
+            componentIssueRelVOList = new ArrayList<>();
+            ComponentIssueRelVO componentIssueRelVO = new ComponentIssueRelVO();
+            componentIssueRelVO.setComponentId(componentMap.get(componentName));
+            componentIssueRelVOList.add(componentIssueRelVO);
         }
         if (sprintName != null) {
             issueCreateVO.setSprintId(sprintMap.get(sprintName));
         }
-        issueCreateVO.setComponentIssueRelDTOList(componentIssueRelDTOList);
+        issueCreateVO.setComponentIssueRelVOList(componentIssueRelVOList);
         issueCreateVO.setRemainingTime(remainTime);
         issueCreateVO.setVersionIssueRelDTOList(versionIssueRelDTOList);
         issueCreateVO.setReporterId(userId);

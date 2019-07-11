@@ -25,7 +25,7 @@ public class CumulativeFlowDiagramVO implements Serializable {
     private String categoryCode;
 
     @ApiModelProperty(value = "该列的坐标信息，包含时间和问题计数")
-    private List<CoordinateDTO> coordinateDTOList;
+    private List<CoordinateVO> coordinateVOList;
 
     public Long getColumnId() {
         return columnId;
@@ -51,12 +51,12 @@ public class CumulativeFlowDiagramVO implements Serializable {
         this.name = name;
     }
 
-    public List<CoordinateDTO> getCoordinateDTOList() {
-        return coordinateDTOList;
+    public List<CoordinateVO> getCoordinateVOList() {
+        return coordinateVOList;
     }
 
-    public void setCoordinateDTOList(List<CoordinateDTO> coordinateDTOList) {
-        this.coordinateDTOList = coordinateDTOList;
+    public void setCoordinateVOList(List<CoordinateVO> coordinateVOList) {
+        this.coordinateVOList = coordinateVOList;
     }
 
     public String getCategoryCode() {

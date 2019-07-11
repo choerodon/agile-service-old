@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository;
 
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
-import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
+import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
 
 
 /**
@@ -29,10 +29,10 @@ public interface ComponentIssueRelRepository {
     /**
      * 删除componentIssueRel
      *
-     * @param componentIssueRelDO componentIssueRelDO
+     * @param componentIssueRelDTO componentIssueRelDTO
      * @return int
      */
-    int delete(ComponentIssueRelDO componentIssueRelDO);
+    int delete(ComponentIssueRelDTO componentIssueRelDTO);
 
     void deleteByComponentId(Long projectId, Long componentId);
 

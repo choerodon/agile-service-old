@@ -10,7 +10,7 @@ import java.util.Date;
  * Created by HuangFuqiang@choerodon.io on 2019/4/23.
  * Email: fuqianghuang01@gmail.com
  */
-public class FeatureExportDO {
+public class FeatureExportDTO {
 
     private Long issueId;
 

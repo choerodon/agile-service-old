@@ -45,7 +45,7 @@ public class IssueComponentDetailDO {
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
-    private List<ComponentIssueRelDO> componentIssueRelDOList;
+    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
     public Long getIssueId() {
         return issueId;
@@ -183,12 +183,12 @@ public class IssueComponentDetailDO {
         this.labelIssueRelDTOList = labelIssueRelDTOList;
     }
 
-    public List<ComponentIssueRelDO> getComponentIssueRelDOList() {
-        return componentIssueRelDOList;
+    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
+        return componentIssueRelDTOList;
     }
 
-    public void setComponentIssueRelDOList(List<ComponentIssueRelDO> componentIssueRelDOList) {
-        this.componentIssueRelDOList = componentIssueRelDOList;
+    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
+        this.componentIssueRelDTOList = componentIssueRelDTOList;
     }
 
     @Override

@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/12/06.
  * Email: fuqianghuang01@gmail.com
  */
-public class OrganizationDTO {
+public class OrganizationVO {
 
     @ApiModelProperty(value = "组织id")
     private Long id;

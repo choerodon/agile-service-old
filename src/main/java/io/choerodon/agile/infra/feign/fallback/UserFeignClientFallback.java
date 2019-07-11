@@ -52,7 +52,7 @@ public class UserFeignClientFallback implements UserFeignClient {
     }
 
     @Override
-    public ResponseEntity<OrganizationDTO> query(Long id) {
+    public ResponseEntity<OrganizationVO> query(Long id) {
         throw new CommonException("error.organization.get");
     }
 

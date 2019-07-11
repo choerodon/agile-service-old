@@ -8,7 +8,7 @@ import java.util.List;
  * @author shinan.chen
  * @since 2019/2/25
  */
-public class PersonalFilterSearchAdvancedArgsDTO {
+public class PersonalFilterSearchAdvancedArgsVO {
 
     @ApiModelProperty(value = "问题类型id集合")
     private List<Long> issueTypeId;

@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.infra.dataobject.ComponentForListDO;
+import io.choerodon.agile.infra.dataobject.ComponentForListDTO;
 import io.choerodon.mybatis.common.Mapper;
 import io.choerodon.agile.infra.dataobject.IssueComponentDTO;
 import org.apache.ibatis.annotations.Param;
@@ -45,12 +45,12 @@ public interface IssueComponentMapper extends Mapper<IssueComponentDTO> {
      * @param advancedSearchArgs advancedSearchArgs
      * @return Long
      */
-    List<ComponentForListDO> queryComponentByOption(@Param("projectId") Long projectId, @Param("noIssueTest") Boolean noIssueTest,
-                                                    @Param("componentId") Long componentId, @Param("searchArgs") Map<String, Object> searchArgs,
-                                                    @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("contents") List<String> contents);
+    List<ComponentForListDTO> queryComponentByOption(@Param("projectId") Long projectId, @Param("noIssueTest") Boolean noIssueTest,
+                                                     @Param("componentId") Long componentId, @Param("searchArgs") Map<String, Object> searchArgs,
+                                                     @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("contents") List<String> contents);
 
-    List<ComponentForListDO> queryComponentWithIssueNum(@Param("projectId") Long projectId, @Param("componentId") Long componentId,
-                                                        @Param("noIssueTest") Boolean noIssueTest);
+    List<ComponentForListDTO> queryComponentWithIssueNum(@Param("projectId") Long projectId, @Param("componentId") Long componentId,
+                                                         @Param("noIssueTest") Boolean noIssueTest);
 
     List<IssueComponentDTO> selectByProjectId(@Param("projectId") Long projectId);
 }

@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.ComponentForListDTO;
+import io.choerodon.agile.api.vo.ComponentForListVO;
 import io.choerodon.agile.api.vo.IssueVO;
 import io.choerodon.agile.api.vo.SearchVO;
 import io.choerodon.base.annotation.Permission;
@@ -91,15 +91,15 @@ public class IssueComponentController {
     @ApiOperation("根据project id查询component")
     @CustomPageRequest
     @PostMapping(value = "/query_all")
-    public ResponseEntity<PageInfo<ComponentForListDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<ComponentForListVO>> listByProjectId(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
-                                                                     @ApiParam(value = "当前模块id")
+                                                                        @ApiParam(value = "当前模块id")
                                                                      @RequestParam(required = false) Long componentId,
-                                                                     @ApiParam(value = "是否包含测试")
+                                                                        @ApiParam(value = "是否包含测试")
                                                                      @RequestParam(required = false, name = "no_issue_test", defaultValue = "false") Boolean noIssueTest,
-                                                                     @ApiParam(value = "查询参数")
+                                                                        @ApiParam(value = "查询参数")
                                                                      @RequestBody(required = false) SearchVO searchVO,
-                                                                     @ApiParam(value = "分页信息", required = true)
+                                                                        @ApiParam(value = "分页信息", required = true)
                                                                      @SortDefault(value = "component_id", direction = Sort.Direction.DESC)
                                                                      @ApiIgnore PageRequest pageRequest) {
         return Optional.ofNullable(issueComponentService.queryComponentByProjectId(projectId, componentId, noIssueTest, searchVO, pageRequest))
@@ -110,11 +110,11 @@ public class IssueComponentController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据project id查询component,测试服务用")
     @GetMapping
-    public ResponseEntity<List<ComponentForListDTO>> listByProjectIdForTest(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<ComponentForListVO>> listByProjectIdForTest(@ApiParam(value = "项目id", required = true)
                                                                             @PathVariable(name = "project_id") Long projectId,
-                                                                            @ApiParam(value = "当前模块id")
+                                                                           @ApiParam(value = "当前模块id")
                                                                             @RequestParam(required = false) Long componentId,
-                                                                            @ApiParam(value = "是否包含测试")
+                                                                           @ApiParam(value = "是否包含测试")
                                                                             @RequestParam(required = false, name = "no_issue_test", defaultValue = "false")
                                                                                     Boolean noIssueTest) {
         return Optional.ofNullable(issueComponentService.listByProjectIdForTest(projectId, componentId, noIssueTest))

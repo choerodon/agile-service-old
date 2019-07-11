@@ -69,7 +69,7 @@ public interface UserFeignClient {
             @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO);
 
     @GetMapping(value = "/v1/organizations/{organization_id}")
-    ResponseEntity<OrganizationDTO> query(@PathVariable(name = "organization_id") Long id);
+    ResponseEntity<OrganizationVO> query(@PathVariable(name = "organization_id") Long id);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/project_relations/{parent_id}")
     ResponseEntity<List<ProjectRelationshipVO>> getProjUnderGroup(@PathVariable(name = "organization_id") Long orgId,

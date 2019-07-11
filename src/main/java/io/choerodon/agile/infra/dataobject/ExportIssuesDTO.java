@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Created by jian_zhang02@163.com on 2018/6/12.
  */
-public class ExportIssuesDO {
+public class ExportIssuesDTO {
     private Long issueId;
     private String issueNum;
     private String summary;

@@ -11,7 +11,7 @@ import javax.persistence.Transient;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_component_issue_rel")
-public class ComponentIssueRelDO extends BaseDTO {
+public class ComponentIssueRelDTO extends BaseDTO {
 
     private Long componentId;
 

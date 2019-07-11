@@ -10,7 +10,7 @@ import java.util.Date;
  * @author dinghuang123@gmail.com
  * @since 2018/7/2
  */
-public class ColumnChangeDTO implements Serializable {
+public class ColumnChangeVO implements Serializable {
 
     @ApiModelProperty(value = "问题主键id")
     private Long issueId;

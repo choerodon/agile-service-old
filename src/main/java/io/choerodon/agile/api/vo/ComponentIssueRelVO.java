@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 16:47:27
  */
-public class ComponentIssueRelDTO {
+public class ComponentIssueRelVO {
 
     @ApiModelProperty(value = "模块id")
     private Long componentId;

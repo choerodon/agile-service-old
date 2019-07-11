@@ -240,9 +240,9 @@ public interface ReportMapper {
      * @param endDate     endDate
      * @param allIssueIds allIssueIds
      * @param columnIds   columnIds
-     * @return ColumnChangeDO
+     * @return ColumnChangeDTO
      */
-    List<ColumnChangeDO> queryAddIssueDuringDate(@Param("projectId") Long projectId, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("allIssueIds") List<Long> allIssueIds, @Param("columnIds") List<Long> columnIds);
+    List<ColumnChangeDTO> queryAddIssueDuringDate(@Param("projectId") Long projectId, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("allIssueIds") List<Long> allIssueIds, @Param("columnIds") List<Long> columnIds);
 
     /**
      * 查询时间范围内的列变化（累积流图）
@@ -251,9 +251,9 @@ public interface ReportMapper {
      * @param endDate     endDate
      * @param allIssueIds allIssueIds
      * @param columnIds   columnIds
-     * @return ColumnChangeDO
+     * @return ColumnChangeDTO
      */
-    List<ColumnChangeDO> queryChangeIssueDuringDate(@Param("projectId") Long projectId, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("allIssueIds") List<Long> allIssueIds, @Param("columnIds") List<Long> columnIds);
+    List<ColumnChangeDTO> queryChangeIssueDuringDate(@Param("projectId") Long projectId, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("allIssueIds") List<Long> allIssueIds, @Param("columnIds") List<Long> columnIds);
 
     List queryReportIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("status") String status, @Param("type") String type);
 

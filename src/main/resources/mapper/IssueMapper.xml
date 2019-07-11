@@ -43,7 +43,7 @@
         <collection property="labelIssueRelDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDTO"
                     select="queryLabelIssueByIssueId"/>
-        <collection property="componentIssueRelDOList" column="issue_id"
+        <collection property="componentIssueRelDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDTO"
                     select="queryComponentIssueRelByIssueId"/>
         <collection property="issueCommentDTOList" column="issue_id"
@@ -108,7 +108,7 @@
         <collection property="labelIssueRelDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
                     select="queryLabelIssueByIssueId"/>
-        <collection property="componentIssueRelDOList" column="issue_id"
+        <collection property="componentIssueRelDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
                     select="queryComponentIssueRelByIssueId"/>
     </resultMap>
@@ -265,7 +265,7 @@
         and ail.project_id = #{projectId}
     </select>
 
-    <select id="queryComponentIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.ComponentIssueRelDO">
+    <select id="queryComponentIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO">
         SELECT
         acir.*,
         aic.name
@@ -278,7 +278,7 @@
         and acir.project_id = #{projectId}
     </select>
 
-    <select id="queryComponentIssueRelByIssueId" resultType="io.choerodon.agile.infra.dataobject.ComponentIssueRelDO">
+    <select id="queryComponentIssueRelByIssueId" resultType="io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO">
         SELECT
             acir.*,
             aic.name
@@ -530,7 +530,7 @@
         </if>
     </select>
 
-    <select id="selectExportIssuesInProgram" resultType="io.choerodon.agile.infra.dataobject.FeatureExportDO">
+    <select id="selectExportIssuesInProgram" resultType="io.choerodon.agile.infra.dataobject.FeatureExportDTO">
         select
         ai.issue_id,
         CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num,
@@ -1185,7 +1185,7 @@
         </if>
     </select>
 
-    <select id="querySprintAllIssueIdsByCondition" resultType="io.choerodon.agile.api.vo.IssueIdSprintIdDTO">
+    <select id="querySprintAllIssueIdsByCondition" resultType="io.choerodon.agile.api.vo.IssueIdSprintIdVO">
         SELECT
         ai.issue_id,
         aisr.sprint_id
@@ -1855,7 +1855,7 @@
         WHERE project_id = #{projectId} AND relate_issue_id = #{issueId}
     </select>
 
-    <select id="queryExportIssues" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDO">
+    <select id="queryExportIssues" resultType="io.choerodon.agile.infra.dataobject.ExportIssuesDTO">
         SELECT
         ai.issue_id,
         IF ((ai.parent_issue_id IS NULL OR ai.parent_issue_id = 0),

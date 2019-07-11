@@ -171,20 +171,20 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.issueTypeId = typeId
 
         and: '设置模块'
-        List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>()
-        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO()
+        List<ComponentIssueRelVO> componentIssueRelDTOList = new ArrayList<>()
+        ComponentIssueRelVO componentIssueRelDTO = new ComponentIssueRelVO()
         componentIssueRelDTO.projectId = projectId
         componentIssueRelDTO.name = "测试模块"
         componentIssueRelDTOList.add(componentIssueRelDTO)
-        ComponentIssueRelDTO componentExit = new ComponentIssueRelDTO()
+        ComponentIssueRelVO componentExit = new ComponentIssueRelVO()
         componentExit.projectId = projectId
         componentExit.componentId = componentId
         componentIssueRelDTOList.add(componentExit)
-        ComponentIssueRelDTO componentCreate = new ComponentIssueRelDTO()
+        ComponentIssueRelVO componentCreate = new ComponentIssueRelVO()
         componentCreate.projectId = projectId
         componentCreate.name = "测试模块2"
         componentIssueRelDTOList.add(componentCreate)
-        issueCreateDTO.componentIssueRelDTOList = componentIssueRelDTOList
+        issueCreateDTO.componentIssueRelVOList = componentIssueRelDTOList
 
         and: '设置标签'
         List<LabelIssueRelVO> labelIssueRelDTOList = new ArrayList<>()
@@ -273,20 +273,20 @@ class IssueControllerSpec extends Specification {
         issueSubCreateDTO.parentIssueId = issueIdList[0]
 
         and: '设置模块'
-        List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>()
-        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO()
+        List<ComponentIssueRelVO> componentIssueRelDTOList = new ArrayList<>()
+        ComponentIssueRelVO componentIssueRelDTO = new ComponentIssueRelVO()
         componentIssueRelDTO.projectId = projectId
         componentIssueRelDTO.name = "测试模块"
         componentIssueRelDTOList.add(componentIssueRelDTO)
-        ComponentIssueRelDTO componentExit = new ComponentIssueRelDTO()
+        ComponentIssueRelVO componentExit = new ComponentIssueRelVO()
         componentExit.projectId = projectId
         componentExit.componentId = componentId
         componentIssueRelDTOList.add(componentExit)
-        ComponentIssueRelDTO componentCreate = new ComponentIssueRelDTO()
+        ComponentIssueRelVO componentCreate = new ComponentIssueRelVO()
         componentCreate.projectId = projectId
         componentCreate.name = "测试模块2"
         componentIssueRelDTOList.add(componentCreate)
-        issueSubCreateDTO.componentIssueRelDTOList = componentIssueRelDTOList
+        issueSubCreateDTO.componentIssueRelVOList = componentIssueRelDTOList
 
         and: '设置标签'
         List<LabelIssueRelVO> labelIssueRelDTOList = new ArrayList<>()
@@ -347,7 +347,7 @@ class IssueControllerSpec extends Specification {
         issueUpdate.put("estimateTime", 20)
         issueUpdate.put("versionIssueRelDTOList", [])
         issueUpdate.put("labelIssueRelVOList", [])
-        issueUpdate.put("componentIssueRelDTOList", [])
+        issueUpdate.put("componentIssueRelVOList", [])
         List<IssueLinkVO> issueLinkDTOList = new ArrayList<>()
         IssueLinkVO issueLinkDTO = new IssueLinkVO()
         issueLinkDTO.issueId = issueIdList[0]
@@ -778,13 +778,13 @@ class IssueControllerSpec extends Specification {
 
     def "dragEpic"() {
         given: '拖动参数'
-        EpicSequenceDTO epicSequenceDTO = new EpicSequenceDTO()
+        EpicSequenceVO epicSequenceDTO = new EpicSequenceVO()
         epicSequenceDTO.epicId = issueIdList[2]
         epicSequenceDTO.objectVersionNumber = issueObjectVersionNumberList[2]
         epicSequenceDTO.beforeSequence = issueIdList[7]
 
         when: '分页过滤查询issue列表提供给测试模块用'
-        HttpEntity<EpicSequenceDTO> requestEntity = new HttpEntity<EpicSequenceDTO>(epicSequenceDTO, null)
+        HttpEntity<EpicSequenceVO> requestEntity = new HttpEntity<EpicSequenceVO>(epicSequenceDTO, null)
         def entity = restTemplate.exchange('/v1/projects/{project_id}/issues/epic_drag', HttpMethod.PUT, requestEntity, EpicDataVO, projectId)
 
         then: '返回值'
@@ -1033,7 +1033,7 @@ class IssueControllerSpec extends Specification {
 //        issueDetailDO.typeCode = 'story'
 //        issueDetailDO.statusId = 1
 //        issueDetailDO.priorityId = 1
-//        issueDetailDO.componentIssueRelDOList = new ArrayList<>()
+//        issueDetailDO.componentIssueRelDTOList = new ArrayList<>()
 //        issueDetailDO.labelIssueRelDTOList = new ArrayList<>()
 //        issueDetailDOList.add(issueDetailDO)
 //

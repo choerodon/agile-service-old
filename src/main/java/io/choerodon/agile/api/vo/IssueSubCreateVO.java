@@ -55,7 +55,7 @@ public class IssueSubCreateVO {
     private List<LabelIssueRelVO> labelIssueRelVOList;
 
     @ApiModelProperty(value = "关联的模块列表")
-    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
+    private List<ComponentIssueRelVO> componentIssueRelVOList;
 
     @ApiModelProperty(value = "关联的问题链接列表")
     private List<IssueLinkCreateVO> issueLinkCreateVOList;
@@ -156,12 +156,12 @@ public class IssueSubCreateVO {
         this.sprintId = sprintId;
     }
 
-    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
-        return componentIssueRelDTOList;
+    public List<ComponentIssueRelVO> getComponentIssueRelVOList() {
+        return componentIssueRelVOList;
     }
 
-    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
-        this.componentIssueRelDTOList = componentIssueRelDTOList;
+    public void setComponentIssueRelVOList(List<ComponentIssueRelVO> componentIssueRelVOList) {
+        this.componentIssueRelVOList = componentIssueRelVOList;
     }
 
     public Long getReporterId() {

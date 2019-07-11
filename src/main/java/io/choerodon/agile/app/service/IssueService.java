@@ -229,10 +229,10 @@ public interface IssueService {
      * 拖动epic
      *
      * @param projectId       projectId
-     * @param epicSequenceDTO epicSequenceDTO
+     * @param epicSequenceVO epicSequenceVO
      * @return EpicDataVO
      */
-    EpicDataVO dragEpic(Long projectId, EpicSequenceDTO epicSequenceDTO);
+    EpicDataVO dragEpic(Long projectId, EpicSequenceVO epicSequenceVO);
 
     /**
      * 查询issue统计信息

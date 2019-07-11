@@ -8,7 +8,7 @@ import java.util.Date;
  * @author shinan.chen
  * @since 2019/2/25
  */
-public class PersonalFilterSearchArgsDTO {
+public class PersonalFilterSearchArgsVO {
 
     @ApiModelProperty(value = "概要")
     private String summary;

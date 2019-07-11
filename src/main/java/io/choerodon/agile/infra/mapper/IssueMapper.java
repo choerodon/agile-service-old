@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.vo.IssueIdSprintIdDTO;
+import io.choerodon.agile.api.vo.IssueIdSprintIdVO;
 import io.choerodon.agile.api.vo.SearchVO;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.Mapper;
@@ -173,7 +173,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
                                                  @Param("self") Boolean self,
                                                  @Param("content") String content);
 
-    List<ExportIssuesDO> queryExportIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("projectCode") String projectCode);
+    List<ExportIssuesDTO> queryExportIssues(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("projectCode") String projectCode);
 
     List<SprintNameDTO> querySprintNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
@@ -183,7 +183,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<LabelIssueRelDTO> queryLabelIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    List<ComponentIssueRelDO> queryComponentIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<ComponentIssueRelDTO> queryComponentIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     /**
      * 根据issueIds查询issueEpic信息
@@ -314,7 +314,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      * @param filterSql          filterSql
      * @return issueIds
      */
-    List<IssueIdSprintIdDTO> querySprintAllIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
+    List<IssueIdSprintIdVO> querySprintAllIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
 //    List<StoryMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId,
 //                                                      @Param("pageType") String pageType,
@@ -557,7 +557,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<Long> selectExportIssueIdsInProgram(@Param("programId") Long programId, @Param("searchVO") SearchVO searchVO);
 
-    List<FeatureExportDO> selectExportIssuesInProgram(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
+    List<FeatureExportDTO> selectExportIssuesInProgram(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 
     List<PiExportNameDO> queryPiNameByIssueIds(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 

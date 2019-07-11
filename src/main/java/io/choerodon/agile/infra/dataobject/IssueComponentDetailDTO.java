@@ -64,7 +64,7 @@ public class IssueComponentDetailDTO {
 
     private List<LabelIssueRelVO> labelIssueRelVOList;
 
-    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
+    private List<ComponentIssueRelVO> componentIssueRelVOList;
 
     public String getAssigneeName() {
         return assigneeName;
@@ -212,12 +212,12 @@ public class IssueComponentDetailDTO {
         this.labelIssueRelVOList = labelIssueRelVOList;
     }
 
-    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
-        return componentIssueRelDTOList;
+    public List<ComponentIssueRelVO> getComponentIssueRelVOList() {
+        return componentIssueRelVOList;
     }
 
-    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
-        this.componentIssueRelDTOList = componentIssueRelDTOList;
+    public void setComponentIssueRelVOList(List<ComponentIssueRelVO> componentIssueRelVOList) {
+        this.componentIssueRelVOList = componentIssueRelVOList;
     }
 
     public IssueTypeVO getIssueTypeVO() {

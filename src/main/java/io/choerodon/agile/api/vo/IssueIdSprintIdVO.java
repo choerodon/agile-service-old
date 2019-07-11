@@ -4,7 +4,7 @@ package io.choerodon.agile.api.vo;
  * @author shinan.chen
  * @since 2019/5/27
  */
-public class IssueIdSprintIdDTO {
+public class IssueIdSprintIdVO {
 
     private Long issueId;
     private Long sprintId;

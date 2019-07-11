@@ -5,9 +5,9 @@ import io.choerodon.agile.api.validator.IssueComponentValidator;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
 import io.choerodon.agile.infra.repository.ComponentIssueRelRepository;
 import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -115,12 +115,12 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     }
 
     private void reRelateIssueWithComponent(Long projectId, Long id, Long relateComponentId) {
-        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
-        componentIssueRelDO.setProjectId(projectId);
-        componentIssueRelDO.setComponentId(id);
-        List<ComponentIssueRelDO> componentIssueRelDOList = componentIssueRelMapper.select(componentIssueRelDO);
+        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
+        componentIssueRelDTO.setProjectId(projectId);
+        componentIssueRelDTO.setComponentId(id);
+        List<ComponentIssueRelDTO> componentIssueRelDTOList = componentIssueRelMapper.select(componentIssueRelDTO);
         unRelateIssueWithComponent(projectId, id);
-        for (ComponentIssueRelDO componentIssue : componentIssueRelDOList) {
+        for (ComponentIssueRelDTO componentIssue : componentIssueRelDTOList) {
             ComponentIssueRelE relate = new ComponentIssueRelE();
             relate.setProjectId(projectId);
             relate.setIssueId(componentIssue.getIssueId());
@@ -150,28 +150,28 @@ public class IssueComponentServiceImpl implements IssueComponentService {
 
     @Override
     @SuppressWarnings("unchecked")
-    public PageInfo<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchVO searchVO, PageRequest pageRequest) {
+    public PageInfo<ComponentForListVO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchVO searchVO, PageRequest pageRequest) {
         //处理用户搜索
         Boolean condition = handleSearchUser(searchVO, projectId);
         if (condition) {
-            PageInfo<ComponentForListDTO> componentForListDTOPage = ConvertPageHelper.convertPageInfo(PageHelper.startPage(pageRequest.getPage(),
+            PageInfo<ComponentForListVO> componentForListDTOPage = ConvertPageHelper.convertPageInfo(PageHelper.startPage(pageRequest.getPage(),
                     pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
                     issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchVO.getSearchArgs(),
-                            searchVO.getAdvancedSearchArgs(), searchVO.getContents())), ComponentForListDTO.class);
+                            searchVO.getAdvancedSearchArgs(), searchVO.getContents())), ComponentForListVO.class);
             if ((componentForListDTOPage.getList() != null) && !componentForListDTOPage.getList().isEmpty()) {
-                List<Long> assigneeIds = componentForListDTOPage.getList().stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
-                        && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
+                List<Long> assigneeIds = componentForListDTOPage.getList().stream().filter(componentForListVO -> componentForListVO.getManagerId() != null
+                        && !Objects.equals(componentForListVO.getManagerId(), 0L)).map(ComponentForListVO::getManagerId).distinct().collect(Collectors.toList());
                 Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
-                componentForListDTOPage.getList().forEach(componentForListDTO -> {
-                    UserMessageDO userMessageDO = usersMap.get(componentForListDTO.getManagerId());
+                componentForListDTOPage.getList().forEach(componentForListVO -> {
+                    UserMessageDO userMessageDO = usersMap.get(componentForListVO.getManagerId());
                     String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
                     String assigneeLoginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
                     String assigneeRealName = userMessageDO != null ? userMessageDO.getRealName() : null;
                     String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
-                    componentForListDTO.setManagerName(assigneeName);
-                    componentForListDTO.setManagerLoginName(assigneeLoginName);
-                    componentForListDTO.setManagerRealName(assigneeRealName);
-                    componentForListDTO.setImageUrl(imageUrl);
+                    componentForListVO.setManagerName(assigneeName);
+                    componentForListVO.setManagerLoginName(assigneeLoginName);
+                    componentForListVO.setManagerRealName(assigneeRealName);
+                    componentForListVO.setImageUrl(imageUrl);
                 });
             }
             return componentForListDTOPage;
@@ -202,17 +202,17 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     }
 
     @Override
-    public List<ComponentForListDTO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest) {
-        List<ComponentForListDTO> componentForListDTOList = ConvertHelper.convertList(
-                issueComponentMapper.queryComponentWithIssueNum(projectId, componentId, noIssueTest), ComponentForListDTO.class);
-        List<Long> assigneeIds = componentForListDTOList.stream().filter(componentForListDTO -> componentForListDTO.getManagerId() != null
-                && !Objects.equals(componentForListDTO.getManagerId(), 0L)).map(ComponentForListDTO::getManagerId).distinct().collect(Collectors.toList());
+    public List<ComponentForListVO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest) {
+        List<ComponentForListVO> componentForListDTOList = ConvertHelper.convertList(
+                issueComponentMapper.queryComponentWithIssueNum(projectId, componentId, noIssueTest), ComponentForListVO.class);
+        List<Long> assigneeIds = componentForListDTOList.stream().filter(componentForListVO -> componentForListVO.getManagerId() != null
+                && !Objects.equals(componentForListVO.getManagerId(), 0L)).map(ComponentForListVO::getManagerId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
-        componentForListDTOList.forEach(componentForListDTO -> {
-            String assigneeName = usersMap.get(componentForListDTO.getManagerId()) != null ? usersMap.get(componentForListDTO.getManagerId()).getName() : null;
-            String imageUrl = assigneeName != null ? usersMap.get(componentForListDTO.getManagerId()).getImageUrl() : null;
-            componentForListDTO.setManagerName(assigneeName);
-            componentForListDTO.setImageUrl(imageUrl);
+        componentForListDTOList.forEach(componentForListVO -> {
+            String assigneeName = usersMap.get(componentForListVO.getManagerId()) != null ? usersMap.get(componentForListVO.getManagerId()).getName() : null;
+            String imageUrl = assigneeName != null ? usersMap.get(componentForListVO.getManagerId()).getImageUrl() : null;
+            componentForListVO.setManagerName(assigneeName);
+            componentForListVO.setImageUrl(imageUrl);
         });
         return componentForListDTOList;
     }

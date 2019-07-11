@@ -314,39 +314,39 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void handleColumnCoordinate(List<ColumnChangeDTO> columnChangeDTOList,
+    private void handleColumnCoordinate(List<ColumnChangeVO> columnChangeVOList,
                                         CumulativeFlowDiagramVO cumulativeFlowDiagramVO,
                                         Date startDate,
                                         Date endDate) {
-        List<CoordinateDTO> coordinateDTOS = new ArrayList<>();
-        List<ColumnChangeDTO> columnChange = columnChangeDTOList.stream().filter(columnChangeDTO ->
-                Objects.equals(columnChangeDTO.getColumnFrom(), cumulativeFlowDiagramVO.getColumnId().toString())
-                        || Objects.equals(columnChangeDTO.getColumnTo(), cumulativeFlowDiagramVO.getColumnId().toString())).collect(Collectors.toList());
+        List<CoordinateVO> coordinateVOS = new ArrayList<>();
+        List<ColumnChangeVO> columnChange = columnChangeVOList.stream().filter(columnChangeVO ->
+                Objects.equals(columnChangeVO.getColumnFrom(), cumulativeFlowDiagramVO.getColumnId().toString())
+                        || Objects.equals(columnChangeVO.getColumnTo(), cumulativeFlowDiagramVO.getColumnId().toString())).collect(Collectors.toList());
         if (columnChange != null && !columnChange.isEmpty()) {
             DateFormat bf = new SimpleDateFormat("yyyy-MM-dd");
             TreeMap<String, Integer> report = handleColumnCoordinateReport(columnChange, startDate, endDate, cumulativeFlowDiagramVO, bf);
             report.forEach((k, v) -> {
-                CoordinateDTO coordinateDTO = new CoordinateDTO();
-                coordinateDTO.setIssueCount(v);
+                CoordinateVO coordinateVO = new CoordinateVO();
+                coordinateVO.setIssueCount(v);
                 try {
-                    coordinateDTO.setDate(bf.parse(k));
+                    coordinateVO.setDate(bf.parse(k));
                 } catch (ParseException e) {
                     LOGGER.error("Exception:{}", e);
                 }
-                coordinateDTOS.add(coordinateDTO);
+                coordinateVOS.add(coordinateVO);
             });
-            cumulativeFlowDiagramVO.setCoordinateDTOList(coordinateDTOS);
+            cumulativeFlowDiagramVO.setCoordinateVOList(coordinateVOS);
         }
     }
 
-    private TreeMap<String, Integer> handleColumnCoordinateReport(List<ColumnChangeDTO> columnChange, Date startDate, Date endDate, CumulativeFlowDiagramVO cumulativeFlowDiagramVO, DateFormat bf) {
+    private TreeMap<String, Integer> handleColumnCoordinateReport(List<ColumnChangeVO> columnChange, Date startDate, Date endDate, CumulativeFlowDiagramVO cumulativeFlowDiagramVO, DateFormat bf) {
         TreeMap<String, Integer> report = new TreeMap<>();
         if (columnChange.get(0).getDate().after(startDate)) {
             report.put(bf.format(startDate), 0);
         }
         String columnId = cumulativeFlowDiagramVO.getColumnId().toString();
         //处理同一天数据
-        columnChange.forEach(columnChangeDTO -> handleColumnCoordinateSameDate(bf, report, columnChangeDTO, columnId));
+        columnChange.forEach(columnChangeVO -> handleColumnCoordinateSameDate(bf, report, columnChangeVO, columnId));
         Date lastDate = columnChange.get(columnChange.size() - 1).getDate();
         if (lastDate.before(endDate)) {
             report.put(bf.format(endDate), report.lastEntry().getValue());
@@ -354,17 +354,17 @@ public class ReportServiceImpl implements ReportService {
         return report;
     }
 
-    private void handleColumnCoordinateSameDate(DateFormat bf, TreeMap<String, Integer> report, ColumnChangeDTO columnChangeDTO, String columnId) {
-        String date = bf.format(columnChangeDTO.getDate());
+    private void handleColumnCoordinateSameDate(DateFormat bf, TreeMap<String, Integer> report, ColumnChangeVO columnChangeVO, String columnId) {
+        String date = bf.format(columnChangeVO.getDate());
         if (report.get(date) == null) {
             Integer count = report.lastEntry() == null ? 0 : report.lastEntry().getValue();
-            if (columnChangeDTO.getColumnFrom().equals(columnId)) {
+            if (columnChangeVO.getColumnFrom().equals(columnId)) {
                 report.put(date, count - 1);
             } else {
                 report.put(date, count + 1);
             }
         } else {
-            if (columnChangeDTO.getColumnFrom().equals(columnId)) {
+            if (columnChangeVO.getColumnFrom().equals(columnId)) {
                 report.put(date, report.get(date) - 1);
             } else {
                 report.put(date, report.get(date) + 1);
@@ -374,9 +374,9 @@ public class ReportServiceImpl implements ReportService {
     }
 
 
-    private void handleCumulativeFlowChangeDuringDate(Long projectId, Date startDate, Date endDate, List<Long> columnIds, List<Long> allIssueIds, List<ColumnChangeDTO> result) {
-        List<ColumnChangeDTO> changeIssueDuringDate = reportAssembler.toTargetList
-                (reportMapper.queryChangeIssueDuringDate(projectId, startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
+    private void handleCumulativeFlowChangeDuringDate(Long projectId, Date startDate, Date endDate, List<Long> columnIds, List<Long> allIssueIds, List<ColumnChangeVO> result) {
+        List<ColumnChangeVO> changeIssueDuringDate = reportAssembler.toTargetList
+                (reportMapper.queryChangeIssueDuringDate(projectId, startDate, endDate, allIssueIds, columnIds), ColumnChangeVO.class);
         List<BoardColumnStatusRelDTO> relDOs = boardColumnMapper.queryRelByColumnIds(columnIds);
         Map<Long, Long> relMap = relDOs.stream().collect(Collectors.toMap(BoardColumnStatusRelDTO::getStatusId, BoardColumnStatusRelDTO::getColumnId));
         changeIssueDuringDate.parallelStream().forEach(changeDto -> {
@@ -682,21 +682,21 @@ public class ReportServiceImpl implements ReportService {
 
     }
 
-    private void handleCumulativeFlowAddDuringDate(Long projectId, List<Long> allIssueIds, List<ColumnChangeDTO> result, Date startDate, Date endDate, List<Long> columnIds) {
-        List<ColumnChangeDTO> addIssueDuringDate = reportAssembler.toTargetList(reportMapper.queryAddIssueDuringDate(projectId, startDate, endDate, allIssueIds, columnIds), ColumnChangeDTO.class);
+    private void handleCumulativeFlowAddDuringDate(Long projectId, List<Long> allIssueIds, List<ColumnChangeVO> result, Date startDate, Date endDate, List<Long> columnIds) {
+        List<ColumnChangeVO> addIssueDuringDate = reportAssembler.toTargetList(reportMapper.queryAddIssueDuringDate(projectId, startDate, endDate, allIssueIds, columnIds), ColumnChangeVO.class);
         if (addIssueDuringDate != null && !addIssueDuringDate.isEmpty()) {
             //新创建的issue没有生成列变更日志，所以StatusTo字段为空，说明是新创建的issue，要进行处理
-            List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeDTO -> columnChangeDTO.getStatusTo() == null).map(ColumnChangeDTO::getIssueId).collect(Collectors.toList());
+            List<Long> statusToNullIssueIds = addIssueDuringDate.stream().filter(columnChangeVO -> columnChangeVO.getStatusTo() == null).map(ColumnChangeVO::getIssueId).collect(Collectors.toList());
             if (statusToNullIssueIds != null && !statusToNullIssueIds.isEmpty()) {
                 //查询issue当前的状态
                 Map<Long, ColumnStatusRelDTO> columnStatusRelMap = columnStatusRelMapper.queryByIssueIdAndColumnIds(statusToNullIssueIds, columnIds)
                         .stream().collect(Collectors.toMap(ColumnStatusRelDTO::getIssueId, Function.identity()));
-                addIssueDuringDate.parallelStream().forEach(columnChangeDTO -> {
-                    if (statusToNullIssueIds.contains(columnChangeDTO.getIssueId())) {
-                        ColumnStatusRelDTO columnStatusRelDTO = columnStatusRelMap.get(columnChangeDTO.getIssueId());
+                addIssueDuringDate.parallelStream().forEach(columnChangeVO -> {
+                    if (statusToNullIssueIds.contains(columnChangeVO.getIssueId())) {
+                        ColumnStatusRelDTO columnStatusRelDTO = columnStatusRelMap.get(columnChangeVO.getIssueId());
                         if (columnStatusRelDTO != null) {
-                            columnChangeDTO.setColumnTo(columnStatusRelDTO.getColumnId().toString());
-                            columnChangeDTO.setStatusTo(columnStatusRelDTO.getStatusId().toString());
+                            columnChangeVO.setColumnTo(columnStatusRelDTO.getColumnId().toString());
+                            columnChangeVO.setStatusTo(columnStatusRelDTO.getStatusId().toString());
                         }
                     }
                 });
@@ -968,11 +968,11 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private List<CoordinateDTO> getCumulativeFlowDiagramDuringDate(CumulativeFlowDiagramVO cumulativeFlowDiagramVO, CumulativeFlowFilterVO cumulativeFlowFilterVO) {
-        if (cumulativeFlowDiagramVO.getCoordinateDTOList() != null && !cumulativeFlowDiagramVO.getCoordinateDTOList().isEmpty()) {
-            return cumulativeFlowDiagramVO.getCoordinateDTOList().stream().filter(coordinateDTO ->
-                    (coordinateDTO.getDate().before(cumulativeFlowFilterVO.getEndDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterVO.getEndDate()))
-                            && (coordinateDTO.getDate().after(cumulativeFlowFilterVO.getStartDate()) || coordinateDTO.getDate().equals(cumulativeFlowFilterVO.getStartDate()))).collect(Collectors.toList());
+    private List<CoordinateVO> getCumulativeFlowDiagramDuringDate(CumulativeFlowDiagramVO cumulativeFlowDiagramVO, CumulativeFlowFilterVO cumulativeFlowFilterVO) {
+        if (cumulativeFlowDiagramVO.getCoordinateVOList() != null && !cumulativeFlowDiagramVO.getCoordinateVOList().isEmpty()) {
+            return cumulativeFlowDiagramVO.getCoordinateVOList().stream().filter(coordinateVO ->
+                    (coordinateVO.getDate().before(cumulativeFlowFilterVO.getEndDate()) || coordinateVO.getDate().equals(cumulativeFlowFilterVO.getEndDate()))
+                            && (coordinateVO.getDate().after(cumulativeFlowFilterVO.getStartDate()) || coordinateVO.getDate().equals(cumulativeFlowFilterVO.getStartDate()))).collect(Collectors.toList());
         } else {
             return new ArrayList<>();
         }
@@ -993,23 +993,23 @@ public class ReportServiceImpl implements ReportService {
         //设置时间区间
         Date startDate = projectInfoDTO.getCreationDate();
         Date endDate = new Date();
-        List<ColumnChangeDTO> result = new ArrayList<>();
+        List<ColumnChangeVO> result = new ArrayList<>();
         //所有在当前时间内创建的issue
         handleCumulativeFlowAddDuringDate(projectId, allIssueIds, result, startDate, endDate, columnIds);
         //所有在当前时间内状态改变的issue
         handleCumulativeFlowChangeDuringDate(projectId, startDate, endDate, columnIds, allIssueIds, result);
         //过滤并排序
-        List<ColumnChangeDTO> columnChangeDTOList = result.stream().filter(columnChangeDTO ->
-                columnChangeDTO.getColumnTo() != null && columnChangeDTO.getColumnFrom() != null && !columnChangeDTO.getColumnFrom().equals(columnChangeDTO.getColumnTo()))
-                .filter(columnChangeDTO ->
-                        (columnChangeDTO.getDate().before(cumulativeFlowFilterVO.getEndDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterVO.getEndDate()))
-                                && (columnChangeDTO.getDate().after(cumulativeFlowFilterVO.getStartDate()) || columnChangeDTO.getDate().equals(cumulativeFlowFilterVO.getStartDate()))).sorted(Comparator.comparing(ColumnChangeDTO::getDate)).collect(Collectors.toList());
+        List<ColumnChangeVO> columnChangeVOList = result.stream().filter(columnChangeVO ->
+                columnChangeVO.getColumnTo() != null && columnChangeVO.getColumnFrom() != null && !columnChangeVO.getColumnFrom().equals(columnChangeVO.getColumnTo()))
+                .filter(columnChangeVO ->
+                        (columnChangeVO.getDate().before(cumulativeFlowFilterVO.getEndDate()) || columnChangeVO.getDate().equals(cumulativeFlowFilterVO.getEndDate()))
+                                && (columnChangeVO.getDate().after(cumulativeFlowFilterVO.getStartDate()) || columnChangeVO.getDate().equals(cumulativeFlowFilterVO.getStartDate()))).sorted(Comparator.comparing(ColumnChangeVO::getDate)).collect(Collectors.toList());
         //对传入时间点的数据给与坐标
         List<CumulativeFlowDiagramVO> cumulativeFlowDiagramVOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(columnIds));
         cumulativeFlowDiagramVOList.parallelStream().forEachOrdered(cumulativeFlowDiagramVO -> {
-            handleColumnCoordinate(columnChangeDTOList, cumulativeFlowDiagramVO, cumulativeFlowFilterVO.getStartDate(), cumulativeFlowFilterVO.getEndDate());
+            handleColumnCoordinate(columnChangeVOList, cumulativeFlowDiagramVO, cumulativeFlowFilterVO.getStartDate(), cumulativeFlowFilterVO.getEndDate());
             //过滤日期
-            cumulativeFlowDiagramVO.setCoordinateDTOList(getCumulativeFlowDiagramDuringDate(cumulativeFlowDiagramVO, cumulativeFlowFilterVO));
+            cumulativeFlowDiagramVO.setCoordinateVOList(getCumulativeFlowDiagramDuringDate(cumulativeFlowDiagramVO, cumulativeFlowFilterVO));
         });
         return cumulativeFlowDiagramVOList.stream().filter(cumulativeFlowDiagramVO -> cumulativeFlowFilterVO.getColumnIds().contains(cumulativeFlowDiagramVO.getColumnId())).collect(Collectors.toList());
     }

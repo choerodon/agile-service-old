@@ -20,7 +20,7 @@
             AND aic.name = #{name}
     </select>
 
-    <select id="queryComponentByOption" resultType="io.choerodon.agile.infra.dataobject.ComponentForListDO">
+    <select id="queryComponentByOption" resultType="io.choerodon.agile.infra.dataobject.ComponentForListDTO">
         select
         aic.component_id,
         aic.project_id,
@@ -84,7 +84,7 @@
         AND acir.component_id = #{componentId}
     </select>
 
-    <select id="queryComponentWithIssueNum" resultType="io.choerodon.agile.infra.dataobject.ComponentForListDO">
+    <select id="queryComponentWithIssueNum" resultType="io.choerodon.agile.infra.dataobject.ComponentForListDTO">
         select
         aic.component_id,
         aic.project_id,

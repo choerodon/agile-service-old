@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Created by jian_zhang02@163.com on 2018/6/12.
  */
-public class ExportIssuesDTO {
+public class ExportIssuesVO {
 
     @ApiModelProperty(value = "问题id")
     private Long issueId;

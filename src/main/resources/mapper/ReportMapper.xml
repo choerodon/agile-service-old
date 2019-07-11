@@ -957,7 +957,7 @@
         </if>
     </select>
 
-    <select id="queryAddIssueDuringDate" resultType="io.choerodon.agile.infra.dataobject.ColumnChangeDO">
+    <select id="queryAddIssueDuringDate" resultType="io.choerodon.agile.infra.dataobject.ColumnChangeDTO">
         SELECT
         abb.*,
         x.column_id AS column_to,
@@ -1008,7 +1008,7 @@
 
 
 
-    <select id="queryChangeIssueDuringDate" resultType="io.choerodon.agile.infra.dataobject.ColumnChangeDO">
+    <select id="queryChangeIssueDuringDate" resultType="io.choerodon.agile.infra.dataobject.ColumnChangeDTO">
         SELECT
         adl.issue_id,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num,

@@ -36,8 +36,8 @@ public class IssueAssembler extends AbstractAssembler {
     public IssueVO issueDetailDoToDto(IssueDetailDTO issueDetailDTO, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         IssueVO issueVO = new IssueVO();
         BeanUtils.copyProperties(issueDetailDTO, issueVO);
-        issueVO.setFeatureVO(ConvertHelper.convert(issueDetailDTO.getFeatureDO(), FeatureVO.class));
-        issueVO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
+        issueVO.setFeatureVO(ConvertHelper.convert(issueDetailDTO.getFeatureDTO(), FeatureVO.class));
+        issueVO.setComponentIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getComponentIssueRelDTOList(), ComponentIssueRelVO.class));
         issueVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameVO.class));
         issueVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameVO.class));
         issueVO.setActivePi(sprintNameAssembler.toTarget(issueDetailDTO.getActivePi(), PiNameVO.class));
@@ -218,7 +218,7 @@ public class IssueAssembler extends AbstractAssembler {
     public IssueSubVO issueDetailDoToIssueSubDto(IssueDetailDTO issueDetailDTO) {
         IssueSubVO issueSubVO = new IssueSubVO();
         BeanUtils.copyProperties(issueDetailDTO, issueSubVO);
-        issueSubVO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
+        issueSubVO.setComponentIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getComponentIssueRelDTOList(), ComponentIssueRelVO.class));
         issueSubVO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueSubVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameVO.class));
         issueSubVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameVO.class));
@@ -254,10 +254,10 @@ public class IssueAssembler extends AbstractAssembler {
         return issueSubVO;
     }
 
-    public List<ExportIssuesDTO> exportIssuesDOListToExportIssuesDTO(List<ExportIssuesDO> exportIssues, Long projectId) {
-        List<ExportIssuesDTO> exportIssuesDTOS = new ArrayList<>(exportIssues.size());
-        Set<Long> userIds = exportIssues.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(ExportIssuesDO::getAssigneeId).collect(Collectors.toSet());
-        userIds.addAll(exportIssues.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(ExportIssuesDO::getReporterId).collect(Collectors.toSet()));
+    public List<ExportIssuesVO> exportIssuesDOListToExportIssuesDTO(List<ExportIssuesDTO> exportIssues, Long projectId) {
+        List<ExportIssuesVO> exportIssuesVOS = new ArrayList<>(exportIssues.size());
+        Set<Long> userIds = exportIssues.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(ExportIssuesDTO::getAssigneeId).collect(Collectors.toSet());
+        userIds.addAll(exportIssues.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(ExportIssuesDTO::getReporterId).collect(Collectors.toSet()));
         Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(new ArrayList<>(userIds), true);
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
@@ -267,18 +267,18 @@ public class IssueAssembler extends AbstractAssembler {
             String assigneeRealName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getRealName() : null;
             String reporterName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getName() : null;
             String reporterRealName = usersMap.get(issueDO.getReporterId()) != null ? usersMap.get(issueDO.getReporterId()).getRealName() : null;
-            ExportIssuesDTO exportIssuesDTO = new ExportIssuesDTO();
-            BeanUtils.copyProperties(issueDO, exportIssuesDTO);
-            exportIssuesDTO.setPriorityName(priorityDTOMap.get(issueDO.getPriorityId()) == null ? null : priorityDTOMap.get(issueDO.getPriorityId()).getName());
-            exportIssuesDTO.setStatusName(statusMapDTOMap.get(issueDO.getStatusId()) == null ? null : statusMapDTOMap.get(issueDO.getStatusId()).getName());
-            exportIssuesDTO.setTypeName(issueTypeDTOMap.get(issueDO.getIssueTypeId()) == null ? null : issueTypeDTOMap.get(issueDO.getIssueTypeId()).getName());
-            exportIssuesDTO.setAssigneeName(assigneeName);
-            exportIssuesDTO.setAssigneeRealName(assigneeRealName);
-            exportIssuesDTO.setReporterName(reporterName);
-            exportIssuesDTO.setReporterRealName(reporterRealName);
-            exportIssuesDTOS.add(exportIssuesDTO);
+            ExportIssuesVO exportIssuesVO = new ExportIssuesVO();
+            BeanUtils.copyProperties(issueDO, exportIssuesVO);
+            exportIssuesVO.setPriorityName(priorityDTOMap.get(issueDO.getPriorityId()) == null ? null : priorityDTOMap.get(issueDO.getPriorityId()).getName());
+            exportIssuesVO.setStatusName(statusMapDTOMap.get(issueDO.getStatusId()) == null ? null : statusMapDTOMap.get(issueDO.getStatusId()).getName());
+            exportIssuesVO.setTypeName(issueTypeDTOMap.get(issueDO.getIssueTypeId()) == null ? null : issueTypeDTOMap.get(issueDO.getIssueTypeId()).getName());
+            exportIssuesVO.setAssigneeName(assigneeName);
+            exportIssuesVO.setAssigneeRealName(assigneeRealName);
+            exportIssuesVO.setReporterName(reporterName);
+            exportIssuesVO.setReporterRealName(reporterRealName);
+            exportIssuesVOS.add(exportIssuesVO);
         });
-        return exportIssuesDTOS;
+        return exportIssuesVOS;
     }
 
     public IssueCreateVO issueDtoToIssueCreateDto(IssueDetailDTO issueDetailDTO) {
@@ -286,7 +286,7 @@ public class IssueAssembler extends AbstractAssembler {
         BeanUtils.copyProperties(issueDetailDTO, issueCreateVO);
         issueCreateVO.setSprintId(null);
         issueCreateVO.setRemainingTime(null);
-        issueCreateVO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDTO.getComponentIssueRelDOList()));
+        issueCreateVO.setComponentIssueRelVOList(copyComponentIssueRel(issueDetailDTO.getComponentIssueRelDTOList()));
         issueCreateVO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDetailDTO.getVersionIssueRelDOList()));
         issueCreateVO.setLabelIssueRelVOList(copyLabelIssueRel(issueDetailDTO.getLabelIssueRelDTOList(), issueDetailDTO.getProjectId()));
         return issueCreateVO;
@@ -297,22 +297,22 @@ public class IssueAssembler extends AbstractAssembler {
         BeanUtils.copyProperties(issueDetailDTO, issueSubCreateVO);
         issueSubCreateVO.setSprintId(null);
         issueSubCreateVO.setRemainingTime(null);
-        issueSubCreateVO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDTO.getComponentIssueRelDOList()));
+        issueSubCreateVO.setComponentIssueRelVOList(copyComponentIssueRel(issueDetailDTO.getComponentIssueRelDTOList()));
         issueSubCreateVO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDetailDTO.getVersionIssueRelDOList()));
         issueSubCreateVO.setLabelIssueRelVOList(copyLabelIssueRel(issueDetailDTO.getLabelIssueRelDTOList(), issueDetailDTO.getProjectId()));
         return issueSubCreateVO;
     }
 
-    private List<ComponentIssueRelDTO> copyComponentIssueRel(List<ComponentIssueRelDO> componentIssueRelDOList) {
-        List<ComponentIssueRelDTO> componentIssueRelDTOList = new ArrayList<>(componentIssueRelDOList.size());
-        componentIssueRelDOList.forEach(componentIssueRelDO -> {
-            ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
-            BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelDTO);
-            componentIssueRelDTO.setIssueId(null);
-            componentIssueRelDTO.setObjectVersionNumber(null);
-            componentIssueRelDTOList.add(componentIssueRelDTO);
+    private List<ComponentIssueRelVO> copyComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
+        List<ComponentIssueRelVO> componentIssueRelVOList = new ArrayList<>(componentIssueRelDTOList.size());
+        componentIssueRelDTOList.forEach(componentIssueRelDO -> {
+            ComponentIssueRelVO componentIssueRelVO = new ComponentIssueRelVO();
+            BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelVO);
+            componentIssueRelVO.setIssueId(null);
+            componentIssueRelVO.setObjectVersionNumber(null);
+            componentIssueRelVOList.add(componentIssueRelVO);
         });
-        return componentIssueRelDTOList;
+        return componentIssueRelVOList;
     }
 
     private List<LabelIssueRelVO> copyLabelIssueRel(List<LabelIssueRelDTO> labelIssueRelDTOList, Long projectId) {
@@ -348,7 +348,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueCreateDTO.setSprintId(null);
         issueCreateDTO.setIssueNum(null);
         issueCreateDTO.setParentIssueId(parentIssueId);
-        issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(subIssueDetailDTO.getComponentIssueRelDOList()));
+        issueCreateDTO.setComponentIssueRelVOList(copyComponentIssueRel(subIssueDetailDTO.getComponentIssueRelDTOList()));
         issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(subIssueDetailDTO.getVersionIssueRelDOList()));
         issueCreateDTO.setLabelIssueRelVOList(copyLabelIssueRel(subIssueDetailDTO.getLabelIssueRelDTOList(), subIssueDetailDTO.getProjectId()));
         return issueCreateDTO;
@@ -388,7 +388,7 @@ public class IssueAssembler extends AbstractAssembler {
                 issueComponentDetailDTO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
                 issueComponentDetailDTO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
                 issueComponentDetailDTO.setPriorityVO(priorityDTOMap.get(issueDO.getPriorityId()));
-                issueComponentDetailDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
+                issueComponentDetailDTO.setComponentIssueRelVOList(ConvertHelper.convertList(issueDO.getComponentIssueRelDTOList(), ComponentIssueRelVO.class));
                 issueComponentDetailDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
                 issueComponentDetailDTO.setLabelIssueRelVOList(ConvertHelper.convertList(issueDO.getLabelIssueRelDTOList(), LabelIssueRelVO.class));
                 issueComponentDetailDTOS.add(issueComponentDetailDTO);

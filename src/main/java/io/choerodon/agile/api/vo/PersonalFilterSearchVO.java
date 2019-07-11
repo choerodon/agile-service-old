@@ -14,17 +14,17 @@ public class PersonalFilterSearchVO {
      * 搜索参数
      */
     @ApiModelProperty(value = "搜索参数")
-    private PersonalFilterSearchArgsDTO searchArgs;
+    private PersonalFilterSearchArgsVO searchArgs;
     /**
      * 高级搜索，issue的必填字段的对应id值，在sql中用in匹配
      */
     @ApiModelProperty(value = "高级搜索，issue的必填字段的对应id值，在sql中用in匹配")
-    private PersonalFilterSearchAdvancedArgsDTO advancedSearchArgs;
+    private PersonalFilterSearchAdvancedArgsVO advancedSearchArgs;
     /**
      * 其他搜索，issue的非必填字段的对应id值，在sql中用in匹配
      */
     @ApiModelProperty(value = "其他搜索，issue的非必填字段的对应id值，在sql中用in匹配")
-    private PersonalFilterSearchOtherArgsDTO otherArgs;
+    private PersonalFilterSearchOtherArgsVO otherArgs;
 
     /**
      * 全局搜索：目前仅包括issueNum和summery
@@ -40,27 +40,27 @@ public class PersonalFilterSearchVO {
         this.contents = contents;
     }
 
-    public PersonalFilterSearchOtherArgsDTO getOtherArgs() {
+    public PersonalFilterSearchOtherArgsVO getOtherArgs() {
         return otherArgs;
     }
 
-    public void setOtherArgs(PersonalFilterSearchOtherArgsDTO otherArgs) {
+    public void setOtherArgs(PersonalFilterSearchOtherArgsVO otherArgs) {
         this.otherArgs = otherArgs;
     }
 
-    public PersonalFilterSearchArgsDTO getSearchArgs() {
+    public PersonalFilterSearchArgsVO getSearchArgs() {
         return searchArgs;
     }
 
-    public void setSearchArgs(PersonalFilterSearchArgsDTO searchArgs) {
+    public void setSearchArgs(PersonalFilterSearchArgsVO searchArgs) {
         this.searchArgs = searchArgs;
     }
 
-    public PersonalFilterSearchAdvancedArgsDTO getAdvancedSearchArgs() {
+    public PersonalFilterSearchAdvancedArgsVO getAdvancedSearchArgs() {
         return advancedSearchArgs;
     }
 
-    public void setAdvancedSearchArgs(PersonalFilterSearchAdvancedArgsDTO advancedSearchArgs) {
+    public void setAdvancedSearchArgs(PersonalFilterSearchAdvancedArgsVO advancedSearchArgs) {
         this.advancedSearchArgs = advancedSearchArgs;
     }
 }

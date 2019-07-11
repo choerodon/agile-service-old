@@ -937,17 +937,17 @@ public class DataLogAspect {
 
 
     private void handleComponentDeleteDataLog(Object[] args) {
-        ComponentIssueRelDO componentIssueRelDO = null;
+        ComponentIssueRelDTO componentIssueRelDTO = null;
         for (Object arg : args) {
-            if (arg instanceof ComponentIssueRelDO) {
-                componentIssueRelDO = (ComponentIssueRelDO) arg;
+            if (arg instanceof ComponentIssueRelDTO) {
+                componentIssueRelDTO = (ComponentIssueRelDTO) arg;
             }
         }
-        if (componentIssueRelDO != null) {
-            createDataLog(componentIssueRelDO.getProjectId(), componentIssueRelDO.getIssueId(),
-                    FIELD_COMPONENT, issueComponentMapper.selectByPrimaryKey(componentIssueRelDO.getComponentId()).getName(), null,
-                    componentIssueRelDO.getComponentId().toString(), null);
-            redisUtil.deleteRedisCache(new String[]{PIECHART + componentIssueRelDO.getProjectId() + ':' + COMPONENT + "*"});
+        if (componentIssueRelDTO != null) {
+            createDataLog(componentIssueRelDTO.getProjectId(), componentIssueRelDTO.getIssueId(),
+                    FIELD_COMPONENT, issueComponentMapper.selectByPrimaryKey(componentIssueRelDTO.getComponentId()).getName(), null,
+                    componentIssueRelDTO.getComponentId().toString(), null);
+            redisUtil.deleteRedisCache(new String[]{PIECHART + componentIssueRelDTO.getProjectId() + ':' + COMPONENT + "*"});
         }
     }
 
@@ -959,14 +959,14 @@ public class DataLogAspect {
             }
         }
         if (issueId != null) {
-            ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
-            componentIssueRelDO.setIssueId(issueId);
-            List<ComponentIssueRelDO> componentIssueRelDOList = componentIssueRelMapper.select(componentIssueRelDO);
-            if (componentIssueRelDOList != null && !componentIssueRelDOList.isEmpty()) {
-                componentIssueRelDOList.forEach(componentIssueRel -> createDataLog(componentIssueRel.getProjectId(), componentIssueRel.getIssueId(),
+            ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
+            componentIssueRelDTO.setIssueId(issueId);
+            List<ComponentIssueRelDTO> componentIssueRelDTOList = componentIssueRelMapper.select(componentIssueRelDTO);
+            if (componentIssueRelDTOList != null && !componentIssueRelDTOList.isEmpty()) {
+                componentIssueRelDTOList.forEach(componentIssueRel -> createDataLog(componentIssueRel.getProjectId(), componentIssueRel.getIssueId(),
                         FIELD_COMPONENT, issueComponentMapper.selectByPrimaryKey(componentIssueRel.getComponentId()).getName(), null,
                         componentIssueRel.getComponentId().toString(), null));
-                redisUtil.deleteRedisCache(new String[]{PIECHART + componentIssueRelDOList.get(0).getProjectId() + ':' + COMPONENT + "*"});
+                redisUtil.deleteRedisCache(new String[]{PIECHART + componentIssueRelDTOList.get(0).getProjectId() + ':' + COMPONENT + "*"});
             }
         }
     }

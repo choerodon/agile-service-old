@@ -3,7 +3,7 @@ package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.ActiveSprintVO
-import io.choerodon.agile.api.vo.BackLogIssueDTO
+import io.choerodon.agile.api.vo.BackLogIssueVO
 import io.choerodon.agile.api.vo.IssueCreateVO
 import io.choerodon.agile.api.vo.IssueListVO
 import io.choerodon.agile.api.vo.IssueVO
@@ -198,7 +198,7 @@ class SprintControllerSpec extends Specification {
         Map<String, Object> result = entity.body
 
         and: '返回值'
-        BackLogIssueDTO backLogIssueDTO = result.get("backlogData") as BackLogIssueDTO
+        BackLogIssueVO backLogIssueDTO = result.get("backlogData") as BackLogIssueVO
         List<SprintSearchVO> searchDTOList = result.get("sprintData") as List<SprintSearchVO>
 
         expect: '期望值'

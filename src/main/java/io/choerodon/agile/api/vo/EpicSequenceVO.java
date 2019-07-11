@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
  * @author dinghuang123@gmail.com
  * @since 2018/7/30
  */
-public class EpicSequenceDTO {
+public class EpicSequenceVO {
 
 
     private static final String EPIC_ID_NOT_NULL_ERROR = "error.epicId.NotNull";

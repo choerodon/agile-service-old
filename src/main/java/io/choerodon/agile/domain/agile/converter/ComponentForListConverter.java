@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.ComponentForListDTO;
-import io.choerodon.agile.infra.dataobject.ComponentForListDO;
+import io.choerodon.agile.api.vo.ComponentForListVO;
+import io.choerodon.agile.infra.dataobject.ComponentForListDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,19 +11,19 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class ComponentForListConverter implements ConvertorI<Object, ComponentForListDO, ComponentForListDTO> {
+public class ComponentForListConverter implements ConvertorI<Object, ComponentForListDTO, ComponentForListVO> {
 
     @Override
-    public ComponentForListDTO doToDto(ComponentForListDO componentForListDO) {
-        ComponentForListDTO componentForListDTO = new ComponentForListDTO();
-        BeanUtils.copyProperties(componentForListDO, componentForListDTO);
-        return componentForListDTO;
+    public ComponentForListVO doToDto(ComponentForListDTO componentForListDTO) {
+        ComponentForListVO componentForListVO = new ComponentForListVO();
+        BeanUtils.copyProperties(componentForListDTO, componentForListVO);
+        return componentForListVO;
     }
 
     @Override
-    public ComponentForListDO dtoToDo(ComponentForListDTO componentForListDTO) {
-        ComponentForListDO componentForListDO = new ComponentForListDO();
-        BeanUtils.copyProperties(componentForListDTO, componentForListDO);
-        return componentForListDO;
+    public ComponentForListDTO dtoToDo(ComponentForListVO componentForListVO) {
+        ComponentForListDTO componentForListDTO = new ComponentForListDTO();
+        BeanUtils.copyProperties(componentForListVO, componentForListDTO);
+        return componentForListDTO;
     }
 }

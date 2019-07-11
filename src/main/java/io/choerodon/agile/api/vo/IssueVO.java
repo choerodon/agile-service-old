@@ -77,7 +77,7 @@ public class IssueVO {
     private List<LabelIssueRelVO> labelIssueRelVOList;
 
     @ApiModelProperty(value = "关联的模块列表")
-    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
+    private List<ComponentIssueRelVO> componentIssueRelVOList;
 
     @ApiModelProperty(value = "评论列表")
     private List<IssueCommentVO> issueCommentVOList;
@@ -355,12 +355,12 @@ public class IssueVO {
         this.labelIssueRelVOList = labelIssueRelVOList;
     }
 
-    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
-        return componentIssueRelDTOList;
+    public List<ComponentIssueRelVO> getComponentIssueRelVOList() {
+        return componentIssueRelVOList;
     }
 
-    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
-        this.componentIssueRelDTOList = componentIssueRelDTOList;
+    public void setComponentIssueRelVOList(List<ComponentIssueRelVO> componentIssueRelVOList) {
+        this.componentIssueRelVOList = componentIssueRelVOList;
     }
 
     public List<IssueCommentVO> getIssueCommentVOList() {

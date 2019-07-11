@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by jian_zhang02@163.com on 2018/5/18.
  */
-public class BackLogIssueDTO {
+public class BackLogIssueVO {
 
     @ApiModelProperty(value = "待办问题数量")
     private Integer backlogIssueCount;
@@ -15,9 +15,9 @@ public class BackLogIssueDTO {
     @ApiModelProperty(value = "待办问题列表")
     private List<IssueSearchVO> backLogIssue;
 
-    public BackLogIssueDTO(){}
+    public BackLogIssueVO(){}
 
-    public BackLogIssueDTO(Integer backlogIssueCount, List<IssueSearchVO> backLogIssue) {
+    public BackLogIssueVO(Integer backlogIssueCount, List<IssueSearchVO> backLogIssue) {
         this.backlogIssueCount = backlogIssueCount;
         this.backLogIssue = backLogIssue;
     }

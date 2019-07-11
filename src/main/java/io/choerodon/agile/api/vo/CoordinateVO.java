@@ -10,7 +10,7 @@ import java.util.Date;
  * @author dinghuang123@gmail.com
  * @since 2018/7/2
  */
-public class CoordinateDTO implements Serializable {
+public class CoordinateVO implements Serializable {
 
     @ApiModelProperty(value = "日期")
     private Date date;
