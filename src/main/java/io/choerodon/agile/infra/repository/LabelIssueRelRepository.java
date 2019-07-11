@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.repository;
 
 import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
-import io.choerodon.agile.infra.dataobject.LabelIssueRelDO;
+import io.choerodon.agile.infra.dataobject.LabelIssueRelDTO;
 
 
 
@@ -39,8 +39,8 @@ public interface LabelIssueRelRepository {
 
     /**
      * 根据查询条件删除
-     * @param labelIssueRelDO labelIssueRelDO
+     * @param labelIssueRelDTO labelIssueRelDTO
      * @return int
      */
-    int delete(LabelIssueRelDO labelIssueRelDO);
+    int delete(LabelIssueRelDTO labelIssueRelDTO);
 }

@@ -1,9 +1,11 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.IssueLinkTypeCreateDTO;
-import io.choerodon.agile.api.vo.IssueLinkTypeDTO;
-import io.choerodon.agile.api.vo.IssueLinkTypeSearchDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeCreateVO;
+import io.choerodon.agile.api.vo.IssueLinkTypeVO;
+import io.choerodon.agile.api.vo.IssueLinkTypeSearchVO;
 import com.github.pagehelper.PageInfo;
+import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import io.choerodon.base.domain.PageRequest;
 
 /**
@@ -17,27 +19,27 @@ public interface IssueLinkTypeService {
      *
      * @param projectId              projectId
      * @param issueLinkTypeId        issueLinkTypeId不包含的id
-     * @param issueLinkTypeSearchDTO issueLinkTypeSearchDTO
+     * @param issueLinkTypeSearchVO issueLinkTypeSearchVO
      * @param pageRequest            pageRequest
-     * @return IssueLinkTypeDTO
+     * @return IssueLinkTypeVO
      */
-    PageInfo<IssueLinkTypeDTO> listIssueLinkType(Long projectId, Long issueLinkTypeId, IssueLinkTypeSearchDTO issueLinkTypeSearchDTO, PageRequest pageRequest);
+    PageInfo<IssueLinkTypeVO> listIssueLinkType(Long projectId, Long issueLinkTypeId, IssueLinkTypeSearchVO issueLinkTypeSearchVO, PageRequest pageRequest);
 
     /**
      * 创建issueLinkType
      *
-     * @param issueLinkTypeCreateDTO issueLinkTypeCreateDTO
-     * @return IssueLinkTypeDTO
+     * @param issueLinkTypeCreateVO issueLinkTypeCreateVO
+     * @return IssueLinkTypeVO
      */
-    IssueLinkTypeDTO createIssueLinkType(IssueLinkTypeCreateDTO issueLinkTypeCreateDTO);
+    IssueLinkTypeVO createIssueLinkType(IssueLinkTypeCreateVO issueLinkTypeCreateVO);
 
     /**
      * 修改issueLinkType
      *
-     * @param issueLinkTypeDTO issueLinkTypeDTO
-     * @return IssueLinkTypeDTO
+     * @param issueLinkTypeVO issueLinkTypeVO
+     * @return IssueLinkTypeVO
      */
-    IssueLinkTypeDTO updateIssueLinkType(IssueLinkTypeDTO issueLinkTypeDTO);
+    IssueLinkTypeVO updateIssueLinkType(IssueLinkTypeVO issueLinkTypeVO);
 
     /**
      * 删除IssueLinkType
@@ -54,9 +56,9 @@ public interface IssueLinkTypeService {
      *
      * @param projectId  projectId
      * @param linkTypeId linkTypeId
-     * @return IssueLinkTypeDTO
+     * @return IssueLinkTypeVO
      */
-    IssueLinkTypeDTO queryIssueLinkType(Long projectId, Long linkTypeId);
+    IssueLinkTypeVO queryIssueLinkType(Long projectId, Long linkTypeId);
 
     /**
      * 创建项目初始化issueLinkType
@@ -66,4 +68,47 @@ public interface IssueLinkTypeService {
     void initIssueLinkType(Long projectId);
 
     boolean queryIssueLinkTypeName(Long projectId, String issueLinkTypeName, Long issueLinkTypeId);
+
+
+    /**
+     * 更新
+     *
+     * @param issueLinkTypeDTO issueLinkTypeDTO
+     * @return IssueLinkTypeDTO
+     */
+    IssueLinkTypeDTO update(IssueLinkTypeDTO issueLinkTypeDTO);
+
+    /**
+     * 创建
+     *
+     * @param issueLinkTypeDTO issueLinkTypeDTO
+     * @return IssueLinkTypeDTO
+     */
+    IssueLinkTypeDTO create(IssueLinkTypeDTO issueLinkTypeDTO);
+
+    /**
+     * 删除
+     *
+     * @param linkTypeId linkTypeId
+     * @param projectId  projectId
+     * @return int
+     */
+    int delete(Long linkTypeId, Long projectId);
+
+    /**
+     * 删除issue下的link关系
+     *
+     * @param issueLinkTypeId issueLinkTypeId
+     * @return int
+     */
+    int deleteIssueLinkTypeRel(Long issueLinkTypeId);
+
+    /**
+     * 批量修改issue链接关系的类型到新的类型
+     *
+     * @param issueLinkTypeId   issueLinkTypeId
+     * @param toIssueLinkTypeId toIssueLinkTypeId
+     * @return int
+     */
+    int batchUpdateRelToIssueLinkType(Long issueLinkTypeId, Long toIssueLinkTypeId);
 }

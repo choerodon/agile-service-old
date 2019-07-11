@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.vo.IssueLinkTypeCreateDTO;
-import io.choerodon.agile.api.vo.IssueLinkTypeDTO;
-import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
+import io.choerodon.agile.api.vo.IssueLinkTypeCreateVO;
+import io.choerodon.agile.api.vo.IssueLinkTypeVO;
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,37 +18,37 @@ public class IssueLinkTypeValidator {
     @Autowired
     private IssueLinkTypeMapper issueLinkTypeMapper;
 
-    public void verifyCreateData(IssueLinkTypeCreateDTO issueLinkTypeCreateDTO, Long projectId) {
-        if (issueLinkTypeCreateDTO.getInWard() == null) {
+    public void verifyCreateData(IssueLinkTypeCreateVO issueLinkTypeCreateVO, Long projectId) {
+        if (issueLinkTypeCreateVO.getInWard() == null) {
             throw new CommonException("error.IssueLinkType.inWard");
         }
-        if (issueLinkTypeCreateDTO.getOutWard() == null) {
+        if (issueLinkTypeCreateVO.getOutWard() == null) {
             throw new CommonException("error.IssueLinkType.outWard");
         }
-        if (issueLinkTypeCreateDTO.getLinkName() == null) {
+        if (issueLinkTypeCreateVO.getLinkName() == null) {
             throw new CommonException("error.IssueLinkType.linkName");
         }
-        issueLinkTypeCreateDTO.setProjectId(projectId);
+        issueLinkTypeCreateVO.setProjectId(projectId);
     }
 
     public void verifyDeleteData(Long issueLinkTypeId, Long toIssueLinkTypeId, Long projectId) {
-        IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
-        issueLinkTypeDO.setLinkTypeId(issueLinkTypeId);
-        issueLinkTypeDO.setProjectId(projectId);
-        if (issueLinkTypeMapper.selectOne(issueLinkTypeDO) == null) {
+        IssueLinkTypeDTO issueLinkTypeDTO = new IssueLinkTypeDTO();
+        issueLinkTypeDTO.setLinkTypeId(issueLinkTypeId);
+        issueLinkTypeDTO.setProjectId(projectId);
+        if (issueLinkTypeMapper.selectOne(issueLinkTypeDTO) == null) {
             throw new CommonException("error.IssueLinkType.notFound");
         }
-        issueLinkTypeDO.setLinkTypeId(toIssueLinkTypeId);
-        if (toIssueLinkTypeId != null && issueLinkTypeMapper.selectOne(issueLinkTypeDO) == null) {
+        issueLinkTypeDTO.setLinkTypeId(toIssueLinkTypeId);
+        if (toIssueLinkTypeId != null && issueLinkTypeMapper.selectOne(issueLinkTypeDTO) == null) {
             throw new CommonException("error.IssueLinkType.notFound");
         }
     }
 
-    public void verifyUpdateData(IssueLinkTypeDTO issueLinkTypeDTO, Long projectId) {
-        if (issueLinkTypeDTO.getLinkTypeId() == null) {
+    public void verifyUpdateData(IssueLinkTypeVO issueLinkTypeVO, Long projectId) {
+        if (issueLinkTypeVO.getLinkTypeId() == null) {
             throw new CommonException("error.IssueLinkType.linkTypeId");
         }
-        issueLinkTypeDTO.setProjectId(projectId);
+        issueLinkTypeVO.setProjectId(projectId);
     }
 
     public void verifyIssueLinkTypeName(Long projectId, String issueLinkTypeName, Long issueLinkTypeId) {

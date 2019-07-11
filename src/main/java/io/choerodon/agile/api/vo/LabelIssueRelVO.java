@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:31:22
  */
-public class LabelIssueRelDTO implements Serializable {
+public class LabelIssueRelVO implements Serializable {
 
     @ApiModelProperty(value = "问题主键id")
     private Long issueId;

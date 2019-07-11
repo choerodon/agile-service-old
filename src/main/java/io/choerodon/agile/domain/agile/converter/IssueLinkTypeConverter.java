@@ -1,8 +1,8 @@
 package io.choerodon.agile.domain.agile.converter;
 
-import io.choerodon.agile.api.vo.IssueLinkTypeDTO;
+import io.choerodon.agile.api.vo.IssueLinkTypeVO;
 import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;
-import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -12,47 +12,47 @@ import org.springframework.stereotype.Component;
  * @since 2018/6/14
  */
 @Component
-public class IssueLinkTypeConverter implements ConvertorI<IssueLinkTypeE, IssueLinkTypeDO, IssueLinkTypeDTO> {
+public class IssueLinkTypeConverter implements ConvertorI<IssueLinkTypeE, IssueLinkTypeDTO, IssueLinkTypeVO> {
 
     @Override
-    public IssueLinkTypeE dtoToEntity(IssueLinkTypeDTO issueLinkTypeDTO) {
+    public IssueLinkTypeE dtoToEntity(IssueLinkTypeVO issueLinkTypeVO) {
+        IssueLinkTypeE issueLinkTypeE = new IssueLinkTypeE();
+        BeanUtils.copyProperties(issueLinkTypeVO, issueLinkTypeE);
+        return issueLinkTypeE;
+    }
+
+    @Override
+    public IssueLinkTypeE doToEntity(IssueLinkTypeDTO issueLinkTypeDTO) {
         IssueLinkTypeE issueLinkTypeE = new IssueLinkTypeE();
         BeanUtils.copyProperties(issueLinkTypeDTO, issueLinkTypeE);
         return issueLinkTypeE;
     }
 
     @Override
-    public IssueLinkTypeE doToEntity(IssueLinkTypeDO issueLinkTypeDO) {
-        IssueLinkTypeE issueLinkTypeE = new IssueLinkTypeE();
-        BeanUtils.copyProperties(issueLinkTypeDO, issueLinkTypeE);
-        return issueLinkTypeE;
+    public IssueLinkTypeVO entityToDto(IssueLinkTypeE issueLinkTypeE) {
+        IssueLinkTypeVO issueLinkTypeVO = new IssueLinkTypeVO();
+        BeanUtils.copyProperties(issueLinkTypeE, issueLinkTypeVO);
+        return issueLinkTypeVO;
     }
 
     @Override
-    public IssueLinkTypeDTO entityToDto(IssueLinkTypeE issueLinkTypeE) {
+    public IssueLinkTypeDTO entityToDo(IssueLinkTypeE issueLinkTypeE) {
         IssueLinkTypeDTO issueLinkTypeDTO = new IssueLinkTypeDTO();
         BeanUtils.copyProperties(issueLinkTypeE, issueLinkTypeDTO);
         return issueLinkTypeDTO;
     }
 
     @Override
-    public IssueLinkTypeDO entityToDo(IssueLinkTypeE issueLinkTypeE) {
-        IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
-        BeanUtils.copyProperties(issueLinkTypeE, issueLinkTypeDO);
-        return issueLinkTypeDO;
+    public IssueLinkTypeVO doToDto(IssueLinkTypeDTO issueLinkTypeDTO) {
+        IssueLinkTypeVO issueLinkTypeVO = new IssueLinkTypeVO();
+        BeanUtils.copyProperties(issueLinkTypeDTO, issueLinkTypeVO);
+        return issueLinkTypeVO;
     }
 
     @Override
-    public IssueLinkTypeDTO doToDto(IssueLinkTypeDO issueLinkTypeDO) {
+    public IssueLinkTypeDTO dtoToDo(IssueLinkTypeVO issueLinkTypeVO) {
         IssueLinkTypeDTO issueLinkTypeDTO = new IssueLinkTypeDTO();
-        BeanUtils.copyProperties(issueLinkTypeDO, issueLinkTypeDTO);
+        BeanUtils.copyProperties(issueLinkTypeVO, issueLinkTypeDTO);
         return issueLinkTypeDTO;
-    }
-
-    @Override
-    public IssueLinkTypeDO dtoToDo(IssueLinkTypeDTO issueLinkTypeDTO) {
-        IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
-        BeanUtils.copyProperties(issueLinkTypeDTO, issueLinkTypeDO);
-        return issueLinkTypeDO;
     }
 }

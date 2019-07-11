@@ -61,13 +61,13 @@ public class IssueUpdateVO {
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     @ApiModelProperty(value = "关联的标签列表")
-    private List<LabelIssueRelDTO> labelIssueRelDTOList;
+    private List<LabelIssueRelVO> labelIssueRelVOList;
 
     @ApiModelProperty(value = "关联的模块列表")
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
     @ApiModelProperty(value = "关联的问题链接列表")
-    private List<IssueLinkDTO> issueLinkDTOList;
+    private List<IssueLinkVO> issueLinkVOList;
 
     @ApiModelProperty(value = "关联的附件列表")
     private List<IssueAttachmentVO> issueAttachmentVOList;
@@ -214,12 +214,12 @@ public class IssueUpdateVO {
         this.versionIssueRelDTOList = versionIssueRelDTOList;
     }
 
-    public List<LabelIssueRelDTO> getLabelIssueRelDTOList() {
-        return labelIssueRelDTOList;
+    public List<LabelIssueRelVO> getLabelIssueRelVOList() {
+        return labelIssueRelVOList;
     }
 
-    public void setLabelIssueRelDTOList(List<LabelIssueRelDTO> labelIssueRelDTOList) {
-        this.labelIssueRelDTOList = labelIssueRelDTOList;
+    public void setLabelIssueRelVOList(List<LabelIssueRelVO> labelIssueRelVOList) {
+        this.labelIssueRelVOList = labelIssueRelVOList;
     }
 
     public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
@@ -230,12 +230,12 @@ public class IssueUpdateVO {
         this.componentIssueRelDTOList = componentIssueRelDTOList;
     }
 
-    public List<IssueLinkDTO> getIssueLinkDTOList() {
-        return issueLinkDTOList;
+    public List<IssueLinkVO> getIssueLinkVOList() {
+        return issueLinkVOList;
     }
 
-    public void setIssueLinkDTOList(List<IssueLinkDTO> issueLinkDTOList) {
-        this.issueLinkDTOList = issueLinkDTOList;
+    public void setIssueLinkVOList(List<IssueLinkVO> issueLinkVOList) {
+        this.issueLinkVOList = issueLinkVOList;
     }
 
     public List<IssueAttachmentVO> getIssueAttachmentVOList() {

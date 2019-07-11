@@ -140,7 +140,7 @@ public class IssueDTO extends BaseDTO {
     private List<IssueComponentBriefDO> issueComponentBriefDOS;
 
     @Transient
-    private List<LabelIssueRelDO> labelIssueRelDOS;
+    private List<LabelIssueRelDTO> labelIssueRelDTOS;
 
     private BigDecimal estimateTime;
 
@@ -183,12 +183,12 @@ public class IssueDTO extends BaseDTO {
     @Transient
     private Long epicRankObjectVersionNumber;
 
-    public List<LabelIssueRelDO> getLabelIssueRelDOS() {
-        return labelIssueRelDOS;
+    public List<LabelIssueRelDTO> getLabelIssueRelDTOS() {
+        return labelIssueRelDTOS;
     }
 
-    public void setLabelIssueRelDOS(List<LabelIssueRelDO> labelIssueRelDOS) {
-        this.labelIssueRelDOS = labelIssueRelDOS;
+    public void setLabelIssueRelDTOS(List<LabelIssueRelDTO> labelIssueRelDTOS) {
+        this.labelIssueRelDTOS = labelIssueRelDTOS;
     }
 
     public String getEpicColor() {

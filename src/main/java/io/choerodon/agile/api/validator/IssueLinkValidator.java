@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.validator;
 
 import io.choerodon.agile.domain.agile.entity.IssueLinkE;
-import io.choerodon.agile.infra.dataobject.IssueLinkDO;
+import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.agile.infra.mapper.IssueMapper;
@@ -27,32 +27,32 @@ public class IssueLinkValidator {
     @Autowired
     private IssueLinkMapper issueLinkMapper;
 
-    public void verifyCreateData(IssueLinkE issueLinkE) {
-        if (issueLinkE.getLinkTypeId() == null) {
+    public void verifyCreateData(IssueLinkDTO issueLinkDTO) {
+        if (issueLinkDTO.getLinkTypeId() == null) {
             throw new CommonException("error.issueLink.LinkTypeId");
         }
-        if (issueLinkE.getLinkedIssueId() == null) {
+        if (issueLinkDTO.getLinkedIssueId() == null) {
             throw new CommonException("error.issueLink.LinkIssueId");
         }
-        if (issueLinkE.getProjectId() == null) {
+        if (issueLinkDTO.getProjectId() == null) {
             throw new CommonException("error.issueLink.ProjectId");
         }
-        if (issueMapper.selectByPrimaryKey(issueLinkE.getIssueId()) == null) {
+        if (issueMapper.selectByPrimaryKey(issueLinkDTO.getIssueId()) == null) {
             throw new CommonException("error.issueLink.IssueNotFound");
         }
-        if (issueLinkTypeMapper.selectByPrimaryKey(issueLinkE.getLinkTypeId()) == null) {
+        if (issueLinkTypeMapper.selectByPrimaryKey(issueLinkDTO.getLinkTypeId()) == null) {
             throw new CommonException("error.issueLink.LinkTypeId");
         }
     }
 
-    public Boolean checkUniqueLink(IssueLinkE issueLinkE) {
-        IssueLinkDO issueLinkDO = new IssueLinkDO();
-        issueLinkDO.setIssueId(issueLinkE.getIssueId());
-        issueLinkDO.setLinkTypeId(issueLinkE.getLinkTypeId());
-        issueLinkDO.setLinkedIssueId(issueLinkE.getLinkedIssueId());
-        issueLinkDO.setProjectId(issueLinkE.getProjectId());
-        List<IssueLinkDO> issueLinkDOList = issueLinkMapper.select(issueLinkDO);
-        if (issueLinkDOList != null && !issueLinkDOList.isEmpty()) {
+    public Boolean checkUniqueLink(IssueLinkDTO issueLinkDTO) {
+        IssueLinkDTO issueLink = new IssueLinkDTO();
+        issueLink.setIssueId(issueLinkDTO.getIssueId());
+        issueLink.setLinkTypeId(issueLinkDTO.getLinkTypeId());
+        issueLink.setLinkedIssueId(issueLinkDTO.getLinkedIssueId());
+        issueLink.setProjectId(issueLinkDTO.getProjectId());
+        List<IssueLinkDTO> issueLinkDTOList = issueLinkMapper.select(issueLink);
+        if (issueLinkDTOList != null && !issueLinkDTOList.isEmpty()) {
             return false;
         }
         return true;

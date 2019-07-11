@@ -181,7 +181,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<VersionIssueRelDO> queryVersionNameByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("relationType") String relationType);
 
-    List<LabelIssueRelDO> queryLabelIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<LabelIssueRelDTO> queryLabelIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
     List<ComponentIssueRelDO> queryComponentIssueByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 

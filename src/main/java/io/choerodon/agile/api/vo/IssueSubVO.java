@@ -56,7 +56,7 @@ public class IssueSubVO {
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     @ApiModelProperty(value = "关联的标签列表")
-    private List<LabelIssueRelDTO> labelIssueRelDTOList;
+    private List<LabelIssueRelVO> labelIssueRelVOList;
 
     @ApiModelProperty(value = "评论列表")
     private List<IssueCommentVO> issueCommentVOList;
@@ -319,12 +319,12 @@ public class IssueSubVO {
         this.versionIssueRelDTOList = versionIssueRelDTOList;
     }
 
-    public List<LabelIssueRelDTO> getLabelIssueRelDTOList() {
-        return labelIssueRelDTOList;
+    public List<LabelIssueRelVO> getLabelIssueRelVOList() {
+        return labelIssueRelVOList;
     }
 
-    public void setLabelIssueRelDTOList(List<LabelIssueRelDTO> labelIssueRelDTOList) {
-        this.labelIssueRelDTOList = labelIssueRelDTOList;
+    public void setLabelIssueRelVOList(List<LabelIssueRelVO> labelIssueRelVOList) {
+        this.labelIssueRelVOList = labelIssueRelVOList;
     }
 
     public List<IssueCommentVO> getIssueCommentVOList() {

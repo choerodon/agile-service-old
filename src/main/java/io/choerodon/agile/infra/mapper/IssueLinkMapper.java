@@ -13,7 +13,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:50:34
  */
-public interface IssueLinkMapper extends Mapper<IssueLinkDO> {
+public interface IssueLinkMapper extends Mapper<IssueLinkDTO> {
 
     /**
      * 根据issueId删除
@@ -29,9 +29,9 @@ public interface IssueLinkMapper extends Mapper<IssueLinkDO> {
      * @param issueId   issueId
      * @param projectId projectId
      * @param noIssueTest noIssueTest
-     * @return IssueLinkDO
+     * @return IssueLinkDTO
      */
-    List<IssueLinkDO> queryIssueLinkByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId,@Param("noIssueTest") Boolean noIssueTest);
+    List<IssueLinkDTO> queryIssueLinkByIssueId(@Param("issueId") Long issueId, @Param("projectId") Long projectId, @Param("noIssueTest") Boolean noIssueTest);
 
     /**
      * 批量更新issue链接关系到别的issueLinkType
@@ -42,5 +42,5 @@ public interface IssueLinkMapper extends Mapper<IssueLinkDO> {
      */
     int batchUpdateRelToIssueLinkType(@Param("issueLinkTypeId") Long issueLinkTypeId, @Param("toIssueLinkTypeId") Long toIssueLinkTypeId);
 
-    List<IssueLinkDO> listIssueLinkByBatch(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
+    List<IssueLinkDTO> listIssueLinkByBatch(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 }

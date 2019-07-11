@@ -43,7 +43,7 @@ public class IssueComponentDetailDO {
 
     private List<VersionIssueRelDO> versionIssueRelDOList;
 
-    private List<LabelIssueRelDO> labelIssueRelDOList;
+    private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
     private List<ComponentIssueRelDO> componentIssueRelDOList;
 
@@ -175,12 +175,12 @@ public class IssueComponentDetailDO {
         this.versionIssueRelDOList = versionIssueRelDOList;
     }
 
-    public List<LabelIssueRelDO> getLabelIssueRelDOList() {
-        return labelIssueRelDOList;
+    public List<LabelIssueRelDTO> getLabelIssueRelDTOList() {
+        return labelIssueRelDTOList;
     }
 
-    public void setLabelIssueRelDOList(List<LabelIssueRelDO> labelIssueRelDOList) {
-        this.labelIssueRelDOList = labelIssueRelDOList;
+    public void setLabelIssueRelDTOList(List<LabelIssueRelDTO> labelIssueRelDTOList) {
+        this.labelIssueRelDTOList = labelIssueRelDTOList;
     }
 
     public List<ComponentIssueRelDO> getComponentIssueRelDOList() {

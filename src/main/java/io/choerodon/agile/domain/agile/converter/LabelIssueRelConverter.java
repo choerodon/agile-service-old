@@ -1,11 +1,11 @@
 package io.choerodon.agile.domain.agile.converter;
 
 
-import io.choerodon.agile.infra.dataobject.LabelIssueRelDO;
+import io.choerodon.agile.api.vo.LabelIssueRelVO;
+import io.choerodon.agile.infra.dataobject.LabelIssueRelDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.BeanUtils;
-import io.choerodon.agile.api.vo.LabelIssueRelDTO;
 import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
 
 /**
@@ -15,47 +15,47 @@ import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
  * @since 2018-05-14 21:31:22
  */
 @Component
-public class LabelIssueRelConverter implements ConvertorI<LabelIssueRelE, LabelIssueRelDO, LabelIssueRelDTO> {
+public class LabelIssueRelConverter implements ConvertorI<LabelIssueRelE, LabelIssueRelDTO, LabelIssueRelVO> {
 
     @Override
-    public LabelIssueRelE dtoToEntity(LabelIssueRelDTO labelIssueRelDTO) {
+    public LabelIssueRelE dtoToEntity(LabelIssueRelVO labelIssueRelVO) {
+        LabelIssueRelE labelIssueRelE = new LabelIssueRelE();
+        BeanUtils.copyProperties(labelIssueRelVO, labelIssueRelE);
+        return labelIssueRelE;
+    }
+
+    @Override
+    public LabelIssueRelE doToEntity(LabelIssueRelDTO labelIssueRelDTO) {
         LabelIssueRelE labelIssueRelE = new LabelIssueRelE();
         BeanUtils.copyProperties(labelIssueRelDTO, labelIssueRelE);
         return labelIssueRelE;
     }
 
     @Override
-    public LabelIssueRelE doToEntity(LabelIssueRelDO labelIssueRelDO) {
-        LabelIssueRelE labelIssueRelE = new LabelIssueRelE();
-        BeanUtils.copyProperties(labelIssueRelDO, labelIssueRelE);
-        return labelIssueRelE;
+    public LabelIssueRelVO entityToDto(LabelIssueRelE labelIssueRelE) {
+        LabelIssueRelVO labelIssueRelVO = new LabelIssueRelVO();
+        BeanUtils.copyProperties(labelIssueRelE, labelIssueRelVO);
+        return labelIssueRelVO;
     }
 
     @Override
-    public LabelIssueRelDTO entityToDto(LabelIssueRelE labelIssueRelE) {
+    public LabelIssueRelDTO entityToDo(LabelIssueRelE labelIssueRelE) {
         LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
         BeanUtils.copyProperties(labelIssueRelE, labelIssueRelDTO);
         return labelIssueRelDTO;
     }
 
     @Override
-    public LabelIssueRelDO entityToDo(LabelIssueRelE labelIssueRelE) {
-        LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO();
-        BeanUtils.copyProperties(labelIssueRelE, labelIssueRelDO);
-        return labelIssueRelDO;
+    public LabelIssueRelVO doToDto(LabelIssueRelDTO labelIssueRelDTO) {
+        LabelIssueRelVO labelIssueRelVO = new LabelIssueRelVO();
+        BeanUtils.copyProperties(labelIssueRelDTO, labelIssueRelVO);
+        return labelIssueRelVO;
     }
 
     @Override
-    public LabelIssueRelDTO doToDto(LabelIssueRelDO labelIssueRelDO) {
+    public LabelIssueRelDTO dtoToDo(LabelIssueRelVO labelIssueRelVO) {
         LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
-        BeanUtils.copyProperties(labelIssueRelDO, labelIssueRelDTO);
+        BeanUtils.copyProperties(labelIssueRelVO, labelIssueRelDTO);
         return labelIssueRelDTO;
-    }
-
-    @Override
-    public LabelIssueRelDO dtoToDo(LabelIssueRelDTO labelIssueRelDTO) {
-        LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO();
-        BeanUtils.copyProperties(labelIssueRelDTO, labelIssueRelDO);
-        return labelIssueRelDO;
     }
 }

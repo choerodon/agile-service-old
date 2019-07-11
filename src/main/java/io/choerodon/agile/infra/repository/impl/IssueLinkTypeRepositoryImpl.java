@@ -1,9 +1,9 @@
 package io.choerodon.agile.infra.repository.impl;
 
 import io.choerodon.agile.domain.agile.entity.IssueLinkTypeE;
+import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import io.choerodon.agile.infra.repository.IssueLinkTypeRepository;
-import io.choerodon.agile.infra.dataobject.IssueLinkDO;
-import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -28,37 +28,37 @@ public class IssueLinkTypeRepositoryImpl implements IssueLinkTypeRepository {
 
     @Override
     public IssueLinkTypeE update(IssueLinkTypeE issueLinkTypeE) {
-        IssueLinkTypeDO issueLinkTypeDO = ConvertHelper.convert(issueLinkTypeE, IssueLinkTypeDO.class);
-        if (issueLinkTypeMapper.updateByPrimaryKeySelective(issueLinkTypeDO) != 1) {
+        IssueLinkTypeDTO issueLinkTypeDTO = ConvertHelper.convert(issueLinkTypeE, IssueLinkTypeDTO.class);
+        if (issueLinkTypeMapper.updateByPrimaryKeySelective(issueLinkTypeDTO) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
-        return ConvertHelper.convert(issueLinkTypeMapper.selectByPrimaryKey(issueLinkTypeDO.getLinkTypeId()), IssueLinkTypeE.class);
+        return ConvertHelper.convert(issueLinkTypeMapper.selectByPrimaryKey(issueLinkTypeDTO.getLinkTypeId()), IssueLinkTypeE.class);
     }
 
     @Override
     public IssueLinkTypeE create(IssueLinkTypeE issueLinkTypeE) {
-        IssueLinkTypeDO issueLinkTypeDO = ConvertHelper.convert(issueLinkTypeE, IssueLinkTypeDO.class);
-        if (issueLinkTypeMapper.insert(issueLinkTypeDO) != 1) {
+        IssueLinkTypeDTO issueLinkTypeDTO = ConvertHelper.convert(issueLinkTypeE, IssueLinkTypeDTO.class);
+        if (issueLinkTypeMapper.insert(issueLinkTypeDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        IssueLinkTypeDO query = new IssueLinkTypeDO();
-        query.setLinkTypeId(issueLinkTypeDO.getLinkTypeId());
-        return ConvertHelper.convert(issueLinkTypeMapper.selectByPrimaryKey(issueLinkTypeDO.getLinkTypeId()), IssueLinkTypeE.class);
+        IssueLinkTypeDTO query = new IssueLinkTypeDTO();
+        query.setLinkTypeId(issueLinkTypeDTO.getLinkTypeId());
+        return ConvertHelper.convert(issueLinkTypeMapper.selectByPrimaryKey(issueLinkTypeDTO.getLinkTypeId()), IssueLinkTypeE.class);
     }
 
     @Override
     public int delete(Long linkTypeId, Long projectId) {
-        IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
-        issueLinkTypeDO.setLinkTypeId(linkTypeId);
-        issueLinkTypeDO.setProjectId(projectId);
-        return issueLinkTypeMapper.delete(issueLinkTypeDO);
+        IssueLinkTypeDTO issueLinkTypeDTO = new IssueLinkTypeDTO();
+        issueLinkTypeDTO.setLinkTypeId(linkTypeId);
+        issueLinkTypeDTO.setProjectId(projectId);
+        return issueLinkTypeMapper.delete(issueLinkTypeDTO);
     }
 
     @Override
     public int deleteIssueLinkTypeRel(Long issueLinkTypeId) {
-        IssueLinkDO issueLinkDO = new IssueLinkDO();
-        issueLinkDO.setLinkTypeId(issueLinkTypeId);
-        return issueLinkMapper.delete(issueLinkDO);
+        IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
+        issueLinkDTO.setLinkTypeId(issueLinkTypeId);
+        return issueLinkMapper.delete(issueLinkDTO);
     }
 
     @Override

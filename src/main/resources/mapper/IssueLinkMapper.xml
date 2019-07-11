@@ -6,7 +6,7 @@
         WHERE issue_id = #{issueId} OR linked_issue_id = #{issueId}
     </delete>
 
-    <select id="queryIssueLinkByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDO">
+    <select id="queryIssueLinkByIssueId" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDTO">
         SELECT a.*
         FROM
             (
@@ -68,7 +68,7 @@
         WHERE link_type_id = #{issueLinkTypeId}
     </update>
 
-    <select id="listIssueLinkByBatch" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDO">
+    <select id="listIssueLinkByBatch" resultType="io.choerodon.agile.infra.dataobject.IssueLinkDTO">
         SELECT a.*
         FROM
         (

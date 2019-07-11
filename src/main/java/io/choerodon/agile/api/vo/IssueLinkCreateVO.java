@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018/6/14
  */
-public class IssueLinkCreateDTO {
+public class IssueLinkCreateVO {
 
     @ApiModelProperty(value = "问题链接类型id")
     private Long linkTypeId;

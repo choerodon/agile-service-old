@@ -6,7 +6,7 @@ import io.choerodon.agile.api.vo.event.DemoPayload;
 import io.choerodon.agile.api.vo.event.OrganizationRegisterEventPayload;
 import io.choerodon.agile.infra.dataobject.BoardColumnDTO;
 import io.choerodon.agile.infra.dataobject.BoardDTO;
-import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -218,12 +218,12 @@ public class DemoServiceImpl implements DemoService {
     private void updateLabel(Long projectId, Long issueId, String labelName) {
         IssueUpdateVO issueUpdateVO = new IssueUpdateVO();
         issueUpdateVO.setIssueId(issueId);
-        List<LabelIssueRelDTO> labelIssueRelDTOList = new ArrayList<>();
-        LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
-        labelIssueRelDTO.setProjectId(projectId);
-        labelIssueRelDTO.setLabelName(labelName);
-        labelIssueRelDTOList.add(labelIssueRelDTO);
-        issueUpdateVO.setLabelIssueRelDTOList(labelIssueRelDTOList);
+        List<LabelIssueRelVO> labelIssueRelVOList = new ArrayList<>();
+        LabelIssueRelVO labelIssueRelVO = new LabelIssueRelVO();
+        labelIssueRelVO.setProjectId(projectId);
+        labelIssueRelVO.setLabelName(labelName);
+        labelIssueRelVOList.add(labelIssueRelVO);
+        issueUpdateVO.setLabelIssueRelVOList(labelIssueRelVOList);
         List<String> fieldList = new ArrayList<>();
         issueService.updateIssue(projectId, issueUpdateVO, fieldList);
     }
@@ -639,22 +639,22 @@ public class DemoServiceImpl implements DemoService {
         updateFixVersion(projectId, test4.getIssueId(), productVersionDetailVO.getVersionId());
 
         // 创建issueLink
-        List<IssueLinkCreateDTO> issueLinkCreateDTOList = new ArrayList<>();
-        IssueLinkTypeDO issueLinkTypeDO = new IssueLinkTypeDO();
-        issueLinkTypeDO.setProjectId(projectId);
-        List<IssueLinkTypeDO> issueLinkTypeDOS = issueLinkTypeMapper.select(issueLinkTypeDO);
+        List<IssueLinkCreateVO> issueLinkCreateVOList = new ArrayList<>();
+        IssueLinkTypeDTO issueLinkTypeDTO = new IssueLinkTypeDTO();
+        issueLinkTypeDTO.setProjectId(projectId);
+        List<IssueLinkTypeDTO> issueLinkTypeDTOS = issueLinkTypeMapper.select(issueLinkTypeDTO);
         Long wantLinkTypeId = null;
-        for (IssueLinkTypeDO issueLinkTypeDO1 : issueLinkTypeDOS) {
-            if ("阻塞".equals(issueLinkTypeDO1.getLinkName())) {
-                wantLinkTypeId = issueLinkTypeDO1.getLinkTypeId();
+        for (IssueLinkTypeDTO issueLinkTypeDTO1 : issueLinkTypeDTOS) {
+            if ("阻塞".equals(issueLinkTypeDTO1.getLinkName())) {
+                wantLinkTypeId = issueLinkTypeDTO1.getLinkTypeId();
             }
         }
-        IssueLinkCreateDTO issueLinkCreateDTO = new IssueLinkCreateDTO();
-        issueLinkCreateDTO.setLinkTypeId(wantLinkTypeId);
-        issueLinkCreateDTO.setIssueId(test4.getIssueId());
-        issueLinkCreateDTO.setLinkedIssueId(story4.getIssueId());
-        issueLinkCreateDTOList.add(issueLinkCreateDTO);
-        issueLinkService.createIssueLinkList(issueLinkCreateDTOList, story4.getIssueId(), projectId);
+        IssueLinkCreateVO issueLinkCreateVO = new IssueLinkCreateVO();
+        issueLinkCreateVO.setLinkTypeId(wantLinkTypeId);
+        issueLinkCreateVO.setIssueId(test4.getIssueId());
+        issueLinkCreateVO.setLinkedIssueId(story4.getIssueId());
+        issueLinkCreateVOList.add(issueLinkCreateVO);
+        issueLinkService.createIssueLinkList(issueLinkCreateVOList, story4.getIssueId(), projectId);
 
         // 完成冲刺1所有的issue
         List<IssueStatusVO> issueStatusVOS = issueStatusService.queryIssueStatusList(projectId);

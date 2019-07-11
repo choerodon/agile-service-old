@@ -100,7 +100,7 @@ public class IssueListFieldKVVO {
     private List<VersionIssueRelDTO> versionIssueRelDTOS;
 
     @ApiModelProperty(value = "关联的标签")
-    private List<LabelIssueRelDTO> labelIssueRelDTOS;
+    private List<LabelIssueRelVO> labelIssueRelVOS;
 
     @ApiModelProperty(value = "冲刺列表")
     private List<IssueSprintDTO> issueSprintDTOS;
@@ -115,12 +115,12 @@ public class IssueListFieldKVVO {
         return issueSprintDTOS;
     }
 
-    public List<LabelIssueRelDTO> getLabelIssueRelDTOS() {
-        return labelIssueRelDTOS;
+    public List<LabelIssueRelVO> getLabelIssueRelVOS() {
+        return labelIssueRelVOS;
     }
 
-    public void setLabelIssueRelDTOS(List<LabelIssueRelDTO> labelIssueRelDTOS) {
-        this.labelIssueRelDTOS = labelIssueRelDTOS;
+    public void setLabelIssueRelVOS(List<LabelIssueRelVO> labelIssueRelVOS) {
+        this.labelIssueRelVOS = labelIssueRelVOS;
     }
 
     public void setIssueSprintDTOS(List<IssueSprintDTO> issueSprintDTOS) {

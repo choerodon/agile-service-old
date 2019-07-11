@@ -13,7 +13,7 @@ import io.choerodon.mybatis.entity.BaseDTO;
  * @since 2018-05-14 21:31:22
  */
 @Table(name = "agile_label_issue_rel")
-public class LabelIssueRelDO extends BaseDTO {
+public class LabelIssueRelDTO extends BaseDTO {
 
     /***/
     @Id

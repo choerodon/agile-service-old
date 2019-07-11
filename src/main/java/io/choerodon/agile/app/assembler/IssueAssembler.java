@@ -43,7 +43,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueVO.setActivePi(sprintNameAssembler.toTarget(issueDetailDTO.getActivePi(), PiNameVO.class));
         issueVO.setClosePi(sprintNameAssembler.toTargetList(issueDetailDTO.getClosePi(), PiNameVO.class));
         issueVO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
-        issueVO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
+        issueVO.setLabelIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getLabelIssueRelDTOList(), LabelIssueRelVO.class));
         issueVO.setIssueAttachmentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueAttachmentDTOList(), IssueAttachmentVO.class));
         issueVO.setIssueCommentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueCommentDTOList(), IssueCommentVO.class));
         issueVO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDTO.getSubIssueDTOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
@@ -128,7 +128,7 @@ public class IssueAssembler extends AbstractAssembler {
             issueListFieldKVVO.setVersionIssueRelDTOS(toTargetList(issueDO.getVersionIssueRelDOS(), VersionIssueRelDTO.class));
             issueListFieldKVVO.setIssueComponentBriefDTOS(toTargetList(issueDO.getIssueComponentBriefDOS(), IssueComponentBriefDTO.class));
             issueListFieldKVVO.setIssueSprintDTOS(toTargetList(issueDO.getIssueSprintDOS(), IssueSprintDTO.class));
-            issueListFieldKVVO.setLabelIssueRelDTOS(toTargetList(issueDO.getLabelIssueRelDOS(), LabelIssueRelDTO.class));
+            issueListFieldKVVO.setLabelIssueRelVOS(toTargetList(issueDO.getLabelIssueRelDTOS(), LabelIssueRelVO.class));
             issueListFieldKVVO.setFoundationFieldValue(foundationCodeValue.get(issueDO.getIssueId()) != null ? foundationCodeValue.get(issueDO.getIssueId()) : new HashMap<>());
             issueListFieldKVDTOList.add(issueListFieldKVVO);
         });
@@ -173,7 +173,7 @@ public class IssueAssembler extends AbstractAssembler {
             issueListVO.setVersionIssueRelDTOS(toTargetList(issueDO.getVersionIssueRelDOS(), VersionIssueRelDTO.class));
             issueListVO.setIssueComponentBriefDTOS(toTargetList(issueDO.getIssueComponentBriefDOS(), IssueComponentBriefDTO.class));
             issueListVO.setIssueSprintDTOS(toTargetList(issueDO.getIssueSprintDOS(), IssueSprintDTO.class));
-            issueListVO.setLabelIssueRelDTOS(toTargetList(issueDO.getLabelIssueRelDOS(), LabelIssueRelDTO.class));
+            issueListVO.setLabelIssueRelVOS(toTargetList(issueDO.getLabelIssueRelDTOS(), LabelIssueRelVO.class));
             issueListDTOList.add(issueListVO);
         });
         return issueListDTOList;
@@ -222,7 +222,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueSubVO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
         issueSubVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameVO.class));
         issueSubVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameVO.class));
-        issueSubVO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDetailDTO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
+        issueSubVO.setLabelIssueRelVOList(ConvertHelper.convertList(issueDetailDTO.getLabelIssueRelDTOList(), LabelIssueRelVO.class));
         issueSubVO.setIssueAttachmentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueAttachmentDTOList(), IssueAttachmentVO.class));
         issueSubVO.setIssueCommentVOList(ConvertHelper.convertList(issueDetailDTO.getIssueCommentDTOList(), IssueCommentVO.class));
         List<Long> assigneeIdList = new ArrayList<>();
@@ -288,7 +288,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueCreateVO.setRemainingTime(null);
         issueCreateVO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDTO.getComponentIssueRelDOList()));
         issueCreateVO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDetailDTO.getVersionIssueRelDOList()));
-        issueCreateVO.setLabelIssueRelDTOList(copyLabelIssueRel(issueDetailDTO.getLabelIssueRelDOList(), issueDetailDTO.getProjectId()));
+        issueCreateVO.setLabelIssueRelVOList(copyLabelIssueRel(issueDetailDTO.getLabelIssueRelDTOList(), issueDetailDTO.getProjectId()));
         return issueCreateVO;
     }
 
@@ -299,7 +299,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueSubCreateVO.setRemainingTime(null);
         issueSubCreateVO.setComponentIssueRelDTOList(copyComponentIssueRel(issueDetailDTO.getComponentIssueRelDOList()));
         issueSubCreateVO.setVersionIssueRelDTOList(copyVersionIssueRel(issueDetailDTO.getVersionIssueRelDOList()));
-        issueSubCreateVO.setLabelIssueRelDTOList(copyLabelIssueRel(issueDetailDTO.getLabelIssueRelDOList(), issueDetailDTO.getProjectId()));
+        issueSubCreateVO.setLabelIssueRelVOList(copyLabelIssueRel(issueDetailDTO.getLabelIssueRelDTOList(), issueDetailDTO.getProjectId()));
         return issueSubCreateVO;
     }
 
@@ -315,18 +315,18 @@ public class IssueAssembler extends AbstractAssembler {
         return componentIssueRelDTOList;
     }
 
-    private List<LabelIssueRelDTO> copyLabelIssueRel(List<LabelIssueRelDO> labelIssueRelDOList, Long projectId) {
-        List<LabelIssueRelDTO> labelIssueRelDTOList = new ArrayList<>(labelIssueRelDOList.size());
-        labelIssueRelDOList.forEach(labelIssueRelDO -> {
-            LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
-            BeanUtils.copyProperties(labelIssueRelDO, labelIssueRelDTO);
-            labelIssueRelDTO.setIssueId(null);
-            labelIssueRelDTO.setLabelName(null);
-            labelIssueRelDTO.setObjectVersionNumber(null);
-            labelIssueRelDTO.setProjectId(projectId);
-            labelIssueRelDTOList.add(labelIssueRelDTO);
+    private List<LabelIssueRelVO> copyLabelIssueRel(List<LabelIssueRelDTO> labelIssueRelDTOList, Long projectId) {
+        List<LabelIssueRelVO> labelIssueRelVOList = new ArrayList<>(labelIssueRelDTOList.size());
+        labelIssueRelDTOList.forEach(labelIssueRelDO -> {
+            LabelIssueRelVO labelIssueRelVO = new LabelIssueRelVO();
+            BeanUtils.copyProperties(labelIssueRelDO, labelIssueRelVO);
+            labelIssueRelVO.setIssueId(null);
+            labelIssueRelVO.setLabelName(null);
+            labelIssueRelVO.setObjectVersionNumber(null);
+            labelIssueRelVO.setProjectId(projectId);
+            labelIssueRelVOList.add(labelIssueRelVO);
         });
-        return labelIssueRelDTOList;
+        return labelIssueRelVOList;
     }
 
     private List<VersionIssueRelDTO> copyVersionIssueRel(List<VersionIssueRelDO> versionIssueRelDOList) {
@@ -350,7 +350,7 @@ public class IssueAssembler extends AbstractAssembler {
         issueCreateDTO.setParentIssueId(parentIssueId);
         issueCreateDTO.setComponentIssueRelDTOList(copyComponentIssueRel(subIssueDetailDTO.getComponentIssueRelDOList()));
         issueCreateDTO.setVersionIssueRelDTOList(copyVersionIssueRel(subIssueDetailDTO.getVersionIssueRelDOList()));
-        issueCreateDTO.setLabelIssueRelDTOList(copyLabelIssueRel(subIssueDetailDTO.getLabelIssueRelDOList(), subIssueDetailDTO.getProjectId()));
+        issueCreateDTO.setLabelIssueRelVOList(copyLabelIssueRel(subIssueDetailDTO.getLabelIssueRelDTOList(), subIssueDetailDTO.getProjectId()));
         return issueCreateDTO;
     }
 
@@ -390,7 +390,7 @@ public class IssueAssembler extends AbstractAssembler {
                 issueComponentDetailDTO.setPriorityVO(priorityDTOMap.get(issueDO.getPriorityId()));
                 issueComponentDetailDTO.setComponentIssueRelDTOList(ConvertHelper.convertList(issueDO.getComponentIssueRelDOList(), ComponentIssueRelDTO.class));
                 issueComponentDetailDTO.setVersionIssueRelDTOList(ConvertHelper.convertList(issueDO.getVersionIssueRelDOList(), VersionIssueRelDTO.class));
-                issueComponentDetailDTO.setLabelIssueRelDTOList(ConvertHelper.convertList(issueDO.getLabelIssueRelDOList(), LabelIssueRelDTO.class));
+                issueComponentDetailDTO.setLabelIssueRelVOList(ConvertHelper.convertList(issueDO.getLabelIssueRelDTOList(), LabelIssueRelVO.class));
                 issueComponentDetailDTOS.add(issueComponentDetailDTO);
             });
         }

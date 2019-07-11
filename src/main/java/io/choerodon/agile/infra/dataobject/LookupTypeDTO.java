@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
  * @since 2018-05-15 10:13:37
  */
 @Table(name = "agile_lookup_type")
-public class LookupTypeDO extends BaseDTO {
+public class LookupTypeDTO extends BaseDTO {
 
     /***/
     @Id

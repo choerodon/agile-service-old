@@ -52,20 +52,20 @@ public class IssueSubCreateVO {
     private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     @ApiModelProperty(value = "关联的标签列表")
-    private List<LabelIssueRelDTO> labelIssueRelDTOList;
+    private List<LabelIssueRelVO> labelIssueRelVOList;
 
     @ApiModelProperty(value = "关联的模块列表")
     private List<ComponentIssueRelDTO> componentIssueRelDTOList;
 
     @ApiModelProperty(value = "关联的问题链接列表")
-    private List<IssueLinkCreateDTO> issueLinkCreateDTOList;
+    private List<IssueLinkCreateVO> issueLinkCreateVOList;
 
-    public List<IssueLinkCreateDTO> getIssueLinkCreateDTOList() {
-        return issueLinkCreateDTOList;
+    public List<IssueLinkCreateVO> getIssueLinkCreateVOList() {
+        return issueLinkCreateVOList;
     }
 
-    public void setIssueLinkCreateDTOList(List<IssueLinkCreateDTO> issueLinkCreateDTOList) {
-        this.issueLinkCreateDTOList = issueLinkCreateDTOList;
+    public void setIssueLinkCreateVOList(List<IssueLinkCreateVO> issueLinkCreateVOList) {
+        this.issueLinkCreateVOList = issueLinkCreateVOList;
     }
 
     public BigDecimal getRemainingTime() {
@@ -140,12 +140,12 @@ public class IssueSubCreateVO {
         this.versionIssueRelDTOList = versionIssueRelDTOList;
     }
 
-    public List<LabelIssueRelDTO> getLabelIssueRelDTOList() {
-        return labelIssueRelDTOList;
+    public List<LabelIssueRelVO> getLabelIssueRelVOList() {
+        return labelIssueRelVOList;
     }
 
-    public void setLabelIssueRelDTOList(List<LabelIssueRelDTO> labelIssueRelDTOList) {
-        this.labelIssueRelDTOList = labelIssueRelDTOList;
+    public void setLabelIssueRelVOList(List<LabelIssueRelVO> labelIssueRelVOList) {
+        this.labelIssueRelVOList = labelIssueRelVOList;
     }
 
     public Long getSprintId() {

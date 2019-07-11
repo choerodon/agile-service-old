@@ -46,11 +46,11 @@ public class IssueDetailDTO {
 
     private List<VersionIssueRelDO> versionIssueRelDOList;
 
-    private List<LabelIssueRelDO> labelIssueRelDOList;
+    private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
     private List<ComponentIssueRelDO> componentIssueRelDOList;
 
-    private List<IssueLinkDO> issueLinkDOList;
+    private List<IssueLinkDTO> issueLinkDTOList;
 
     private SprintNameDTO activeSprint;
 
@@ -238,12 +238,12 @@ public class IssueDetailDTO {
         this.versionIssueRelDOList = versionIssueRelDOList;
     }
 
-    public List<LabelIssueRelDO> getLabelIssueRelDOList() {
-        return labelIssueRelDOList;
+    public List<LabelIssueRelDTO> getLabelIssueRelDTOList() {
+        return labelIssueRelDTOList;
     }
 
-    public void setLabelIssueRelDOList(List<LabelIssueRelDO> labelIssueRelDOList) {
-        this.labelIssueRelDOList = labelIssueRelDOList;
+    public void setLabelIssueRelDTOList(List<LabelIssueRelDTO> labelIssueRelDTOList) {
+        this.labelIssueRelDTOList = labelIssueRelDTOList;
     }
 
     public List<ComponentIssueRelDO> getComponentIssueRelDOList() {
@@ -254,12 +254,12 @@ public class IssueDetailDTO {
         this.componentIssueRelDOList = componentIssueRelDOList;
     }
 
-    public List<IssueLinkDO> getIssueLinkDOList() {
-        return issueLinkDOList;
+    public List<IssueLinkDTO> getIssueLinkDTOList() {
+        return issueLinkDTOList;
     }
 
-    public void setIssueLinkDOList(List<IssueLinkDO> issueLinkDOList) {
-        this.issueLinkDOList = issueLinkDOList;
+    public void setIssueLinkDTOList(List<IssueLinkDTO> issueLinkDTOList) {
+        this.issueLinkDTOList = issueLinkDTOList;
     }
 
     public List<IssueCommentDTO> getIssueCommentDTOList() {

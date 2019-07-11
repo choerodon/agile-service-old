@@ -12,7 +12,7 @@ import javax.persistence.*;
  * @since 2018-05-14 21:50:34
  */
 @Table(name = "agile_issue_link")
-public class IssueLinkDO extends BaseDTO {
+public class IssueLinkDTO extends BaseDTO {
 
     /***/
     @Id
@@ -61,6 +61,9 @@ public class IssueLinkDO extends BaseDTO {
 
     @Transient
     private String applyType;
+
+    @Transient
+    private Boolean in;
 
     private Long projectId;
 
@@ -182,6 +185,14 @@ public class IssueLinkDO extends BaseDTO {
 
     public Long getAssigneeId() {
         return assigneeId;
+    }
+
+    public void setIn(Boolean in) {
+        this.in = in;
+    }
+
+    public Boolean getIn() {
+        return in;
     }
 
     @Override

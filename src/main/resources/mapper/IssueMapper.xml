@@ -40,7 +40,7 @@
         <collection property="closePi" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDTO"
                     select="queryClosePiNameByIssueId"/>
-        <collection property="labelIssueRelDOList" column="issue_id"
+        <collection property="labelIssueRelDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDTO"
                     select="queryLabelIssueByIssueId"/>
         <collection property="componentIssueRelDOList" column="issue_id"
@@ -105,7 +105,7 @@
         <collection property="versionIssueRelDOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
                     select="queryVersionIssueRelByIssueId"/>
-        <collection property="labelIssueRelDOList" column="issue_id"
+        <collection property="labelIssueRelDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
                     select="queryLabelIssueByIssueId"/>
         <collection property="componentIssueRelDOList" column="issue_id"
@@ -244,7 +244,7 @@
         WHERE apf.issue_id = #{issueId} AND apf.pi_id = ap.id AND ap.status_code != 'done'
     </select>
 
-    <select id="queryLabelIssueByIssueId" resultType="io.choerodon.agile.infra.dataobject.LabelIssueRelDO">
+    <select id="queryLabelIssueByIssueId" resultType="io.choerodon.agile.infra.dataobject.LabelIssueRelDTO">
         SELECT
             ali.*,
             ail.label_name
@@ -252,7 +252,7 @@
         WHERE ali.issue_id = #{issueId}
     </select>
 
-    <select id="queryLabelIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.LabelIssueRelDO">
+    <select id="queryLabelIssueByIssueIds" resultType="io.choerodon.agile.infra.dataobject.LabelIssueRelDTO">
         SELECT
         ali.*,
         ail.label_name
@@ -370,8 +370,8 @@
             <id property="componentId" column="component_id"/>
             <id property="name" column="component_name"/>
         </collection>
-        <collection property="labelIssueRelDOS" autoMapping="true"
-                    ofType="io.choerodon.agile.infra.dataobject.LabelIssueRelDO">
+        <collection property="labelIssueRelDTOS" autoMapping="true"
+                    ofType="io.choerodon.agile.infra.dataobject.LabelIssueRelDTO">
             <id property="labelId" column="label_id"/>
             <id property="labelName" column="label_name"/>
         </collection>

@@ -187,16 +187,16 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.componentIssueRelDTOList = componentIssueRelDTOList
 
         and: '设置标签'
-        List<LabelIssueRelDTO> labelIssueRelDTOList = new ArrayList<>()
-        LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO()
+        List<LabelIssueRelVO> labelIssueRelDTOList = new ArrayList<>()
+        LabelIssueRelVO labelIssueRelDTO = new LabelIssueRelVO()
         labelIssueRelDTO.projectId = projectId
         labelIssueRelDTO.labelName = "测试标签"
-        LabelIssueRelDTO labelIssueRelDTO1 = new LabelIssueRelDTO()
+        LabelIssueRelVO labelIssueRelDTO1 = new LabelIssueRelVO()
         labelIssueRelDTO1.projectId = projectId
         labelIssueRelDTO1.labelId = 1L
         labelIssueRelDTOList.add(labelIssueRelDTO)
         labelIssueRelDTOList.add(labelIssueRelDTO1)
-        issueCreateDTO.labelIssueRelDTOList = labelIssueRelDTOList
+        issueCreateDTO.labelIssueRelVOList = labelIssueRelDTOList
 
         and: '设置版本'
         List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
@@ -289,16 +289,16 @@ class IssueControllerSpec extends Specification {
         issueSubCreateDTO.componentIssueRelDTOList = componentIssueRelDTOList
 
         and: '设置标签'
-        List<LabelIssueRelDTO> labelIssueRelDTOList = new ArrayList<>()
-        LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO()
+        List<LabelIssueRelVO> labelIssueRelDTOList = new ArrayList<>()
+        LabelIssueRelVO labelIssueRelDTO = new LabelIssueRelVO()
         labelIssueRelDTO.projectId = projectId
         labelIssueRelDTO.labelName = "测试标签"
-        LabelIssueRelDTO labelIssueRelDTO1 = new LabelIssueRelDTO()
+        LabelIssueRelVO labelIssueRelDTO1 = new LabelIssueRelVO()
         labelIssueRelDTO1.projectId = projectId
         labelIssueRelDTO1.labelName = "测试标签1"
         labelIssueRelDTOList.add(labelIssueRelDTO)
         labelIssueRelDTOList.add(labelIssueRelDTO1)
-        issueSubCreateDTO.labelIssueRelDTOList = labelIssueRelDTOList
+        issueSubCreateDTO.labelIssueRelVOList = labelIssueRelDTOList
 
         and: '设置版本'
         List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
@@ -346,22 +346,22 @@ class IssueControllerSpec extends Specification {
         issueUpdate.put("sprintId", null)
         issueUpdate.put("estimateTime", 20)
         issueUpdate.put("versionIssueRelDTOList", [])
-        issueUpdate.put("labelIssueRelDTOList", [])
+        issueUpdate.put("labelIssueRelVOList", [])
         issueUpdate.put("componentIssueRelDTOList", [])
-        List<IssueLinkDTO> issueLinkDTOList = new ArrayList<>()
-        IssueLinkDTO issueLinkDTO = new IssueLinkDTO()
+        List<IssueLinkVO> issueLinkDTOList = new ArrayList<>()
+        IssueLinkVO issueLinkDTO = new IssueLinkVO()
         issueLinkDTO.issueId = issueIdList[0]
         issueLinkDTO.linkId = issueIdList[1]
         issueLinkDTO.linkTypeId = 1
         issueLinkDTOList.add(issueLinkDTO)
-        issueUpdate.put("issueLinkDTOList", issueLinkDTOList)
-        List<LabelIssueRelDTO> labelIssueRelDTOArrayList = new ArrayList<>()
-        LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO()
+        issueUpdate.put("issueLinkVOList", issueLinkDTOList)
+        List<LabelIssueRelVO> labelIssueRelDTOArrayList = new ArrayList<>()
+        LabelIssueRelVO labelIssueRelDTO = new LabelIssueRelVO()
         labelIssueRelDTO.issueId = issueIdList[0]
         labelIssueRelDTO.labelId = 1
         labelIssueRelDTO.projectId = projectId
         labelIssueRelDTOArrayList.add(labelIssueRelDTO)
-        issueUpdate.put("labelIssueRelDTOList", labelIssueRelDTOArrayList)
+        issueUpdate.put("labelIssueRelVOList", labelIssueRelDTOArrayList)
 
         when: '向开始创建issue的接口发请求'
         restTemplate.put('/v1/projects/{project_id}/issues', issueUpdate, projectId)
@@ -1034,7 +1034,7 @@ class IssueControllerSpec extends Specification {
 //        issueDetailDO.statusId = 1
 //        issueDetailDO.priorityId = 1
 //        issueDetailDO.componentIssueRelDOList = new ArrayList<>()
-//        issueDetailDO.labelIssueRelDOList = new ArrayList<>()
+//        issueDetailDO.labelIssueRelDTOList = new ArrayList<>()
 //        issueDetailDOList.add(issueDetailDO)
 //
 //        when: '测试服务用，批量复制issue并生成版本信息'

@@ -5,11 +5,14 @@ import io.swagger.annotations.ApiModelProperty;
 
 /**
  * @author dinghuang123@gmail.com
- * @since 2018/6/22
+ * @since 2018/6/14
  */
-public class IssueLinkTypeCreateDTO {
+public class IssueLinkTypeVO {
 
-    @ApiModelProperty(value = "问题链接名称")
+    @ApiModelProperty(value = "问题链接类型id")
+    private Long linkTypeId;
+
+    @ApiModelProperty(value = "链接名称")
     private String linkName;
 
     @ApiModelProperty(value = "链入描述")
@@ -18,8 +21,19 @@ public class IssueLinkTypeCreateDTO {
     @ApiModelProperty(value = "链出描述")
     private String outWard;
 
+    @ApiModelProperty(value = "版本号")
+    private Long objectVersionNumber;
+
     @ApiModelProperty(value = "项目id")
     private Long projectId;
+
+    public Long getLinkTypeId() {
+        return linkTypeId;
+    }
+
+    public void setLinkTypeId(Long linkTypeId) {
+        this.linkTypeId = linkTypeId;
+    }
 
     public String getLinkName() {
         return linkName;
@@ -43,6 +57,14 @@ public class IssueLinkTypeCreateDTO {
 
     public void setOutWard(String outWard) {
         this.outWard = outWard;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
     }
 
     public Long getProjectId() {

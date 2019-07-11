@@ -783,15 +783,15 @@ public class DataLogAspect {
 
 
     private Object handleLabelDeleteDataLog(Object[] args, ProceedingJoinPoint pjp) {
-        LabelIssueRelDO labelIssueRelDO = null;
+        LabelIssueRelDTO labelIssueRelDTO = null;
         Object result = null;
         for (Object arg : args) {
-            if (arg instanceof LabelIssueRelDO) {
-                labelIssueRelDO = (LabelIssueRelDO) arg;
+            if (arg instanceof LabelIssueRelDTO) {
+                labelIssueRelDTO = (LabelIssueRelDTO) arg;
             }
         }
-        if (labelIssueRelDO != null) {
-            result = createLabelDataLog(labelIssueRelDO.getIssueId(), labelIssueRelDO.getProjectId(), pjp);
+        if (labelIssueRelDTO != null) {
+            result = createLabelDataLog(labelIssueRelDTO.getIssueId(), labelIssueRelDTO.getProjectId(), pjp);
         }
         return result;
     }

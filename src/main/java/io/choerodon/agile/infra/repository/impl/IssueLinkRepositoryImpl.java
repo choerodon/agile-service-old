@@ -1,10 +1,10 @@
 package io.choerodon.agile.infra.repository.impl;
 
+import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.domain.agile.entity.IssueLinkE;
 import io.choerodon.agile.infra.repository.IssueLinkRepository;
-import io.choerodon.agile.infra.dataobject.IssueLinkDO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,12 +28,12 @@ public class IssueLinkRepositoryImpl implements IssueLinkRepository {
 
     @Override
     public List<IssueLinkE> create(IssueLinkE issueLinkE) {
-        IssueLinkDO issueLinkDO = ConvertHelper.convert(issueLinkE, IssueLinkDO.class);
-        if (issueLinkMapper.insert(issueLinkDO) != 1) {
+        IssueLinkDTO issueLinkDTO = ConvertHelper.convert(issueLinkE, IssueLinkDTO.class);
+        if (issueLinkMapper.insert(issueLinkDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        IssueLinkDO query = new IssueLinkDO();
-        query.setIssueId(issueLinkDO.getIssueId());
+        IssueLinkDTO query = new IssueLinkDTO();
+        query.setIssueId(issueLinkDTO.getIssueId());
         return ConvertHelper.convertList(issueLinkMapper.select(query), IssueLinkE.class);
     }
 

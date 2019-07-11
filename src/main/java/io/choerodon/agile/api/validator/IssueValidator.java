@@ -269,10 +269,10 @@ public class IssueValidator {
     }
 
     public Boolean existLabelIssue(LabelIssueRelE labelIssueRelE) {
-        LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO();
-        labelIssueRelDO.setLabelId(labelIssueRelE.getLabelId());
-        labelIssueRelDO.setIssueId(labelIssueRelE.getIssueId());
-        return labelIssueRelMapper.selectOne(labelIssueRelDO) == null;
+        LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
+        labelIssueRelDTO.setLabelId(labelIssueRelE.getLabelId());
+        labelIssueRelDTO.setIssueId(labelIssueRelE.getIssueId());
+        return labelIssueRelMapper.selectOne(labelIssueRelDTO) == null;
     }
 
     public void verifyTransformedSubTask(IssueTransformSubTask issueTransformSubTask) {

@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:50:34
  */
-public class IssueLinkDTO {
+public class IssueLinkVO {
 
     @ApiModelProperty(value = "问题id")
     private Long issueId;

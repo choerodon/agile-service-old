@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * @since 2018/6/14
  */
 @Table(name = "agile_issue_link_type")
-public class IssueLinkTypeDO extends BaseDTO {
+public class IssueLinkTypeDTO extends BaseDTO {
 
     /***/
     @Id
@@ -66,6 +66,27 @@ public class IssueLinkTypeDO extends BaseDTO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public void initDuplicate(Long projectId) {
+        this.projectId = projectId;
+        this.inWard = "被复制";
+        this.outWard = "复制";
+        this.linkName = "复制";
+    }
+
+    public void initBlocks(Long projectId) {
+        this.projectId = projectId;
+        this.inWard = "被阻塞";
+        this.outWard = "阻塞";
+        this.linkName = "阻塞";
+    }
+
+    public void initRelates(Long projectId) {
+        this.projectId = projectId;
+        this.inWard = "关联";
+        this.outWard = "关联";
+        this.linkName = "关联";
     }
 
     @Override

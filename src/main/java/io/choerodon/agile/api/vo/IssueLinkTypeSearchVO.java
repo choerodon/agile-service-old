@@ -9,7 +9,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2019/1/22
  */
-public class IssueLinkTypeSearchDTO {
+public class IssueLinkTypeSearchVO {
 
     @ApiModelProperty(value = "搜索内容，传字符串集合")
     private List<String> contents;

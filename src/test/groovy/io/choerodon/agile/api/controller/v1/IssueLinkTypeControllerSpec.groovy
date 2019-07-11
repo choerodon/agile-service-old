@@ -1,10 +1,10 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.IssueLinkTypeCreateDTO
-import io.choerodon.agile.api.vo.IssueLinkTypeDTO
-import io.choerodon.agile.api.vo.IssueLinkTypeSearchDTO
-import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO
+import io.choerodon.agile.api.vo.IssueLinkTypeCreateVO
+import io.choerodon.agile.api.vo.IssueLinkTypeSearchVO
+import io.choerodon.agile.api.vo.IssueLinkTypeVO
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO
 import io.choerodon.agile.infra.mapper.IssueLinkTypeMapper
 import com.github.pagehelper.PageInfo
 import org.springframework.beans.factory.annotation.Autowired
@@ -43,20 +43,20 @@ class IssueLinkTypeControllerSpec extends Specification {
 
     def 'createIssueLinkType'() {
         given: '准备IssueLinkTypeCreateDTO'
-        IssueLinkTypeCreateDTO issueLinkTypeCreateDTO = new IssueLinkTypeCreateDTO()
+        IssueLinkTypeCreateVO issueLinkTypeCreateDTO = new IssueLinkTypeCreateVO()
         issueLinkTypeCreateDTO.projectId = 1L
         issueLinkTypeCreateDTO.outWard = 'outWard1'
         issueLinkTypeCreateDTO.linkName = 'linkName1'
         issueLinkTypeCreateDTO.inWard = 'inWard1'
 
         when: '发请求'
-        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_link_types', issueLinkTypeCreateDTO, IssueLinkTypeDTO, projectId)
+        def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issue_link_types', issueLinkTypeCreateDTO, IssueLinkTypeVO, projectId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        IssueLinkTypeDTO result = entity.body
+        IssueLinkTypeVO result = entity.body
 
         expect: '设置期望值'
         result.inWard == issueLinkTypeCreateDTO.inWard
@@ -68,21 +68,21 @@ class IssueLinkTypeControllerSpec extends Specification {
     def 'updateIssueLinkType'() {
         given: '准备IssueLinkTypeDTO'
 
-        List<IssueLinkTypeDO> list = issueLinkTypeMapper.selectAll()
-        IssueLinkTypeDTO issueLinkTypeDTO = new IssueLinkTypeDTO()
+        List<IssueLinkTypeDTO> list = issueLinkTypeMapper.selectAll()
+        IssueLinkTypeVO issueLinkTypeDTO = new IssueLinkTypeVO()
         issueLinkTypeDTO.projectId = list.get(3).projectId
         issueLinkTypeDTO.outWard = list.get(3).outWard
         issueLinkTypeDTO.linkName = 'linkName22222'
         issueLinkTypeDTO.inWard = 'inWard222222222'
         issueLinkTypeDTO.objectVersionNumber = list.get(3).objectVersionNumber
         issueLinkTypeDTO.linkTypeId = list.get(3).linkTypeId
-        HttpEntity<IssueLinkTypeDTO> requestEntity = new HttpEntity<IssueLinkTypeDTO>(issueLinkTypeDTO, null)
+        HttpEntity<IssueLinkTypeVO> requestEntity = new HttpEntity<IssueLinkTypeVO>(issueLinkTypeDTO, null)
 
         when: '发请求'
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_link_types",
                 HttpMethod.PUT,
                 requestEntity,
-                IssueLinkTypeDTO.class,
+                IssueLinkTypeVO.class,
                 projectId
         )
 
@@ -90,7 +90,7 @@ class IssueLinkTypeControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        IssueLinkTypeDTO result = entity.body
+        IssueLinkTypeVO result = entity.body
 
         expect: '设置期望值'
         result.inWard == issueLinkTypeDTO.inWard
@@ -104,7 +104,7 @@ class IssueLinkTypeControllerSpec extends Specification {
         List<String> contents = new ArrayList<>(2)
         contents.add("阻塞")
         contents.add("被阻塞")
-        IssueLinkTypeSearchDTO issueLinkTypeSearchDTO = new IssueLinkTypeSearchDTO()
+        IssueLinkTypeSearchVO issueLinkTypeSearchDTO = new IssueLinkTypeSearchVO()
         issueLinkTypeSearchDTO.contents = contents
         issueLinkTypeSearchDTO.linkName = "阻塞"
 
@@ -115,7 +115,7 @@ class IssueLinkTypeControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueLinkTypeDTO> result = entity.body.getList()
+        List<IssueLinkTypeVO> result = entity.body.getList()
 
         expect: '设置期望值'
         result.size() == exceptCount
@@ -130,13 +130,13 @@ class IssueLinkTypeControllerSpec extends Specification {
     def 'queryIssueLinkType'() {
 
         when: '发请求'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_link_types/{linkTypeId}', IssueLinkTypeDTO, projectId, issueLinkTypeId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/issue_link_types/{linkTypeId}', IssueLinkTypeVO, projectId, issueLinkTypeId)
 
         then: '返回值'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        IssueLinkTypeDTO result = entity.body
+        IssueLinkTypeVO result = entity.body
 
         expect: '设置期望值'
         result.outWard == outWard
