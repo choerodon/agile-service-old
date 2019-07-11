@@ -15,16 +15,7 @@ const { AppState } = stores;
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
 const { Option } = Select;
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 100 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 26 },
-  },
-};
+
 
 const regex = /^[0-9a-zA-Z_]+$/;
 
@@ -169,11 +160,8 @@ class CreateField extends Component {
         confirmLoading={submitting}
       >
         <div className="issue-region">
-          <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form">
-            <FormItem
-              {...formItemLayout}
-              className="issue-sidebar-form"
-            >
+          <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form c7nagile-form">
+            <FormItem>
               {getFieldDecorator('code', {
                 rules: [{
                   required: true,
@@ -189,10 +177,7 @@ class CreateField extends Component {
                 />,
               )}
             </FormItem>
-            <FormItem
-              {...formItemLayout}
-              className="issue-sidebar-form"
-            >
+            <FormItem>
               {getFieldDecorator('name', {
                 rules: [{
                   required: true,
@@ -208,18 +193,14 @@ class CreateField extends Component {
                 />,
               )}
             </FormItem>
-            <FormItem
-              {...formItemLayout}
-              className="issue-sidebar-form"
-            >
+            <FormItem>
               {getFieldDecorator('fieldType', {
                 rules: [{
                   required: true,
                   message: '字段类型为必填项！',
                 }],
               })(
-                <Select
-                  style={{ width: 520 }}
+                <Select        
                   label={<FormattedMessage id="field.type" />}
                   dropdownMatchSelectWidth
                   size="default"
@@ -240,18 +221,14 @@ class CreateField extends Component {
                 </Select>,
               )}
             </FormItem>
-            <FormItem
-              {...formItemLayout}
-              className="issue-sidebar-form"
-            >
+            <FormItem>
               {getFieldDecorator('context', {
                 rules: [{
                   required: true,
                   message: '显示范围为必填项！',
                 }],
               })(
-                <Select
-                  style={{ width: 520 }}
+                <Select                 
                   label={<FormattedMessage id="field.context" />}
                   dropdownMatchSelectWidth
                   showCheckAll={false}

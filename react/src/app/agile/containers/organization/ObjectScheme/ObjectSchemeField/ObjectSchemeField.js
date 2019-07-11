@@ -26,16 +26,7 @@ const dateList = ['time', 'datetime', 'date'];
 const textList = ['input', 'text', 'url'];
 const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 100 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 26 },
-  },
-};
+
 let sign = false;
 
 @observer
@@ -317,11 +308,8 @@ class ObjectSchemeField extends Component {
         />
         <Spin spinning={spinning}>
           <Content>
-            <Form layout="vertical" onSubmit={this.handleOk} className="c7n-sidebar-form">
-              <FormItem
-                {...formItemLayout}
-                className="issue-sidebar-form"
-              >
+            <Form layout="vertical" onSubmit={this.handleOk} style={{ width: 520 }} className="c7nagile-form">
+              <FormItem>
                 {getFieldDecorator('name', {
                   rules: [{
                     required: true,
@@ -338,10 +326,7 @@ class ObjectSchemeField extends Component {
                   />,
                 )}
               </FormItem>
-              <FormItem
-                {...formItemLayout}
-                className="issue-sidebar-form"
-              >
+              <FormItem>
                 {getFieldDecorator('type', {
                   initialValue: field.fieldTypeName,
                 })(
@@ -351,10 +336,7 @@ class ObjectSchemeField extends Component {
                   />,
                 )}
               </FormItem>
-              <FormItem
-                {...formItemLayout}
-                className="issue-sidebar-form"
-              >
+              <FormItem>
                 {getFieldDecorator('context', {
                   rules: [{
                     required: true,
@@ -362,8 +344,7 @@ class ObjectSchemeField extends Component {
                   }],
                   initialValue: field.context && field.context.slice(),
                 })(
-                  <Select
-                    style={{ width: 520 }}
+                  <Select                    
                     label={<FormattedMessage id="field.context" />}
                     dropdownMatchSelectWidth
                     showCheckAll={false}
@@ -386,10 +367,7 @@ class ObjectSchemeField extends Component {
                 singleList.indexOf(field.fieldType) !== -1
                   ? (
                     <Fragment>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || [],
                           rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
@@ -433,10 +411,7 @@ class ObjectSchemeField extends Component {
                 multipleList.indexOf(field.fieldType) !== -1
                   ? (
                     <Fragment>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || [],
                           rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
@@ -480,10 +455,7 @@ class ObjectSchemeField extends Component {
                 field.fieldType === 'time'
                   ? (
                     <Fragment>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || null,
                           rules: [{ required: field.required && !dateDisable, message: '必填字段默认值不能为空！' }],
@@ -497,10 +469,7 @@ class ObjectSchemeField extends Component {
                           />,
                         )}
                       </FormItem>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('check', {
                           valuePropName: 'checked',
                           initialValue: isCheck || false,
@@ -517,10 +486,7 @@ class ObjectSchemeField extends Component {
                 field.fieldType === 'datetime'
                   ? (
                     <Fragment>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || null,
                           rules: [{ required: field.required && !dateDisable, message: '必填字段默认值不能为空！' }],
@@ -535,10 +501,7 @@ class ObjectSchemeField extends Component {
                           />,
                         )}
                       </FormItem>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('check', {
                           valuePropName: 'checked',
                           initialValue: isCheck || false,
@@ -555,10 +518,7 @@ class ObjectSchemeField extends Component {
                 field.fieldType === 'date'
                   ? (
                     <Fragment>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || null,
                           rules: [{ required: field.required && !dateDisable, message: '必填字段默认值不能为空！' }],
@@ -572,10 +532,7 @@ class ObjectSchemeField extends Component {
                           />,
                         )}
                       </FormItem>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('check', {
                           valuePropName: 'checked',
                           initialValue: isCheck || false,
@@ -592,10 +549,7 @@ class ObjectSchemeField extends Component {
                 field.fieldType === 'number'
                   ? (
                     <Fragment>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('check', {
                           valuePropName: 'checked',
                           initialValue: isCheck || false,
@@ -605,10 +559,7 @@ class ObjectSchemeField extends Component {
                           </Checkbox>,
                         )}
                       </FormItem>
-                      <FormItem
-                        {...formItemLayout}
-                        className="issue-sidebar-form"
-                      >
+                      <FormItem>
                         {getFieldDecorator('defaultValue', {
                           initialValue: defaultValue || 0,
                           rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
@@ -626,10 +577,7 @@ class ObjectSchemeField extends Component {
               {
                 field.fieldType === 'input'
                   ? (
-                    <FormItem
-                      {...formItemLayout}
-                      className="issue-sidebar-form"
-                    >
+                    <FormItem>
                       {getFieldDecorator('defaultValue', {
                         initialValue: defaultValue || '',
                         rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
@@ -645,10 +593,7 @@ class ObjectSchemeField extends Component {
               {
                 field.fieldType === 'text'
                   ? (
-                    <FormItem
-                      {...formItemLayout}
-                      className="issue-sidebar-form"
-                    >
+                    <FormItem>
                       {getFieldDecorator('defaultValue', {
                         initialValue: defaultValue || '',
                         rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],
@@ -664,10 +609,7 @@ class ObjectSchemeField extends Component {
               {
                 field.fieldType === 'url'
                   ? (
-                    <FormItem
-                      {...formItemLayout}
-                      className="issue-sidebar-form"
-                    >
+                    <FormItem>
                       {getFieldDecorator('defaultValue', {
                         rules: [{
                           type: 'url',
@@ -688,10 +630,7 @@ class ObjectSchemeField extends Component {
               {
                 field.fieldType === 'member'
                   ? (
-                    <FormItem
-                      {...formItemLayout}
-                      className="issue-sidebar-form"
-                    >
+                    <FormItem>
                       {getFieldDecorator('defaultValue', {
                         initialValue: defaultValue || [],
                         rules: [{ required: field.required, message: '必填字段默认值不能为空！' }],

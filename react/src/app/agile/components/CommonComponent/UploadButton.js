@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Upload, Button, Icon } from 'choerodon-ui';
+import { Upload, Button } from 'choerodon-ui';
 import { deleteFile } from '../../api/FileApi';
+import './UploadButton.scss';
 
 class UploadButton extends React.Component {
   static propTypes = {
@@ -77,7 +78,7 @@ class UploadButton extends React.Component {
       <Upload
         {...props}
         fileList={fileList}
-        className="upload-button"
+        className="c7nagile-upload-button"
       >
         <Button funcType="raised" type={funcType || 'primary'} style={{ color: 'white' }} icon="file_upload" shape="circle" />
       </Upload>

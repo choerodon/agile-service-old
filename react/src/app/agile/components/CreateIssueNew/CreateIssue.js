@@ -1245,19 +1245,12 @@ class CreateIssue extends Component {
                     )))
                 )
               }
+              <UploadButton
+                onRemove={this.setFileList}
+                onBeforeUpload={this.setFileList}
+                fileList={fileList}
+              />
             </Form>
-            <div className="sign-upload" style={{ marginTop: 20 }}>
-              <div style={{ display: 'flex', marginBottom: '13px', alignItems: 'center' }}>
-                <div style={{ fontWeight: 'bold' }}>附件</div>
-              </div>
-              <div style={{ marginTop: -38 }}>
-                <UploadButton
-                  onRemove={this.setFileList}
-                  onBeforeUpload={this.setFileList}
-                  fileList={fileList}
-                />
-              </div>
-            </div>
           </Spin>
         </Content>
       </Sidebar>

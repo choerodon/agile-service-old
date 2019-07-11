@@ -730,20 +730,12 @@ class CreateSubBug extends Component {
             <div className="c7nagile-createIssue-fields">
               {fields && fields.map(field => this.getFieldComponent(field))}
             </div>
-          </Form>
-
-          <div className="sign-upload" style={{ marginTop: 20 }}>
-            <div style={{ display: 'flex', marginBottom: 13, alignItems: 'center' }}>
-              <div style={{ fontWeight: 'bold' }}>附件</div>
-            </div>
-            <div style={{ marginTop: -38 }}>
-              <UploadButton
-                onRemove={this.setFileList}
-                onBeforeUpload={this.setFileList}
-                fileList={fileList}
-              />
-            </div>
-          </div>
+            <UploadButton
+              onRemove={this.setFileList}
+              onBeforeUpload={this.setFileList}
+              fileList={fileList}
+            />
+          </Form>          
         </Spin>
       </Sidebar>
     );
