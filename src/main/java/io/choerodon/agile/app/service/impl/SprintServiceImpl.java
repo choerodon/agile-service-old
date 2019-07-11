@@ -6,6 +6,7 @@ import com.google.common.collect.Ordering;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.SprintValidator;
 import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarRefService;
 import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
@@ -104,6 +105,9 @@ public class SprintServiceImpl implements SprintService {
     @Autowired
     private DataLogRedisUtil dataLogRedisUtil;
 
+    @Autowired
+    private IssueAccessDataService issueAccessDataService;
+
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -189,7 +193,7 @@ public class SprintServiceImpl implements SprintService {
         }
         sprintConvertDTO.judgeDelete();
         moveIssueToBacklog(projectId, sprintId);
-        issueRepository.batchRemoveFromSprint(projectId, sprintId);
+        issueAccessDataService.batchRemoveFromSprint(projectId, sprintId);
         delete(sprintConvertDTO);
         return true;
     }
@@ -202,7 +206,7 @@ public class SprintServiceImpl implements SprintService {
         if (moveIssueDTOS.isEmpty()) {
             return;
         }
-        issueRepository.batchUpdateIssueRank(projectId, moveIssueDTOS);
+        issueAccessDataService.batchUpdateIssueRank(projectId, moveIssueDTOS);
     }
 
     @Override
@@ -348,7 +352,7 @@ public class SprintServiceImpl implements SprintService {
                 workCalendarRefService.create(workCalendarRefDTO);
             });
         }
-        issueRepository.updateStayDate(projectId, sprintConvertDTO.getSprintId(), new Date());
+        issueAccessDataService.updateStayDate(projectId, sprintConvertDTO.getSprintId(), new Date());
         return sprintUpdateAssembler.toTarget(update(sprintConvertDTO), SprintDetailVO.class);
     }
 
@@ -382,9 +386,9 @@ public class SprintServiceImpl implements SprintService {
         moveIssueIds.addAll(issueMapper.querySubTaskIds(projectId, sprintCompleteVO.getSprintId()));
         moveIssueIds.addAll(sprintMapper.queryParentsDoneSubtaskUnDoneIds(projectId, sprintCompleteVO.getSprintId()));
         if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
-            issueRepository.issueToDestinationByIdsCloseSprint(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
+            issueAccessDataService.issueToDestinationByIdsCloseSprint(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
-        issueRepository.batchUpdateIssueRank(projectId, moveIssueDTOS);
+        issueAccessDataService.batchUpdateIssueRank(projectId, moveIssueDTOS);
     }
 
     private void beforeRank(Long projectId, Long targetSprintId, List<MoveIssueDTO> moveIssueDTOS, List<Long> moveIssueIds) {

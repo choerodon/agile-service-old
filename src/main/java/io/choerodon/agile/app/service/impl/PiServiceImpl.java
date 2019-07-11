@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.PiValidator;
 import io.choerodon.agile.app.assembler.PiAssembler;
+import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
@@ -121,6 +122,9 @@ public class PiServiceImpl implements PiService {
 
     @Autowired
     private SendMsgUtil sendMsgUtil;
+
+    @Autowired
+    private IssueAccessDataService issueAccessDataService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -369,7 +373,7 @@ public class PiServiceImpl implements PiService {
         if (updateStatusId != null) {
             if (issueDTOList != null && !issueDTOList.isEmpty()) {
                 CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-                issueRepository.updateStatusIdBatch(programId, updateStatusId, issueDTOList, customUserDetails.getUserId(), new Date());
+                issueAccessDataService.updateStatusIdBatch(programId, updateStatusId, issueDTOList, customUserDetails.getUserId(), new Date());
             }
         }
         return piMapper.selectByPrimaryKey(piVO.getId());
@@ -435,9 +439,9 @@ public class PiServiceImpl implements PiService {
         }
         batchUpdateStatus(programId, targetPiId, moveFeatureIds, initStatusId, "prepare", customUserDetails.getUserId());
         if (targetPiId != null && !Objects.equals(targetPiId, 0L)) {
-            issueRepository.featureToDestinationByIdsClosePi(programId, targetPiId, moveFeatureIds, new Date(), customUserDetails.getUserId());
+            issueAccessDataService.featureToDestinationByIdsClosePi(programId, targetPiId, moveFeatureIds, new Date(), customUserDetails.getUserId());
         }
-        issueRepository.batchUpdateFeatureRank(programId, moveIssueDTOS);
+        issueAccessDataService.batchUpdateFeatureRank(programId, moveIssueDTOS);
     }
 
     @Override
@@ -603,7 +607,7 @@ public class PiServiceImpl implements PiService {
         if (moveIssues == null || moveIssues.isEmpty()) {
             return;
         }
-        issueRepository.updateStatusIdBatch(programId, updateStatusId, moveIssues, userId, new Date());
+        issueAccessDataService.updateStatusIdBatch(programId, updateStatusId, moveIssues, userId, new Date());
     }
 
     @Override
@@ -615,7 +619,7 @@ public class PiServiceImpl implements PiService {
         } else {
             afterRank(programId, piId, moveIssueVO, moveIssueDTOS);
         }
-        issueRepository.batchUpdateFeatureRank(programId, moveIssueDTOS);
+        issueAccessDataService.batchUpdateFeatureRank(programId, moveIssueDTOS);
         List<Long> moveIssueIds = moveIssueVO.getIssueIds();
         List<SubFeatureDTO> featureDTOList = piMapper.selectFeatureIdByFeatureIds(programId, moveIssueIds).stream().filter(subFeatureDO -> subFeatureDO.getPiId() == null ? piId != 0 : !subFeatureDO.getPiId().equals(piId)).collect(Collectors.toList());
         if (featureDTOList != null && !featureDTOList.isEmpty()) {
@@ -625,9 +629,9 @@ public class PiServiceImpl implements PiService {
                 batchUpdateStatus(programId, piId, moveIssueIdsFilter, moveIssueVO.getUpdateStatusId(), moveIssueVO.getStatusCategoryCode(), customUserDetails.getUserId());
             }
             BatchRemovePiE batchRemovePiE = new BatchRemovePiE(programId, piId, moveIssueIdsFilter);
-            issueRepository.removeFeatureFromPiByIssueIds(batchRemovePiE);
+            issueAccessDataService.removeFeatureFromPiByIssueIds(batchRemovePiE);
             if (piId != null && !Objects.equals(piId, 0L)) {
-                issueRepository.batchFeatureToPi(programId, piId, moveIssueIdsFilter, new Date(), customUserDetails.getUserId());
+                issueAccessDataService.batchFeatureToPi(programId, piId, moveIssueIdsFilter, new Date(), customUserDetails.getUserId());
             }
             return featureDTOList;
         } else {
@@ -637,8 +641,8 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public List<SubFeatureDTO> batchFeatureToEpic(Long programId, Long epicId, List<Long> featureIds) {
-        issueRepository.batchFeatureToEpic(programId, epicId, featureIds);
-        issueRepository.updateEpicIdOfStoryByFeatureList(featureIds, epicId);
+        issueAccessDataService.batchFeatureToEpic(programId, epicId, featureIds);
+        issueAccessDataService.updateEpicIdOfStoryByFeatureList(featureIds, epicId);
         return piMapper.selectFeatureIdByFeatureIds(programId, featureIds);
     }
 

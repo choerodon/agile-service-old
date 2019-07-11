@@ -1,11 +1,9 @@
-package io.choerodon.agile.infra.repository.impl;
+package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.domain.agile.entity.IssueSprintRelE;
 import io.choerodon.agile.infra.dataobject.IssueSprintRelDTO;
-import io.choerodon.agile.infra.repository.IssueSprintRelRepository;
+import io.choerodon.agile.app.service.IssueSprintRelService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.mapper.IssueSprintRelMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +14,7 @@ import org.springframework.stereotype.Component;
  * @since 2018/7/6
  */
 @Component
-public class IssueSprintRelRepositoryImpl implements IssueSprintRelRepository {
+public class IssueSprintRelServiceImpl implements IssueSprintRelService {
 
     private static final String INSERT_ERROR = "error.issueSprintRel.create";
     @Autowired
@@ -24,11 +22,10 @@ public class IssueSprintRelRepositoryImpl implements IssueSprintRelRepository {
 
     @Override
     @DataLog(type = "sprint")
-    public IssueSprintRelE createIssueSprintRel(IssueSprintRelE issueSprintRelE) {
-        IssueSprintRelDTO issueSprintRelDTO = ConvertHelper.convert(issueSprintRelE, IssueSprintRelDTO.class);
+    public IssueSprintRelDTO createIssueSprintRel(IssueSprintRelDTO issueSprintRelDTO) {
         if (issueSprintRelMapper.insert(issueSprintRelDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
-        return ConvertHelper.convert(issueSprintRelMapper.selectOne(issueSprintRelDTO), IssueSprintRelE.class);
+        return issueSprintRelMapper.selectOne(issueSprintRelDTO);
     }
 }

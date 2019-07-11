@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.WorkLogVO;
 import io.choerodon.agile.api.validator.WorkLogValidator;
+import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.WorkLogService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
@@ -56,6 +57,9 @@ public class WorkLogServiceImpl implements WorkLogService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private IssueAccessDataService issueAccessDataService;
+
     private ModelMapper modelMapper = new ModelMapper();
 
     @PostConstruct
@@ -66,7 +70,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     private void setTo(Long issueId, BigDecimal predictionTime) {
         IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
         issueConvertDTO.setRemainingTime(predictionTime);
-        issueRepository.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
+        issueAccessDataService.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
     }
 
     private BigDecimal getRemainTime(IssueConvertDTO issueConvertDTO, BigDecimal theTime) {
@@ -78,7 +82,7 @@ public class WorkLogServiceImpl implements WorkLogService {
         IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
         if (issueConvertDTO.getRemainingTime() != null) {
             issueConvertDTO.setRemainingTime(getRemainTime(issueConvertDTO, predictionTime));
-            issueRepository.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
+            issueAccessDataService.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
         }
     }
 
@@ -86,7 +90,7 @@ public class WorkLogServiceImpl implements WorkLogService {
         IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
         if (issueConvertDTO.getRemainingTime() != null) {
             issueConvertDTO.setRemainingTime(getRemainTime(issueConvertDTO, workTime));
-            issueRepository.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
+            issueAccessDataService.update(issueConvertDTO, new String[]{REMAINING_TIME_FIELD});
         }
     }
 

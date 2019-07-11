@@ -51,6 +51,8 @@ public class AgileEventHandler {
     @Autowired
     private IssueRepository issueRepository;
     @Autowired
+    private IssueAccessDataService issueAccessDataService;
+    @Autowired
     private IssueFeignClient issueFeignClient;
 
 
@@ -190,7 +192,7 @@ public class AgileEventHandler {
                 statusChangeItems.forEach(statusChangeItem -> {
                     Long oldStatusId = statusChangeItem.getOldStatus().getId();
                     Long newStatusId = statusChangeItem.getNewStatus().getId();
-                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, deployUpdateIssue.getUserId());
+                    issueAccessDataService.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, deployUpdateIssue.getUserId());
                 });
             });
         });

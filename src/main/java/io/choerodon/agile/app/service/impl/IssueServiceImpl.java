@@ -146,7 +146,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueLinkMapper issueLinkMapper;
     @Autowired
-    private IssueSprintRelRepository issueSprintRelRepository;
+    private IssueSprintRelService issueSprintRelService;
     @Autowired
     private SprintService sprintService;
 //    @Autowired
@@ -915,11 +915,11 @@ public class IssueServiceImpl implements IssueService {
 
     public void handleCreateSprintRel(Long sprintId, Long projectId, Long issueId) {
         if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-            IssueSprintRelE issueSprintRelE = new IssueSprintRelE();
-            issueSprintRelE.setIssueId(issueId);
-            issueSprintRelE.setSprintId(sprintId);
-            issueSprintRelE.setProjectId(projectId);
-            issueSprintRelRepository.createIssueSprintRel(issueSprintRelE);
+            IssueSprintRelDTO issueSprintRelDTO = new IssueSprintRelDTO();
+            issueSprintRelDTO.setIssueId(issueId);
+            issueSprintRelDTO.setSprintId(sprintId);
+            issueSprintRelDTO.setProjectId(projectId);
+            issueSprintRelService.createIssueSprintRel(issueSprintRelDTO);
         }
     }
 
@@ -2011,7 +2011,7 @@ public class IssueServiceImpl implements IssueService {
                 issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
                 issueAccessDataService.issueToDestinationByIds(projectId, sprintId, issueIds, new Date(), customUserDetails.getUserId());
             } else {
-                issueSprintRelRepository.createIssueSprintRel(ConvertHelper.convert(issueSprintRelDTO, IssueSprintRelE.class));
+                issueSprintRelService.createIssueSprintRel(modelMapper.map(issueSprintRelDTO, IssueSprintRelDTO.class));
             }
         }
     }
