@@ -8,7 +8,8 @@ import io.choerodon.agile.api.vo.QuickFilterVO
 import io.choerodon.agile.api.vo.QuickFilterValueVO
 import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper
 import io.choerodon.agile.infra.mapper.QuickFilterMapper
-import io.choerodon.core.convertor.ConvertHelper
+import org.modelmapper.ModelMapper
+import org.modelmapper.convention.MatchingStrategies
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -19,6 +20,8 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
+
+import javax.annotation.PostConstruct
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -45,6 +48,13 @@ class QuickFilterControllerSpec extends Specification {
 
     @Shared
     def filterId = 1L
+
+    private ModelMapper modelMapper = new ModelMapper()
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT)
+    }
 
     def 'create'() {
         given: '准备QuickFilterDTO'
@@ -153,7 +163,7 @@ class QuickFilterControllerSpec extends Specification {
 
     def 'update'() {
         given: '准备QuickFilterDTO'
-        QuickFilterVO quickFilterDTO = ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(filterId), QuickFilterVO.class)
+        QuickFilterVO quickFilterDTO = modelMapper.map(quickFilterMapper.selectByPrimaryKey(filterId), QuickFilterVO.class)
         quickFilterDTO.description = "这是一个更新描述"
         List<QuickFilterValueVO> list = new ArrayList<>()
         QuickFilterValueVO quickFilterValueDTO = new QuickFilterValueVO()

@@ -11,6 +11,8 @@ import io.choerodon.agile.infra.mapper.WorkLogMapper
 import io.choerodon.core.convertor.ConvertHelper
 import org.mockito.Matchers
 import org.mockito.Mockito
+import org.modelmapper.ModelMapper
+import org.modelmapper.convention.MatchingStrategies
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
@@ -22,6 +24,8 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
+
+import javax.annotation.PostConstruct
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -48,6 +52,13 @@ class WorkLogControllerSpec extends Specification {
 
     @Shared
     def workLogDTOList = []
+
+    private ModelMapper modelMapper = new ModelMapper()
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT)
+    }
 
     def setup() {
 
@@ -97,7 +108,7 @@ class WorkLogControllerSpec extends Specification {
         exceptionInfo.get("failed").toString() == "true"
 
         and:
-        workLogDTOList << ConvertHelper.convert(workLogMapper.selectByPrimaryKey(resultSuccess.body.logId), WorkLogVO)
+        workLogDTOList << modelMapper.map(workLogMapper.selectByPrimaryKey(resultSuccess.body.logId), WorkLogVO)
     }
 
     def "updateWorkLog"() {

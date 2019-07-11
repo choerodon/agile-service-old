@@ -7,6 +7,9 @@ import io.choerodon.agile.infra.dataobject.MessageDTO
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper
 import io.choerodon.agile.infra.mapper.NoticeMapper
 import io.choerodon.core.convertor.ConvertHelper
+import org.modelmapper.ModelMapper
+import org.modelmapper.TypeToken
+import org.modelmapper.convention.MatchingStrategies
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -18,6 +21,8 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
+
+import javax.annotation.PostConstruct
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/10/12.
@@ -46,6 +51,13 @@ class NoticeControllerSpec extends Specification {
     @Shared
     def projectId = 1L
 
+    private ModelMapper modelMapper = new ModelMapper()
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT)
+    }
+
 //    def setup() {
 //        userService.listRolesWithUserCountOnProjectLevel(*_) >> new ArrayList<RoleVO>()
 //        userService.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> new PageInfo<UserVO>()
@@ -61,7 +73,7 @@ class NoticeControllerSpec extends Specification {
         }
 
         when:
-        HttpEntity<List<MessageVO>> messages = new HttpEntity<>(ConvertHelper.convertList(originList, MessageVO.class))
+        HttpEntity<List<MessageVO>> messages = new HttpEntity<>(modelMapper.map(originList, new TypeToken<List<MessageVO>>(){}.getType()))
         def entity = restTemplate.exchange("/v1/projects/{project_id}/notice",
                 HttpMethod.PUT,
                 messages,
@@ -79,7 +91,7 @@ class NoticeControllerSpec extends Specification {
         originList.get(0).setObjectVersionNumber(originList.get(0).getObjectVersionNumber() + 1)
 
         when:
-        HttpEntity<List<MessageVO>> messages = new HttpEntity<>(ConvertHelper.convertList(originList, MessageVO.class))
+        HttpEntity<List<MessageVO>> messages = new HttpEntity<>(modelMapper.map(originList, new TypeToken<List<MessageVO>>(){}.getType()))
         def entity = restTemplate.exchange("/v1/projects/{project_id}/notice",
                 HttpMethod.PUT,
                 messages,
