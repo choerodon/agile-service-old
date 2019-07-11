@@ -10,7 +10,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/9/10
  */
-public class SprintBurnDownReportDTO {
+public class SprintBurnDownReportVO {
 
     @ApiModelProperty(value = "冲刺id")
     private Long sprintId;

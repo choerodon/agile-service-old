@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.vo.IssueStatusVO;
-import io.choerodon.agile.api.vo.StatusAndIssuesDTO;
+import io.choerodon.agile.api.vo.StatusAndIssuesVO;
 import io.choerodon.agile.api.vo.StatusMoveVO;
 import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.base.annotation.Permission;
@@ -73,11 +73,11 @@ public class IssueStatusController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询项目下未对应的状态")
     @GetMapping(value = "/list_by_options")
-    public ResponseEntity<List<StatusAndIssuesDTO>> listUnCorrespondStatus(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<StatusAndIssuesVO>> listUnCorrespondStatus(@ApiParam(value = "项目id", required = true)
                                                                            @PathVariable(name = "project_id") Long projectId,
-                                                                           @ApiParam(value = "board id", required = true)
+                                                                          @ApiParam(value = "board id", required = true)
                                                                            @RequestParam Long boardId,
-                                                                           @ApiParam(value = "apply type", required = true)
+                                                                          @ApiParam(value = "apply type", required = true)
                                                                            @RequestParam String applyType) {
         return Optional.ofNullable(issueStatusService.queryUnCorrespondStatus(projectId, boardId, applyType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

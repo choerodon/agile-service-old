@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.SprintWorkCalendarDTO;
+import io.choerodon.agile.api.vo.SprintWorkCalendarVO;
 import io.choerodon.agile.api.vo.WorkCalendarRefCreateVO;
 import io.choerodon.agile.api.vo.WorkCalendarRefVO;
 import io.choerodon.agile.app.service.WorkCalendarRefService;
@@ -47,9 +47,9 @@ public class WorkCalendarRefController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取冲刺工作日历设置")
     @GetMapping(value = "/sprint")
-    public ResponseEntity<SprintWorkCalendarDTO> querySprintWorkCalendarRefs(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<SprintWorkCalendarVO> querySprintWorkCalendarRefs(@ApiParam(value = "项目id", required = true)
                                                                              @PathVariable(name = "project_id") Long projectId,
-                                                                             @ApiParam(value = "年份", required = true)
+                                                                            @ApiParam(value = "年份", required = true)
                                                                              @RequestParam(name = "year") Integer year) {
         return Optional.ofNullable(workCalendarRefService.querySprintWorkCalendarRefs(projectId, year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

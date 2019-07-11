@@ -11,13 +11,13 @@ import java.util.List;
 public class UserWithRoleVO extends UserDTO {
 
     @ApiModelProperty(value = "角色列表")
-    private List<RoleDTO> roles;
+    private List<RoleVO> roles;
 
-    public List<RoleDTO> getRoles() {
+    public List<RoleVO> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<RoleDTO> roles) {
+    public void setRoles(List<RoleVO> roles) {
         this.roles = roles;
     }
 }

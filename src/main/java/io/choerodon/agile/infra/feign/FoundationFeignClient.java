@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.feign;
 
-import io.choerodon.agile.api.vo.FieldDataLogDTO;
+import io.choerodon.agile.api.vo.FieldDataLogVO;
 import io.choerodon.agile.infra.feign.fallback.FoundationFeignClientFallback;
 
 import io.swagger.annotations.ApiParam;
@@ -31,11 +31,11 @@ public interface FoundationFeignClient {
                                                                                @RequestBody List<Long> instanceIds);
 
     @GetMapping("/v1/projects/{project_id}/data_log/list")
-    ResponseEntity<List<FieldDataLogDTO>> queryDataLogByInstanceId(@ApiParam(value = "项目id", required = true)
+    ResponseEntity<List<FieldDataLogVO>> queryDataLogByInstanceId(@ApiParam(value = "项目id", required = true)
                                                                    @PathVariable("project_id") Long projectId,
-                                                                   @ApiParam(value = "字段id", required = true)
+                                                                  @ApiParam(value = "字段id", required = true)
                                                                    @RequestParam("instanceId") Long instanceId,
-                                                                   @ApiParam(value = "方案编码", required = true)
+                                                                  @ApiParam(value = "方案编码", required = true)
                                                                    @RequestParam("schemeCode") String schemeCode);
 
     @PostMapping("/v1/projects/{project_id}/field_value/sort/getInstanceIds")

@@ -34,14 +34,14 @@ public class ReportAssembler extends AbstractAssembler {
         return cumulativeFlowDiagramVOList;
     }
 
-    public SprintBurnDownReportDTO sprintBurnDownReportDoToDto(SprintDTO sprintDTO) {
-        SprintBurnDownReportDTO sprintBurnDownReportDTO = new SprintBurnDownReportDTO();
-        sprintBurnDownReportDTO.setSprintId(sprintDTO.getSprintId());
-        sprintBurnDownReportDTO.setSprintName(sprintDTO.getSprintName());
-        sprintBurnDownReportDTO.setStatusCode(sprintDTO.getStatusCode());
-        sprintBurnDownReportDTO.setStartDate(sprintDTO.getStartDate());
-        sprintBurnDownReportDTO.setEndDate(sprintDTO.getActualEndDate() == null ? sprintDTO.getEndDate() : sprintDTO.getActualEndDate());
-        return sprintBurnDownReportDTO;
+    public SprintBurnDownReportVO sprintBurnDownReportDoToDto(SprintDTO sprintDTO) {
+        SprintBurnDownReportVO sprintBurnDownReportVO = new SprintBurnDownReportVO();
+        sprintBurnDownReportVO.setSprintId(sprintDTO.getSprintId());
+        sprintBurnDownReportVO.setSprintName(sprintDTO.getSprintName());
+        sprintBurnDownReportVO.setStatusCode(sprintDTO.getStatusCode());
+        sprintBurnDownReportVO.setStartDate(sprintDTO.getStartDate());
+        sprintBurnDownReportVO.setEndDate(sprintDTO.getActualEndDate() == null ? sprintDTO.getEndDate() : sprintDTO.getActualEndDate());
+        return sprintBurnDownReportVO;
     }
 
     public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS, Map<Long, IssueTypeVO> issueTypeDTOMap,

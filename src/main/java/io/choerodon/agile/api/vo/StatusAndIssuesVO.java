@@ -1,4 +1,7 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
+
+import io.choerodon.agile.infra.dataobject.IssueForBoardDO;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
@@ -6,24 +9,33 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/5/17.
  * Email: fuqianghuang01@gmail.com
  */
-public class StatusAndIssuesDO {
+public class StatusAndIssuesVO {
 
+    @ApiModelProperty(value = "状态主键id")
     private Long id;
 
+    @ApiModelProperty(value = "状态所属项目id")
     private Long projectId;
 
+    @ApiModelProperty(value = "状态名称")
     private String name;
 
+    @ApiModelProperty(value = "enable")
     private Boolean enable;
 
+    @ApiModelProperty(value = "状态类别")
     private String categoryCode;
 
+    @ApiModelProperty(value = "状态是否已完成：true、false")
     private Boolean completed;
 
+    @ApiModelProperty(value = "版本号")
     private Long objectVersionNumber;
 
+    @ApiModelProperty(value = "真正的状态id")
     private Long statusId;
 
+    @ApiModelProperty(value = "该状态下的问题列表")
     private List<IssueForBoardDO> issues;
 
     public void setId(Long id) {

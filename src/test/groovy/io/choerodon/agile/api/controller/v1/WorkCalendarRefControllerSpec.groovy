@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.SprintWorkCalendarDTO
+import io.choerodon.agile.api.vo.SprintWorkCalendarVO
 import io.choerodon.agile.api.vo.WorkCalendarRefCreateVO
 import io.choerodon.agile.api.vo.WorkCalendarRefVO
 import org.springframework.beans.factory.annotation.Autowired
@@ -76,11 +76,11 @@ class WorkCalendarRefControllerSpec extends Specification {
 
     def 'querySprintWorkCalendarRefs'() {
         when:
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/work_calendar_ref/sprint?year={year}', SprintWorkCalendarDTO, projectId, 2018)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/work_calendar_ref/sprint?year={year}', SprintWorkCalendarVO, projectId, 2018)
 
         then:
         entity.statusCode.is2xxSuccessful()
-        SprintWorkCalendarDTO sprintWorkCalendarDTO = entity.body
+        SprintWorkCalendarVO sprintWorkCalendarDTO = entity.body
 
         expect: "验证"
         sprintWorkCalendarDTO != null

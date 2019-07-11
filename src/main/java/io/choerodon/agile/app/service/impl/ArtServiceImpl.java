@@ -187,9 +187,9 @@ public class ArtServiceImpl implements ArtService {
     }
 
     @Override
-    public void createOtherPi(Long programId, PiCreateDTO piCreateDTO) {
-        Long artId = piCreateDTO.getArtId();
-        Date startDate = piCreateDTO.getStartDate();
+    public void createOtherPi(Long programId, PiCreateVO piCreateVO) {
+        Long artId = piCreateVO.getArtId();
+        Date startDate = piCreateVO.getStartDate();
         // auto create pi with piNumber
         ArtDTO artDTO = artMapper.selectByPrimaryKey(artId);
         piService.createPi(programId, artDTO, startDate);

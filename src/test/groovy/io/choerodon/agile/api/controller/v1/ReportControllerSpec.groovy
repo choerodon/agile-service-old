@@ -514,7 +514,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<SprintBurnDownReportDTO> sprintBurnDownReportDTOList = entity.body.sprintBurnDownReportDTOS
+        List<SprintBurnDownReportVO> sprintBurnDownReportDTOList = entity.body.sprintBurnDownReportVOS
         List<IssueBurnDownReportDTO> incompleteIssues = entity.body.incompleteIssues
 
         expect: '验证期望值'

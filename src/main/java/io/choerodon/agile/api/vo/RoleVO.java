@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2018/10/9.
  * Email: fuqianghuang01@gmail.com
  */
-public class RoleDTO {
+public class RoleVO {
 
     @ApiModelProperty(value = "角色id")
     private Long id;

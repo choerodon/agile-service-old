@@ -10,7 +10,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/10/18
  */
-public class SprintWorkCalendarDTO {
+public class SprintWorkCalendarVO {
 
     @ApiModelProperty(value = "冲刺下的日历变更")
     private List<WorkCalendarRefVO> workCalendarRefVOS;

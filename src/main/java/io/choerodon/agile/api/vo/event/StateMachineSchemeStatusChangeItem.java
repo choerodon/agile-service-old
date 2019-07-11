@@ -1,36 +1,36 @@
 package io.choerodon.agile.api.vo.event;
 
-import io.choerodon.agile.api.vo.StatusDTO;
+import io.choerodon.agile.api.vo.StatusVO;
 
 /**
  * @author shinan.chen
  * @date 2018/11/23
  */
 public class StateMachineSchemeStatusChangeItem {
-    private StatusDTO oldStatus;
-    private StatusDTO newStatus;
+    private StatusVO oldStatus;
+    private StatusVO newStatus;
 
     public StateMachineSchemeStatusChangeItem() {
     }
 
-    public StateMachineSchemeStatusChangeItem(StatusDTO oldStatus, StatusDTO newStatus) {
+    public StateMachineSchemeStatusChangeItem(StatusVO oldStatus, StatusVO newStatus) {
         this.oldStatus = oldStatus;
         this.newStatus = newStatus;
     }
 
-    public StatusDTO getOldStatus() {
+    public StatusVO getOldStatus() {
         return oldStatus;
     }
 
-    public void setOldStatus(StatusDTO oldStatus) {
+    public void setOldStatus(StatusVO oldStatus) {
         this.oldStatus = oldStatus;
     }
 
-    public StatusDTO getNewStatus() {
+    public StatusVO getNewStatus() {
         return newStatus;
     }
 
-    public void setNewStatus(StatusDTO newStatus) {
+    public void setNewStatus(StatusVO newStatus) {
         this.newStatus = newStatus;
     }
 }

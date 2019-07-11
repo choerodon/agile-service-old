@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.SprintWorkCalendarDTO;
+import io.choerodon.agile.api.vo.SprintWorkCalendarVO;
 import io.choerodon.agile.api.vo.WorkCalendarRefCreateVO;
 import io.choerodon.agile.api.vo.WorkCalendarRefVO;
 import io.choerodon.agile.infra.dataobject.WorkCalendarRefDTO;
@@ -19,7 +19,7 @@ public interface WorkCalendarRefService {
      * @param year      year
      * @return SprintWorkCalendarRefDTO
      */
-    SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId, Integer year);
+    SprintWorkCalendarVO querySprintWorkCalendarRefs(Long projectId, Integer year);
 
     /**
      * 查询项目工作日历设置

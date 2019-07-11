@@ -176,7 +176,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     }
 
     @Override
-    public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType) {
+    public List<StatusAndIssuesVO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType) {
         List<StatusMapVO> statusMapVOList = issueFeignClient.queryStatusByProjectId(projectId, applyType).getBody();
         List<Long> realStatusIds = new ArrayList<>();
         for (StatusMapVO statusMapVO : statusMapVOList) {
@@ -185,24 +185,24 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         if (realStatusIds.isEmpty()) {
             return new ArrayList<>();
         }
-        List<StatusAndIssuesDO> statusAndIssuesDOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId, realStatusIds);
-        if (statusAndIssuesDOList != null && !statusAndIssuesDOList.isEmpty()) {
+        List<StatusAndIssuesDTO> statusAndIssuesDTOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId, realStatusIds);
+        if (statusAndIssuesDTOList != null && !statusAndIssuesDTOList.isEmpty()) {
             List<Long> ids = new ArrayList<>();
-            for (StatusAndIssuesDO statusAndIssuesDO : statusAndIssuesDOList) {
-                ids.add(statusAndIssuesDO.getStatusId());
+            for (StatusAndIssuesDTO statusAndIssuesDTO : statusAndIssuesDTOList) {
+                ids.add(statusAndIssuesDTO.getStatusId());
             }
             Map<Long, Status> map = stateMachineFeignClient.batchStatusGet(ids).getBody();
-            for (StatusAndIssuesDO statusAndIssuesDO : statusAndIssuesDOList) {
-                Status status = map.get(statusAndIssuesDO.getStatusId());
-                statusAndIssuesDO.setCategoryCode(status.getType());
-                statusAndIssuesDO.setName(status.getName());
+            for (StatusAndIssuesDTO statusAndIssuesDTO : statusAndIssuesDTOList) {
+                Status status = map.get(statusAndIssuesDTO.getStatusId());
+                statusAndIssuesDTO.setCategoryCode(status.getType());
+                statusAndIssuesDTO.setName(status.getName());
             }
         }
-        List<StatusAndIssuesDTO> statusAndIssuesDTOList = new ArrayList<>();
-        if (statusAndIssuesDOList != null) {
-            statusAndIssuesDTOList = ConvertHelper.convertList(statusAndIssuesDOList, StatusAndIssuesDTO.class);
+        List<StatusAndIssuesVO> statusAndIssuesVOList = new ArrayList<>();
+        if (statusAndIssuesDTOList != null) {
+            statusAndIssuesVOList = ConvertHelper.convertList(statusAndIssuesDTOList, StatusAndIssuesVO.class);
         }
-        return statusAndIssuesDTOList;
+        return statusAndIssuesVOList;
     }
 
     private void checkIssueNumOfStatus(Long projectId, Long statusId) {

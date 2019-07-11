@@ -204,12 +204,12 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         }.getType()));
         //获取团队信息
         List<ProjectRelationshipVO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
-        List<TeamProjectDTO> filterTeamList = new ArrayList<>(projectRelationships.size());
+        List<TeamProjectVO> filterTeamList = new ArrayList<>(projectRelationships.size());
         for (ProjectRelationshipVO rel : projectRelationships) {
-            TeamProjectDTO teamProjectDTO = new TeamProjectDTO();
-            teamProjectDTO.setTeamProjectId(rel.getProjectId());
-            teamProjectDTO.setName(rel.getProjName());
-            filterTeamList.add(teamProjectDTO);
+            TeamProjectVO teamProjectVO = new TeamProjectVO();
+            teamProjectVO.setTeamProjectId(rel.getProjectId());
+            teamProjectVO.setName(rel.getProjName());
+            filterTeamList.add(teamProjectVO);
         }
         programBoardInfo.setFilterTeamList(filterTeamList);
         //获取依赖关系，只获取有效团队的依赖关系

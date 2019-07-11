@@ -25,7 +25,7 @@ public class ProgramBoardInfoVO {
     @ApiModelProperty(value = "冲刺筛选列表")
     private List<SprintVO> filterSprintList;
     @ApiModelProperty(value = "团队筛选列表")
-    private List<TeamProjectDTO> filterTeamList;
+    private List<TeamProjectVO> filterTeamList;
 
     public ProgramBoardInfoVO() {
         sprints = new ArrayList<>();
@@ -83,11 +83,11 @@ public class ProgramBoardInfoVO {
         this.filterSprintList = filterSprintList;
     }
 
-    public List<TeamProjectDTO> getFilterTeamList() {
+    public List<TeamProjectVO> getFilterTeamList() {
         return filterTeamList;
     }
 
-    public void setFilterTeamList(List<TeamProjectDTO> filterTeamList) {
+    public void setFilterTeamList(List<TeamProjectVO> filterTeamList) {
         this.filterTeamList = filterTeamList;
     }
 }

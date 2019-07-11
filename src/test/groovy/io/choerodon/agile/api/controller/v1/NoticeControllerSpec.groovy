@@ -47,7 +47,7 @@ class NoticeControllerSpec extends Specification {
     def projectId = 1L
 
 //    def setup() {
-//        userService.listRolesWithUserCountOnProjectLevel(*_) >> new ArrayList<RoleDTO>()
+//        userService.listRolesWithUserCountOnProjectLevel(*_) >> new ArrayList<RoleVO>()
 //        userService.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> new PageInfo<UserDTO>()
 //    }
 

@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.feign.fallback;
 
-import io.choerodon.agile.api.vo.FieldDataLogDTO;
+import io.choerodon.agile.api.vo.FieldDataLogVO;
 import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.core.exception.CommonException;
 
@@ -28,7 +28,7 @@ public class FoundationFeignClientFallback implements FoundationFeignClient {
     }
 
     @Override
-    public ResponseEntity<List<FieldDataLogDTO>> queryDataLogByInstanceId(Long projectId, Long instanceId, String schemeCode) {
+    public ResponseEntity<List<FieldDataLogVO>> queryDataLogByInstanceId(Long projectId, Long instanceId, String schemeCode) {
         throw new CommonException("error.foundation.queryDataLogByInstanceId");
     }
 

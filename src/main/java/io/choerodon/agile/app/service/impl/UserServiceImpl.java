@@ -2,8 +2,8 @@ package io.choerodon.agile.app.service.impl;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.ProjectVO;
-import io.choerodon.agile.api.vo.RoleAssignmentSearchDTO;
-import io.choerodon.agile.api.vo.RoleDTO;
+import io.choerodon.agile.api.vo.RoleAssignmentSearchVO;
+import io.choerodon.agile.api.vo.RoleVO;
 import io.choerodon.agile.api.vo.UserDTO;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -86,14 +86,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<RoleDTO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
-        ResponseEntity<List<RoleDTO>> roles = userFeignClient.listRolesWithUserCountOnProjectLevel(sourceId, roleAssignmentSearchDTO);
+    public List<RoleVO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO) {
+        ResponseEntity<List<RoleVO>> roles = userFeignClient.listRolesWithUserCountOnProjectLevel(sourceId, roleAssignmentSearchVO);
         return roles != null ? roles.getBody() : new ArrayList<>();
     }
 
     @Override
-    public PageInfo<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
-        ResponseEntity<PageInfo<UserDTO>> users = userFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(page, size, roleId, sourceId, roleAssignmentSearchDTO);
+    public PageInfo<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO) {
+        ResponseEntity<PageInfo<UserDTO>> users = userFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(page, size, roleId, sourceId, roleAssignmentSearchVO);
         return users != null ? users.getBody() : new PageInfo<>(new ArrayList<>());
     }
 

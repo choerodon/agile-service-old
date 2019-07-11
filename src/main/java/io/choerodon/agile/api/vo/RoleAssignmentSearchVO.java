@@ -3,7 +3,7 @@ package io.choerodon.agile.api.vo;
 import io.swagger.annotations.ApiModelProperty;
 
 
-public class RoleAssignmentSearchDTO {
+public class RoleAssignmentSearchVO {
 
     @ApiModelProperty(value = "登录名")
     private String loginName;

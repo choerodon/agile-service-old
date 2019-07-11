@@ -8,7 +8,7 @@ import java.util.Date;
  * @author shinan.chen
  * @since 2019/6/19
  */
-public class FieldDataLogDTO {
+public class FieldDataLogVO {
     @ApiModelProperty(value = "日志id")
     private Long id;
     @ApiModelProperty(value = "实例对象id")

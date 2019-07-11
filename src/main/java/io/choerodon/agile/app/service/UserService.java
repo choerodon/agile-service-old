@@ -2,8 +2,8 @@ package io.choerodon.agile.app.service;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.ProjectVO;
-import io.choerodon.agile.api.vo.RoleAssignmentSearchDTO;
-import io.choerodon.agile.api.vo.RoleDTO;
+import io.choerodon.agile.api.vo.RoleAssignmentSearchVO;
+import io.choerodon.agile.api.vo.RoleVO;
 import io.choerodon.agile.api.vo.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserDO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
@@ -46,9 +46,9 @@ public interface UserService {
      */
     ProjectVO queryProject(Long projectId);
 
-    List<RoleDTO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+    List<RoleVO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO);
 
-    PageInfo<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+    PageInfo<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO);
 
     List<UserDO> listUsersByIds(Long[] ids);
 

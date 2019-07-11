@@ -8,7 +8,7 @@ import java.util.Date;
  * Created by HuangFuqiang@choerodon.io on 2019/3/26.
  * Email: fuqianghuang01@gmail.com
  */
-public class PiCreateDTO {
+public class PiCreateVO {
 
     @ApiModelProperty(value = "art主键id")
     private Long artId;

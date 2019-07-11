@@ -196,18 +196,18 @@ public class SendMsgUtil {
     }
 
     private void getProjectOwnerByProjects(List<Long> projectIds, List<Long> result) {
-        RoleAssignmentSearchDTO roleAssignmentSearchDTO = new RoleAssignmentSearchDTO();
+        RoleAssignmentSearchVO roleAssignmentSearchVO = new RoleAssignmentSearchVO();
         for (Long projectId : projectIds) {
             Long roleId = null;
-            List<RoleDTO> roleDTOS = userService.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchDTO);
-            for (RoleDTO roleDTO : roleDTOS) {
-                if ("role/project/default/project-owner".equals(roleDTO.getCode())) {
-                    roleId = roleDTO.getId();
+            List<RoleVO> roleVOS = userService.listRolesWithUserCountOnProjectLevel(projectId, roleAssignmentSearchVO);
+            for (RoleVO roleVO : roleVOS) {
+                if ("role/project/default/project-owner".equals(roleVO.getCode())) {
+                    roleId = roleVO.getId();
                     break;
                 }
             }
             if (roleId != null) {
-                PageInfo<UserDTO> userDTOS = userService.pagingQueryUsersByRoleIdOnProjectLevel(0, 300, roleId, projectId, roleAssignmentSearchDTO);
+                PageInfo<UserDTO> userDTOS = userService.pagingQueryUsersByRoleIdOnProjectLevel(0, 300, roleId, projectId, roleAssignmentSearchVO);
                 for (UserDTO userDTO : userDTOS.getList()) {
                     if (!result.contains(userDTO.getId())) {
                         result.add(userDTO.getId());

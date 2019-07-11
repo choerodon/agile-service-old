@@ -13,7 +13,7 @@ import java.util.List;
 public class BurnDownReportVO {
 
     @ApiModelProperty(value = "冲刺列表")
-    private List<SprintBurnDownReportDTO> sprintBurnDownReportDTOS;
+    private List<SprintBurnDownReportVO> sprintBurnDownReportVOS;
 
     @ApiModelProperty(value = "未完成的问题列表")
     private List<IssueBurnDownReportDTO> incompleteIssues;
@@ -29,12 +29,12 @@ public class BurnDownReportVO {
         this.jsonObject = jsonObject;
     }
 
-    public List<SprintBurnDownReportDTO> getSprintBurnDownReportDTOS() {
-        return sprintBurnDownReportDTOS;
+    public List<SprintBurnDownReportVO> getSprintBurnDownReportVOS() {
+        return sprintBurnDownReportVOS;
     }
 
-    public void setSprintBurnDownReportDTOS(List<SprintBurnDownReportDTO> sprintBurnDownReportDTOS) {
-        this.sprintBurnDownReportDTOS = sprintBurnDownReportDTOS;
+    public void setSprintBurnDownReportVOS(List<SprintBurnDownReportVO> sprintBurnDownReportVOS) {
+        this.sprintBurnDownReportVOS = sprintBurnDownReportVOS;
     }
 
     public List<IssueBurnDownReportDTO> getIncompleteIssues() {

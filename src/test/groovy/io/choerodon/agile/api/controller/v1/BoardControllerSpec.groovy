@@ -89,8 +89,8 @@ class BoardControllerSpec extends Specification {
 //        List<UserDO> userDOList = new ArrayList<>()
 //        userDOList.add(userDO)
 //        userService.listUsersByIds(*_) >> userDOList
-//        List<RoleDTO> roles = new ArrayList<>()
-//        RoleDTO roleDTO = new RoleDTO()
+//        List<RoleVO> roles = new ArrayList<>()
+//        RoleVO roleDTO = new RoleVO()
 //        roleDTO.setCode("role/project/default/project-owner")
 //        roleDTO.setId(1L)
 //        roles.add(roleDTO)

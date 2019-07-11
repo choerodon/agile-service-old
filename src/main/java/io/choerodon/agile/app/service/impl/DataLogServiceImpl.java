@@ -2,10 +2,9 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.DataLogCreateVO;
 import io.choerodon.agile.api.vo.DataLogVO;
-import io.choerodon.agile.api.vo.FieldDataLogDTO;
+import io.choerodon.agile.api.vo.FieldDataLogVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.app.service.DataLogService;
-import io.choerodon.agile.domain.agile.entity.DataLogE;
 import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.DataLogDTO;
@@ -15,7 +14,6 @@ import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.app.service.UserService;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -66,11 +64,11 @@ public class DataLogServiceImpl implements DataLogService {
     public List<DataLogVO> listByIssueId(Long projectId, Long issueId) {
         List<DataLogVO> dataLogVOS = modelMapper.map(dataLogMapper.selectByIssueId(projectId, issueId), new TypeToken<List<DataLogVO>>() {
         }.getType());
-        List<FieldDataLogDTO> fieldDataLogDTOs = foundationFeignClient.queryDataLogByInstanceId(projectId, issueId, ObjectSchemeCode.AGILE_ISSUE).getBody();
-        for (FieldDataLogDTO fieldDataLogDTO : fieldDataLogDTOs) {
-            DataLogVO dataLogVO = modelMapper.map(fieldDataLogDTO, DataLogVO.class);
-            dataLogVO.setField(fieldDataLogDTO.getFieldCode());
-            dataLogVO.setIssueId(fieldDataLogDTO.getInstanceId());
+        List<FieldDataLogVO> fieldDataLogVOS = foundationFeignClient.queryDataLogByInstanceId(projectId, issueId, ObjectSchemeCode.AGILE_ISSUE).getBody();
+        for (FieldDataLogVO fieldDataLogVO : fieldDataLogVOS) {
+            DataLogVO dataLogVO = modelMapper.map(fieldDataLogVO, DataLogVO.class);
+            dataLogVO.setField(fieldDataLogVO.getFieldCode());
+            dataLogVO.setIssueId(fieldDataLogVO.getInstanceId());
             dataLogVO.setIsCusLog(true);
             dataLogVOS.add(dataLogVO);
         }

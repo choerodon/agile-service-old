@@ -56,9 +56,9 @@ public interface UserFeignClient {
                                            @RequestParam("param") String param);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/count")
-    ResponseEntity<List<RoleDTO>> listRolesWithUserCountOnProjectLevel(
+    ResponseEntity<List<RoleVO>> listRolesWithUserCountOnProjectLevel(
             @PathVariable(name = "project_id") Long sourceId,
-            @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+            @RequestBody(required = false) @Valid RoleAssignmentSearchVO roleAssignmentSearchVO);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users")
     ResponseEntity<PageInfo<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(
@@ -66,7 +66,7 @@ public interface UserFeignClient {
             @RequestParam(name = "size") int size,
             @RequestParam(name = "role_id") Long roleId,
             @PathVariable(name = "project_id") Long sourceId,
-            @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+            @RequestBody(required = false) @Valid RoleAssignmentSearchVO roleAssignmentSearchVO);
 
     @GetMapping(value = "/v1/organizations/{organization_id}")
     ResponseEntity<OrganizationVO> query(@PathVariable(name = "organization_id") Long id);
@@ -85,7 +85,7 @@ public interface UserFeignClient {
             @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size,
             @PathVariable(name = "project_id") Long sourceId,
-            @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO,
+            @RequestBody(required = false) @Valid RoleAssignmentSearchVO roleAssignmentSearchVO,
             @RequestParam(name = "doPage") boolean doPage);
 }
 

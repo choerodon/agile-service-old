@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.SprintWorkCalendarDTO;
+import io.choerodon.agile.api.vo.SprintWorkCalendarVO;
 import io.choerodon.agile.api.vo.WorkCalendarRefCreateVO;
 import io.choerodon.agile.api.vo.WorkCalendarRefVO;
 import io.choerodon.agile.api.validator.WorkCalendarValidator;
@@ -41,14 +41,14 @@ public class WorkCalendarRefServiceImpl implements WorkCalendarRefService {
     private SprintWorkCalendarRefRepository sprintWorkCalendarRefRepository;
 
     @Override
-    public SprintWorkCalendarDTO querySprintWorkCalendarRefs(Long projectId, Integer year) {
+    public SprintWorkCalendarVO querySprintWorkCalendarRefs(Long projectId, Integer year) {
         SprintSearchDTO sprintSearchDTO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDTO != null) {
-            SprintWorkCalendarDTO sprintWorkCalendarDTO = sprintSearchAssembler.toTarget(sprintSearchDTO, SprintWorkCalendarDTO.class);
-            sprintWorkCalendarDTO.setWorkCalendarRefVOS(sprintCreateAssembler.toTargetList(workCalendarRefMapper.queryWithNextYearByYear(projectId, sprintWorkCalendarDTO.getSprintId(), year), WorkCalendarRefVO.class));
-            return sprintWorkCalendarDTO;
+            SprintWorkCalendarVO sprintWorkCalendarVO = sprintSearchAssembler.toTarget(sprintSearchDTO, SprintWorkCalendarVO.class);
+            sprintWorkCalendarVO.setWorkCalendarRefVOS(sprintCreateAssembler.toTargetList(workCalendarRefMapper.queryWithNextYearByYear(projectId, sprintWorkCalendarVO.getSprintId(), year), WorkCalendarRefVO.class));
+            return sprintWorkCalendarVO;
         } else {
-            return new SprintWorkCalendarDTO();
+            return new SprintWorkCalendarVO();
         }
     }
 

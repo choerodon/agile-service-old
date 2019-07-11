@@ -4,17 +4,21 @@ package io.choerodon.agile.infra.dataobject;
  * Created by HuangFuqiang@choerodon.io on 2018/6/26.
  * Email: fuqianghuang01@gmail.com
  */
-public class StatusForMoveDataDO {
+public class StatusDTO {
 
     private Long id;
 
     private String name;
 
-    private Long organizationId;
-
     private Long projectId;
 
     private String categoryCode;
+
+    private String categoryName;
+
+    private Integer issueNumCount;
+
+    private Long objectVersionNumber;
 
     public Long getId() {
         return id;
@@ -48,11 +52,27 @@ public class StatusForMoveDataDO {
         this.categoryCode = categoryCode;
     }
 
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
-    public Long getOrganizationId() {
-        return organizationId;
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setIssueNumCount(Integer issueNumCount) {
+        this.issueNumCount = issueNumCount;
+    }
+
+    public Integer getIssueNumCount() {
+        return issueNumCount;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
     }
 }

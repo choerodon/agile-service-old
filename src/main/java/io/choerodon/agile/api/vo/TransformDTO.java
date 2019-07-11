@@ -21,7 +21,7 @@ public class TransformDTO {
     private Long endStatusId;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusDTO statusDTO;
+    private StatusVO statusVO;
 
     public Long getId() {
         return id;
@@ -55,11 +55,11 @@ public class TransformDTO {
         this.endStatusId = endStatusId;
     }
 
-    public StatusDTO getStatusDTO() {
-        return statusDTO;
+    public StatusVO getStatusVO() {
+        return statusVO;
     }
 
-    public void setStatusDTO(StatusDTO statusDTO) {
-        this.statusDTO = statusDTO;
+    public void setStatusVO(StatusVO statusVO) {
+        this.statusVO = statusVO;
     }
 }

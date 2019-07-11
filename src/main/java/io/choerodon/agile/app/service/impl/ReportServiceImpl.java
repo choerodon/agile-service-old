@@ -1496,32 +1496,32 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleBurnDownReportSprintData(List<SprintDTO> sprintDTOList, List<IssueBurnDownReportDO> completeIssues, BurnDownReportVO burnDownReportVO, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
-        List<SprintBurnDownReportDTO> sprintBurnDownReportDTOS = new ArrayList<>();
+        List<SprintBurnDownReportVO> sprintBurnDownReportVOS = new ArrayList<>();
         if (sprintDTOList.size() == 1) {
-            SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(0));
+            SprintBurnDownReportVO sprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(0));
             List<IssueBurnDownReportDO> singleCompleteIssues = completeIssues.stream().filter(issueDO ->
-                    issueDO.getDoneDate().after(sprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
-            sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
-            sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
+                    issueDO.getDoneDate().after(sprintBurnDownReportVO.getStartDate())).collect(Collectors.toList());
+            sprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
+            sprintBurnDownReportVOS.add(sprintBurnDownReportVO);
         } else {
             for (int i = 0; i < sprintDTOList.size() - 1; i++) {
-                SprintBurnDownReportDTO sprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i));
-                Date startDateOne = sprintBurnDownReportDTO.getStartDate();
+                SprintBurnDownReportVO sprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i));
+                Date startDateOne = sprintBurnDownReportVO.getStartDate();
                 Date startDateTwo = sprintDTOList.get(i + 1).getStartDate();
                 List<IssueBurnDownReportDO> duringSprintCompleteIssues = handleDuringSprintIncompleteIssues(completeIssues, startDateOne, startDateTwo);
-                sprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
-                sprintBurnDownReportDTOS.add(sprintBurnDownReportDTO);
+                sprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
+                sprintBurnDownReportVOS.add(sprintBurnDownReportVO);
                 if (i == sprintDTOList.size() - 2) {
-                    SprintBurnDownReportDTO lastSprintBurnDownReportDTO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i + 1));
+                    SprintBurnDownReportVO lastSprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i + 1));
                     List<IssueBurnDownReportDO> lastCompleteIssues = completeIssues.stream().filter(issueDO ->
-                            issueDO.getDoneDate().after(lastSprintBurnDownReportDTO.getStartDate())).collect(Collectors.toList());
-                    lastSprintBurnDownReportDTO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
-                    lastSprintBurnDownReportDTO.setEndDate(lastSprintBurnDownReportDTO.getEndDate() == null ? new Date() : lastSprintBurnDownReportDTO.getEndDate());
-                    sprintBurnDownReportDTOS.add(lastSprintBurnDownReportDTO);
+                            issueDO.getDoneDate().after(lastSprintBurnDownReportVO.getStartDate())).collect(Collectors.toList());
+                    lastSprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
+                    lastSprintBurnDownReportVO.setEndDate(lastSprintBurnDownReportVO.getEndDate() == null ? new Date() : lastSprintBurnDownReportVO.getEndDate());
+                    sprintBurnDownReportVOS.add(lastSprintBurnDownReportVO);
                 }
             }
         }
-        burnDownReportVO.setSprintBurnDownReportDTOS(sprintBurnDownReportDTOS);
+        burnDownReportVO.setSprintBurnDownReportVOS(sprintBurnDownReportVOS);
     }
 
     private List<IssueBurnDownReportDO> handleDuringSprintIncompleteIssues(List<IssueBurnDownReportDO> completeIssues, Date startDateOne, Date startDateTwo) {

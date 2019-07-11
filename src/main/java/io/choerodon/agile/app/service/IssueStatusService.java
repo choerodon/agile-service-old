@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.IssueStatusVO;
-import io.choerodon.agile.api.vo.StatusAndIssuesDTO;
+import io.choerodon.agile.api.vo.StatusAndIssuesVO;
 import io.choerodon.agile.api.vo.StatusMoveVO;
 import io.choerodon.agile.api.vo.event.AddStatusWithProject;
 import io.choerodon.agile.api.vo.event.StatusPayload;
@@ -21,7 +21,7 @@ public interface IssueStatusService {
 
     IssueStatusVO moveStatusToColumn(Long projectId, Long statusId, StatusMoveVO statusMoveVO);
 
-    List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType);
+    List<StatusAndIssuesVO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType);
 
     IssueStatusVO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveVO statusMoveVO);
 

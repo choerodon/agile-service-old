@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author shinan.chen
  * @since 2019/5/30
  */
-public class TeamProjectDTO {
+public class TeamProjectVO {
 
     @ApiModelProperty(value = "团队项目id")
     private Long teamProjectId;

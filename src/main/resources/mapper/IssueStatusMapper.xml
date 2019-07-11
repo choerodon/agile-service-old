@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.IssueStatusMapper">
 
-    <resultMap id="statusAndIssuesMap" type="io.choerodon.agile.infra.dataobject.StatusAndIssuesDO">
+    <resultMap id="statusAndIssuesMap" type="io.choerodon.agile.infra.dataobject.StatusAndIssuesDTO">
         <id property="id" column="ais_id"/>
         <id property="projectId" column="ais_project_id"/>
         <id property="statusId" column="ais_status_id"/>
