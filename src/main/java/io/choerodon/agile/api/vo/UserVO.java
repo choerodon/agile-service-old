@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018/7/26
  */
-public class UserDTO {
+public class UserVO {
 
     @ApiModelProperty(value = "用户id")
     private Long id;

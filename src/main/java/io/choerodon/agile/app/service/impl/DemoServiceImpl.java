@@ -89,13 +89,13 @@ public class DemoServiceImpl implements DemoService {
     private IssueLinkService issueLinkService;
 
 
-    private void setIssueTypeMap(Map<String, IssueTypeWithStateMachineIdDTO> issueTypeMap, List<IssueTypeWithStateMachineIdDTO> issueTypes) {
-        for (IssueTypeWithStateMachineIdDTO issueTypeWithStateMachineIdDTO : issueTypes) {
-            issueTypeMap.put(issueTypeWithStateMachineIdDTO.getTypeCode(), issueTypeWithStateMachineIdDTO);
+    private void setIssueTypeMap(Map<String, IssueTypeWithStateMachineIdVO> issueTypeMap, List<IssueTypeWithStateMachineIdVO> issueTypes) {
+        for (IssueTypeWithStateMachineIdVO issueTypeWithStateMachineIdVO : issueTypes) {
+            issueTypeMap.put(issueTypeWithStateMachineIdVO.getTypeCode(), issueTypeWithStateMachineIdVO);
         }
     }
 
-    private IssueVO createEpic(Long projectId, String epicName, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long reporterId) {
+    private IssueVO createEpic(Long projectId, String epicName, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap, Long reporterId) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setEpicName(epicName);
@@ -108,7 +108,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
-    private IssueVO createStory(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, BigDecimal storyPoint, Long epicId, Long reporterId) {
+    private IssueVO createStory(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap, Long sprintId, BigDecimal storyPoint, Long epicId, Long reporterId) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setSummary(summary);
@@ -123,7 +123,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
-    private IssueVO createTask(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, Long reporterId) {
+    private IssueVO createTask(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap, Long sprintId, Long reporterId) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setSummary(summary);
@@ -136,7 +136,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
-    private IssueVO createBug(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long sprintId, Long reporterId) {
+    private IssueVO createBug(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap, Long sprintId, Long reporterId) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setSummary(summary);
@@ -149,7 +149,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
-    private IssueVO createTest(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdDTO> testIssueTypeMap) {
+    private IssueVO createTest(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdVO> testIssueTypeMap) {
         IssueCreateVO issueCreateVO = new IssueCreateVO();
         issueCreateVO.setProjectId(projectId);
         issueCreateVO.setSummary(summary);
@@ -160,7 +160,7 @@ public class DemoServiceImpl implements DemoService {
         return stateMachineService.createIssue(issueCreateVO, TEST_APPLYTYPE);
     }
 
-    private IssueSubVO createSubTask(Long projectId, String summary, PriorityVO defaultPriority, Long sprintId, Long parentIssueId, Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap, Long reporterId) {
+    private IssueSubVO createSubTask(Long projectId, String summary, PriorityVO defaultPriority, Long sprintId, Long parentIssueId, Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap, Long reporterId) {
         IssueSubCreateVO issueSubCreateVO = new IssueSubCreateVO();
         issueSubCreateVO.setProjectId(projectId);
         issueSubCreateVO.setSummary(summary);
@@ -192,11 +192,11 @@ public class DemoServiceImpl implements DemoService {
         IssueUpdateVO issueUpdateVO = new IssueUpdateVO();
         issueUpdateVO.setIssueId(issueId);
         issueUpdateVO.setVersionType("fix");
-        List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>();
-        VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
-        versionIssueRelDTO.setVersionId(versionId);
-        versionIssueRelDTOList.add(versionIssueRelDTO);
-        issueUpdateVO.setVersionIssueRelDTOList(versionIssueRelDTOList);
+        List<VersionIssueRelVO> versionIssueRelVOList = new ArrayList<>();
+        VersionIssueRelVO versionIssueRelVO = new VersionIssueRelVO();
+        versionIssueRelVO.setVersionId(versionId);
+        versionIssueRelVOList.add(versionIssueRelVO);
+        issueUpdateVO.setVersionIssueRelVOList(versionIssueRelVOList);
         List<String> fieldList = new ArrayList<>();
         issueService.updateIssue(projectId, issueUpdateVO, fieldList);
     }
@@ -252,11 +252,11 @@ public class DemoServiceImpl implements DemoService {
      * 封装返回 转换名称：转化ID 的Map
      *
      * @param transformMap
-     * @param transformDTOList
+     * @param transformVOList
      */
-    private void setTransformMap(Map<String, Long> transformMap, List<TransformDTO> transformDTOList) {
-        for (TransformDTO transformDTO : transformDTOList) {
-            transformMap.put(transformDTO.getName(), transformDTO.getId());
+    private void setTransformMap(Map<String, Long> transformMap, List<TransformVO> transformVOList) {
+        for (TransformVO transformVO : transformVOList) {
+            transformMap.put(transformVO.getName(), transformVO.getId());
         }
     }
 
@@ -477,13 +477,13 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 查询issue type类型
-        List<IssueTypeWithStateMachineIdDTO> agileIssueTypes = issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(projectId, AGILE_APPLYTYPE).getBody();
-        Map<String, IssueTypeWithStateMachineIdDTO> agileIssueTypeMap = new HashMap<>();
+        List<IssueTypeWithStateMachineIdVO> agileIssueTypes = issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(projectId, AGILE_APPLYTYPE).getBody();
+        Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap = new HashMap<>();
         setIssueTypeMap(agileIssueTypeMap, agileIssueTypes);
 
         // 查询测试的issue type类型
-        List<IssueTypeWithStateMachineIdDTO> testIssueTypes = issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(projectId, TEST_APPLYTYPE).getBody();
-        Map<String, IssueTypeWithStateMachineIdDTO> testIssueTypeMap = new HashMap<>();
+        List<IssueTypeWithStateMachineIdVO> testIssueTypes = issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(projectId, TEST_APPLYTYPE).getBody();
+        Map<String, IssueTypeWithStateMachineIdVO> testIssueTypeMap = new HashMap<>();
         setIssueTypeMap(testIssueTypeMap, testIssueTypes);
 
         // 查询优先级列表
@@ -663,32 +663,32 @@ public class DemoServiceImpl implements DemoService {
             statusMap.put(issueStatusVO.getCategoryCode(), issueStatusVO.getStatusId());
         }
         Long currentStatusId1 = story1.getStatusId();
-        List<TransformDTO> transformDTOList1 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId1, story1.getIssueId(), story1.getIssueTypeId(), "agile").getBody();
+        List<TransformVO> transformVOList1 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId1, story1.getIssueId(), story1.getIssueTypeId(), "agile").getBody();
         Map<String, Long> transformMap1 = new HashMap<>();
-        setTransformMap(transformMap1, transformDTOList1);
+        setTransformMap(transformMap1, transformVOList1);
         Long completeTransformId1 = transformMap1.get("全部转换到已完成");
         Long doingTransformId1 = transformMap1.get("全部转换到处理中");
 
 
         Long currentStatusId2 = task1.getStatusId();
-        List<TransformDTO> transformDTOList2 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId2, task1.getIssueId(), task1.getIssueTypeId(), "agile").getBody();
+        List<TransformVO> transformVOList2 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId2, task1.getIssueId(), task1.getIssueTypeId(), "agile").getBody();
         Map<String, Long> transformMap2 = new HashMap<>();
-        setTransformMap(transformMap2, transformDTOList2);
+        setTransformMap(transformMap2, transformVOList2);
         Long completeTransformId2 = transformMap2.get("全部转换到已完成");
         Long doingTransformId2 = transformMap2.get("全部转换到处理中");
 
         Long currentStatusId4 = bug1.getStatusId();
-        List<TransformDTO> transformDTOList4 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId4, bug1.getIssueId(), bug1.getIssueTypeId(), "agile").getBody();
+        List<TransformVO> transformVOList4 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId4, bug1.getIssueId(), bug1.getIssueTypeId(), "agile").getBody();
         Map<String, Long> transformMap4 = new HashMap<>();
-        setTransformMap(transformMap4, transformDTOList4);
+        setTransformMap(transformMap4, transformVOList4);
         Long completeTransformId4 = transformMap4.get("全部转换到已完成");
         Long doingTransformId4 = transformMap4.get("全部转换到已完成");
 
 
         Long currentStatusId3 = subtask1.getStatusId();
-        List<TransformDTO> transformDTOList3 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId3, subtask1.getIssueId(), subtask1.getIssueTypeId(), "agile").getBody();
+        List<TransformVO> transformVOList3 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId3, subtask1.getIssueId(), subtask1.getIssueTypeId(), "agile").getBody();
         Map<String, Long> transformMap3 = new HashMap<>();
-        setTransformMap(transformMap3, transformDTOList3);
+        setTransformMap(transformMap3, transformVOList3);
         Long completeTransformId3 = transformMap3.get("全部转换到已完成");
         Long doingTransformId3 = transformMap3.get("全部转换到处理中");
 

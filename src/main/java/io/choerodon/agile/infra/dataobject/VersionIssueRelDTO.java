@@ -1,34 +1,41 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import io.swagger.annotations.ApiModelProperty;
+import io.choerodon.mybatis.entity.BaseDTO;
 
-import java.io.Serializable;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 16:21:18
  */
-public class VersionIssueRelDTO implements Serializable {
+@Table(name = "agile_version_issue_rel")
+public class VersionIssueRelDTO extends BaseDTO{
 
-    @ApiModelProperty(value = "版本id")
+    /**
+     * version id
+     */
+    @NotNull(message = "error.version_issue_rel.version_idNotNull")
     private Long versionId;
 
-    @ApiModelProperty(value = "问题id")
+    /**
+     * issue id
+     */
+    @NotNull(message = "error.version_issue_rel.issue_idNotNull")
     private Long issueId;
 
-    @ApiModelProperty(value = "版本名称")
+    @Transient
     private String name;
 
-    @ApiModelProperty(value = "项目id")
-    private Long projectId;
+    @Transient
+    private String statusCode;
 
-    @ApiModelProperty(value = "版本关系：fix、influence")
     private String relationType;
 
-    @ApiModelProperty(value = "版本状态")
-    private String statusCode;
+    private Long projectId;
 
     public Long getVersionId() {
         return versionId;
@@ -54,20 +61,20 @@ public class VersionIssueRelDTO implements Serializable {
         this.name = name;
     }
 
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
-    }
-
     public String getRelationType() {
         return relationType;
     }
 
     public void setRelationType(String relationType) {
         this.relationType = relationType;
+    }
+
+    public Long getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
     public String getStatusCode() {

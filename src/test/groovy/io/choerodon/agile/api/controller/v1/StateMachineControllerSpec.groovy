@@ -8,7 +8,7 @@ import io.choerodon.agile.api.vo.ProjectVO
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.api.vo.event.ProjectConfig
 import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue
-import io.choerodon.agile.infra.dataobject.UserDO
+import io.choerodon.agile.infra.dataobject.UserDTO
 import io.choerodon.agile.infra.mapper.*
 import io.choerodon.agile.app.service.UserService
 import org.mockito.Matchers
@@ -60,7 +60,7 @@ class StateMachineControllerSpec extends Specification {
         projectDTO.setId(1L)
         projectDTO.setOrganizationId(1L)
         Mockito.when(userRepository.queryProject(Matchers.anyLong())).thenReturn(projectDTO)
-        UserDO userDO = new UserDO()
+        UserDTO userDO = new UserDTO()
         userDO.setRealName("管理员")
         Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
     }

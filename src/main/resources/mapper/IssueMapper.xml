@@ -31,7 +31,7 @@
         <id column="relate_issue_num" property="relateIssueNum"/>
         <association property="activeSprint" column="issue_id" select="queryActiveSprintNameByIssueId"/>
         <association property="activePi" column="issue_id" select="queryActivePiNameByIssueId"/>
-        <collection property="versionIssueRelDOList" column="issue_id"
+        <collection property="versionIssueRelDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueDetailDTO"
                     select="queryVersionIssueRelByIssueId"/>
         <collection property="closeSprint" column="issue_id"
@@ -102,7 +102,7 @@
         <id column="description" property="description"/>
         <id column="priority_id" property="priorityId"/>
         <id column="issue_type_id" property="issueTypeId"/>
-        <collection property="versionIssueRelDOList" column="issue_id"
+        <collection property="versionIssueRelDTOList" column="issue_id"
                     ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
                     select="queryVersionIssueRelByIssueId"/>
         <collection property="labelIssueRelDTOList" column="issue_id"
@@ -138,7 +138,7 @@
         WHERE ai.issue_id = #{issueId} AND ai.project_id = #{projectId}
     </select>
 
-    <select id="queryVersionIssueRelByIssueId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
+    <select id="queryVersionIssueRelByIssueId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueRelDTO">
         SELECT
             avir.*,
             apr.name,
@@ -147,7 +147,7 @@
         WHERE avir.issue_id = #{issueId}
     </select>
 
-    <select id="queryVersionNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
+    <select id="queryVersionNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueRelDTO">
         SELECT
         avir.*,
         apr.name
@@ -350,8 +350,8 @@
         <id property="remainingTime" column="remaining_time"/>
         <id property="storyPoints" column="story_points"/>
         <id property="featureType" column="feature_type"/>
-        <collection property="versionIssueRelDOS" autoMapping="true"
-                    ofType="io.choerodon.agile.infra.dataobject.VersionIssueRelDO">
+        <collection property="versionIssueRelDTOS" autoMapping="true"
+                    ofType="io.choerodon.agile.infra.dataobject.VersionIssueRelDTO">
             <id property="versionId" column="version_id"/>
             <id property="statusCode" column="version_status_code"/>
             <id property="relationType" column="relation_type"/>

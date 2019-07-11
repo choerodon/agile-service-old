@@ -2,9 +2,9 @@ package io.choerodon.agile.api.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class IdWithNameDTO {
+public class IdWithNameVO {
 
-    public IdWithNameDTO(Long userId, String name) {
+    public IdWithNameVO(Long userId, String name) {
         this.userId = userId;
         this.name = name;
     }

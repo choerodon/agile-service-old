@@ -62,10 +62,10 @@ public interface ProductVersionService {
      * 拖动版本排序
      *
      * @param projectId          projectId
-     * @param versionSequenceDTO versionSequenceDTO
+     * @param versionSequenceVO versionSequenceVO
      * @return ProductVersionPageVO
      */
-    ProductVersionPageVO dragVersion(Long projectId, VersionSequenceDTO versionSequenceDTO);
+    ProductVersionPageVO dragVersion(Long projectId, VersionSequenceVO versionSequenceVO);
 
     VersionIssueCountVO queryByCategoryCode(Long projectId, Long versionId);
 

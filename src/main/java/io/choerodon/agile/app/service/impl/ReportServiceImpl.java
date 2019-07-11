@@ -421,7 +421,7 @@ public class ReportServiceImpl implements ReportService {
         if (versionDO == null || Objects.equals(versionDO.getStatusCode(), VERSION_ARCHIVED_CODE)) {
             throw new CommonException(VERSION_REPORT_ERROR);
         }
-        List<VersionReportDTO> versionReport = new ArrayList<>();
+        List<VersionReportVO> versionReport = new ArrayList<>();
         List<Long> nowVersionIssue = reportMapper.queryIssueIdByVersionId(projectId, versionId);
         Date startDate = versionDO.getStartDate() != null ? versionDO.getStartDate() : versionDO.getCreationDate();
         Date endDate = new Date();
@@ -444,7 +444,7 @@ public class ReportServiceImpl implements ReportService {
         return versionReportMap;
     }
 
-    private void statisticsByIssueCount(List<VersionReportDTO> versionReport, Long projectId, List<Long> nowVersionIssue, List<VersionIssueChangeDO> versionChangeIssue, Date startDate, Date endDate) {
+    private void statisticsByIssueCount(List<VersionReportVO> versionReport, Long projectId, List<Long> nowVersionIssue, List<VersionIssueChangeDO> versionChangeIssue, Date startDate, Date endDate) {
         VersionIssueChangeDO nowVersionIssueChange = new VersionIssueChangeDO();
         List<VersionIssueChangeDO> versionIssues = new ArrayList<>();
         //查统计最末时间点的相关信息
@@ -463,38 +463,38 @@ public class ReportServiceImpl implements ReportService {
             return;
         }
         Set<Date> dateSet = new TreeSet<>(Comparator.reverseOrder());
-        Map<Date, List<IssueChangeDTO>> completedIssuesMap = statisticalCompletedChange(projectId, versionIssues, dateSet, FIELD_STORY_POINTS);
-        Map<Date, List<IssueChangeDTO>> unCompletedIssuesMap = statisticalUnCompletedChange(projectId, versionIssues, dateSet, FIELD_STORY_POINTS);
-        Map<Date, List<IssueChangeDTO>> addIssuesMap = statisticalAddChangeIssue(projectId, versionChangeIssue, dateSet, FIELD_STORY_POINTS);
-        Map<Date, List<IssueChangeDTO>> removeIssuesMap = statisticalRemoveChangeIssue(projectId, versionChangeIssue, dateSet, FIELD_STORY_POINTS);
-        VersionReportDTO nowVersionReportDTO = new VersionReportDTO();
-        nowVersionReportDTO.setChangeDate(endDate);
-        nowVersionReportDTO.setTotalField(nowIssueCount);
-        nowVersionReportDTO.setCompletedField(nowCompletedIssueCount);
-        versionReport.add(nowVersionReportDTO);
+        Map<Date, List<IssueChangeVO>> completedIssuesMap = statisticalCompletedChange(projectId, versionIssues, dateSet, FIELD_STORY_POINTS);
+        Map<Date, List<IssueChangeVO>> unCompletedIssuesMap = statisticalUnCompletedChange(projectId, versionIssues, dateSet, FIELD_STORY_POINTS);
+        Map<Date, List<IssueChangeVO>> addIssuesMap = statisticalAddChangeIssue(projectId, versionChangeIssue, dateSet, FIELD_STORY_POINTS);
+        Map<Date, List<IssueChangeVO>> removeIssuesMap = statisticalRemoveChangeIssue(projectId, versionChangeIssue, dateSet, FIELD_STORY_POINTS);
+        VersionReportVO nowVersionReportVO = new VersionReportVO();
+        nowVersionReportVO.setChangeDate(endDate);
+        nowVersionReportVO.setTotalField(nowIssueCount);
+        nowVersionReportVO.setCompletedField(nowCompletedIssueCount);
+        versionReport.add(nowVersionReportVO);
         for (Date date : dateSet) {
-            VersionReportDTO versionReportDTO = new VersionReportDTO();
-            List<IssueChangeDTO> completedIssue = changeIssueNowDate(completedIssuesMap, date);
-            List<Long> completedIssueIds = completedIssue.stream().map(IssueChangeDTO::getIssueId).collect(Collectors.toList());
-            List<IssueChangeDTO> unCompletedIssue = changeIssueNowDate(unCompletedIssuesMap, date);
-            List<IssueChangeDTO> addIssue = changeIssueNowDate(addIssuesMap, date);
-            List<IssueChangeDTO> removeIssue = changeIssueNowDate(removeIssuesMap, date);
+            VersionReportVO versionReportVO = new VersionReportVO();
+            List<IssueChangeVO> completedIssue = changeIssueNowDate(completedIssuesMap, date);
+            List<Long> completedIssueIds = completedIssue.stream().map(IssueChangeVO::getIssueId).collect(Collectors.toList());
+            List<IssueChangeVO> unCompletedIssue = changeIssueNowDate(unCompletedIssuesMap, date);
+            List<IssueChangeVO> addIssue = changeIssueNowDate(addIssuesMap, date);
+            List<IssueChangeVO> removeIssue = changeIssueNowDate(removeIssuesMap, date);
             Integer addCompletedCount = addIssue.stream().filter(addChangeIssue -> addChangeIssue.getCompleted() && !completedIssueIds.contains(addChangeIssue.getIssueId())).collect(Collectors.toList()).size();
-            Integer removeCompletedCount = removeIssue.stream().filter(IssueChangeDTO::getCompleted).collect(Collectors.toList()).size();
+            Integer removeCompletedCount = removeIssue.stream().filter(IssueChangeVO::getCompleted).collect(Collectors.toList()).size();
             nowIssueCount = nowIssueCount - addIssue.size() + removeIssue.size();
             nowCompletedIssueCount = nowCompletedIssueCount - completedIssue.size() + unCompletedIssue.size() - addCompletedCount + removeCompletedCount;
-            versionReportDTO.setChangeDate(date);
-            versionReportDTO.setTotalField(nowIssueCount);
-            versionReportDTO.setCompletedField(nowCompletedIssueCount);
-            versionReportDTO.setCompletedIssues(completedIssue);
-            versionReportDTO.setUnCompletedIssues(unCompletedIssue);
-            versionReportDTO.setAddIssues(addIssue);
-            versionReportDTO.setRemoveIssues(removeIssue);
-            versionReport.add(versionReportDTO);
+            versionReportVO.setChangeDate(date);
+            versionReportVO.setTotalField(nowIssueCount);
+            versionReportVO.setCompletedField(nowCompletedIssueCount);
+            versionReportVO.setCompletedIssues(completedIssue);
+            versionReportVO.setUnCompletedIssues(unCompletedIssue);
+            versionReportVO.setAddIssues(addIssue);
+            versionReportVO.setRemoveIssues(removeIssue);
+            versionReport.add(versionReportVO);
         }
     }
 
-    private void statisticsByStoryPointsOrRemainingTime(List<VersionReportDTO> versionReport, Long projectId, List<Long> nowVersionIssue, List<VersionIssueChangeDO> versionChangeIssue, Date startDate, Date endDate, String field) {
+    private void statisticsByStoryPointsOrRemainingTime(List<VersionReportVO> versionReport, Long projectId, List<Long> nowVersionIssue, List<VersionIssueChangeDO> versionChangeIssue, Date startDate, Date endDate, String field) {
         VersionIssueChangeDO nowVersionIssueChange = new VersionIssueChangeDO();
         List<VersionIssueChangeDO> versionIssues = new ArrayList<>();
         String fieldName = field.equals(FIELD_STORY_POINTS) ? FIELD_STORY_POINTS_NAME : FIELD_REMAINING_TIME_NAME;
@@ -519,28 +519,28 @@ public class ReportServiceImpl implements ReportService {
             return;
         }
         Set<Date> dateSet = new TreeSet<>(Comparator.reverseOrder());
-        Map<Date, List<IssueChangeDTO>> fieldChangeIssuesMap = statisticalFieldChange(projectId, versionIssues, dateSet, field);
-        Map<Date, List<IssueChangeDTO>> completedIssuesMap = statisticalCompletedChange(projectId, versionIssues, dateSet, field);
-        Map<Date, List<IssueChangeDTO>> unCompletedIssuesMap = statisticalUnCompletedChange(projectId, versionIssues, dateSet, field);
-        Map<Date, List<IssueChangeDTO>> addIssuesMap = statisticalAddChangeIssue(projectId, versionChangeIssue, dateSet, field);
-        Map<Date, List<IssueChangeDTO>> removeIssuesMap = statisticalRemoveChangeIssue(projectId, versionChangeIssue, dateSet, field);
-        VersionReportDTO nowVersionReportDTO = new VersionReportDTO();
-        nowVersionReportDTO.setChangeDate(endDate);
-        nowVersionReportDTO.setTotalField(nowTotalField);
-        nowVersionReportDTO.setCompletedField(nowCompletedField);
-        nowVersionReportDTO.setUnEstimatedPercentage(nowUnEstimatedPercentage);
-        versionReport.add(nowVersionReportDTO);
+        Map<Date, List<IssueChangeVO>> fieldChangeIssuesMap = statisticalFieldChange(projectId, versionIssues, dateSet, field);
+        Map<Date, List<IssueChangeVO>> completedIssuesMap = statisticalCompletedChange(projectId, versionIssues, dateSet, field);
+        Map<Date, List<IssueChangeVO>> unCompletedIssuesMap = statisticalUnCompletedChange(projectId, versionIssues, dateSet, field);
+        Map<Date, List<IssueChangeVO>> addIssuesMap = statisticalAddChangeIssue(projectId, versionChangeIssue, dateSet, field);
+        Map<Date, List<IssueChangeVO>> removeIssuesMap = statisticalRemoveChangeIssue(projectId, versionChangeIssue, dateSet, field);
+        VersionReportVO nowVersionReportVO = new VersionReportVO();
+        nowVersionReportVO.setChangeDate(endDate);
+        nowVersionReportVO.setTotalField(nowTotalField);
+        nowVersionReportVO.setCompletedField(nowCompletedField);
+        nowVersionReportVO.setUnEstimatedPercentage(nowUnEstimatedPercentage);
+        versionReport.add(nowVersionReportVO);
         for (Date date : dateSet) {
-            VersionReportDTO versionReportDTO = new VersionReportDTO();
-            List<IssueChangeDTO> fieldChangeIssue = changeIssueNowDate(fieldChangeIssuesMap, date);
-            List<Long> fileChangeIds = fieldChangeIssue.stream().map(IssueChangeDTO::getIssueId).collect(Collectors.toList());
-            List<IssueChangeDTO> completedIssue = changeIssueNowDate(completedIssuesMap, date);
-            List<IssueChangeDTO> unCompletedIssue = changeIssueNowDate(unCompletedIssuesMap, date);
-            List<IssueChangeDTO> addIssue = changeIssueNowDate(addIssuesMap, date);
-            List<Long> addIssueIds = addIssue.stream().map(IssueChangeDTO::getIssueId).collect(Collectors.toList());
-            List<IssueChangeDTO> removeIssue = changeIssueNowDate(removeIssuesMap, date);
+            VersionReportVO versionReportVO = new VersionReportVO();
+            List<IssueChangeVO> fieldChangeIssue = changeIssueNowDate(fieldChangeIssuesMap, date);
+            List<Long> fileChangeIds = fieldChangeIssue.stream().map(IssueChangeVO::getIssueId).collect(Collectors.toList());
+            List<IssueChangeVO> completedIssue = changeIssueNowDate(completedIssuesMap, date);
+            List<IssueChangeVO> unCompletedIssue = changeIssueNowDate(unCompletedIssuesMap, date);
+            List<IssueChangeVO> addIssue = changeIssueNowDate(addIssuesMap, date);
+            List<Long> addIssueIds = addIssue.stream().map(IssueChangeVO::getIssueId).collect(Collectors.toList());
+            List<IssueChangeVO> removeIssue = changeIssueNowDate(removeIssuesMap, date);
             Integer changeField = fieldChangeIssue.stream().mapToInt(fieldChange -> Integer.valueOf(fieldChange.getChangeField())).sum();
-            Integer changeCompletedField = fieldChangeIssue.stream().filter(IssueChangeDTO::getCompleted).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getChangeField())).sum();
+            Integer changeCompletedField = fieldChangeIssue.stream().filter(IssueChangeVO::getCompleted).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getChangeField())).sum();
             Integer addField = addChangeIssueField(addIssue, fileChangeIds);
             Integer addCompletedField = addChangeCompletedIssueField(addIssue, fileChangeIds);
             Integer removeField = changeIssueField(removeIssue);
@@ -558,108 +558,108 @@ public class ReportServiceImpl implements ReportService {
             nowTotalField = nowTotalField - changeField - addField + removeField;
             nowCompletedField = nowCompletedField - completedField + unCompletedField - changeCompletedField - addCompletedField + removeCompletedField;
             nowUnEstimatedPercentage = nowIssueCount == 0 ? 0 : nowUnEstimateCount / nowIssueCount;
-            versionReportDTO.setChangeDate(date);
-            versionReportDTO.setTotalField(nowTotalField);
-            versionReportDTO.setCompletedField(nowCompletedField);
-            versionReportDTO.setUnEstimatedPercentage(nowUnEstimatedPercentage);
-            versionReportDTO.setFieldChangIssues(fieldChangeIssue);
-            versionReportDTO.setCompletedIssues(completedIssue);
-            versionReportDTO.setUnCompletedIssues(unCompletedIssue);
-            versionReportDTO.setAddIssues(addIssue);
-            versionReportDTO.setRemoveIssues(removeIssue);
-            versionReport.add(versionReportDTO);
+            versionReportVO.setChangeDate(date);
+            versionReportVO.setTotalField(nowTotalField);
+            versionReportVO.setCompletedField(nowCompletedField);
+            versionReportVO.setUnEstimatedPercentage(nowUnEstimatedPercentage);
+            versionReportVO.setFieldChangIssues(fieldChangeIssue);
+            versionReportVO.setCompletedIssues(completedIssue);
+            versionReportVO.setUnCompletedIssues(unCompletedIssue);
+            versionReportVO.setAddIssues(addIssue);
+            versionReportVO.setRemoveIssues(removeIssue);
+            versionReport.add(versionReportVO);
         }
     }
 
-    private Integer completedCalculationUnEstimated(List<IssueChangeDTO> completedIssue, String field, List<Long> addIssueIds) {
+    private Integer completedCalculationUnEstimated(List<IssueChangeVO> completedIssue, String field, List<Long> addIssueIds) {
         return completedIssue.stream().filter(fieldChange ->
                 (Objects.equals(fieldChange.getTypeCode(), ISSUE_STORY_CODE) || field.equals(FIELD_TIMEESTIMATE)) && fieldChange.getNewValue() == null && !addIssueIds.contains(fieldChange.getIssueId())
         ).collect(Collectors.toList()).size();
     }
 
-    private Integer completedChangeIssueField(List<IssueChangeDTO> completedIssue, List<Long> fileChangeIds) {
+    private Integer completedChangeIssueField(List<IssueChangeVO> completedIssue, List<Long> fileChangeIds) {
         return completedIssue.stream().filter(fieldChange -> fieldChange.getNewValue() != null && !fileChangeIds.contains(fieldChange.getIssueId())).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getNewValue())).sum();
     }
 
-    private Integer addChangeCompletedIssueField(List<IssueChangeDTO> addIssue, List<Long> fileChangeIds) {
+    private Integer addChangeCompletedIssueField(List<IssueChangeVO> addIssue, List<Long> fileChangeIds) {
         return addIssue.stream().filter(fieldChange -> fieldChange.getCompleted() && fieldChange.getNewValue() != null && !fileChangeIds.contains(fieldChange.getIssueId())).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getNewValue())).sum();
     }
 
-    private Integer addChangeIssueField(List<IssueChangeDTO> addIssue, List<Long> fileChangeIds) {
+    private Integer addChangeIssueField(List<IssueChangeVO> addIssue, List<Long> fileChangeIds) {
         return addIssue.stream().filter(fieldChange -> fieldChange.getNewValue() != null && !fileChangeIds.contains(fieldChange.getIssueId())).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getNewValue())).sum();
     }
 
-    private Integer calculationEstimated(List<IssueChangeDTO> issueChange, String field, List<Long> addIssueIds) {
+    private Integer calculationEstimated(List<IssueChangeVO> issueChange, String field, List<Long> addIssueIds) {
         return issueChange.stream().filter(fieldChange ->
                 (Objects.equals(fieldChange.getTypeCode(), ISSUE_STORY_CODE) || field.equals(FIELD_TIMEESTIMATE)) && fieldChange.getOldValue() == null && !addIssueIds.contains(fieldChange.getIssueId())
         ).collect(Collectors.toList()).size();
     }
 
-    private Integer changeCompletedIssueField(List<IssueChangeDTO> issueChange) {
+    private Integer changeCompletedIssueField(List<IssueChangeVO> issueChange) {
         return issueChange.stream().filter(fieldChange -> fieldChange.getCompleted() && fieldChange.getNewValue() != null).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getNewValue())).sum();
     }
 
-    private Integer changeIssueField(List<IssueChangeDTO> issueChange) {
+    private Integer changeIssueField(List<IssueChangeVO> issueChange) {
         return issueChange.stream().filter(fieldChange -> fieldChange.getNewValue() != null).mapToInt(fieldChange -> Integer.valueOf(fieldChange.getNewValue())).sum();
     }
 
-    private List<IssueChangeDTO> changeIssueNowDate(Map<Date, List<IssueChangeDTO>> changeIssuesMap, Date date) {
+    private List<IssueChangeVO> changeIssueNowDate(Map<Date, List<IssueChangeVO>> changeIssuesMap, Date date) {
         return changeIssuesMap.get(date) != null ? changeIssuesMap.get(date) : new ArrayList<>();
     }
 
-    private Integer calculationUnEstimated(List<IssueChangeDTO> issueChange, String field) {
+    private Integer calculationUnEstimated(List<IssueChangeVO> issueChange, String field) {
         return issueChange.stream().filter(fieldChange ->
                 (Objects.equals(fieldChange.getTypeCode(), ISSUE_STORY_CODE) || field.equals(FIELD_TIMEESTIMATE)) && fieldChange.getNewValue() == null
         ).collect(Collectors.toList()).size();
     }
 
-    private Map<Date, List<IssueChangeDTO>> statisticalRemoveChangeIssue(Long projectId, List<VersionIssueChangeDO> versionChangeIssue, Set<Date> dateSet, String field) {
+    private Map<Date, List<IssueChangeVO>> statisticalRemoveChangeIssue(Long projectId, List<VersionIssueChangeDO> versionChangeIssue, Set<Date> dateSet, String field) {
         //issue移除
         List<VersionIssueChangeDO> versionRemoveChangeIssue = versionChangeIssue.stream().filter(versionIssueChangeDO -> !versionIssueChangeDO.getRemoveIssueIds().isEmpty()).map(versionIssueChangeDO -> {
             versionIssueChangeDO.setIssueIds(versionIssueChangeDO.getRemoveIssueIds());
             return versionIssueChangeDO;
         }).collect(Collectors.toList());
         List<IssueChangeDO> versionRemoveChangeIssues = versionRemoveChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionRemoveChangeIssue, field);
-        List<IssueChangeDTO> removeIssues = issueAssembler.toTargetList(versionRemoveChangeIssues, IssueChangeDTO.class);
-        Map<Date, List<IssueChangeDTO>> removeIssuesMap = removeIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
+        List<IssueChangeVO> removeIssues = issueAssembler.toTargetList(versionRemoveChangeIssues, IssueChangeVO.class);
+        Map<Date, List<IssueChangeVO>> removeIssuesMap = removeIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(removeIssuesMap.keySet());
         return removeIssuesMap;
     }
 
-    private Map<Date, List<IssueChangeDTO>> statisticalAddChangeIssue(Long projectId, List<VersionIssueChangeDO> versionChangeIssue, Set<Date> dateSet, String field) {
+    private Map<Date, List<IssueChangeVO>> statisticalAddChangeIssue(Long projectId, List<VersionIssueChangeDO> versionChangeIssue, Set<Date> dateSet, String field) {
         //issue移入
         List<VersionIssueChangeDO> versionAddChangeIssue = versionChangeIssue.stream().filter(versionIssueChangeDO -> !versionIssueChangeDO.getAddIssueIds().isEmpty()).map(versionIssueChangeDO -> {
             versionIssueChangeDO.setIssueIds(versionIssueChangeDO.getAddIssueIds());
             return versionIssueChangeDO;
         }).collect(Collectors.toList());
         List<IssueChangeDO> versionAddChangeIssues = versionAddChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionAddChangeIssue, field);
-        List<IssueChangeDTO> addIssues = issueAssembler.toTargetList(versionAddChangeIssues, IssueChangeDTO.class);
-        Map<Date, List<IssueChangeDTO>> addIssuesMap = addIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
+        List<IssueChangeVO> addIssues = issueAssembler.toTargetList(versionAddChangeIssues, IssueChangeVO.class);
+        Map<Date, List<IssueChangeVO>> addIssuesMap = addIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(addIssuesMap.keySet());
         return addIssuesMap;
     }
 
-    private Map<Date, List<IssueChangeDTO>> statisticalUnCompletedChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
+    private Map<Date, List<IssueChangeVO>> statisticalUnCompletedChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
         //issue由完成变为未完成
         List<VersionIssueChangeDO> unCompletedChangeIssues = reportMapper.queryCompletedChangeIssue(projectId, versionIssues, false);
-        List<IssueChangeDTO> unCompletedIssues = issueAssembler.toTargetList(unCompletedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, unCompletedChangeIssues, field), IssueChangeDTO.class);
-        Map<Date, List<IssueChangeDTO>> unCompletedIssuesMap = unCompletedIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
+        List<IssueChangeVO> unCompletedIssues = issueAssembler.toTargetList(unCompletedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, unCompletedChangeIssues, field), IssueChangeVO.class);
+        Map<Date, List<IssueChangeVO>> unCompletedIssuesMap = unCompletedIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(unCompletedIssuesMap.keySet());
         return unCompletedIssuesMap;
     }
 
-    private Map<Date, List<IssueChangeDTO>> statisticalCompletedChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
+    private Map<Date, List<IssueChangeVO>> statisticalCompletedChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
         //issue由未完成变为完成
         List<VersionIssueChangeDO> completedChangeIssues = reportMapper.queryCompletedChangeIssue(projectId, versionIssues, true);
-        List<IssueChangeDTO> completedIssues = issueAssembler.toTargetList(completedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, completedChangeIssues, field), IssueChangeDTO.class);
-        Map<Date, List<IssueChangeDTO>> completedIssuesMap = completedIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
+        List<IssueChangeVO> completedIssues = issueAssembler.toTargetList(completedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, completedChangeIssues, field), IssueChangeVO.class);
+        Map<Date, List<IssueChangeVO>> completedIssuesMap = completedIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(completedIssuesMap.keySet());
         return completedIssuesMap;
     }
 
-    private Map<Date, List<IssueChangeDTO>> statisticalFieldChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
-        List<IssueChangeDTO> changeIssues = issueAssembler.toTargetList(reportMapper.queryChangeFieldIssue(projectId, versionIssues, field), IssueChangeDTO.class);
-        Map<Date, List<IssueChangeDTO>> changeIssuesMap = changeIssues.stream().collect(Collectors.groupingBy(IssueChangeDTO::getChangeDate));
+    private Map<Date, List<IssueChangeVO>> statisticalFieldChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
+        List<IssueChangeVO> changeIssues = issueAssembler.toTargetList(reportMapper.queryChangeFieldIssue(projectId, versionIssues, field), IssueChangeVO.class);
+        Map<Date, List<IssueChangeVO>> changeIssuesMap = changeIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(changeIssuesMap.keySet());
         return changeIssuesMap;
     }

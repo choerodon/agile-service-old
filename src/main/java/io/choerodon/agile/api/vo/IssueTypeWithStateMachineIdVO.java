@@ -6,7 +6,7 @@ import com.google.common.base.MoreObjects;
  * @author shinan.chen
  * @date 2018/10/29
  */
-public class IssueTypeWithStateMachineIdDTO {
+public class IssueTypeWithStateMachineIdVO {
     private Long id;
 
     private String name;

@@ -298,8 +298,8 @@ public class ProductVersionController {
     public ResponseEntity<ProductVersionPageVO> dragVersion(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId,
                                                             @ApiParam(value = "排序对象", required = true)
-                                                             @RequestBody VersionSequenceDTO versionSequenceDTO) {
-        return Optional.ofNullable(productVersionService.dragVersion(projectId, versionSequenceDTO))
+                                                             @RequestBody VersionSequenceVO versionSequenceVO) {
+        return Optional.ofNullable(productVersionService.dragVersion(projectId, versionSequenceVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(DRAG_ERROR));
     }

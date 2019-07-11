@@ -115,7 +115,7 @@ class ReportControllerSpec extends Specification {
         UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         userRepository.queryUsersMap(*_) >> userMessageDOMap
-        UserDO userDO = new UserDO()
+        UserDTO userDO = new UserDTO()
         userDO.setRealName("管理员")
         userRepository.queryUserNameByOption(*_) >> userDO
 
@@ -297,13 +297,13 @@ class ReportControllerSpec extends Specification {
             issueUpdateDTO.storyPoints = 1
             issueService.updateIssue(projectId, issueUpdateDTO, ["epicId", "storyPoints"])
         } else {
-            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
+            VersionIssueRelVO versionIssueRelDTO = new VersionIssueRelVO()
             versionIssueRelDTO.issueId = issueIds[0]
             versionIssueRelDTO.versionId = id
             versionIssueRelDTO.projectId = projectId
-            List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
+            List<VersionIssueRelVO> versionIssueRelDTOList = new ArrayList<>()
             versionIssueRelDTOList.add(versionIssueRelDTO)
-            issueUpdateDTO.versionIssueRelDTOList = versionIssueRelDTOList
+            issueUpdateDTO.versionIssueRelVOList = versionIssueRelDTOList
             issueUpdateDTO.versionType = "fix"
             issueService.updateIssue(projectId, issueUpdateDTO, [])
         }
@@ -515,7 +515,7 @@ class ReportControllerSpec extends Specification {
 
         and: '设置返回值值'
         List<SprintBurnDownReportVO> sprintBurnDownReportDTOList = entity.body.sprintBurnDownReportVOS
-        List<IssueBurnDownReportDTO> incompleteIssues = entity.body.incompleteIssues
+        List<IssueBurnDownReportVO> incompleteIssues = entity.body.incompleteIssues
 
         expect: '验证期望值'
         sprintBurnDownReportDTOList.size() == expectSizeOne

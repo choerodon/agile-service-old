@@ -185,9 +185,9 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         if (searchVO.getSearchArgs() != null && searchVO.getSearchArgs().get(MANAGER) != null) {
             String userName = (String) searchVO.getSearchArgs().get(MANAGER);
             if (userName != null && !"".equals(userName)) {
-                List<UserDTO> userDTOS = userService.queryUsersByNameAndProjectId(projectId, userName);
-                if (userDTOS != null && !userDTOS.isEmpty()) {
-                    searchVO.getAdvancedSearchArgs().put("managerId", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
+                List<UserVO> userVOS = userService.queryUsersByNameAndProjectId(projectId, userName);
+                if (userVOS != null && !userVOS.isEmpty()) {
+                    searchVO.getAdvancedSearchArgs().put("managerId", userVOS.stream().map(UserVO::getId).collect(Collectors.toList()));
                 } else {
                     return false;
                 }

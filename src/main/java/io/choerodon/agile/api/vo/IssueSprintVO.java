@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author dinghuang123@gmail.com
  * @since 2018/11/7
  */
-public class IssueSprintDTO implements Serializable {
+public class IssueSprintVO implements Serializable {
 
     @ApiModelProperty(value = "冲刺名称")
     private String sprintName;

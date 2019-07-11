@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Created by HuangFuqiang@choerodon.io on 2019/01/07.
  * Email: fuqianghuang01@gmail.com
  */
-public class TransformDTO {
+public class TransformVO {
 
     @ApiModelProperty(value = "转换id")
     private Long id;

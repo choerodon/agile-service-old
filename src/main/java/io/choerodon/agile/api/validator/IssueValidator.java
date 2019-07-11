@@ -219,31 +219,31 @@ public class IssueValidator {
         }
     }
 
-    public IssueConvertDTO verifyUpdateTypeData(Long projectId, IssueUpdateTypeDTO issueUpdateTypeDTO) {
-        if (issueUpdateTypeDTO.getIssueId() == null) {
+    public IssueConvertDTO verifyUpdateTypeData(Long projectId, IssueUpdateTypeVO issueUpdateTypeVO) {
+        if (issueUpdateTypeVO.getIssueId() == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
-        if (issueUpdateTypeDTO.getIssueTypeId() == null) {
+        if (issueUpdateTypeVO.getIssueTypeId() == null) {
             throw new CommonException("error.issuetypeId.isNull");
         }
-        if (issueUpdateTypeDTO.getTypeCode() == null) {
+        if (issueUpdateTypeVO.getTypeCode() == null) {
             throw new CommonException("error.IssueRule.typeCode");
         }
-        if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC) && issueUpdateTypeDTO.getEpicName() == null) {
+        if (issueUpdateTypeVO.getTypeCode().equals(ISSUE_EPIC) && issueUpdateTypeVO.getEpicName() == null) {
             throw new CommonException("error.IssueRule.epicName");
         }
-        IssueConvertDTO issueConvertDTO = issueService.queryIssueByProjectIdAndIssueId(projectId, issueUpdateTypeDTO.getIssueId());
+        IssueConvertDTO issueConvertDTO = issueService.queryIssueByProjectIdAndIssueId(projectId, issueUpdateTypeVO.getIssueId());
         if (issueConvertDTO == null) {
-            throw new CommonException("error.IssueUpdateTypeDTO.issueDO");
+            throw new CommonException("error.IssueUpdateTypeVO.issueDO");
         }
-        if (issueUpdateTypeDTO.getTypeCode().equals(SUB_TASK)) {
+        if (issueUpdateTypeVO.getTypeCode().equals(SUB_TASK)) {
             throw new CommonException("error.IssueRule.subTask");
         }
-        if (issueUpdateTypeDTO.getTypeCode().equals(issueConvertDTO.getTypeCode())) {
+        if (issueUpdateTypeVO.getTypeCode().equals(issueConvertDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
         }
         Long originStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueConvertDTO.getIssueTypeId()).getBody();
-        Long currentStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueUpdateTypeDTO.getIssueTypeId()).getBody();
+        Long currentStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueUpdateTypeVO.getIssueTypeId()).getBody();
         if (originStateMachineId == null || currentStateMachineId == null) {
             throw new CommonException("error.IssueRule.stateMachineId");
         }
@@ -254,11 +254,11 @@ public class IssueValidator {
     }
 
     public Boolean existVersionIssueRel(VersionIssueRelE versionIssueRelE) {
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
-        versionIssueRelDO.setVersionId(versionIssueRelE.getVersionId());
-        versionIssueRelDO.setIssueId(versionIssueRelE.getIssueId());
-        versionIssueRelDO.setRelationType(versionIssueRelE.getRelationType());
-        return versionIssueRelMapper.selectOne(versionIssueRelDO) == null;
+        VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+        versionIssueRelDTO.setVersionId(versionIssueRelE.getVersionId());
+        versionIssueRelDTO.setIssueId(versionIssueRelE.getIssueId());
+        versionIssueRelDTO.setRelationType(versionIssueRelE.getRelationType());
+        return versionIssueRelMapper.selectOne(versionIssueRelDTO) == null;
     }
 
     public Boolean existComponentIssueRel(ComponentIssueRelE componentIssueRelE) {
@@ -302,7 +302,7 @@ public class IssueValidator {
         }
         IssueConvertDTO issueConvertDTO = issueService.queryIssueByProjectIdAndIssueId(projectId, issueTransformTask.getIssueId());
         if (issueConvertDTO == null) {
-            throw new CommonException("error.IssueUpdateTypeDTO.issueDO");
+            throw new CommonException("error.IssueUpdateTypeVO.issueDO");
         }
         if (issueTransformTask.getTypeCode().equals(SUB_TASK)) {
             throw new CommonException("error.IssueRule.subTask");

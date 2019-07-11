@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
  * @author dinghuang123@gmail.com
  * @since 2018/7/26
  */
-public class VersionSequenceDTO {
+public class VersionSequenceVO {
 
 
     private static final String VERSION_ID_NOT_NULL_ERROR = "error.versionId.NotNull";

@@ -142,15 +142,15 @@ public class StoryMapServiceImpl implements StoryMapService {
     }
 
     private void dragToVersion(Long projectId, Long versionId, StoryMapDragVO storyMapDragVO) {
-        List<VersionIssueRelDTO> versionIssueRelDTOList = storyMapDragVO.getVersionIssueRelDTOList();
-        if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
-            for (VersionIssueRelDTO versionIssueRelDTO : versionIssueRelDTOList) {
-                VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
-                versionIssueRelDO.setIssueId(versionIssueRelDTO.getIssueId());
-                versionIssueRelDO.setVersionId(versionIssueRelDTO.getVersionId());
-                versionIssueRelDO.setRelationType("fix");
-                versionIssueRelDO.setProjectId(projectId);
-                versionIssueRelService.delete(versionIssueRelDO);
+        List<VersionIssueRelVO> versionIssueRelVOList = storyMapDragVO.getVersionIssueRelVOList();
+        if (versionIssueRelVOList != null && !versionIssueRelVOList.isEmpty()) {
+            for (VersionIssueRelVO versionIssueRelVO : versionIssueRelVOList) {
+                VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+                versionIssueRelDTO.setIssueId(versionIssueRelVO.getIssueId());
+                versionIssueRelDTO.setVersionId(versionIssueRelVO.getVersionId());
+                versionIssueRelDTO.setRelationType("fix");
+                versionIssueRelDTO.setProjectId(projectId);
+                versionIssueRelService.delete(versionIssueRelDTO);
             }
         }
         storyMapValidator.checkVersionExist(versionId);

@@ -44,20 +44,20 @@ public class ReportAssembler extends AbstractAssembler {
         return sprintBurnDownReportVO;
     }
 
-    public List<IssueBurnDownReportDTO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS, Map<Long, IssueTypeVO> issueTypeDTOMap,
-                                                                   Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
-        List<IssueBurnDownReportDTO> issueBurnDownReportDTOS = new ArrayList<>(issueBurnDownReportDOS.size());
+    public List<IssueBurnDownReportVO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDO> issueBurnDownReportDOS, Map<Long, IssueTypeVO> issueTypeDTOMap,
+                                                                  Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
+        List<IssueBurnDownReportVO> issueBurnDownReportVOS = new ArrayList<>(issueBurnDownReportDOS.size());
         if (!issueBurnDownReportDOS.isEmpty()) {
             issueBurnDownReportDOS.forEach(issueBurnDownReportDO -> {
-                IssueBurnDownReportDTO issueBurnDownReportDTO = new IssueBurnDownReportDTO();
-                BeanUtils.copyProperties(issueBurnDownReportDO, issueBurnDownReportDTO);
-                issueBurnDownReportDTO.setPriorityVO(priorityDTOMap.get(issueBurnDownReportDO.getPriorityId()));
-                issueBurnDownReportDTO.setStatusMapVO(statusMapDTOMap.get(issueBurnDownReportDO.getStatusId()));
-                issueBurnDownReportDTO.setIssueTypeVO(issueTypeDTOMap.get(issueBurnDownReportDO.getIssueTypeId()));
-                issueBurnDownReportDTOS.add(issueBurnDownReportDTO);
+                IssueBurnDownReportVO issueBurnDownReportVO = new IssueBurnDownReportVO();
+                BeanUtils.copyProperties(issueBurnDownReportDO, issueBurnDownReportVO);
+                issueBurnDownReportVO.setPriorityVO(priorityDTOMap.get(issueBurnDownReportDO.getPriorityId()));
+                issueBurnDownReportVO.setStatusMapVO(statusMapDTOMap.get(issueBurnDownReportDO.getStatusId()));
+                issueBurnDownReportVO.setIssueTypeVO(issueTypeDTOMap.get(issueBurnDownReportDO.getIssueTypeId()));
+                issueBurnDownReportVOS.add(issueBurnDownReportVO);
             });
         }
-        return issueBurnDownReportDTOS;
+        return issueBurnDownReportVOS;
     }
 
     public List<IssueTypeDistributionChartVO> toIssueTypeDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDO> issueTypeDistributionChartDOS) {

@@ -58,7 +58,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<List<IssueTypeWithStateMachineIdDTO>> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
+    public ResponseEntity<List<IssueTypeWithStateMachineIdVO>> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
         throw new CommonException("error.status.queryIssueTypesWithStateMachineIdByProjectId");
     }
 
@@ -78,7 +78,7 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<List<TransformDTO>> queryTransformsByProjectId(Long projectId, Long currentStatusId, Long issueId, Long issueTypeId, String applyType) {
+    public ResponseEntity<List<TransformVO>> queryTransformsByProjectId(Long projectId, Long currentStatusId, Long issueId, Long issueTypeId, String applyType) {
         throw new CommonException("error.transform.get");
     }
 

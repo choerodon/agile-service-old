@@ -6,16 +6,16 @@ import java.util.List;
 /**
  * Created by jian_zhang02@163.com on 2018/7/5.
  */
-public class VersionReportDTO {
+public class VersionReportVO {
     private Integer totalField;
     private Integer completedField;
     private double  unEstimatedPercentage;
     private Date changeDate;
-    private List<IssueChangeDTO> fieldChangIssues;
-    private List<IssueChangeDTO> completedIssues;
-    private List<IssueChangeDTO> unCompletedIssues;
-    private List<IssueChangeDTO> addIssues;
-    private List<IssueChangeDTO> removeIssues;
+    private List<IssueChangeVO> fieldChangIssues;
+    private List<IssueChangeVO> completedIssues;
+    private List<IssueChangeVO> unCompletedIssues;
+    private List<IssueChangeVO> addIssues;
+    private List<IssueChangeVO> removeIssues;
 
     public Integer getTotalField() {
         return totalField;
@@ -49,43 +49,43 @@ public class VersionReportDTO {
         this.changeDate = changeDate;
     }
 
-    public List<IssueChangeDTO> getFieldChangIssues() {
+    public List<IssueChangeVO> getFieldChangIssues() {
         return fieldChangIssues;
     }
 
-    public void setFieldChangIssues(List<IssueChangeDTO> fieldChangIssues) {
+    public void setFieldChangIssues(List<IssueChangeVO> fieldChangIssues) {
         this.fieldChangIssues = fieldChangIssues;
     }
 
-    public List<IssueChangeDTO> getCompletedIssues() {
+    public List<IssueChangeVO> getCompletedIssues() {
         return completedIssues;
     }
 
-    public void setCompletedIssues(List<IssueChangeDTO> completedIssues) {
+    public void setCompletedIssues(List<IssueChangeVO> completedIssues) {
         this.completedIssues = completedIssues;
     }
 
-    public List<IssueChangeDTO> getUnCompletedIssues() {
+    public List<IssueChangeVO> getUnCompletedIssues() {
         return unCompletedIssues;
     }
 
-    public void setUnCompletedIssues(List<IssueChangeDTO> unCompletedIssues) {
+    public void setUnCompletedIssues(List<IssueChangeVO> unCompletedIssues) {
         this.unCompletedIssues = unCompletedIssues;
     }
 
-    public List<IssueChangeDTO> getAddIssues() {
+    public List<IssueChangeVO> getAddIssues() {
         return addIssues;
     }
 
-    public void setAddIssues(List<IssueChangeDTO> addIssues) {
+    public void setAddIssues(List<IssueChangeVO> addIssues) {
         this.addIssues = addIssues;
     }
 
-    public List<IssueChangeDTO> getRemoveIssues() {
+    public List<IssueChangeVO> getRemoveIssues() {
         return removeIssues;
     }
 
-    public void setRemoveIssues(List<IssueChangeDTO> removeIssues) {
+    public void setRemoveIssues(List<IssueChangeVO> removeIssues) {
         this.removeIssues = removeIssues;
     }
 

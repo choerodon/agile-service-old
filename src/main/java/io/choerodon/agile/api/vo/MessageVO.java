@@ -34,7 +34,7 @@ public class MessageVO {
 
     @ApiModelProperty(value = "用户列表详细信息列表")
     @Transient
-    private List<IdWithNameDTO> idWithNameDTOList;
+    private List<IdWithNameVO> idWithNameVOList;
 
     public String getEvent() {
         return event;
@@ -92,11 +92,11 @@ public class MessageVO {
         return user;
     }
 
-    public void setIdWithNameDTOList(List<IdWithNameDTO> idWithNameDTOList) {
-        this.idWithNameDTOList = idWithNameDTOList;
+    public void setIdWithNameVOList(List<IdWithNameVO> idWithNameVOList) {
+        this.idWithNameVOList = idWithNameVOList;
     }
 
-    public List<IdWithNameDTO> getIdWithNameDTOList() {
-        return idWithNameDTOList;
+    public List<IdWithNameVO> getIdWithNameVOList() {
+        return idWithNameVOList;
     }
 }

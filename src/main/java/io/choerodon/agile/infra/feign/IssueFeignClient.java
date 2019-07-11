@@ -53,7 +53,7 @@ public interface IssueFeignClient {
                                                              @RequestParam("apply_type") String applyType);
 
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_issue_types_with_sm_id")
-    ResponseEntity<List<IssueTypeWithStateMachineIdDTO>> queryIssueTypesWithStateMachineIdByProjectId(@PathVariable("project_id") Long projectId, @RequestParam("apply_type") String applyType);
+    ResponseEntity<List<IssueTypeWithStateMachineIdVO>> queryIssueTypesWithStateMachineIdByProjectId(@PathVariable("project_id") Long projectId, @RequestParam("apply_type") String applyType);
 
     @DeleteMapping(value = "/v1/projects/{project_id}/schemes/remove_status_for_agile")
     ResponseEntity removeStatusForAgile(@PathVariable("project_id") Long projectId,
@@ -70,11 +70,11 @@ public interface IssueFeignClient {
                                                              @PathVariable("organization_id") Long organizationId);
 
     @GetMapping(value = "/v1/projects/{project_id}/schemes/query_transforms")
-    ResponseEntity<List<TransformDTO>> queryTransformsByProjectId(@PathVariable("project_id") Long projectId,
-                                                                  @RequestParam("current_status_id") Long currentStatusId,
-                                                                  @RequestParam("issue_id") Long issueId,
-                                                                  @RequestParam("issue_type_id") Long issueTypeId,
-                                                                  @RequestParam("apply_type") String applyType);
+    ResponseEntity<List<TransformVO>> queryTransformsByProjectId(@PathVariable("project_id") Long projectId,
+                                                                 @RequestParam("current_status_id") Long currentStatusId,
+                                                                 @RequestParam("issue_id") Long issueId,
+                                                                 @RequestParam("issue_type_id") Long issueTypeId,
+                                                                 @RequestParam("apply_type") String applyType);
 
     @GetMapping("/v1/organizations/{organization_id}/priority/list_by_org")
     ResponseEntity<List<PriorityVO>> queryByOrganizationIdList(@ApiParam(value = "组织id", required = true)

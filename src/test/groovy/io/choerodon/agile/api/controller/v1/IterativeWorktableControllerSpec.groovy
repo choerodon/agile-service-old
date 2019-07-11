@@ -50,7 +50,7 @@ class IterativeWorktableControllerSpec extends Specification {
 //        UserMessageDO userMessageDO = new UserMessageDO("admin", "http://XXX.png", "admin@gmail.com")
 //        userMessageDOMap.put(1, userMessageDO)
 //        userService.queryUsersMap(*_) >> userMessageDOMap
-//        UserDO userDO = new UserDO()
+//        UserDTO userDO = new UserDTO()
 //        userDO.setRealName("admin")
 //        userService.queryUserNameByOption(*_) >> userDO
 //    }

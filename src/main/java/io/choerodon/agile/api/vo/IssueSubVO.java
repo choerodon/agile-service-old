@@ -53,7 +53,7 @@ public class IssueSubVO {
     private BigDecimal storyPoints;
 
     @ApiModelProperty(value = "关联的版本列表")
-    private List<VersionIssueRelDTO> versionIssueRelDTOList;
+    private List<VersionIssueRelVO> versionIssueRelVOList;
 
     @ApiModelProperty(value = "关联的标签列表")
     private List<LabelIssueRelVO> labelIssueRelVOList;
@@ -311,12 +311,12 @@ public class IssueSubVO {
         this.storyPoints = storyPoints;
     }
 
-    public List<VersionIssueRelDTO> getVersionIssueRelDTOList() {
-        return versionIssueRelDTOList;
+    public List<VersionIssueRelVO> getVersionIssueRelVOList() {
+        return versionIssueRelVOList;
     }
 
-    public void setVersionIssueRelDTOList(List<VersionIssueRelDTO> versionIssueRelDTOList) {
-        this.versionIssueRelDTOList = versionIssueRelDTOList;
+    public void setVersionIssueRelVOList(List<VersionIssueRelVO> versionIssueRelVOList) {
+        this.versionIssueRelVOList = versionIssueRelVOList;
     }
 
     public List<LabelIssueRelVO> getLabelIssueRelVOList() {

@@ -733,23 +733,23 @@ public class DataLogAspect {
     }
 
     private void handleVersionDeleteDataLog(Object[] args) {
-        VersionIssueRelDO versionIssueRelDO = null;
+        VersionIssueRelDTO versionIssueRelDTO = null;
         for (Object arg : args) {
-            if (arg instanceof VersionIssueRelDO) {
-                versionIssueRelDO = (VersionIssueRelDO) arg;
+            if (arg instanceof VersionIssueRelDTO) {
+                versionIssueRelDTO = (VersionIssueRelDTO) arg;
             }
         }
-        if (versionIssueRelDO != null) {
+        if (versionIssueRelDTO != null) {
             String field;
-            if (versionIssueRelDO.getRelationType() == null) {
+            if (versionIssueRelDTO.getRelationType() == null) {
                 field = FIELD_FIX_VERSION;
             } else {
-                field = FIX_VERSION.equals(versionIssueRelDO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
+                field = FIX_VERSION.equals(versionIssueRelDTO.getRelationType()) ? FIELD_FIX_VERSION : FIELD_VERSION;
             }
-            createDataLog(versionIssueRelDO.getProjectId(), versionIssueRelDO.getIssueId(), field,
-                    productVersionMapper.selectByPrimaryKey(versionIssueRelDO.getVersionId()).getName(), null,
-                    versionIssueRelDO.getVersionId().toString(), null);
-            dataLogRedisUtil.deleteByHandleBatchDeleteVersion(versionIssueRelDO.getProjectId(), versionIssueRelDO.getVersionId());
+            createDataLog(versionIssueRelDTO.getProjectId(), versionIssueRelDTO.getIssueId(), field,
+                    productVersionMapper.selectByPrimaryKey(versionIssueRelDTO.getVersionId()).getName(), null,
+                    versionIssueRelDTO.getVersionId().toString(), null);
+            dataLogRedisUtil.deleteByHandleBatchDeleteVersion(versionIssueRelDTO.getProjectId(), versionIssueRelDTO.getVersionId());
         }
     }
 

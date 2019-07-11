@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * @author dinghuang123@gmail.com
  * @since 2018/9/10
  */
-public class IssueBurnDownReportDTO {
+public class IssueBurnDownReportVO {
 
     @ApiModelProperty(value = "问题id")
     private Long issueId;

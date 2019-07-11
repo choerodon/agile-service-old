@@ -97,13 +97,13 @@ public class IssueListFieldKVVO {
     private Date lastUpdateDate;
 
     @ApiModelProperty(value = "关联的版本")
-    private List<VersionIssueRelDTO> versionIssueRelDTOS;
+    private List<VersionIssueRelVO> versionIssueRelVOS;
 
     @ApiModelProperty(value = "关联的标签")
     private List<LabelIssueRelVO> labelIssueRelVOS;
 
     @ApiModelProperty(value = "冲刺列表")
-    private List<IssueSprintDTO> issueSprintDTOS;
+    private List<IssueSprintVO> issueSprintVOS;
 
     @ApiModelProperty(value = "评论列表")
     private List<IssueComponentBriefDTO> issueComponentBriefDTOS;
@@ -111,8 +111,8 @@ public class IssueListFieldKVVO {
     @ApiModelProperty(value = "自定义字段kv")
     private Map<String, String> foundationFieldValue;
 
-    public List<IssueSprintDTO> getIssueSprintDTOS() {
-        return issueSprintDTOS;
+    public List<IssueSprintVO> getIssueSprintVOS() {
+        return issueSprintVOS;
     }
 
     public List<LabelIssueRelVO> getLabelIssueRelVOS() {
@@ -123,8 +123,8 @@ public class IssueListFieldKVVO {
         this.labelIssueRelVOS = labelIssueRelVOS;
     }
 
-    public void setIssueSprintDTOS(List<IssueSprintDTO> issueSprintDTOS) {
-        this.issueSprintDTOS = issueSprintDTOS;
+    public void setIssueSprintVOS(List<IssueSprintVO> issueSprintVOS) {
+        this.issueSprintVOS = issueSprintVOS;
     }
 
     public List<IssueComponentBriefDTO> getIssueComponentBriefDTOS() {
@@ -184,12 +184,12 @@ public class IssueListFieldKVVO {
         this.reporterName = reporterName;
     }
 
-    public List<VersionIssueRelDTO> getVersionIssueRelDTOS() {
-        return versionIssueRelDTOS;
+    public List<VersionIssueRelVO> getVersionIssueRelVOS() {
+        return versionIssueRelVOS;
     }
 
-    public void setVersionIssueRelDTOS(List<VersionIssueRelDTO> versionIssueRelDTOS) {
-        this.versionIssueRelDTOS = versionIssueRelDTOS;
+    public void setVersionIssueRelVOS(List<VersionIssueRelVO> versionIssueRelVOS) {
+        this.versionIssueRelVOS = versionIssueRelVOS;
     }
 
     public Long getIssueId() {

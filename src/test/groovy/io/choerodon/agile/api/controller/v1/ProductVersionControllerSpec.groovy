@@ -5,7 +5,7 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.*
 import io.choerodon.agile.app.service.ProductVersionService
 import io.choerodon.agile.infra.dataobject.ProductVersionDTO
-import io.choerodon.agile.infra.dataobject.VersionIssueRelDO
+import io.choerodon.agile.infra.dataobject.VersionIssueRelDTO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.ProductVersionMapper
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper
@@ -119,7 +119,7 @@ class ProductVersionControllerSpec extends Specification {
         result3 = productVersionMapper.selectOne(productVersionDO)
 
         // 初始化version、issue关联关系
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO()
+        VersionIssueRelDTO versionIssueRelDO = new VersionIssueRelDTO()
         versionIssueRelDO.projectId = projectId
         versionIssueRelDO.issueId = 2L
         versionIssueRelDO.versionId = result.versionId
@@ -237,11 +237,11 @@ class ProductVersionControllerSpec extends Specification {
                 projectId)
         and:
         // 设置查询versionIssueRel条件
-        VersionIssueRelDO search = new VersionIssueRelDO()
+        VersionIssueRelDTO search = new VersionIssueRelDTO()
         search.versionId = result.versionId
-        List<VersionIssueRelDO> relsOrigin = versionIssueRelMapper.select(search)
+        List<VersionIssueRelDTO> relsOrigin = versionIssueRelMapper.select(search)
         search.versionId = result2.versionId
-        List<VersionIssueRelDO> relsNew = versionIssueRelMapper.select(search)
+        List<VersionIssueRelDTO> relsNew = versionIssueRelMapper.select(search)
 
 
         then:
@@ -361,11 +361,11 @@ class ProductVersionControllerSpec extends Specification {
 
         and:
         // 设置查询versionIssueRel条件
-        VersionIssueRelDO search = new VersionIssueRelDO()
+        VersionIssueRelDTO search = new VersionIssueRelDTO()
         search.versionId = result2.versionId
-        List<VersionIssueRelDO> relsOrigin = versionIssueRelMapper.select(search)
+        List<VersionIssueRelDTO> relsOrigin = versionIssueRelMapper.select(search)
         search.versionId = result3.versionId
-        List<VersionIssueRelDO> relsNew = versionIssueRelMapper.select(search)
+        List<VersionIssueRelDTO> relsNew = versionIssueRelMapper.select(search)
 
 
         then:
@@ -553,10 +553,10 @@ class ProductVersionControllerSpec extends Specification {
 
     def 'dragVersion'() {
         given:
-        VersionSequenceDTO versionSequenceDTO = new VersionSequenceDTO()
+        VersionSequenceVO versionSequenceDTO = new VersionSequenceVO()
         versionSequenceDTO.versionId = result.versionId
         versionSequenceDTO.afterSequence = 1
-        HttpEntity<VersionSequenceDTO> requestEntity = new HttpEntity<>(versionSequenceDTO, null)
+        HttpEntity<VersionSequenceVO> requestEntity = new HttpEntity<>(versionSequenceDTO, null)
 
         when:
         def entity = restTemplate.exchange("/v1/projects/{project_id}/product_version/drag",
@@ -637,7 +637,7 @@ class ProductVersionControllerSpec extends Specification {
         ProductVersionDTO productVersionDO = new ProductVersionDTO()
         productVersionDO.name = versionMergeName
         productVersionDO.projectId = projectId
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO()
+        VersionIssueRelDTO versionIssueRelDO = new VersionIssueRelDTO()
         versionIssueRelDO.projectId = projectId
         versionIssueRelDO.versionId = result.versionId
 

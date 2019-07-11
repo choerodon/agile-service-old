@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @author dinghuang123@gmail.com
  * @since 2018/6/5
  */
-public class IssueUpdateTypeDTO {
+public class IssueUpdateTypeVO {
 
     @ApiModelProperty(value = "问题主键id")
     private Long issueId;

@@ -131,7 +131,7 @@ public class IssueDTO extends BaseDTO {
     private Boolean completed;
 
     @Transient
-    private List<VersionIssueRelDO> versionIssueRelDOS;
+    private List<VersionIssueRelDTO> versionIssueRelDTOS;
 
     @Transient
     private List<IssueSprintDO> issueSprintDOS;
@@ -215,12 +215,12 @@ public class IssueDTO extends BaseDTO {
         this.issueSprintDOS = issueSprintDOS;
     }
 
-    public List<VersionIssueRelDO> getVersionIssueRelDOS() {
-        return versionIssueRelDOS;
+    public List<VersionIssueRelDTO> getVersionIssueRelDTOS() {
+        return versionIssueRelDTOS;
     }
 
-    public void setVersionIssueRelDOS(List<VersionIssueRelDO> versionIssueRelDOS) {
-        this.versionIssueRelDOS = versionIssueRelDOS;
+    public void setVersionIssueRelDTOS(List<VersionIssueRelDTO> versionIssueRelDTOS) {
+        this.versionIssueRelDTOS = versionIssueRelDTOS;
     }
 
     public Long getIssueId() {

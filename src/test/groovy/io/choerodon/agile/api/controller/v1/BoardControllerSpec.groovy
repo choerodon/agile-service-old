@@ -83,10 +83,10 @@ class BoardControllerSpec extends Specification {
 //        userService.queryProject(*_) >> projectDTO
 
 //        and:
-//        UserDO userDO = new UserDO()
+//        UserDTO userDO = new UserDTO()
 //        userDO.loginName = "1"
 //        userDO.realName = "admin"
-//        List<UserDO> userDOList = new ArrayList<>()
+//        List<UserDTO> userDOList = new ArrayList<>()
 //        userDOList.add(userDO)
 //        userService.listUsersByIds(*_) >> userDOList
 //        List<RoleVO> roles = new ArrayList<>()
@@ -95,9 +95,9 @@ class BoardControllerSpec extends Specification {
 //        roleDTO.setId(1L)
 //        roles.add(roleDTO)
 //        userService.listRolesWithUserCountOnProjectLevel(*_) >> roles
-//        PageInfo<UserDTO> users = new PageInfo<>(new ArrayList<>())
-//        List<UserDTO> userDOList1 = new ArrayList<>()
-//        UserDTO u = new UserDTO()
+//        PageInfo<UserVO> users = new PageInfo<>(new ArrayList<>())
+//        List<UserVO> userDOList1 = new ArrayList<>()
+//        UserVO u = new UserVO()
 //        u.setId(6L)
 //        userDOList1.add(u)
 //        users.setContent(userDOList1)

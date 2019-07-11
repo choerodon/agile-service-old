@@ -5,7 +5,7 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.IssueCommentCreateVO
 import io.choerodon.agile.api.vo.IssueCommentVO
 import io.choerodon.agile.app.service.UserService
-import io.choerodon.agile.infra.dataobject.UserDO
+import io.choerodon.agile.infra.dataobject.UserDTO
 import io.choerodon.agile.infra.dataobject.UserMessageDO
 import io.choerodon.agile.infra.mapper.IssueCommentMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
@@ -61,7 +61,7 @@ class IssueCommentControllerSpec extends Specification {
         UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         Mockito.when(userRepository.queryUsersMap(Matchers.any(List.class), Matchers.anyBoolean())).thenReturn(userMessageDOMap)
-        UserDO userDO = new UserDO()
+        UserDTO userDO = new UserDTO()
         userDO.setRealName("管理员")
         Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
 

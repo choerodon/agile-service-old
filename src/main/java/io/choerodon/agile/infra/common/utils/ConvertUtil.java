@@ -84,13 +84,13 @@ public class ConvertUtil {
         }
     }
 
-    public static Map<Long, IssueTypeWithStateMachineIdDTO> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
-        List<IssueTypeWithStateMachineIdDTO> issueTypeWithStateMachineIdDTOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesWithStateMachineIdByProjectId(projectId, applyType)
+    public static Map<Long, IssueTypeWithStateMachineIdVO> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
+        List<IssueTypeWithStateMachineIdVO> issueTypeWithStateMachineIdVOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesWithStateMachineIdByProjectId(projectId, applyType)
                 .getBody();
-        Map<Long, Long> statusIdMap = SpringBeanUtil.getBean(StateMachineFeignClient.class).queryInitStatusIds(getOrganizationId(projectId), issueTypeWithStateMachineIdDTOS
-                .stream().map(IssueTypeWithStateMachineIdDTO::getStateMachineId).collect(Collectors.toList())).getBody();
-        issueTypeWithStateMachineIdDTOS.forEach(issueTypeWithStateMachineIdDTO -> issueTypeWithStateMachineIdDTO.setInitStatusId(statusIdMap.get(issueTypeWithStateMachineIdDTO.getStateMachineId())));
-        return issueTypeWithStateMachineIdDTOS.stream().collect(Collectors.toMap(IssueTypeWithStateMachineIdDTO::getId, Function.identity()));
+        Map<Long, Long> statusIdMap = SpringBeanUtil.getBean(StateMachineFeignClient.class).queryInitStatusIds(getOrganizationId(projectId), issueTypeWithStateMachineIdVOS
+                .stream().map(IssueTypeWithStateMachineIdVO::getStateMachineId).collect(Collectors.toList())).getBody();
+        issueTypeWithStateMachineIdVOS.forEach(issueTypeWithStateMachineIdDTO -> issueTypeWithStateMachineIdDTO.setInitStatusId(statusIdMap.get(issueTypeWithStateMachineIdDTO.getStateMachineId())));
+        return issueTypeWithStateMachineIdVOS.stream().collect(Collectors.toMap(IssueTypeWithStateMachineIdVO::getId, Function.identity()));
     }
 
 

@@ -233,15 +233,15 @@ public class FeignConfigure {
         Mockito.when(issueFeignClient.queryIssueTypeById(Matchers.anyLong(), Matchers.eq(6L))).thenReturn(new ResponseEntity<>(issueTest, HttpStatus.OK));
         Mockito.when(issueFeignClient.listIssueTypeMap(Matchers.anyLong())).thenReturn(new ResponseEntity<>(issueTypeVOS.stream().collect(Collectors.toMap(IssueTypeVO::getId,
                 Function.identity())), HttpStatus.OK));
-        List<IssueTypeWithStateMachineIdDTO> issueTypeWithStateMachineIdDTOS = new ArrayList<>();
+        List<IssueTypeWithStateMachineIdVO> issueTypeWithStateMachineIdVOS = new ArrayList<>();
         issueTypeVOS.forEach(issueTypeDTO -> {
-            IssueTypeWithStateMachineIdDTO issueTypeWithStateMachineIdDTO = new IssueTypeWithStateMachineIdDTO();
-            BeanUtils.copyProperties(issueTypeDTO, issueTypeWithStateMachineIdDTO);
-            issueTypeWithStateMachineIdDTO.setInitStatusId(1L);
-            issueTypeWithStateMachineIdDTO.setStateMachineId(1L);
-            issueTypeWithStateMachineIdDTOS.add(issueTypeWithStateMachineIdDTO);
+            IssueTypeWithStateMachineIdVO issueTypeWithStateMachineIdVO = new IssueTypeWithStateMachineIdVO();
+            BeanUtils.copyProperties(issueTypeDTO, issueTypeWithStateMachineIdVO);
+            issueTypeWithStateMachineIdVO.setInitStatusId(1L);
+            issueTypeWithStateMachineIdVO.setStateMachineId(1L);
+            issueTypeWithStateMachineIdVOS.add(issueTypeWithStateMachineIdVO);
         });
-        Mockito.when(issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(issueTypeWithStateMachineIdDTOS, HttpStatus.OK));
+        Mockito.when(issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(issueTypeWithStateMachineIdVOS, HttpStatus.OK));
         StatusInfoVO statusInfoVO = new StatusInfoVO();
         statusInfoVO.setId(10000L);
         statusInfoVO.setName("statusName");

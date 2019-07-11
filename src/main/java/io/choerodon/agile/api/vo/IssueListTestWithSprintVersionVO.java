@@ -41,10 +41,10 @@ public class IssueListTestWithSprintVersionVO {
     private String epicName;
 
     @ApiModelProperty(value = "issue关联的版本")
-    private List<VersionIssueRelDTO> versionDTOList;
+    private List<VersionIssueRelVO> versionDTOList;
 
     @ApiModelProperty(value = "issue关联的冲刺")
-    private List<IssueSprintDTO> sprintDTOList;
+    private List<IssueSprintVO> sprintDTOList;
 
     @ApiModelProperty(value = "故事点")
     private BigDecimal storyPoints;
@@ -167,19 +167,19 @@ public class IssueListTestWithSprintVersionVO {
         this.assigneeImageUrl = assigneeImageUrl;
     }
 
-    public List<VersionIssueRelDTO> getVersionDTOList() {
+    public List<VersionIssueRelVO> getVersionDTOList() {
         return versionDTOList;
     }
 
-    public void setVersionDTOList(List<VersionIssueRelDTO> versionDTOList) {
+    public void setVersionDTOList(List<VersionIssueRelVO> versionDTOList) {
         this.versionDTOList = versionDTOList;
     }
 
-    public List<IssueSprintDTO> getSprintDTOList() {
+    public List<IssueSprintVO> getSprintDTOList() {
         return sprintDTOList;
     }
 
-    public void setSprintDTOList(List<IssueSprintDTO> sprintDTOList) {
+    public void setSprintDTOList(List<IssueSprintVO> sprintDTOList) {
         this.sprintDTOList = sprintDTOList;
     }
 

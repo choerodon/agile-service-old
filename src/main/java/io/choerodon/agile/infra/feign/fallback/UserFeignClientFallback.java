@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.feign.fallback;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.dataobject.UserDO;
+import io.choerodon.agile.infra.dataobject.UserDTO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +22,12 @@ public class UserFeignClientFallback implements UserFeignClient {
     private static final String BATCH_QUERY_ERROR = "error.UserFeign.queryList";
 
     @Override
-    public ResponseEntity<UserDO> query(Long organizationId, Long id) {
+    public ResponseEntity<UserDTO> query(Long organizationId, Long id) {
         throw new CommonException(QUERY_ERROR);
     }
 
     @Override
-    public ResponseEntity<List<UserDO>> listUsersByIds(Long[] ids, Boolean onlyEnabled) {
+    public ResponseEntity<List<UserDTO>> listUsersByIds(Long[] ids, Boolean onlyEnabled) {
         throw new CommonException(BATCH_QUERY_ERROR);
     }
 
@@ -37,7 +37,7 @@ public class UserFeignClientFallback implements UserFeignClient {
     }
 
     @Override
-    public ResponseEntity<PageInfo<UserDTO>> list(Long id, String param) {
+    public ResponseEntity<PageInfo<UserVO>> list(Long id, String param) {
         throw new CommonException(QUERY_ERROR);
     }
 
@@ -47,7 +47,7 @@ public class UserFeignClientFallback implements UserFeignClient {
     }
 
     @Override
-    public ResponseEntity<PageInfo<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO) {
+    public ResponseEntity<PageInfo<UserVO>> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO) {
         throw new CommonException("error.users.get");
     }
 

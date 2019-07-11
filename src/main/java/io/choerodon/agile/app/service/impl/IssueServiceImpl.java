@@ -283,21 +283,21 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public void afterCreateIssue(Long issueId, IssueConvertDTO issueConvertDTO, IssueCreateVO issueCreateVO, ProjectInfoE projectInfoE) {
-        handleCreateIssueRearAction(issueConvertDTO, issueId, projectInfoE, issueCreateVO.getLabelIssueRelVOList(), issueCreateVO.getComponentIssueRelVOList(), issueCreateVO.getVersionIssueRelDTOList(), issueCreateVO.getIssueLinkCreateVOList());
+        handleCreateIssueRearAction(issueConvertDTO, issueId, projectInfoE, issueCreateVO.getLabelIssueRelVOList(), issueCreateVO.getComponentIssueRelVOList(), issueCreateVO.getVersionIssueRelVOList(), issueCreateVO.getIssueLinkCreateVOList());
     }
 
-    private void handleCreateIssueRearAction(IssueConvertDTO issueConvertDTO, Long issueId, ProjectInfoE projectInfoE, List<LabelIssueRelVO> labelIssueRelVOList, List<ComponentIssueRelVO> componentIssueRelVOList, List<VersionIssueRelDTO> versionIssueRelDTOList, List<IssueLinkCreateVO> issueLinkCreateVOList) {
+    private void handleCreateIssueRearAction(IssueConvertDTO issueConvertDTO, Long issueId, ProjectInfoE projectInfoE, List<LabelIssueRelVO> labelIssueRelVOList, List<ComponentIssueRelVO> componentIssueRelVOList, List<VersionIssueRelVO> versionIssueRelVOList, List<IssueLinkCreateVO> issueLinkCreateVOList) {
         //处理冲刺
         handleCreateSprintRel(issueConvertDTO.getSprintId(), issueConvertDTO.getProjectId(), issueId);
         handleCreateLabelIssue(labelIssueRelVOList, issueId);
         handleCreateComponentIssueRel(componentIssueRelVOList, projectInfoE.getProjectId(), issueId, projectInfoE, issueConvertDTO.getAssigneerCondtiion());
-        handleCreateVersionIssueRel(versionIssueRelDTOList, projectInfoE.getProjectId(), issueId);
+        handleCreateVersionIssueRel(versionIssueRelVOList, projectInfoE.getProjectId(), issueId);
         handleCreateIssueLink(issueLinkCreateVOList, projectInfoE.getProjectId(), issueId);
     }
 
     @Override
     public void afterCreateSubIssue(Long issueId, IssueConvertDTO subIssueConvertDTO, IssueSubCreateVO issueSubCreateVO, ProjectInfoE projectInfoE) {
-        handleCreateIssueRearAction(subIssueConvertDTO, issueId, projectInfoE, issueSubCreateVO.getLabelIssueRelVOList(), issueSubCreateVO.getComponentIssueRelVOList(), issueSubCreateVO.getVersionIssueRelDTOList(), issueSubCreateVO.getIssueLinkCreateVOList());
+        handleCreateIssueRearAction(subIssueConvertDTO, issueId, projectInfoE, issueSubCreateVO.getLabelIssueRelVOList(), issueSubCreateVO.getComponentIssueRelVOList(), issueSubCreateVO.getVersionIssueRelVOList(), issueSubCreateVO.getIssueLinkCreateVOList());
     }
 
     @Override
@@ -578,9 +578,9 @@ public class IssueServiceImpl implements IssueService {
         if (searchVO.getSearchArgs() != null && searchVO.getSearchArgs().get(ASSIGNEE) != null) {
             String userName = (String) searchVO.getSearchArgs().get(ASSIGNEE);
             if (userName != null && !"".equals(userName)) {
-                List<UserDTO> userDTOS = userService.queryUsersByNameAndProjectId(projectId, userName);
-                if (userDTOS != null && !userDTOS.isEmpty()) {
-                    searchVO.getAdvancedSearchArgs().put("assigneeIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
+                List<UserVO> userVOS = userService.queryUsersByNameAndProjectId(projectId, userName);
+                if (userVOS != null && !userVOS.isEmpty()) {
+                    searchVO.getAdvancedSearchArgs().put("assigneeIds", userVOS.stream().map(UserVO::getId).collect(Collectors.toList()));
                 } else {
                     return false;
                 }
@@ -589,9 +589,9 @@ public class IssueServiceImpl implements IssueService {
         if (searchVO.getSearchArgs() != null && searchVO.getSearchArgs().get(REPORTER) != null) {
             String userName = (String) searchVO.getSearchArgs().get(REPORTER);
             if (userName != null && !"".equals(userName)) {
-                List<UserDTO> userDTOS = userService.queryUsersByNameAndProjectId(projectId, userName);
-                if (userDTOS != null && !userDTOS.isEmpty()) {
-                    searchVO.getAdvancedSearchArgs().put("reporterIds", userDTOS.stream().map(UserDTO::getId).collect(Collectors.toList()));
+                List<UserVO> userVOS = userService.queryUsersByNameAndProjectId(projectId, userName);
+                if (userVOS != null && !userVOS.isEmpty()) {
+                    searchVO.getAdvancedSearchArgs().put("reporterIds", userVOS.stream().map(UserVO::getId).collect(Collectors.toList()));
                 } else {
                     return false;
                 }
@@ -624,7 +624,7 @@ public class IssueServiceImpl implements IssueService {
         Long issueId = issueUpdateVO.getIssueId();
         handleUpdateLabelIssue(issueUpdateVO.getLabelIssueRelVOList(), issueId, projectId);
         handleUpdateComponentIssueRel(issueUpdateVO.getComponentIssueRelVOList(), projectId, issueId);
-        handleUpdateVersionIssueRel(issueUpdateVO.getVersionIssueRelDTOList(), projectId, issueId, issueUpdateVO.getVersionType());
+        handleUpdateVersionIssueRel(issueUpdateVO.getVersionIssueRelVOList(), projectId, issueId, issueUpdateVO.getVersionType());
         return queryIssueByUpdate(projectId, issueId, fieldList);
     }
 
@@ -1068,7 +1068,7 @@ public class IssueServiceImpl implements IssueService {
         SprintSearchDTO sprintSearchDTO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDTO == null || !Objects.equals(sprintId, sprintSearchDTO.getSprintId())) {
             List<IssueConvertDTO> issueConvertDTOList = issueAssembler.toTargetList(issueMapper.queryIssueByIssueIdsAndSubIssueIds(moveIssueIds), IssueConvertDTO.class);
-            Map<Long, IssueTypeWithStateMachineIdDTO> issueTypeWithStateMachineIdDTOMap = ConvertUtil.queryIssueTypesWithStateMachineIdByProjectId(projectId, AGILE);
+            Map<Long, IssueTypeWithStateMachineIdVO> issueTypeWithStateMachineIdDTOMap = ConvertUtil.queryIssueTypesWithStateMachineIdByProjectId(projectId, AGILE);
             issueConvertDTOList.forEach(issueE -> {
                 Long initStatusId = issueTypeWithStateMachineIdDTOMap.get(issueE.getIssueTypeId()).getInitStatusId();
                 if (!issueE.getStatusId().equals(initStatusId)) {
@@ -1365,7 +1365,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public synchronized IssueVO updateIssueTypeCode(IssueConvertDTO issueConvertDTO, IssueUpdateTypeDTO issueUpdateTypeDTO, Long organizationId) {
+    public synchronized IssueVO updateIssueTypeCode(IssueConvertDTO issueConvertDTO, IssueUpdateTypeVO issueUpdateTypeVO, Long organizationId) {
         String originType = issueConvertDTO.getTypeCode();
         if (originType.equals(SUB_TASK)) {
             issueConvertDTO.setParentIssueId(null);
@@ -1373,10 +1373,10 @@ public class IssueServiceImpl implements IssueService {
         if (STORY_TYPE.equals(issueConvertDTO.getTypeCode()) && issueConvertDTO.getStoryPoints() != null) {
             issueConvertDTO.setStoryPoints(null);
         }
-        if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC)) {
+        if (issueUpdateTypeVO.getTypeCode().equals(ISSUE_EPIC)) {
             issueConvertDTO.setRank(null);
-            issueConvertDTO.setTypeCode(issueUpdateTypeDTO.getTypeCode());
-            issueConvertDTO.setEpicName(issueUpdateTypeDTO.getEpicName());
+            issueConvertDTO.setTypeCode(issueUpdateTypeVO.getTypeCode());
+            issueConvertDTO.setEpicName(issueUpdateTypeVO.getEpicName());
             List<LookupValueDTO> colorList = lookupValueMapper.queryLookupValueByCode(EPIC_COLOR_TYPE).getLookupValues();
             issueConvertDTO.initializationColor(colorList);
             issueConvertDTO.setRemainingTime(null);
@@ -1387,16 +1387,16 @@ public class IssueServiceImpl implements IssueService {
         } else if (issueConvertDTO.getTypeCode().equals(ISSUE_EPIC)) {
             // 如果之前类型是epic，会把该epic下的issue的epicId置为0
             issueAccessDataService.batchUpdateIssueEpicId(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId());
-            issueConvertDTO.setTypeCode(issueUpdateTypeDTO.getTypeCode());
+            issueConvertDTO.setTypeCode(issueUpdateTypeVO.getTypeCode());
             issueConvertDTO.setColorCode(null);
             issueConvertDTO.setEpicName(null);
             issueConvertDTO.setEpicSequence(null);
             //rank值重置
             calculationRank(issueConvertDTO.getProjectId(), issueConvertDTO);
         } else {
-            issueConvertDTO.setTypeCode(issueUpdateTypeDTO.getTypeCode());
+            issueConvertDTO.setTypeCode(issueUpdateTypeVO.getTypeCode());
         }
-        issueConvertDTO.setIssueTypeId(issueUpdateTypeDTO.getIssueTypeId());
+        issueConvertDTO.setIssueTypeId(issueUpdateTypeVO.getIssueTypeId());
         issueAccessDataService.update(issueConvertDTO, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID});
         return queryIssue(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId(), organizationId);
     }
@@ -1419,9 +1419,9 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleCreateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
-        if (versionIssueRelDTOList != null && !versionIssueRelDTOList.isEmpty()) {
-            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class), projectId, issueId);
+    private void handleCreateVersionIssueRel(List<VersionIssueRelVO> versionIssueRelVOList, Long projectId, Long issueId) {
+        if (versionIssueRelVOList != null && !versionIssueRelVOList.isEmpty()) {
+            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelVOList, VersionIssueRelE.class), projectId, issueId);
         }
     }
 
@@ -1561,23 +1561,23 @@ public class IssueServiceImpl implements IssueService {
 
     }
 
-    private void handleUpdateVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId, String versionType) {
-        if (versionIssueRelDTOList != null && versionType != null) {
-            if (!versionIssueRelDTOList.isEmpty()) {
+    private void handleUpdateVersionIssueRel(List<VersionIssueRelVO> versionIssueRelVOList, Long projectId, Long issueId, String versionType) {
+        if (versionIssueRelVOList != null && versionType != null) {
+            if (!versionIssueRelVOList.isEmpty()) {
                 //归档状态的版本之间的关联不删除
-                List<VersionIssueRelE> versionIssueRelES = ConvertHelper.convertList(versionIssueRelDTOList, VersionIssueRelE.class);
+                List<VersionIssueRelE> versionIssueRelES = ConvertHelper.convertList(versionIssueRelVOList, VersionIssueRelE.class);
                 List<VersionIssueRelE> versionIssueRelCreate = versionIssueRelES.stream().filter(versionIssueRelE ->
                         versionIssueRelE.getVersionId() != null).collect(Collectors.toList());
                 List<Long> curVersionIds = versionIssueRelMapper.queryByIssueIdAndProjectIdNoArchivedExceptInfluence(projectId, issueId, versionType);
                 List<Long> createVersionIds = versionIssueRelCreate.stream().map(VersionIssueRelE::getVersionId).collect(Collectors.toList());
                 curVersionIds.forEach(id -> {
                     if (!createVersionIds.contains(id)) {
-                        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
-                        versionIssueRelDO.setIssueId(issueId);
-                        versionIssueRelDO.setVersionId(id);
-                        versionIssueRelDO.setRelationType(versionType);
-                        versionIssueRelDO.setProjectId(projectId);
-                        versionIssueRelService.delete(versionIssueRelDO);
+                        VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+                        versionIssueRelDTO.setIssueId(issueId);
+                        versionIssueRelDTO.setVersionId(id);
+                        versionIssueRelDTO.setRelationType(versionType);
+                        versionIssueRelDTO.setProjectId(projectId);
+                        versionIssueRelService.delete(versionIssueRelDTO);
                     }
                 });
                 versionIssueRelES.forEach(rel -> rel.setRelationType(versionType));
@@ -1698,15 +1698,15 @@ public class IssueServiceImpl implements IssueService {
             List<ExportIssuesVO> exportIssues = issueAssembler.exportIssuesDOListToExportIssuesDTO(issueMapper.queryExportIssues(projectId, issueIds, projectCode), projectId);
             if (!issueIds.isEmpty()) {
                 Map<Long, List<SprintNameDTO>> closeSprintNames = issueMapper.querySprintNameByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(SprintNameDTO::getIssueId));
-                Map<Long, List<VersionIssueRelDO>> fixVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, FIX_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
-                Map<Long, List<VersionIssueRelDO>> influenceVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, INFLUENCE_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDO::getIssueId));
+                Map<Long, List<VersionIssueRelDTO>> fixVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, FIX_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDTO::getIssueId));
+                Map<Long, List<VersionIssueRelDTO>> influenceVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, INFLUENCE_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDTO::getIssueId));
                 Map<Long, List<LabelIssueRelDTO>> labelNames = issueMapper.queryLabelIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(LabelIssueRelDTO::getIssueId));
                 Map<Long, List<ComponentIssueRelDTO>> componentMap = issueMapper.queryComponentIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(ComponentIssueRelDTO::getIssueId));
                 Map<Long, Map<String, String>> foundationCodeValue = foundationFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIds).getBody();
                 exportIssues.forEach(exportIssue -> {
                     String closeSprintName = closeSprintNames.get(exportIssue.getIssueId()) != null ? closeSprintNames.get(exportIssue.getIssueId()).stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(",")) : "";
-                    String fixVersionName = fixVersionNames.get(exportIssue.getIssueId()) != null ? fixVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
-                    String influenceVersionName = influenceVersionNames.get(exportIssue.getIssueId()) != null ? influenceVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDO::getName).collect(Collectors.joining(",")) : "";
+                    String fixVersionName = fixVersionNames.get(exportIssue.getIssueId()) != null ? fixVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDTO::getName).collect(Collectors.joining(",")) : "";
+                    String influenceVersionName = influenceVersionNames.get(exportIssue.getIssueId()) != null ? influenceVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDTO::getName).collect(Collectors.joining(",")) : "";
                     String labelName = labelNames.get(exportIssue.getIssueId()) != null ? labelNames.get(exportIssue.getIssueId()).stream().map(LabelIssueRelDTO::getLabelName).collect(Collectors.joining(",")) : "";
                     String componentName = componentMap.get(exportIssue.getIssueId()) != null ? componentMap.get(exportIssue.getIssueId()).stream().map(ComponentIssueRelDTO::getName).collect(Collectors.joining(",")) : "";
                     Map<String, String> fieldValue = foundationCodeValue.get(exportIssue.getIssueId()) != null ? foundationCodeValue.get(exportIssue.getIssueId()) : new HashMap<>();
@@ -2167,26 +2167,26 @@ public class IssueServiceImpl implements IssueService {
         for (int a = 0; a < issueListTestDTOSPage.getSize(); a++) {
             IssueListTestWithSprintVersionVO issueListTestWithSprintVersionVO = new IssueListTestWithSprintVersionVO(issueListTestDTOSPage.getList().get(a));
 
-            List<VersionIssueRelDTO> versionList = new ArrayList<>();
-            List<IssueSprintDTO> sprintList = new ArrayList<>();
+            List<VersionIssueRelVO> versionList = new ArrayList<>();
+            List<IssueSprintVO> sprintList = new ArrayList<>();
 
             issueMapper.queryVersionIssueRelByIssueId(issueListTestWithSprintVersionVO.getIssueId()).forEach(v -> {
-                VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
-                versionIssueRelDTO.setVersionId(v.getVersionId());
-                versionIssueRelDTO.setName(v.getName());
+                VersionIssueRelVO versionIssueRelVO = new VersionIssueRelVO();
+                versionIssueRelVO.setVersionId(v.getVersionId());
+                versionIssueRelVO.setName(v.getName());
 
-                versionList.add(versionIssueRelDTO);
+                versionList.add(versionIssueRelVO);
             });
 
             issueMapper.querySprintNameByIssueId(issueListTestWithSprintVersionVO.getIssueId()).forEach(v -> {
                 SprintDTO sprintDTO = sprintDoMap.get(v.getSprintId());
 
-                IssueSprintDTO issueSprintDTO = new IssueSprintDTO();
-                issueSprintDTO.setSprintId(sprintDTO.getSprintId());
-                issueSprintDTO.setSprintName(sprintDTO.getSprintName());
-                issueSprintDTO.setStatusCode(sprintDTO.getStatusCode());
+                IssueSprintVO issueSprintVO = new IssueSprintVO();
+                issueSprintVO.setSprintId(sprintDTO.getSprintId());
+                issueSprintVO.setSprintName(sprintDTO.getSprintName());
+                issueSprintVO.setStatusCode(sprintDTO.getStatusCode());
 
-                sprintList.add(issueSprintDTO);
+                sprintList.add(issueSprintVO);
             });
 
             issueListTestWithSprintVersionVO.setVersionDTOList(versionList);
@@ -2425,7 +2425,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     @Override
-    public List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId, Long assigneeId) {
+    public List<UnfinishedIssueVO> queryUnfinishedIssues(Long projectId, Long assigneeId) {
         return issueAssembler.unfinishedIssueDoToDto(issueMapper.queryUnfinishedIssues(projectId, assigneeId), projectId);
     }
 

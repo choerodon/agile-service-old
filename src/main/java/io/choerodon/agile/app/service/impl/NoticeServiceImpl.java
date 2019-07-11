@@ -122,10 +122,10 @@ public class NoticeServiceImpl implements NoticeService {
                 }
             }
             if (roleId != null) {
-                PageInfo<UserDTO> userDTOS = userService.pagingQueryUsersByRoleIdOnProjectLevel(0, 300,roleId, projectId, roleAssignmentSearchVO);
-                for (UserDTO userDTO : userDTOS.getList()) {
-                    if (!result.contains(userDTO.getId())) {
-                        result.add(userDTO.getId());
+                PageInfo<UserVO> userDTOS = userService.pagingQueryUsersByRoleIdOnProjectLevel(0, 300,roleId, projectId, roleAssignmentSearchVO);
+                for (UserVO userVO : userDTOS.getList()) {
+                    if (!result.contains(userVO.getId())) {
+                        result.add(userVO.getId());
                     }
                 }
             }

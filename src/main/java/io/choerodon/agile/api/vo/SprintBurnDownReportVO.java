@@ -28,7 +28,7 @@ public class SprintBurnDownReportVO {
     private Date endDate;
 
     @ApiModelProperty(value = "已完成的问题列表")
-    private List<IssueBurnDownReportDTO> completeIssues;
+    private List<IssueBurnDownReportVO> completeIssues;
 
     public Long getSprintId() {
         return sprintId;
@@ -62,11 +62,11 @@ public class SprintBurnDownReportVO {
         this.endDate = endDate;
     }
 
-    public List<IssueBurnDownReportDTO> getCompleteIssues() {
+    public List<IssueBurnDownReportVO> getCompleteIssues() {
         return completeIssues;
     }
 
-    public void setCompleteIssues(List<IssueBurnDownReportDTO> completeIssues) {
+    public void setCompleteIssues(List<IssueBurnDownReportVO> completeIssues) {
         this.completeIssues = completeIssues;
     }
 

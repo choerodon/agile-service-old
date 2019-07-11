@@ -154,8 +154,8 @@ public class SendMsgUtil {
             }
             Long[] ids = new Long[1];
             ids[0] = result.getAssigneeId();
-            List<UserDO> userDOList = userFeignClient.listUsersByIds(ids, false).getBody();
-            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
+            List<UserDTO> userDTOList = userFeignClient.listUsersByIds(ids, false).getBody();
+            String userName = !userDTOList.isEmpty() && userDTOList.get(0) != null ? userDTOList.get(0).getLoginName() + userDTOList.get(0).getRealName() : "";
             String summary = result.getIssueNum() + "-" + result.getSummary();
             siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), result.getAssigneeId(), projectId);
         }
@@ -189,8 +189,8 @@ public class SendMsgUtil {
             String summary = pioCode + "-" + issueDTO.getIssueNum() + "-" + issueDTO.getSummary();
             Long[] ids = new Long[1];
             ids[0] = issueDTO.getAssigneeId();
-            List<UserDO> userDOList = userService.listUsersByIds(ids);
-            String userName = !userDOList.isEmpty() && userDOList.get(0) != null ? userDOList.get(0).getLoginName() + userDOList.get(0).getRealName() : "";
+            List<UserDTO> userDTOList = userService.listUsersByIds(ids);
+            String userName = !userDTOList.isEmpty() && userDTOList.get(0) != null ? userDTOList.get(0).getLoginName() + userDTOList.get(0).getRealName() : "";
             siteMsgUtil.issueSolve(userIds, userName, summary, url.toString(), issueDTO.getAssigneeId(), projectId);
         }
     }
@@ -207,10 +207,10 @@ public class SendMsgUtil {
                 }
             }
             if (roleId != null) {
-                PageInfo<UserDTO> userDTOS = userService.pagingQueryUsersByRoleIdOnProjectLevel(0, 300, roleId, projectId, roleAssignmentSearchVO);
-                for (UserDTO userDTO : userDTOS.getList()) {
-                    if (!result.contains(userDTO.getId())) {
-                        result.add(userDTO.getId());
+                PageInfo<UserVO> userDTOS = userService.pagingQueryUsersByRoleIdOnProjectLevel(0, 300, roleId, projectId, roleAssignmentSearchVO);
+                for (UserVO userVO : userDTOS.getList()) {
+                    if (!result.contains(userVO.getId())) {
+                        result.add(userVO.getId());
                     }
                 }
             }

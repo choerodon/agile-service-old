@@ -146,10 +146,10 @@ public interface IssueService {
      * 更改issue类型
      *
      * @param issueConvertDTO             issueConvertDTO
-     * @param issueUpdateTypeDTO issueUpdateTypeDTO
+     * @param issueUpdateTypeVO issueUpdateTypeVO
      * @return IssueVO
      */
-    IssueVO updateIssueTypeCode(IssueConvertDTO issueConvertDTO, IssueUpdateTypeDTO issueUpdateTypeDTO, Long organizationId);
+    IssueVO updateIssueTypeCode(IssueConvertDTO issueConvertDTO, IssueUpdateTypeVO issueUpdateTypeVO, Long organizationId);
 
     /**
      * 通过项目id和issueId查询issueE
@@ -266,7 +266,7 @@ public interface IssueService {
 
     PageInfo<UndistributedIssueVO> queryUnDistributedIssues(Long projectId, PageRequest pageRequest);
 
-    List<UnfinishedIssueDTO> queryUnfinishedIssues(Long projectId, Long assigneeId);
+    List<UnfinishedIssueVO> queryUnfinishedIssues(Long projectId, Long assigneeId);
 
     /**
      * 查询用户故事地图泳道

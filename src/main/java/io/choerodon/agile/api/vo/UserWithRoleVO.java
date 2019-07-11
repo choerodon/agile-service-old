@@ -8,7 +8,7 @@ import java.util.List;
  * @author flyleft
  * @date 2018/5/30
  */
-public class UserWithRoleVO extends UserDTO {
+public class UserWithRoleVO extends UserVO {
 
     @ApiModelProperty(value = "角色列表")
     private List<RoleVO> roles;

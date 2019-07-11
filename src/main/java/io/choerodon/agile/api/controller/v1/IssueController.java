@@ -409,9 +409,9 @@ public class IssueController {
                                                        @ApiParam(value = "组织id", required = true)
                                                         @RequestParam Long organizationId,
                                                        @ApiParam(value = "修改类型信息", required = true)
-                                                        @RequestBody IssueUpdateTypeDTO issueUpdateTypeDTO) {
-        IssueConvertDTO issueConvertDTO = issueValidator.verifyUpdateTypeData(projectId, issueUpdateTypeDTO);
-        return Optional.ofNullable(issueService.updateIssueTypeCode(issueConvertDTO, issueUpdateTypeDTO, organizationId))
+                                                        @RequestBody IssueUpdateTypeVO issueUpdateTypeVO) {
+        IssueConvertDTO issueConvertDTO = issueValidator.verifyUpdateTypeData(projectId, issueUpdateTypeVO);
+        return Optional.ofNullable(issueService.updateIssueTypeCode(issueConvertDTO, issueUpdateTypeVO, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.updateIssueTypeCode"));
     }
@@ -686,9 +686,9 @@ public class IssueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询经办人未完成的问题，类型为story,task,bug")
     @GetMapping(value = "/unfinished/{assignee_id}")
-    public ResponseEntity<List<UnfinishedIssueDTO>> queryUnfinishedIssues(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<UnfinishedIssueVO>> queryUnfinishedIssues(@ApiParam(value = "项目id", required = true)
                                                                           @PathVariable(name = "project_id") Long projectId,
-                                                                          @ApiParam(value = "经办人id", required = true)
+                                                                         @ApiParam(value = "经办人id", required = true)
                                                                           @PathVariable(name = "assignee_id") Long assigneeId) {
         return Optional.ofNullable(issueService.queryUnfinishedIssues(projectId, assigneeId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

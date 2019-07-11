@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
-import io.choerodon.agile.infra.dataobject.VersionIssueRelDO;
+import io.choerodon.agile.infra.dataobject.VersionIssueRelDTO;
 
 import java.util.List;
 
@@ -51,8 +51,8 @@ public interface VersionIssueRelService {
 
     /**
      * 根据查询条件删除版本关联
-     * @param versionIssueRelDO versionIssueRelDO
+     * @param versionIssueRelDTO versionIssueRelDTO
      * @return int
      */
-    int delete(VersionIssueRelDO versionIssueRelDO);
+    int delete(VersionIssueRelDTO versionIssueRelDTO);
 }

@@ -4,8 +4,8 @@ import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.ProjectVO;
 import io.choerodon.agile.api.vo.RoleAssignmentSearchVO;
 import io.choerodon.agile.api.vo.RoleVO;
-import io.choerodon.agile.api.vo.UserDTO;
-import io.choerodon.agile.infra.dataobject.UserDO;
+import io.choerodon.agile.api.vo.UserVO;
+import io.choerodon.agile.infra.dataobject.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDO;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public interface UserService {
      * @param withId withId
      * @return userDO
      */
-    UserDO queryUserNameByOption(Long userId, Boolean withId);
+    UserDTO queryUserNameByOption(Long userId, Boolean withId);
 
     Map<Long, UserMessageDO> queryUsersMap(List<Long> assigneeIds, Boolean withLoginName);
 
@@ -33,9 +33,9 @@ public interface UserService {
      *
      * @param projectId projectId
      * @param name      name
-     * @return UserDTO
+     * @return UserVO
      */
-    List<UserDTO> queryUsersByNameAndProjectId(Long projectId, String name);
+    List<UserVO> queryUsersByNameAndProjectId(Long projectId, String name);
 
 
     /**
@@ -48,9 +48,9 @@ public interface UserService {
 
     List<RoleVO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO);
 
-    PageInfo<UserDTO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO);
+    PageInfo<UserVO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO);
 
-    List<UserDO> listUsersByIds(Long[] ids);
+    List<UserDTO> listUsersByIds(Long[] ids);
 
     ProjectVO getGroupInfoByEnableProject(Long organizationId, Long projectId);
 }

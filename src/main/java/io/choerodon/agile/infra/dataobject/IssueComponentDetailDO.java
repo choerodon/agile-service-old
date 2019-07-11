@@ -41,7 +41,7 @@ public class IssueComponentDetailDO {
 
     private Long issueTypeId;
 
-    private List<VersionIssueRelDO> versionIssueRelDOList;
+    private List<VersionIssueRelDTO> versionIssueRelDTOList;
 
     private List<LabelIssueRelDTO> labelIssueRelDTOList;
 
@@ -167,12 +167,12 @@ public class IssueComponentDetailDO {
         this.epicColor = epicColor;
     }
 
-    public List<VersionIssueRelDO> getVersionIssueRelDOList() {
-        return versionIssueRelDOList;
+    public List<VersionIssueRelDTO> getVersionIssueRelDTOList() {
+        return versionIssueRelDTOList;
     }
 
-    public void setVersionIssueRelDOList(List<VersionIssueRelDO> versionIssueRelDOList) {
-        this.versionIssueRelDOList = versionIssueRelDOList;
+    public void setVersionIssueRelDTOList(List<VersionIssueRelDTO> versionIssueRelDTOList) {
+        this.versionIssueRelDTOList = versionIssueRelDTOList;
     }
 
     public List<LabelIssueRelDTO> getLabelIssueRelDTOList() {

@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
  * Date:  16:17 2018/8/28
  * Description: 未完成的任务DTO
  */
-public class UnfinishedIssueDTO {
+public class UnfinishedIssueVO {
 
     @ApiModelProperty(value = "问题Id")
     private Long issueId;

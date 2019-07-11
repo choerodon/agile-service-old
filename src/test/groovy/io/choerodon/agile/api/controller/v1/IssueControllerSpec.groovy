@@ -147,7 +147,7 @@ class IssueControllerSpec extends Specification {
         projectDTO.setId(1L)
         projectDTO.setOrganizationId(1L)
         Mockito.when(userRepository.queryProject(Matchers.anyLong())).thenReturn(projectDTO)
-        UserDO userDO = new UserDO()
+        UserDTO userDO = new UserDTO()
         userDO.setRealName("管理员")
         Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
     }
@@ -199,18 +199,18 @@ class IssueControllerSpec extends Specification {
         issueCreateDTO.labelIssueRelVOList = labelIssueRelDTOList
 
         and: '设置版本'
-        List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
-        VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
+        List<VersionIssueRelVO> versionIssueRelDTOList = new ArrayList<>()
+        VersionIssueRelVO versionIssueRelDTO = new VersionIssueRelVO()
         versionIssueRelDTO.projectId = projectId
         versionIssueRelDTO.name = "测试版本"
         versionIssueRelDTO.relationType = "fix"
-        VersionIssueRelDTO versionIssueRelDTO1 = new VersionIssueRelDTO()
+        VersionIssueRelVO versionIssueRelDTO1 = new VersionIssueRelVO()
         versionIssueRelDTO1.projectId = projectId
         versionIssueRelDTO1.versionId = versionId
         versionIssueRelDTO1.relationType = "fix"
         versionIssueRelDTOList.add(versionIssueRelDTO)
         versionIssueRelDTOList.add(versionIssueRelDTO1)
-        issueCreateDTO.versionIssueRelDTOList = versionIssueRelDTOList
+        issueCreateDTO.versionIssueRelVOList = versionIssueRelDTOList
 
         when: '向开始创建issue的接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues?applyType={applyType}', issueCreateDTO, IssueVO, projectId, SchemeApplyType.AGILE)
@@ -301,18 +301,18 @@ class IssueControllerSpec extends Specification {
         issueSubCreateDTO.labelIssueRelVOList = labelIssueRelDTOList
 
         and: '设置版本'
-        List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
-        VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
+        List<VersionIssueRelVO> versionIssueRelDTOList = new ArrayList<>()
+        VersionIssueRelVO versionIssueRelDTO = new VersionIssueRelVO()
         versionIssueRelDTO.projectId = projectId
         versionIssueRelDTO.name = "测试版本"
         versionIssueRelDTO.relationType = "fix"
-        VersionIssueRelDTO versionIssueRelDTO1 = new VersionIssueRelDTO()
+        VersionIssueRelVO versionIssueRelDTO1 = new VersionIssueRelVO()
         versionIssueRelDTO1.projectId = projectId
         versionIssueRelDTO1.name = "测试版本2"
         versionIssueRelDTO1.relationType = "fix"
         versionIssueRelDTOList.add(versionIssueRelDTO)
         versionIssueRelDTOList.add(versionIssueRelDTO1)
-        issueSubCreateDTO.versionIssueRelDTOList = versionIssueRelDTOList
+        issueSubCreateDTO.versionIssueRelVOList = versionIssueRelDTOList
 
         when: '向开始创建issue的接口发请求'
         def entity = restTemplate.postForEntity('/v1/projects/{project_id}/issues/sub_issue', issueSubCreateDTO, IssueSubVO, projectId)
@@ -345,7 +345,7 @@ class IssueControllerSpec extends Specification {
         issueUpdate.put("storyPoints", 10)
         issueUpdate.put("sprintId", null)
         issueUpdate.put("estimateTime", 20)
-        issueUpdate.put("versionIssueRelDTOList", [])
+        issueUpdate.put("versionIssueRelVOList", [])
         issueUpdate.put("labelIssueRelVOList", [])
         issueUpdate.put("componentIssueRelVOList", [])
         List<IssueLinkVO> issueLinkDTOList = new ArrayList<>()
@@ -558,7 +558,7 @@ class IssueControllerSpec extends Specification {
 
     def "updateIssueTypeCode"() {
         given: '给定一个修改类型DTO'
-        IssueUpdateTypeDTO issueUpdateTypeDTO = new IssueUpdateTypeDTO()
+        IssueUpdateTypeVO issueUpdateTypeDTO = new IssueUpdateTypeVO()
         issueUpdateTypeDTO.issueId = issueIdList[0]
         issueUpdateTypeDTO.projectId = projectId
         issueUpdateTypeDTO.typeCode = typeCode
@@ -1279,7 +1279,7 @@ class IssueControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        PageInfo<UnfinishedIssueDTO> result = entity.body
+        PageInfo<UnfinishedIssueVO> result = entity.body
 
         expect:
         result.getContent().size() == 1
@@ -1293,7 +1293,7 @@ class IssueControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and:
-        List<UnfinishedIssueDTO> result = entity.body
+        List<UnfinishedIssueVO> result = entity.body
 
         expect:
         result.size() == 1

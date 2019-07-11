@@ -432,50 +432,50 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
     @Override
-    public synchronized ProductVersionPageVO dragVersion(Long projectId, VersionSequenceDTO versionSequenceDTO) {
-        if (versionSequenceDTO.getAfterSequence() == null && versionSequenceDTO.getBeforeSequence() == null) {
+    public synchronized ProductVersionPageVO dragVersion(Long projectId, VersionSequenceVO versionSequenceVO) {
+        if (versionSequenceVO.getAfterSequence() == null && versionSequenceVO.getBeforeSequence() == null) {
             throw new CommonException("error.dragVersion.noSequence");
         }
         ProductVersionDTO productVersionDTO = modelMapper.map(queryVersionByProjectIdAndVersionId(
-                versionSequenceDTO.getVersionId(), projectId), ProductVersionDTO.class);
+                versionSequenceVO.getVersionId(), projectId), ProductVersionDTO.class);
         if (productVersionDTO == null) {
             throw new CommonException(NOT_FOUND);
         } else {
-            if (versionSequenceDTO.getAfterSequence() == null) {
-                Integer maxSequence = productVersionMapper.queryMaxAfterSequence(versionSequenceDTO.getBeforeSequence(), projectId);
-                versionSequenceDTO.setAfterSequence(maxSequence);
-            } else if (versionSequenceDTO.getBeforeSequence() == null) {
-                Integer minSequence = productVersionMapper.queryMinBeforeSequence(versionSequenceDTO.getAfterSequence(), projectId);
-                versionSequenceDTO.setBeforeSequence(minSequence);
+            if (versionSequenceVO.getAfterSequence() == null) {
+                Integer maxSequence = productVersionMapper.queryMaxAfterSequence(versionSequenceVO.getBeforeSequence(), projectId);
+                versionSequenceVO.setAfterSequence(maxSequence);
+            } else if (versionSequenceVO.getBeforeSequence() == null) {
+                Integer minSequence = productVersionMapper.queryMinBeforeSequence(versionSequenceVO.getAfterSequence(), projectId);
+                versionSequenceVO.setBeforeSequence(minSequence);
             }
-            handleSequence(versionSequenceDTO, projectId, productVersionDTO);
+            handleSequence(versionSequenceVO, projectId, productVersionDTO);
         }
         return productVersionPageAssembler.toTarget(queryVersionByProjectIdAndVersionId(
-                versionSequenceDTO.getVersionId(), projectId), ProductVersionPageVO.class);
+                versionSequenceVO.getVersionId(), projectId), ProductVersionPageVO.class);
     }
 
-    private void handleSequence(VersionSequenceDTO versionSequenceDTO, Long projectId, ProductVersionDTO productVersionDTO) {
-        if (versionSequenceDTO.getBeforeSequence() == null) {
-            productVersionDTO.setSequence(versionSequenceDTO.getAfterSequence() + 1);
+    private void handleSequence(VersionSequenceVO versionSequenceVO, Long projectId, ProductVersionDTO productVersionDTO) {
+        if (versionSequenceVO.getBeforeSequence() == null) {
+            productVersionDTO.setSequence(versionSequenceVO.getAfterSequence() + 1);
             update(productVersionDTO);
-        } else if (versionSequenceDTO.getAfterSequence() == null) {
-            if (productVersionDTO.getSequence() > versionSequenceDTO.getBeforeSequence()) {
-                Integer add = productVersionDTO.getSequence() - versionSequenceDTO.getBeforeSequence();
+        } else if (versionSequenceVO.getAfterSequence() == null) {
+            if (productVersionDTO.getSequence() > versionSequenceVO.getBeforeSequence()) {
+                Integer add = productVersionDTO.getSequence() - versionSequenceVO.getBeforeSequence();
                 if (add > 0) {
-                    productVersionDTO.setSequence(versionSequenceDTO.getBeforeSequence() - 1);
+                    productVersionDTO.setSequence(versionSequenceVO.getBeforeSequence() - 1);
                     update(productVersionDTO);
                 } else {
-                    batchUpdateSequence(versionSequenceDTO.getBeforeSequence(), projectId,
-                            productVersionDTO.getSequence() - versionSequenceDTO.getBeforeSequence() + 1, productVersionDTO.getVersionId());
+                    batchUpdateSequence(versionSequenceVO.getBeforeSequence(), projectId,
+                            productVersionDTO.getSequence() - versionSequenceVO.getBeforeSequence() + 1, productVersionDTO.getVersionId());
                 }
             }
         } else {
-            Integer sequence = versionSequenceDTO.getAfterSequence() + 1;
+            Integer sequence = versionSequenceVO.getAfterSequence() + 1;
             productVersionDTO.setSequence(sequence);
             update(productVersionDTO);
-            Integer update = sequence - versionSequenceDTO.getBeforeSequence();
+            Integer update = sequence - versionSequenceVO.getBeforeSequence();
             if (update >= 0) {
-                batchUpdateSequence(versionSequenceDTO.getBeforeSequence(), projectId, update + 1, productVersionDTO.getVersionId());
+                batchUpdateSequence(versionSequenceVO.getBeforeSequence(), projectId, update + 1, productVersionDTO.getVersionId());
             }
         }
     }

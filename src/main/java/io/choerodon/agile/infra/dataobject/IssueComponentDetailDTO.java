@@ -60,7 +60,7 @@ public class IssueComponentDetailDTO {
 
     private PriorityVO priorityVO;
 
-    private List<VersionIssueRelDTO> versionIssueRelDTOList;
+    private List<VersionIssueRelVO> versionIssueRelVOList;
 
     private List<LabelIssueRelVO> labelIssueRelVOList;
 
@@ -196,12 +196,12 @@ public class IssueComponentDetailDTO {
         this.epicColor = epicColor;
     }
 
-    public List<VersionIssueRelDTO> getVersionIssueRelDTOList() {
-        return versionIssueRelDTOList;
+    public List<VersionIssueRelVO> getVersionIssueRelVOList() {
+        return versionIssueRelVOList;
     }
 
-    public void setVersionIssueRelDTOList(List<VersionIssueRelDTO> versionIssueRelDTOList) {
-        this.versionIssueRelDTOList = versionIssueRelDTOList;
+    public void setVersionIssueRelVOList(List<VersionIssueRelVO> versionIssueRelVOList) {
+        this.versionIssueRelVOList = versionIssueRelVOList;
     }
 
     public List<LabelIssueRelVO> getLabelIssueRelVOList() {

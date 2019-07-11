@@ -1,41 +1,34 @@
-package io.choerodon.agile.infra.dataobject;
+package io.choerodon.agile.api.vo;
 
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import io.choerodon.mybatis.entity.BaseDTO;
+import io.swagger.annotations.ApiModelProperty;
 
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 16:21:18
  */
-@Table(name = "agile_version_issue_rel")
-public class VersionIssueRelDO extends BaseDTO{
+public class VersionIssueRelVO implements Serializable {
 
-    /**
-     * version id
-     */
-    @NotNull(message = "error.version_issue_rel.version_idNotNull")
+    @ApiModelProperty(value = "版本id")
     private Long versionId;
 
-    /**
-     * issue id
-     */
-    @NotNull(message = "error.version_issue_rel.issue_idNotNull")
+    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
-    @Transient
+    @ApiModelProperty(value = "版本名称")
     private String name;
 
-    @Transient
-    private String statusCode;
+    @ApiModelProperty(value = "项目id")
+    private Long projectId;
 
+    @ApiModelProperty(value = "版本关系：fix、influence")
     private String relationType;
 
-    private Long projectId;
+    @ApiModelProperty(value = "版本状态")
+    private String statusCode;
 
     public Long getVersionId() {
         return versionId;
@@ -61,20 +54,20 @@ public class VersionIssueRelDO extends BaseDTO{
         this.name = name;
     }
 
-    public String getRelationType() {
-        return relationType;
-    }
-
-    public void setRelationType(String relationType) {
-        this.relationType = relationType;
-    }
-
     public Long getProjectId() {
         return projectId;
     }
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
+    }
+
+    public String getRelationType() {
+        return relationType;
+    }
+
+    public void setRelationType(String relationType) {
+        this.relationType = relationType;
     }
 
     public String getStatusCode() {

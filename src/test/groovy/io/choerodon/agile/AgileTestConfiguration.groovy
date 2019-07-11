@@ -335,7 +335,7 @@ class AgileTestConfiguration {
         productVersionDO.statusCode = 'version_planning'
         productVersionDO.versionId = 1L
         productVersionMapper.insert(productVersionDO)
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO()
+        VersionIssueRelDTO versionIssueRelDO = new VersionIssueRelDTO()
         versionIssueRelDO.projectId = 1L
         versionIssueRelDO.issueId = 2L
         versionIssueRelDO.versionId = 1L

@@ -3,7 +3,7 @@ package io.choerodon.agile.domain.agile.converter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import io.choerodon.agile.api.vo.UnfinishedIssueDTO;
+import io.choerodon.agile.api.vo.UnfinishedIssueVO;
 import io.choerodon.agile.infra.dataobject.UnfinishedIssueDO;
 import io.choerodon.core.convertor.ConvertorI;
 
@@ -13,12 +13,12 @@ import io.choerodon.core.convertor.ConvertorI;
  * Description:
  */
 @Component
-public class UnfinishedIssueConverter implements ConvertorI<Object, UnfinishedIssueDO, UnfinishedIssueDTO> {
+public class UnfinishedIssueConverter implements ConvertorI<Object, UnfinishedIssueDO, UnfinishedIssueVO> {
 
     @Override
-    public UnfinishedIssueDTO doToDto(UnfinishedIssueDO unfinishedIssueDO) {
-        UnfinishedIssueDTO unfinishedIssueDTO = new UnfinishedIssueDTO();
-        BeanUtils.copyProperties(unfinishedIssueDO, unfinishedIssueDTO);
-        return unfinishedIssueDTO;
+    public UnfinishedIssueVO doToDto(UnfinishedIssueDO unfinishedIssueDO) {
+        UnfinishedIssueVO unfinishedIssueVO = new UnfinishedIssueVO();
+        BeanUtils.copyProperties(unfinishedIssueDO, unfinishedIssueVO);
+        return unfinishedIssueVO;
     }
 }

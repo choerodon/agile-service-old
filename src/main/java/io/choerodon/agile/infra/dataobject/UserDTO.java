@@ -8,7 +8,7 @@ import java.util.Date;
  * @author dinghuang123@gmail.com
  * @since 2018/5/24
  */
-public class UserDO {
+public class UserDTO {
 
     private Long id;
 

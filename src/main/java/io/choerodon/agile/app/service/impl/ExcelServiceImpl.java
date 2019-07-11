@@ -206,13 +206,13 @@ public class ExcelServiceImpl implements ExcelService {
         if(!(row.getCell(9)==null || row.getCell(9).toString().equals("") || row.getCell(9).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
             sprintName = row.getCell(9).toString();
         }
-        List<VersionIssueRelDTO> versionIssueRelDTOList = null;
+        List<VersionIssueRelVO> versionIssueRelVOList = null;
         if (!(versionName == null || "".equals(versionName))) {
-            versionIssueRelDTOList = new ArrayList<>();
-            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
-            versionIssueRelDTO.setVersionId(versionMap.get(versionName));
-            versionIssueRelDTO.setRelationType(RELATION_TYPE_FIX);
-            versionIssueRelDTOList.add(versionIssueRelDTO);
+            versionIssueRelVOList = new ArrayList<>();
+            VersionIssueRelVO versionIssueRelVO = new VersionIssueRelVO();
+            versionIssueRelVO.setVersionId(versionMap.get(versionName));
+            versionIssueRelVO.setRelationType(RELATION_TYPE_FIX);
+            versionIssueRelVOList.add(versionIssueRelVO);
         }
         String typeCode = issueTypeMap.get(typeName).getTypeCode();
         issueCreateVO.setProjectId(projectId);
@@ -245,7 +245,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
         issueCreateVO.setComponentIssueRelVOList(componentIssueRelVOList);
         issueCreateVO.setRemainingTime(remainTime);
-        issueCreateVO.setVersionIssueRelDTOList(versionIssueRelDTOList);
+        issueCreateVO.setVersionIssueRelVOList(versionIssueRelVOList);
         issueCreateVO.setReporterId(userId);
         return true;
     }

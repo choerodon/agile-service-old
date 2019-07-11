@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.feign;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.dataobject.UserDO;
+import io.choerodon.agile.infra.dataobject.UserDTO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +25,15 @@ public interface UserFeignClient {
      *
      * @param organizationId organizationId
      * @param id             id
-     * @return UserDO
+     * @return UserDTO
      */
     @GetMapping(value = "/v1/organizations/{organization_id}/users/{id}")
-    ResponseEntity<UserDO> query(@PathVariable(name = "organization_id") Long organizationId,
-                                 @PathVariable("id") Long id);
+    ResponseEntity<UserDTO> query(@PathVariable(name = "organization_id") Long organizationId,
+                                  @PathVariable("id") Long id);
 
     @PostMapping(value = "/v1/users/ids")
-    ResponseEntity<List<UserDO>> listUsersByIds(@RequestBody Long[] ids,
-                                                @RequestParam(name = "only_enabled") Boolean onlyEnabled);
+    ResponseEntity<List<UserDTO>> listUsersByIds(@RequestBody Long[] ids,
+                                                 @RequestParam(name = "only_enabled") Boolean onlyEnabled);
 
     /**
      * 按照Id查询项目
@@ -49,11 +49,11 @@ public interface UserFeignClient {
      *
      * @param id          id
      * @param param       param
-     * @return UserDTO
+     * @return UserVO
      */
     @GetMapping(value = "/v1/projects/{id}/users")
-    ResponseEntity<PageInfo<UserDTO>> list(@PathVariable("id") Long id,
-                                           @RequestParam("param") String param);
+    ResponseEntity<PageInfo<UserVO>> list(@PathVariable("id") Long id,
+                                          @RequestParam("param") String param);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/count")
     ResponseEntity<List<RoleVO>> listRolesWithUserCountOnProjectLevel(
@@ -61,7 +61,7 @@ public interface UserFeignClient {
             @RequestBody(required = false) @Valid RoleAssignmentSearchVO roleAssignmentSearchVO);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users")
-    ResponseEntity<PageInfo<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(
+    ResponseEntity<PageInfo<UserVO>> pagingQueryUsersByRoleIdOnProjectLevel(
             @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size,
             @RequestParam(name = "role_id") Long roleId,

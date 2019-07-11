@@ -59,7 +59,7 @@ public class IssueVO {
     private BigDecimal storyPoints;
 
     @ApiModelProperty(value = "关联的版本列表")
-    private List<VersionIssueRelDTO> versionIssueRelDTOList;
+    private List<VersionIssueRelVO> versionIssueRelVOList;
 
     @ApiModelProperty(value = "活跃冲刺")
     private SprintNameVO activeSprint;
@@ -86,10 +86,10 @@ public class IssueVO {
     private List<IssueAttachmentVO> issueAttachmentVOList;
 
     @ApiModelProperty(value = "子任务列表")
-    private List<IssueSubListDTO> subIssueDTOList;
+    private List<IssueSubListVO> subIssueDTOList;
 
     @ApiModelProperty(value = "子缺陷列表")
-    private List<IssueSubListDTO> subBugDTOList;
+    private List<IssueSubListVO> subBugDTOList;
 
     @ApiModelProperty(value = "问题版本号")
     private Long objectVersionNumber;
@@ -339,12 +339,12 @@ public class IssueVO {
         this.objectVersionNumber = objectVersionNumber;
     }
 
-    public List<VersionIssueRelDTO> getVersionIssueRelDTOList() {
-        return versionIssueRelDTOList;
+    public List<VersionIssueRelVO> getVersionIssueRelVOList() {
+        return versionIssueRelVOList;
     }
 
-    public void setVersionIssueRelDTOList(List<VersionIssueRelDTO> versionIssueRelDTOList) {
-        this.versionIssueRelDTOList = versionIssueRelDTOList;
+    public void setVersionIssueRelVOList(List<VersionIssueRelVO> versionIssueRelVOList) {
+        this.versionIssueRelVOList = versionIssueRelVOList;
     }
 
     public List<LabelIssueRelVO> getLabelIssueRelVOList() {
@@ -379,11 +379,11 @@ public class IssueVO {
         this.issueAttachmentVOList = issueAttachmentVOList;
     }
 
-    public List<IssueSubListDTO> getSubIssueDTOList() {
+    public List<IssueSubListVO> getSubIssueDTOList() {
         return subIssueDTOList;
     }
 
-    public void setSubIssueDTOList(List<IssueSubListDTO> subIssueDTOList) {
+    public void setSubIssueDTOList(List<IssueSubListVO> subIssueDTOList) {
         this.subIssueDTOList = subIssueDTOList;
     }
 
@@ -635,11 +635,11 @@ public class IssueVO {
         return relateIssueNum;
     }
 
-    public void setSubBugDTOList(List<IssueSubListDTO> subBugDTOList) {
+    public void setSubBugDTOList(List<IssueSubListVO> subBugDTOList) {
         this.subBugDTOList = subBugDTOList;
     }
 
-    public List<IssueSubListDTO> getSubBugDTOList() {
+    public List<IssueSubListVO> getSubBugDTOList() {
         return subBugDTOList;
     }
 

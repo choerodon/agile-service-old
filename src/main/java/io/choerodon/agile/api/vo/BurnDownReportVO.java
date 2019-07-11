@@ -16,7 +16,7 @@ public class BurnDownReportVO {
     private List<SprintBurnDownReportVO> sprintBurnDownReportVOS;
 
     @ApiModelProperty(value = "未完成的问题列表")
-    private List<IssueBurnDownReportDTO> incompleteIssues;
+    private List<IssueBurnDownReportVO> incompleteIssues;
 
     @ApiModelProperty(value = "史诗或版本的字段信息")
     private JSONObject jsonObject;
@@ -37,11 +37,11 @@ public class BurnDownReportVO {
         this.sprintBurnDownReportVOS = sprintBurnDownReportVOS;
     }
 
-    public List<IssueBurnDownReportDTO> getIncompleteIssues() {
+    public List<IssueBurnDownReportVO> getIncompleteIssues() {
         return incompleteIssues;
     }
 
-    public void setIncompleteIssues(List<IssueBurnDownReportDTO> incompleteIssues) {
+    public void setIncompleteIssues(List<IssueBurnDownReportVO> incompleteIssues) {
         this.incompleteIssues = incompleteIssues;
     }
 
