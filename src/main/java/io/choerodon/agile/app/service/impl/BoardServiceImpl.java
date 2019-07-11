@@ -174,8 +174,11 @@ public class BoardServiceImpl implements BoardService {
         }
         BoardValidator.checkUpdateBoard(projectId, boardVO);
         boardVO.setBoardId(boardId);
-        BoardE boardE = ConvertHelper.convert(boardVO, BoardE.class);
-        return ConvertHelper.convert(boardRepository.update(boardE), BoardVO.class);
+//        BoardE boardE = ConvertHelper.convert(boardVO, BoardE.class);
+        if (boardMapper.updateByPrimaryKeySelective(modelMapper.map(boardVO, BoardDTO.class)) != 1) {
+            throw new CommonException("error.board.update");
+        }
+        return modelMapper.map(boardMapper.selectByPrimaryKey(boardVO.getBoardId()), BoardVO.class);
     }
 
     @Override

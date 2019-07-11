@@ -45,6 +45,8 @@ public class AgileEventHandler {
     @Autowired
     private BoardColumnRepository boardColumnRepository;
     @Autowired
+    private BoardColumnService boardColumnService;
+    @Autowired
     private IssueStatusRepository issueStatusRepository;
     @Autowired
     private IssueRepository issueRepository;
@@ -155,7 +157,7 @@ public class AgileEventHandler {
         List<AddStatusWithProject> addStatusWithProjects = deployStateMachinePayload.getAddStatusWithProjects();
         //删除项目下的状态及与列的关联
         if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
+            boardColumnService.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
         }
         //增加项目下的状态
         if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
@@ -194,7 +196,7 @@ public class AgileEventHandler {
         });
         //删除项目下的状态及与列的关联
         if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
+            boardColumnService.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
         }
         issueFeignClient.updateDeployProgress(deployUpdateIssue.getOrganizationId(), deployUpdateIssue.getSchemeId(), 100);
         return message;
