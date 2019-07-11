@@ -207,8 +207,8 @@ public class IssueValidator {
         }
     }
 
-    public void verifyVersionIssueRelData(VersionIssueRelE versionIssueRelE) {
-        if (versionIssueRelE.getName() == null && versionIssueRelE.getVersionId() == null) {
+    public void verifyVersionIssueRelData(VersionIssueRelDTO versionIssueRelDTO) {
+        if (versionIssueRelDTO.getName() == null && versionIssueRelDTO.getVersionId() == null) {
             throw new CommonException("error.versionIssueRel.Name");
         }
     }
@@ -253,12 +253,12 @@ public class IssueValidator {
         return issueConvertDTO;
     }
 
-    public Boolean existVersionIssueRel(VersionIssueRelE versionIssueRelE) {
-        VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
-        versionIssueRelDTO.setVersionId(versionIssueRelE.getVersionId());
-        versionIssueRelDTO.setIssueId(versionIssueRelE.getIssueId());
-        versionIssueRelDTO.setRelationType(versionIssueRelE.getRelationType());
-        return versionIssueRelMapper.selectOne(versionIssueRelDTO) == null;
+    public Boolean existVersionIssueRel(VersionIssueRelDTO versionIssueRelDTO) {
+        VersionIssueRelDTO versionIssueRel = new VersionIssueRelDTO();
+        versionIssueRel.setVersionId(versionIssueRelDTO.getVersionId());
+        versionIssueRel.setIssueId(versionIssueRelDTO.getIssueId());
+        versionIssueRel.setRelationType(versionIssueRelDTO.getRelationType());
+        return versionIssueRelMapper.selectOne(versionIssueRel) == null;
     }
 
     public Boolean existComponentIssueRel(ComponentIssueRelDTO componentIssueRelDTO) {

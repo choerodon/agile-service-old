@@ -1,6 +1,5 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDTO;
 
 import java.util.List;
@@ -15,10 +14,10 @@ public interface VersionIssueRelService {
     /**
      * 添加一个
      *
-     * @param versionIssueRelE versionIssueRelE
-     * @return VersionIssueRelE
+     * @param versionIssueRelDTO versionIssueRelDTO
+     * @return VersionIssueRelDTO
      */
-    VersionIssueRelE create(VersionIssueRelE versionIssueRelE);
+    VersionIssueRelDTO create(VersionIssueRelDTO versionIssueRelDTO);
 
     /**
      * 根据issueId删除版本
@@ -31,10 +30,10 @@ public interface VersionIssueRelService {
     /**
      * 通过查询条件批量删除issue版本关联（不包含已归档的版本）
      *
-     * @param versionIssueRelE   versionIssueRelE
+     * @param versionIssueRelDTO versionIssueRelDTO
      * @return int
      */
-    int batchDeleteByIssueIdAndTypeArchivedExceptInfluence(VersionIssueRelE versionIssueRelE);
+    int batchDeleteByIssueIdAndTypeArchivedExceptInfluence(VersionIssueRelDTO versionIssueRelDTO);
 
     /**
      * 根据id删除

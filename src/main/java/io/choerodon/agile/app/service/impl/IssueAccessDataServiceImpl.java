@@ -7,10 +7,7 @@ import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.domain.service.IIssueService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
-import io.choerodon.agile.infra.dataobject.IssueDTO;
-import io.choerodon.agile.infra.dataobject.MoveIssueDTO;
-import io.choerodon.agile.infra.dataobject.StoryMapMoveIssueDO;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -86,8 +83,8 @@ public class IssueAccessDataServiceImpl implements IssueAccessDataService {
 
     @Override
     @DataLog(type = "batchToVersion", single = false)
-    public Boolean batchIssueToVersion(VersionIssueRelE versionIssueRelE) {
-        issueMapper.batchIssueToVersion(versionIssueRelE.getProjectId(), versionIssueRelE.getVersionId(), versionIssueRelE.getIssueIds(), versionIssueRelE.getCreationDate(), versionIssueRelE.getCreatedBy());
+    public Boolean batchIssueToVersion(VersionIssueRelDTO versionIssueRelDTO) {
+        issueMapper.batchIssueToVersion(versionIssueRelDTO.getProjectId(), versionIssueRelDTO.getVersionId(), versionIssueRelDTO.getIssueIds(), versionIssueRelDTO.getCreationDate(), versionIssueRelDTO.getCreatedBy());
         return true;
     }
 

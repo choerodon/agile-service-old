@@ -1,12 +1,16 @@
 package io.choerodon.agile.infra.dataobject;
 
 
+import io.choerodon.agile.domain.agile.entity.ProductVersionE;
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.entity.BaseDTO;
 
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author dinghuang123@gmail.com
@@ -14,6 +18,8 @@ import javax.validation.constraints.NotNull;
  */
 @Table(name = "agile_version_issue_rel")
 public class VersionIssueRelDTO extends BaseDTO{
+
+    private static final String STATUS_CODE_PLANNING = "version_planning";
 
     /**
      * version id
@@ -36,6 +42,12 @@ public class VersionIssueRelDTO extends BaseDTO{
     private String relationType;
 
     private Long projectId;
+
+    private Date creationDate;
+
+    private Long createdBy;
+
+    private List<Long> issueIds;
 
     public Long getVersionId() {
         return versionId;
@@ -86,8 +98,58 @@ public class VersionIssueRelDTO extends BaseDTO{
     }
 
     @Override
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    @Override
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    @Override
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public List<Long> getIssueIds() {
+        return issueIds;
+    }
+
+    public void setIssueIds(List<Long> issueIds) {
+        this.issueIds = issueIds;
+    }
+
+    @Override
     public String toString() {
         return StringUtil.getToString(this);
+    }
+
+    public ProductVersionDTO createProductVersionDTO() {
+        ProductVersionDTO productVersionDTO = new ProductVersionDTO();
+        productVersionDTO.setStatusCode(STATUS_CODE_PLANNING);
+        productVersionDTO.setName(this.name);
+        productVersionDTO.setProjectId(this.projectId);
+        return productVersionDTO;
+    }
+
+    public void createBatchDeleteVersionIssueRel(Long projectId, Long issueId, String relationType) {
+        this.projectId = projectId;
+        this.issueId = issueId;
+        this.relationType = relationType;
+    }
+
+    public void createBatchIssueToVersionDTO(Long projectId, Long versionId, List<Long> issueIds) {
+        this.projectId = projectId;
+        this.versionId = versionId;
+        this.issueIds = issueIds;
+        this.creationDate = new Date();
+        this.createdBy = DetailsHelper.getUserDetails().getUserId();
     }
 
 }

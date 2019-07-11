@@ -445,7 +445,7 @@ public class IssueServiceImpl implements IssueService {
             featureDTO.setIssueId(result.getIssueId());
             FeatureDTO res = featureMapper.selectOne(featureDTO);
             if (res != null) {
-                result.setFeatureVO(ConvertHelper.convert(res, FeatureVO.class));
+                result.setFeatureVO(modelMapper.map(res, FeatureVO.class));
             }
         }
         sendMsgUtil.sendMsgByIssueComplete(projectId, fieldList, result);
@@ -926,7 +926,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public void handleInitSubIssue(IssueConvertDTO subIssueConvertDTO, Long statusId, ProjectInfoE projectInfoE) {
-        IssueConvertDTO parentIssueConvertDTO = ConvertHelper.convert(issueMapper.queryIssueSprintNotClosed(subIssueConvertDTO.getProjectId(), subIssueConvertDTO.getParentIssueId()), IssueConvertDTO.class);
+        IssueConvertDTO parentIssueConvertDTO = modelMapper.map(issueMapper.queryIssueSprintNotClosed(subIssueConvertDTO.getProjectId(), subIssueConvertDTO.getParentIssueId()), IssueConvertDTO.class);
         //设置初始状态,跟随父类状态
         subIssueConvertDTO = parentIssueConvertDTO.initializationSubIssue(subIssueConvertDTO, statusId, projectInfoE);
         projectInfoService.updateIssueMaxNum(subIssueConvertDTO.getProjectId(), subIssueConvertDTO.getIssueNum());
@@ -940,9 +940,9 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueSearchVO> batchIssueToVersion(Long projectId, Long versionId, List<Long> issueIds) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
             productVersionValidator.judgeExist(projectId, versionId);
-            VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
-            versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
-            issueAccessDataService.batchIssueToVersion(versionIssueRelE);
+            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+            versionIssueRelDTO.createBatchIssueToVersionDTO(projectId, versionId, issueIds);
+            issueAccessDataService.batchIssueToVersion(versionIssueRelDTO);
         } else {
             issueAccessDataService.batchRemoveVersion(projectId, issueIds);
         }
@@ -958,9 +958,9 @@ public class IssueServiceImpl implements IssueService {
                 throw new CommonException("error.Issue.type.isNotIssueTest");
             }
             issueAccessDataService.batchRemoveVersionTest(projectId, issueIds);
-            VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
-            versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
-            issueAccessDataService.batchIssueToVersion(versionIssueRelE);
+            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+            versionIssueRelDTO.createBatchIssueToVersionDTO(projectId, versionId, issueIds);
+            issueAccessDataService.batchIssueToVersion(versionIssueRelDTO);
         }
     }
 
@@ -1411,12 +1411,12 @@ public class IssueServiceImpl implements IssueService {
         IssueDTO issueDTO = new IssueDTO();
         issueDTO.setProjectId(projectId);
         issueDTO.setIssueId(issueId);
-        return ConvertHelper.convert(issueMapper.selectOne(issueDTO), IssueConvertDTO.class);
+        return modelMapper.map(issueMapper.selectOne(issueDTO), IssueConvertDTO.class);
     }
 
     private void handleCreateLabelIssue(List<LabelIssueRelVO> labelIssueRelVOList, Long issueId) {
         if (labelIssueRelVOList != null && !labelIssueRelVOList.isEmpty()) {
-            List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<LabelIssueRelDTO>(){}.getType());
+            List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<List<LabelIssueRelDTO>>(){}.getType());
             labelIssueDTOList.forEach(labelIssueRelDTO -> {
                 labelIssueRelDTO.setIssueId(issueId);
                 handleLabelIssue(labelIssueRelDTO);
@@ -1426,7 +1426,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleCreateVersionIssueRel(List<VersionIssueRelVO> versionIssueRelVOList, Long projectId, Long issueId) {
         if (versionIssueRelVOList != null && !versionIssueRelVOList.isEmpty()) {
-            handleVersionIssueRel(ConvertHelper.convertList(versionIssueRelVOList, VersionIssueRelE.class), projectId, issueId);
+            handleVersionIssueRel(modelMapper.map(versionIssueRelVOList, new TypeToken<List<VersionIssueRelDTO>>(){}.getType()), projectId, issueId);
         }
     }
 
@@ -1446,36 +1446,36 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-    private void handleVersionIssueRel(List<VersionIssueRelE> versionIssueRelEList, Long projectId, Long issueId) {
-        versionIssueRelEList.forEach(versionIssueRelE -> {
-            versionIssueRelE.setIssueId(issueId);
-            versionIssueRelE.setProjectId(projectId);
-            versionIssueRelE.setRelationType(versionIssueRelE.getRelationType() == null ? "fix" : versionIssueRelE.getRelationType());
-            issueValidator.verifyVersionIssueRelData(versionIssueRelE);
-            if (versionIssueRelE.getName() != null && versionIssueRelE.getVersionId() == null) {
+    private void handleVersionIssueRel(List<VersionIssueRelDTO> versionIssueRelDTOList, Long projectId, Long issueId) {
+        versionIssueRelDTOList.forEach(versionIssueRel -> {
+            versionIssueRel.setIssueId(issueId);
+            versionIssueRel.setProjectId(projectId);
+            versionIssueRel.setRelationType(versionIssueRel.getRelationType() == null ? "fix" : versionIssueRel.getRelationType());
+            issueValidator.verifyVersionIssueRelData(versionIssueRel);
+            if (versionIssueRel.getName() != null && versionIssueRel.getVersionId() == null) {
                 //重名校验
-                ProductVersionE productVersionE = versionIssueRelE.createProductVersionE();
-                if (productVersionMapper.isRepeatName(productVersionE.getProjectId(), productVersionE.getName())) {
+                ProductVersionDTO productVersionDTO = versionIssueRel.createProductVersionDTO();
+                if (productVersionMapper.isRepeatName(productVersionDTO.getProjectId(), productVersionDTO.getName())) {
                     //已归档的版本id是null,不进行任何操作
-                    Long versionId = productVersionMapper.queryVersionIdByNameAndProjectId(productVersionE.getName(), productVersionE.getProjectId());
+                    Long versionId = productVersionMapper.queryVersionIdByNameAndProjectId(productVersionDTO.getName(), productVersionDTO.getProjectId());
                     if (versionId != null) {
-                        versionIssueRelE.setVersionId(versionId);
+                        productVersionDTO.setVersionId(versionId);
                     } else {
                         return;
                     }
                 } else {
-                    ProductVersionCreateVO productVersionCreateVO = issueAssembler.toTarget(productVersionE, ProductVersionCreateVO.class);
+                    ProductVersionCreateVO productVersionCreateVO = issueAssembler.toTarget(productVersionDTO, ProductVersionCreateVO.class);
                     ProductVersionDetailVO productVersionDetailVO = productVersionService.createVersion(projectId, productVersionCreateVO);
-                    versionIssueRelE.setVersionId(productVersionDetailVO.getVersionId());
+                    productVersionDTO.setVersionId(productVersionDetailVO.getVersionId());
                 }
             }
-            handleVersionIssueRelCreate(versionIssueRelE);
+            handleVersionIssueRelCreate(versionIssueRel);
         });
     }
 
-    private void handleVersionIssueRelCreate(VersionIssueRelE versionIssueRelE) {
-        if (issueValidator.existVersionIssueRel(versionIssueRelE)) {
-            versionIssueRelService.create(versionIssueRelE);
+    private void handleVersionIssueRelCreate(VersionIssueRelDTO versionIssueRelDTO) {
+        if (issueValidator.existVersionIssueRel(versionIssueRelDTO)) {
+            versionIssueRelService.create(versionIssueRelDTO);
         }
     }
 
@@ -1522,7 +1522,7 @@ public class IssueServiceImpl implements IssueService {
         if (ISSUE_MANAGER_TYPE.equals(issueComponentDTO.getDefaultAssigneeRole()) && issueComponentDTO.getManagerId() !=
                 null && issueComponentDTO.getManagerId() != 0) {
             //如果模块有选择模块负责人或者经办人的话，对应的issue的负责人要修改
-            IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
+            IssueConvertDTO issueConvertDTO = modelMapper.map(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
             Boolean condition = (issueConvertDTO.getAssigneeId() == null || issueConvertDTO.getAssigneeId() == 0) ||
                     (projectInfoE.getDefaultAssigneeType() != null);
             if (condition) {
@@ -1537,8 +1537,8 @@ public class IssueServiceImpl implements IssueService {
             if (!labelIssueRelVOList.isEmpty()) {
                 LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
                 labelIssueRelDTO.setIssueId(issueId);
-                List<LabelIssueRelDTO> originLabels = modelMapper.map(labelIssueRelMapper.select(labelIssueRelDTO), new TypeToken<LabelIssueRelDTO>(){}.getType());
-                List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<LabelIssueRelDTO>(){}.getType());
+                List<LabelIssueRelDTO> originLabels = modelMapper.map(labelIssueRelMapper.select(labelIssueRelDTO), new TypeToken<List<LabelIssueRelDTO>>(){}.getType());
+                List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<List<LabelIssueRelDTO>>(){}.getType());
                 List<LabelIssueRelDTO> labelIssueCreateList = labelIssueDTOList.stream().filter(labelIssueRel ->
                         labelIssueRel.getLabelId() != null).collect(Collectors.toList());
                 List<Long> curLabelIds = originLabels.stream().
@@ -1571,11 +1571,11 @@ public class IssueServiceImpl implements IssueService {
         if (versionIssueRelVOList != null && versionType != null) {
             if (!versionIssueRelVOList.isEmpty()) {
                 //归档状态的版本之间的关联不删除
-                List<VersionIssueRelE> versionIssueRelES = ConvertHelper.convertList(versionIssueRelVOList, VersionIssueRelE.class);
-                List<VersionIssueRelE> versionIssueRelCreate = versionIssueRelES.stream().filter(versionIssueRelE ->
-                        versionIssueRelE.getVersionId() != null).collect(Collectors.toList());
+                List<VersionIssueRelDTO> versionIssueRelDTOS = modelMapper.map(versionIssueRelVOList, new TypeToken<VersionIssueRelDTO>(){}.getType());
+                List<VersionIssueRelDTO> versionIssueRelCreate = versionIssueRelDTOS.stream().filter(versionIssueRel ->
+                        versionIssueRel.getVersionId() != null).collect(Collectors.toList());
                 List<Long> curVersionIds = versionIssueRelMapper.queryByIssueIdAndProjectIdNoArchivedExceptInfluence(projectId, issueId, versionType);
-                List<Long> createVersionIds = versionIssueRelCreate.stream().map(VersionIssueRelE::getVersionId).collect(Collectors.toList());
+                List<Long> createVersionIds = versionIssueRelCreate.stream().map(VersionIssueRelDTO::getVersionId).collect(Collectors.toList());
                 curVersionIds.forEach(id -> {
                     if (!createVersionIds.contains(id)) {
                         VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
@@ -1586,12 +1586,12 @@ public class IssueServiceImpl implements IssueService {
                         versionIssueRelService.delete(versionIssueRelDTO);
                     }
                 });
-                versionIssueRelES.forEach(rel -> rel.setRelationType(versionType));
-                handleVersionIssueRel(versionIssueRelES, projectId, issueId);
+                versionIssueRelDTOS.forEach(rel -> rel.setRelationType(versionType));
+                handleVersionIssueRel(versionIssueRelDTOS, projectId, issueId);
             } else {
-                VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
-                versionIssueRelE.createBatchDeleteVersionIssueRel(projectId, issueId, versionType);
-                versionIssueRelService.batchDeleteByIssueIdAndTypeArchivedExceptInfluence(versionIssueRelE);
+                VersionIssueRelDTO versionIssueRel = new VersionIssueRelDTO();
+                versionIssueRel.createBatchDeleteVersionIssueRel(projectId, issueId, versionType);
+                versionIssueRelService.batchDeleteByIssueIdAndTypeArchivedExceptInfluence(versionIssueRel);
             }
         }
 
@@ -1604,7 +1604,7 @@ public class IssueServiceImpl implements IssueService {
     private void handleUpdateComponentIssueRel(List<ComponentIssueRelVO> componentIssueRelVOList, Long projectId, Long issueId) {
         if (componentIssueRelVOList != null) {
             if (!componentIssueRelVOList.isEmpty()) {
-                List<ComponentIssueRelDTO> componentIssueRelDTOList = modelMapper.map(componentIssueRelVOList, new TypeToken<ComponentIssueRelDTO>(){}.getType());
+                List<ComponentIssueRelDTO> componentIssueRelDTOList = modelMapper.map(componentIssueRelVOList, new TypeToken<List<ComponentIssueRelDTO>>(){}.getType());
                 List<ComponentIssueRelDTO> componentIssueRelCreate = componentIssueRelDTOList.stream().filter(componentIssueRel ->
                         componentIssueRel.getComponentId() != null).collect(Collectors.toList());
                 List<Long> curComponentIds = getComponentIssueRel(projectId, issueId).stream().
@@ -1745,7 +1745,7 @@ public class IssueServiceImpl implements IssueService {
         String[] fieldNames = fieldMap.get(FIELD_NAMES);
         List<Long> exportIssueIds = issueMapper.selectExportIssueIdsInProgram(programId, searchVO);
         List<FeatureExportDTO> featureExportDTOList = issueMapper.selectExportIssuesInProgram(programId, exportIssueIds);
-        List<FeatureExportVO> featureExportVOList = (featureExportDTOList != null && !featureExportDTOList.isEmpty() ? ConvertHelper.convertList(featureExportDTOList, FeatureExportVO.class) : null);
+        List<FeatureExportVO> featureExportVOList = (featureExportDTOList != null && !featureExportDTOList.isEmpty() ? modelMapper.map(featureExportDTOList, new TypeToken<List<FeatureExportVO>>(){}.getType()) : null);
         if (featureExportVOList != null && !featureExportVOList.isEmpty()) {
             Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
@@ -2019,7 +2019,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueSubVO transformedSubTask(Long projectId, Long organizationId, IssueTransformSubTask issueTransformSubTask) {
-        IssueConvertDTO issueConvertDTO = ConvertHelper.convert(queryIssueByIssueIdAndProjectId(projectId, issueTransformSubTask.getIssueId()), IssueConvertDTO.class);
+        IssueConvertDTO issueConvertDTO = modelMapper.map(queryIssueByIssueIdAndProjectId(projectId, issueTransformSubTask.getIssueId()), IssueConvertDTO.class);
         if (issueConvertDTO != null) {
             if (!issueConvertDTO.getTypeCode().equals(SUB_TASK)) {
                 issueConvertDTO.setObjectVersionNumber(issueTransformSubTask.getObjectVersionNumber());
@@ -2239,7 +2239,7 @@ public class IssueServiceImpl implements IssueService {
         IssueDTO issueDTO = new IssueDTO();
         issueDTO.setIssueId(epicSequenceVO.getEpicId());
         issueDTO.setProjectId(projectId);
-        IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectOne(issueDTO), IssueConvertDTO.class);
+        IssueConvertDTO issueConvertDTO = modelMapper.map(issueMapper.selectOne(issueDTO), IssueConvertDTO.class);
         if (issueConvertDTO == null) {
             throw new CommonException("error.issue.notFound");
         } else {
@@ -2476,8 +2476,8 @@ public class IssueServiceImpl implements IssueService {
 
         ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
         projectInfoDTO.setProjectId(projectId);
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoE.class);
-        if (projectInfoE == null) {
+        ProjectInfoDTO projectInfo = modelMapper.map(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoDTO.class);
+        if (projectInfo == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }
         issueDOList.forEach(issueDetailDTO -> {
@@ -2491,9 +2491,9 @@ public class IssueServiceImpl implements IssueService {
             handleCreateCopyComponentIssueRel(issueDetailDTO.getComponentIssueRelDTOList(), issueId);
             issueIds.add(issueId);
         });
-        VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
-        versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
-        issueAccessDataService.batchIssueToVersion(versionIssueRelE);
+        VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+        versionIssueRelDTO.createBatchIssueToVersionDTO(projectId, versionId, issueIds);
+        issueAccessDataService.batchIssueToVersion(versionIssueRelDTO);
         return issueIds;
     }
 

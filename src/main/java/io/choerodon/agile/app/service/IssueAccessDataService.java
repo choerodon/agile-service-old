@@ -3,10 +3,7 @@ package io.choerodon.agile.app.service;
 import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
 import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
-import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
-import io.choerodon.agile.infra.dataobject.IssueDTO;
-import io.choerodon.agile.infra.dataobject.MoveIssueDTO;
-import io.choerodon.agile.infra.dataobject.StoryMapMoveIssueDO;
+import io.choerodon.agile.infra.dataobject.*;
 
 import java.util.Date;
 import java.util.List;
@@ -41,7 +38,7 @@ public interface IssueAccessDataService {
 
     Boolean batchRemoveFromSprint(Long projectId, Long sprintId);
 
-    Boolean batchIssueToVersion(VersionIssueRelE versionIssueRelE);
+    Boolean batchIssueToVersion(VersionIssueRelDTO versionIssueRelDTO);
 
     Boolean batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds);
 

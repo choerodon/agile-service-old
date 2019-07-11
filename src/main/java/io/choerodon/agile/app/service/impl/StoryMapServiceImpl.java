@@ -159,9 +159,9 @@ public class StoryMapServiceImpl implements StoryMapService {
             return;
         }
         if (!Objects.equals(versionId, 0L)) {
-            VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
-            versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
-            issueAccessDataService.batchIssueToVersion(versionIssueRelE);
+            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
+            versionIssueRelDTO.createBatchIssueToVersionDTO(projectId, versionId, issueIds);
+            issueAccessDataService.batchIssueToVersion(versionIssueRelDTO);
         }
     }
 

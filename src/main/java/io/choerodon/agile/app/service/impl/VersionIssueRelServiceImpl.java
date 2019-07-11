@@ -1,9 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.infra.common.annotation.DataLog;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.app.service.VersionIssueRelService;
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDTO;
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper;
@@ -27,8 +25,7 @@ public class VersionIssueRelServiceImpl implements VersionIssueRelService {
 
     @Override
     @DataLog(type = "versionCreate")
-    public VersionIssueRelE create(VersionIssueRelE versionIssueRelE) {
-        VersionIssueRelDTO versionIssueRelDTO = ConvertHelper.convert(versionIssueRelE, VersionIssueRelDTO.class);
+    public VersionIssueRelDTO create(VersionIssueRelDTO versionIssueRelDTO) {
         if (versionIssueRelMapper.insert(versionIssueRelDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
@@ -37,7 +34,7 @@ public class VersionIssueRelServiceImpl implements VersionIssueRelService {
         query.setIssueId(versionIssueRelDTO.getIssueId());
         query.setProjectId(versionIssueRelDTO.getProjectId());
         query.setRelationType(versionIssueRelDTO.getRelationType());
-        return ConvertHelper.convert(versionIssueRelMapper.selectOne(query), VersionIssueRelE.class);
+        return versionIssueRelMapper.selectOne(query);
     }
 
     @Override
@@ -49,9 +46,9 @@ public class VersionIssueRelServiceImpl implements VersionIssueRelService {
 
     @Override
     @DataLog(type = "batchDeleteVersion", single = false)
-    public int batchDeleteByIssueIdAndTypeArchivedExceptInfluence(VersionIssueRelE versionIssueRelE) {
-        return versionIssueRelMapper.batchDeleteByIssueIdAndTypeArchivedExceptInfluence(versionIssueRelE.getProjectId(),
-                versionIssueRelE.getIssueId(), versionIssueRelE.getRelationType());
+    public int batchDeleteByIssueIdAndTypeArchivedExceptInfluence(VersionIssueRelDTO versionIssueRelDTO) {
+        return versionIssueRelMapper.batchDeleteByIssueIdAndTypeArchivedExceptInfluence(versionIssueRelDTO.getProjectId(),
+                versionIssueRelDTO.getIssueId(), versionIssueRelDTO.getRelationType());
     }
 
     @Override
