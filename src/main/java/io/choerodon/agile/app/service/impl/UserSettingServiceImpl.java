@@ -1,10 +1,8 @@
-package io.choerodon.agile.infra.repository.impl;
+package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.domain.agile.entity.UserSettingE;
-import io.choerodon.agile.infra.repository.UserSettingRepository;
+import io.choerodon.agile.app.service.UserSettingService;
 import io.choerodon.agile.infra.dataobject.UserSettingDTO;
 import io.choerodon.agile.infra.mapper.UserSettingMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,24 +12,22 @@ import org.springframework.stereotype.Component;
  * @since 2018/7/4
  */
 @Component
-public class UserSettingRepositoryImpl implements UserSettingRepository {
+public class UserSettingServiceImpl implements UserSettingService {
 
     @Autowired
     private UserSettingMapper userSettingMapper;
 
     @Override
-    public UserSettingE create(UserSettingE userSettingE) {
-        UserSettingDTO userSettingDTO = ConvertHelper.convert(userSettingE, UserSettingDTO.class);
+    public UserSettingDTO create(UserSettingDTO userSettingDTO) {
         int insert = userSettingMapper.insert(userSettingDTO);
         if (insert != 1) {
             throw new CommonException("error.userSetting.create");
         }
-        return ConvertHelper.convert(userSettingMapper.selectByPrimaryKey(userSettingDTO.getSettingId()), UserSettingE.class);
+        return userSettingMapper.selectByPrimaryKey(userSettingDTO.getSettingId());
     }
 
     @Override
-    public UserSettingE update(UserSettingE userSettingE) {
-        UserSettingDTO userSettingDTO = ConvertHelper.convert(userSettingE, UserSettingDTO.class);
+    public UserSettingDTO update(UserSettingDTO userSettingDTO) {
         if (userSettingMapper.selectByPrimaryKey(userSettingDTO) == null) {
             throw new CommonException("error.userSetting.notFound");
         }
@@ -39,7 +35,7 @@ public class UserSettingRepositoryImpl implements UserSettingRepository {
         if (update != 1) {
             throw new CommonException("error.userSetting.update");
         }
-        return ConvertHelper.convert(userSettingMapper.selectByPrimaryKey(userSettingDTO.getSettingId()), UserSettingE.class);
+        return userSettingMapper.selectByPrimaryKey(userSettingDTO.getSettingId());
     }
 
     @Override

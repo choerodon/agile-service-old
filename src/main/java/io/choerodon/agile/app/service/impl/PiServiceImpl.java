@@ -26,6 +26,7 @@ import io.choerodon.agile.infra.repository.SprintRepository;
 
 import com.github.pagehelper.PageInfo;
 
+import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -244,14 +245,14 @@ public class PiServiceImpl implements PiService {
         return interationCount * interationWeeks * 7 + ipWeeks * 7;
     }
 
-    private void setPiStartAndEndDate(PiE piE, Long piWorkDays, Date startDate) {
+    private void setPiStartAndEndDate(PiDTO piDTO, Long piWorkDays, Date startDate) {
         startDate = formatDate(startDate);
         Date endDate = getSpecifyTimeByOneTime(startDate, piWorkDays.intValue());
-        piE.setStartDate(startDate);
-        piE.setEndDate(endDate);
+        piDTO.setStartDate(startDate);
+        piDTO.setEndDate(endDate);
     }
 
-    private void createSprintTemplate(Long programId, PiE piRes, ArtDTO artDTO, List<Long> sprintIds) {
+    private void createSprintTemplate(Long programId, PiDTO piRes, ArtDTO artDTO, List<Long> sprintIds) {
         Date startDate = piRes.getStartDate();
         Long interationCount = artDTO.getInterationCount();
         Long interationWeeks = artDTO.getInterationWeeks();
@@ -270,18 +271,18 @@ public class PiServiceImpl implements PiService {
         Long piWorkDays = getPiWorkDays(artDTO);
         List<Long> sprintIds = new ArrayList<>();
         for (int i = 0; i < artDTO.getPiCount(); i++) {
-            PiE piE = new PiE();
-            piE.setCode(artDTO.getPiCodePrefix());
-            piE.setName(piCodeNumber.toString());
+            PiDTO piDTO = new PiDTO();
+            piDTO.setCode(artDTO.getPiCodePrefix());
+            piDTO.setName(piCodeNumber.toString());
             piCodeNumber++;
-            piE.setArtId(artDTO.getId());
-            piE.setStatusCode(PI_TODO);
-            piE.setProgramId(programId);
-            setPiStartAndEndDate(piE, piWorkDays, startDate);
-            PiE piRes = piRepository.create(piE);
+            piDTO.setArtId(artDTO.getId());
+            piDTO.setStatusCode(PI_TODO);
+            piDTO.setProgramId(programId);
+            setPiStartAndEndDate(piDTO, piWorkDays, startDate);
+            PiDTO piRes = createBase(piDTO);
             // create sprint template
             createSprintTemplate(programId, piRes, artDTO, sprintIds);
-            startDate = piE.getEndDate();
+            startDate = piDTO.getEndDate();
         }
         sprintService.updateSprintNameByBatch(programId, sprintIds);
         updateArtPiCodeNumber(programId, artDTO.getId(), piCodeNumber, artDTO.getObjectVersionNumber());
@@ -498,18 +499,18 @@ public class PiServiceImpl implements PiService {
             Long piWorkDays = getPiWorkDays(artDTO);
             List<Long> sprintIds = new ArrayList<>();
             for (int i = 0; i < artPiCount - restPiCount; i++) {
-                PiE piE = new PiE();
-                piE.setCode(artDTO.getPiCodePrefix());
-                piE.setName(piCodeNumber.toString());
+                PiDTO piDTO = new PiDTO();
+                piDTO.setCode(artDTO.getPiCodePrefix());
+                piDTO.setName(piCodeNumber.toString());
                 piCodeNumber++;
-                piE.setStatusCode(PI_TODO);
-                piE.setArtId(artDTO.getId());
-                piE.setProgramId(programId);
-                setPiStartAndEndDate(piE, piWorkDays, startDate);
-                PiE piRes = piRepository.create(piE);
+                piDTO.setStatusCode(PI_TODO);
+                piDTO.setArtId(artDTO.getId());
+                piDTO.setProgramId(programId);
+                setPiStartAndEndDate(piDTO, piWorkDays, startDate);
+                PiDTO piRes = createBase(piDTO);
                 // create sprint template
                 createSprintTemplate(programId, piRes, artDTO, sprintIds);
-                startDate = piE.getEndDate();
+                startDate = piDTO.getEndDate();
             }
             sprintService.updateSprintNameByBatch(programId, sprintIds);
             updateArtPiCodeNumber(programId, artDTO.getId(), piCodeNumber, artDTO.getObjectVersionNumber());
@@ -686,4 +687,21 @@ public class PiServiceImpl implements PiService {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public PiDTO createBase(PiDTO piDTO) {
+        if (piMapper.insert(piDTO) != 1) {
+            throw new CommonException("error.pi.insert");
+        }
+        return piMapper.selectByPrimaryKey(piDTO.getId());
+    }
+
+    @Override
+    public PiDTO updateBySelectiveBase(PiDTO piDTO) {
+        if (piMapper.updateByPrimaryKeySelective(piDTO) != 1) {
+            throw new CommonException("error.pi.update");
+        }
+        return piMapper.selectByPrimaryKey(piDTO.getId());
+    }
+
 }

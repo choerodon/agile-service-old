@@ -122,16 +122,16 @@ public class ArtServiceImpl implements ArtService {
         }
         List<PiDTO> piDTOList = piMapper.selectUnDonePiDOList(programId, artVO.getId());
         if (piDTOList != null) {
-            piDTOList.forEach(piDO -> {
+            piDTOList.forEach(pi -> {
                 // deal uncomplete feature to target pi
-                piService.dealUnCompleteFeature(programId, piDO.getId(), 0L);
+                piService.dealUnCompleteFeature(programId, pi.getId(), 0L);
                 // deal projects' sprints complete
-                piService.completeProjectsSprints(programId, piDO.getId(), onlySelectEnable);
+                piService.completeProjectsSprints(programId, pi.getId(), onlySelectEnable);
                 // update pi status: done
-                PiE update = new PiE(programId, piDO.getId(), PI_DONE, piDO.getObjectVersionNumber());
+                PiDTO update = new PiDTO(programId, pi.getId(), PI_DONE, pi.getObjectVersionNumber());
                 update.setActualStartDate(new Date());
                 update.setActualEndDate(new Date());
-                piRepository.updateBySelective(update);
+                piService.updateBySelectiveBase(update);
             });
         }
         return artMapper.selectByPrimaryKey(artVO.getId());

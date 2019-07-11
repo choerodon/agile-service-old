@@ -1,6 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.entity.BaseDTO;
 
 import javax.persistence.*;
@@ -93,6 +94,11 @@ public class UserSettingDTO extends BaseDTO {
 
     public void setStorymapSwimlaneCode(String storymapSwimlaneCode) {
         this.storymapSwimlaneCode = storymapSwimlaneCode;
+    }
+
+    public void initUserSetting(Long projectId) {
+        this.projectId = projectId;
+        this.userId = DetailsHelper.getUserDetails().getUserId();
     }
 
     @Override

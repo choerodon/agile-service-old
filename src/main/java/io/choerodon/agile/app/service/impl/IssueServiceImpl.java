@@ -156,7 +156,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private RedisUtil redisUtil;
     @Autowired
-    private UserSettingRepository userSettingRepository;
+    private UserSettingService userSettingService;
     @Autowired
     private UserSettingMapper userSettingMapper;
     @Autowired
@@ -283,6 +283,8 @@ public class IssueServiceImpl implements IssueService {
     private IssueLinkValidator issueLinkValidator;
     @Autowired
     private PiMapper piMapper;
+    @Autowired
+    private ProjectInfoService projectInfoService;
 
 
     @Override
@@ -316,7 +318,7 @@ public class IssueServiceImpl implements IssueService {
         }
         //初始化创建issue设置issue编号、项目默认设置
         issueConvertDTO.initializationIssue(statusId, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueNum());
+        projectInfoService.updateIssueMaxNum(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueNum());
         //初始化排序
         if (issueConvertDTO.isIssueRank()) {
             calculationRank(issueConvertDTO.getProjectId(), issueConvertDTO);
@@ -928,7 +930,7 @@ public class IssueServiceImpl implements IssueService {
         IssueConvertDTO parentIssueConvertDTO = ConvertHelper.convert(issueMapper.queryIssueSprintNotClosed(subIssueConvertDTO.getProjectId(), subIssueConvertDTO.getParentIssueId()), IssueConvertDTO.class);
         //设置初始状态,跟随父类状态
         subIssueConvertDTO = parentIssueConvertDTO.initializationSubIssue(subIssueConvertDTO, statusId, projectInfoE);
-        projectInfoRepository.updateIssueMaxNum(subIssueConvertDTO.getProjectId(), subIssueConvertDTO.getIssueNum());
+        projectInfoService.updateIssueMaxNum(subIssueConvertDTO.getProjectId(), subIssueConvertDTO.getIssueNum());
         //初始化排序
         if (subIssueConvertDTO.isIssueRank()) {
             calculationRank(subIssueConvertDTO.getProjectId(), subIssueConvertDTO);
@@ -2366,10 +2368,10 @@ public class IssueServiceImpl implements IssueService {
             UserSettingDTO query = userSettingMapper.selectOne(userSettingDTO);
             if (query == null) {
                 userSettingDTO.setStorymapSwimlaneCode(STORYMAP_TYPE_NONE);
-                userSettingRepository.create(ConvertHelper.convert(userSettingDTO, UserSettingE.class));
+                userSettingService.create(userSettingDTO);
             } else if (!query.getStorymapSwimlaneCode().equals(type)) {
                 query.setStorymapSwimlaneCode(type);
-                userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
+                userSettingService.update(query);
             }
         }
     }
@@ -2436,14 +2438,14 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public String querySwimLaneCode(Long projectId) {
-        UserSettingE userSettingE = new UserSettingE();
-        userSettingE.initUserSetting(projectId);
-        userSettingE.setTypeCode(STORYMAP);
-        UserSettingDTO query = userSettingMapper.selectOne(ConvertHelper.convert(userSettingE, UserSettingDTO.class));
+        UserSettingDTO userSettingDTO = new UserSettingDTO();
+        userSettingDTO.initUserSetting(projectId);
+        userSettingDTO.setTypeCode(STORYMAP);
+        UserSettingDTO query = userSettingMapper.selectOne(userSettingDTO);
         String result;
         if (query == null) {
-            userSettingE.setStorymapSwimlaneCode("none");
-            result = userSettingRepository.create(userSettingE).getStorymapSwimlaneCode();
+            userSettingDTO.setStorymapSwimlaneCode("none");
+            result = userSettingService.create(userSettingDTO).getStorymapSwimlaneCode();
         } else {
             result = query.getStorymapSwimlaneCode();
         }
@@ -2483,7 +2485,7 @@ public class IssueServiceImpl implements IssueService {
             IssueConvertDTO issueConvertDTO = issueAssembler.toTarget(issueDetailDTO, IssueConvertDTO.class);
             //初始化创建issue设置issue编号、项目默认设置
             issueConvertDTO.initializationIssueByCopy(initStatusId);
-            projectInfoRepository.updateIssueMaxNum(projectId, issueConvertDTO.getIssueNum());
+            projectInfoService.updateIssueMaxNum(projectId, issueConvertDTO.getIssueNum());
             issueConvertDTO.setApplyType(SchemeApplyType.TEST);
             Long issueId = issueAccessDataService.create(issueConvertDTO).getIssueId();
             handleCreateCopyLabelIssueRel(issueDetailDTO.getLabelIssueRelDTOList(), issueId);

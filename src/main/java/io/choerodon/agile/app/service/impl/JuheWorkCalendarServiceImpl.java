@@ -38,6 +38,7 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
     private static final String ERROR_CODE = "error_code";
     private static final String URL = "http://v.juhe.cn/calendar/month";
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36";
+    private static final String INSERT_ERROR = "error.WorkCalendarHolidayRef.create";
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WorkCalendarHolidayRefJobs.class);
@@ -84,11 +85,14 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
     }
 
     private void batchCreateWorkCalendarHolidayRef(int y) {
-        getRestDayByYear(y).forEach(workCalendarHolidayRefDO -> {
+        getRestDayByYear(y).forEach(workCalendarHolidayRef -> {
             WorkCalendarHolidayRefDTO query = new WorkCalendarHolidayRefDTO();
-            query.setHoliday(workCalendarHolidayRefDO.getHoliday());
+            query.setHoliday(workCalendarHolidayRef.getHoliday());
             if (workCalendarHolidayRefMapper.selectOne(query) == null) {
-                workCalendarHolidayRefRepository.create(workCalendarHolidayRefDO);
+//                workCalendarHolidayRefRepository.create(workCalendarHolidayRef);
+                if (workCalendarHolidayRefMapper.insert(workCalendarHolidayRef) != 1) {
+                    throw new CommonException(INSERT_ERROR);
+                }
             }
         });
     }

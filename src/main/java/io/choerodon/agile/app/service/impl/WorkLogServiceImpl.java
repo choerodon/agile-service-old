@@ -116,7 +116,7 @@ public class WorkLogServiceImpl implements WorkLogService {
             }
         }
 //        workLogE = workLogRepository.create(workLogE);
-        WorkLogDTO res = create(modelMapper.map(workLogVO, WorkLogDTO.class));
+        WorkLogDTO res = createBase(modelMapper.map(workLogVO, WorkLogDTO.class));
         return queryWorkLogById(res.getProjectId(), res.getLogId());
     }
 
@@ -124,13 +124,13 @@ public class WorkLogServiceImpl implements WorkLogService {
     public WorkLogVO updateWorkLog(Long projectId, Long logId, WorkLogVO workLogVO) {
         WorkLogValidator.checkUpdateWorkLog(workLogVO);
         workLogVO.setProjectId(projectId);
-        WorkLogDTO res = update(modelMapper.map(workLogVO, WorkLogDTO.class));
+        WorkLogDTO res = updateBase(modelMapper.map(workLogVO, WorkLogDTO.class));
         return queryWorkLogById(res.getProjectId(), res.getLogId());
     }
 
     @Override
     public void deleteWorkLog(Long projectId, Long logId) {
-        delete(projectId, logId);
+        deleteBase(projectId, logId);
     }
 
     @Override
@@ -157,7 +157,7 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     @DataLog(type = "createWorkLog")
-    public WorkLogDTO create(WorkLogDTO workLogDTO) {
+    public WorkLogDTO createBase(WorkLogDTO workLogDTO) {
         if (workLogMapper.insert(workLogDTO) != 1) {
             throw new CommonException("error.workLog.insert");
         }
@@ -165,7 +165,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     }
 
     @Override
-    public WorkLogDTO update(WorkLogDTO workLogDTO) {
+    public WorkLogDTO updateBase(WorkLogDTO workLogDTO) {
         if (workLogMapper.updateByPrimaryKeySelective(workLogDTO) != 1) {
             throw new CommonException("error.workLog.update");
         }
@@ -174,7 +174,7 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     @DataLog(type = "deleteWorkLog")
-    public void delete(Long projectId,Long logId) {
+    public void deleteBase(Long projectId,Long logId) {
         WorkLogDTO query = new WorkLogDTO();
         query.setProjectId(projectId);
         query.setLogId(logId);

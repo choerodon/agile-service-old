@@ -9,7 +9,6 @@ import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.RankService;
 import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.domain.agile.entity.FeatureE;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.domain.agile.entity.PiFeatureE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
@@ -29,7 +28,7 @@ import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.agile.infra.mapper.RankMapper;
 import io.choerodon.agile.app.service.FeatureService;
 import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.PiFeatureRepository;
+import io.choerodon.agile.app.service.PiFeatureService;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -100,7 +99,7 @@ public class StateMachineServiceImpl implements StateMachineService {
     @Autowired
     private FeatureService featureService;
     @Autowired
-    private PiFeatureRepository piFeatureRepository;
+    private PiFeatureService piFeatureService;
     @Autowired
     private UserFeignClient userFeignClient;
     @Autowired
@@ -204,7 +203,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             }
             featureService.create(modelMapper.map(featureVO, FeatureDTO.class));
             if (issueCreateVO.getPiId() != null && issueCreateVO.getPiId() != 0L) {
-                piFeatureRepository.create(new PiFeatureE(issueId, issueCreateVO.getPiId(), projectId));
+                piFeatureService.create(new PiFeatureDTO(issueId, issueCreateVO.getPiId(), projectId));
             }
             initRank(issueCreateVO, issueId, "feature");
         }

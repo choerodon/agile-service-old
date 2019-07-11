@@ -22,9 +22,9 @@ public interface WorkLogService {
 
     List<WorkLogVO> queryWorkLogListByIssueId(Long projectId, Long issueId);
 
-    WorkLogDTO create(WorkLogDTO workLogDTO);
+    WorkLogDTO createBase(WorkLogDTO workLogDTO);
 
-    WorkLogDTO update(WorkLogDTO workLogDTO);
+    WorkLogDTO updateBase(WorkLogDTO workLogDTO);
 
-    void delete(Long projectId,Long logId);
+    void deleteBase(Long projectId,Long logId);
 }

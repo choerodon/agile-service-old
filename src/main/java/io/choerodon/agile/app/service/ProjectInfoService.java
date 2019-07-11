@@ -50,4 +50,13 @@ public interface ProjectInfoService {
      * @return
      */
     List<ProjectRelationshipVO> queryProgramTeamInfo(Long projectId);
+
+    /**
+     * 根据projectId更新issueMaxNum
+     *
+     * @param projectId   projectId
+     * @param issueMaxNum issueMaxNum
+     * @return int
+     */
+    void updateIssueMaxNum(Long projectId, String issueMaxNum);
 }

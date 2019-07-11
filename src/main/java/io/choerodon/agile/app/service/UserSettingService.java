@@ -1,28 +1,28 @@
-package io.choerodon.agile.infra.repository;
+package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.domain.agile.entity.UserSettingE;
+import io.choerodon.agile.infra.dataobject.UserSettingDTO;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/7/4
  */
-public interface UserSettingRepository {
+public interface UserSettingService {
 
     /**
      * 创建
      *
-     * @param userSettingE userSettingE
-     * @return UserSettingE
+     * @param userSettingDTO userSettingDTO
+     * @return UserSettingDTO
      */
-    UserSettingE create(UserSettingE userSettingE);
+    UserSettingDTO create(UserSettingDTO userSettingDTO);
 
     /**
      * 更新
      *
-     * @param userSettingE userSettingE
-     * @return UserSettingE
+     * @param userSettingDTO userSettingDTO
+     * @return UserSettingDTO
      */
-    UserSettingE update(UserSettingE userSettingE);
+    UserSettingDTO update(UserSettingDTO userSettingDTO);
 
     /**
      * 更新用户其他板默认的为非默认

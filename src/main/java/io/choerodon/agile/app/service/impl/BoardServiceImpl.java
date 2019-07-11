@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.BoardValidator;
 import io.choerodon.agile.app.service.*;
-import io.choerodon.agile.domain.agile.entity.*;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
@@ -94,7 +93,7 @@ public class BoardServiceImpl implements BoardService {
     private UserSettingMapper userSettingMapper;
 
     @Autowired
-    private UserSettingRepository userSettingRepository;
+    private UserSettingService userSettingService;
 
     @Autowired
     private DateUtil dateUtil;
@@ -121,7 +120,7 @@ public class BoardServiceImpl implements BoardService {
     private PiMapper piMapper;
 
     @Autowired
-    private PiFeatureRepository piFeatureRepository;
+    private PiFeatureService piFeatureService;
 
     @Autowired
     private PiFeatureMapper piFeatureMapper;
@@ -469,16 +468,16 @@ public class BoardServiceImpl implements BoardService {
         if (query == null) {
             userSettingDTO.setDefaultBoard(true);
             userSettingDTO.setSwimlaneBasedCode("swimlane_none");
-//            userSettingRepository.create(ConvertHelper.convert(userSettingDTO, UserSettingE.class));
+//            userSettingService.create(ConvertHelper.convert(userSettingDTO, UserSettingE.class));
             int insert = userSettingMapper.insert(userSettingDTO);
             if (insert != 1) {
                 throw new CommonException("error.userSetting.create");
             }
-//            userSettingRepository.updateOtherBoardNoDefault(boardId, projectId, userId);
+//            userSettingService.updateOtherBoardNoDefault(boardId, projectId, userId);
             userSettingMapper.updateOtherBoardNoDefault(boardId,projectId,userId);
         } else if (!query.getDefaultBoard()) {
             query.setDefaultBoard(true);
-//            userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
+//            userSettingService.update(ConvertHelper.convert(query, UserSettingE.class));
             if (userSettingMapper.selectByPrimaryKey(query) == null) {
                 throw new CommonException("error.userSetting.notFound");
             }
@@ -486,7 +485,7 @@ public class BoardServiceImpl implements BoardService {
             if (update != 1) {
                 throw new CommonException("error.userSetting.update");
             }
-//            userSettingRepository.updateOtherBoardNoDefault(boardId, projectId, userId);
+//            userSettingService.updateOtherBoardNoDefault(boardId, projectId, userId);
             userSettingMapper.updateOtherBoardNoDefault(boardId,projectId,userId);
         }
     }
@@ -633,7 +632,7 @@ public class BoardServiceImpl implements BoardService {
             userSetting.setUserId(DetailsHelper.getUserDetails().getUserId());
             userSetting.setSwimlaneBasedCode("swimlane_none");
             userSetting.setDefaultBoard(false);
-//            return ConvertHelper.convert(userSettingRepository.create(userSettingE), UserSettingVO.class);
+//            return ConvertHelper.convert(userSettingService.create(userSettingE), UserSettingVO.class);
             int insert = userSettingMapper.insert(userSettingDTO);
             if (insert != 1) {
                 throw new CommonException("error.userSetting.create");
@@ -648,21 +647,21 @@ public class BoardServiceImpl implements BoardService {
     public UserSettingVO updateUserSettingBoard(Long projectId, Long boardId, String swimlaneBasedCode) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         Long userId = customUserDetails.getUserId();
-        UserSettingE userSettingE = ConvertHelper.convert(queryUserSettingBoardByBoardId(projectId, boardId, userId), UserSettingE.class);
-        if (userSettingE == null) {
-            userSettingE = new UserSettingE();
-            userSettingE.setDefaultBoard(false);
-            userSettingE.setTypeCode(BOARD);
-            userSettingE.setProjectId(projectId);
-            userSettingE.setBoardId(boardId);
-            userSettingE.setUserId(userId);
-            userSettingE.setSwimlaneBasedCode(swimlaneBasedCode);
-            userSettingE = userSettingRepository.create(userSettingE);
+        UserSettingDTO userSettingDTO = modelMapper.map(queryUserSettingBoardByBoardId(projectId, boardId, userId), UserSettingDTO.class);
+        if (userSettingDTO == null) {
+            userSettingDTO = new UserSettingDTO();
+            userSettingDTO.setDefaultBoard(false);
+            userSettingDTO.setTypeCode(BOARD);
+            userSettingDTO.setProjectId(projectId);
+            userSettingDTO.setBoardId(boardId);
+            userSettingDTO.setUserId(userId);
+            userSettingDTO.setSwimlaneBasedCode(swimlaneBasedCode);
+            userSettingDTO = userSettingService.create(userSettingDTO);
         } else {
-            userSettingE.setSwimlaneBasedCode(swimlaneBasedCode);
-            userSettingE = userSettingRepository.update(userSettingE);
+            userSettingDTO.setSwimlaneBasedCode(swimlaneBasedCode);
+            userSettingDTO = userSettingService.update(userSettingDTO);
         }
-        return ConvertHelper.convert(userSettingE, UserSettingVO.class);
+        return modelMapper.map(userSettingDTO, UserSettingVO.class);
     }
 
     private UserSettingDTO queryUserSettingBoardByBoardId(Long projectId, Long boardId, Long userId) {
