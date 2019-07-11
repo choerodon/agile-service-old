@@ -182,9 +182,9 @@ public class DataLogAspect {
     }
 
     /**
-     * 定义拦截规则：拦截Spring管理的后缀为RepositoryImpl的bean中带有@DataLog注解的方法。
+     * 定义拦截规则：拦截Spring管理的后缀为ServiceImpl的bean中带有@DataLog注解的方法。
      */
-    @Pointcut("bean(*RepositoryImpl) && @annotation(io.choerodon.agile.infra.common.annotation.DataLog)")
+    @Pointcut("bean(*ServiceImpl) && @annotation(io.choerodon.agile.infra.common.annotation.DataLog)")
     public void updateMethodPointcut() {
         throw new UnsupportedOperationException();
     }
