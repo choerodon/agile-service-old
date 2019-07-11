@@ -57,18 +57,18 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDTO> {
      * 根据列id获取列对象
      *
      * @param columnIds columnIds
-     * @return ColumnDO
+     * @return ColumnDTO
      */
-    List<ColumnDO> queryColumnByColumnIds(@Param("columnIds") List<Long> columnIds);
+    List<ColumnDTO> queryColumnByColumnIds(@Param("columnIds") List<Long> columnIds);
 
     /**
      * 根据issueIds集合获取ColumnAndIssueDO
      *
      * @param issueIds issueIds
      * @param boardId  boardId
-     * @return ColumnAndIssueDO
+     * @return ColumnAndIssueDTO
      */
-    List<ColumnAndIssueDO> queryColumnsByIssueIds(@Param("issueIds") List<Long> issueIds, @Param("boardId") Long boardId);
+    List<ColumnAndIssueDTO> queryColumnsByIssueIds(@Param("issueIds") List<Long> issueIds, @Param("boardId") Long boardId);
 
     List<EpicIdWithNameDO> selectEpicBatchByIds(@Param("epicIds") List<Long> epicIds);
 
@@ -92,15 +92,15 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDTO> {
 
     List<ParentIssueDO> queryParentIssuesByIds(@Param("projectId") Long projectId, @Param("parentIds") List<Long> parentIds);
 
-    List<ColumnIssueNumDO> getAllColumnNum(@Param("projectId") Long projectId,
-                                           @Param("boardId") Long boardId,
-                                           @Param("activeSprintId") Long activeSprintId,
-                                           @Param("columnConstraint") String columnConstraint);
+    List<ColumnIssueNumDTO> getAllColumnNum(@Param("projectId") Long projectId,
+                                            @Param("boardId") Long boardId,
+                                            @Param("activeSprintId") Long activeSprintId,
+                                            @Param("columnConstraint") String columnConstraint);
 
-    List<ColumnAndIssueDO> selectBoardByProgram(@Param("projectId") Long projectId,
-                                                @Param("boardId") Long boardId,
-                                                @Param("activePiId") Long activePiId,
-                                                @Param("searchVO")SearchVO searchVO);
+    List<ColumnAndIssueDTO> selectBoardByProgram(@Param("projectId") Long projectId,
+                                                 @Param("boardId") Long boardId,
+                                                 @Param("activePiId") Long activePiId,
+                                                 @Param("searchVO")SearchVO searchVO);
 
     List<BoardColumnStatusRelDTO> queryRelByColumnIds(@Param("columnIds") List<Long> columnIds);
 }

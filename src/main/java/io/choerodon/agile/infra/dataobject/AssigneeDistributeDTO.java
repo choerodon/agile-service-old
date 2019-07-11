@@ -5,7 +5,7 @@ package io.choerodon.agile.infra.dataobject;
  * Date:  11:28 2018/9/4
  * Description:
  */
-public class AssigneeDistributeDO {
+public class AssigneeDistributeDTO {
 
     private Long assigneeId;
 

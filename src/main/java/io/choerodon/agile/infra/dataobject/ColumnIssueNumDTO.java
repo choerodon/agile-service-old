@@ -4,7 +4,7 @@ package io.choerodon.agile.infra.dataobject;
  * Created by HuangFuqiang@choerodon.io on 2019/2/25.
  * Email: fuqianghuang01@gmail.com
  */
-public class ColumnIssueNumDO {
+public class ColumnIssueNumDTO {
 
     private Long columnId;
 

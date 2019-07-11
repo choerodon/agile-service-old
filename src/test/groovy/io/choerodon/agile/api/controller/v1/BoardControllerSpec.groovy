@@ -10,7 +10,7 @@ import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.BoardService
 import io.choerodon.agile.app.service.NoticeService
 import io.choerodon.agile.infra.dataobject.BoardDTO
-import io.choerodon.agile.infra.dataobject.ColumnAndIssueDO
+import io.choerodon.agile.infra.dataobject.ColumnAndIssueDTO
 import io.choerodon.agile.infra.dataobject.IssueDTO
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
@@ -225,7 +225,7 @@ class BoardControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
         JSONObject result = entity.body
         JSONObject columnDatas = result.get("columnsData")
-        List<ColumnAndIssueDO> columns = columnDatas.get("columns")
+        List<ColumnAndIssueDTO> columns = columnDatas.get("columns")
         columns.size() == 3
     }
 

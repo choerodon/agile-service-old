@@ -4,7 +4,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import io.choerodon.agile.api.vo.AssigneeDistributeVO;
-import io.choerodon.agile.infra.dataobject.AssigneeDistributeDO;
+import io.choerodon.agile.infra.dataobject.AssigneeDistributeDTO;
 import io.choerodon.core.convertor.ConvertorI;
 
 /**
@@ -13,12 +13,12 @@ import io.choerodon.core.convertor.ConvertorI;
  * Description:
  */
 @Component
-public class AssigneeDistributeConverter implements ConvertorI<Object, AssigneeDistributeDO, AssigneeDistributeVO> {
+public class AssigneeDistributeConverter implements ConvertorI<Object, AssigneeDistributeDTO, AssigneeDistributeVO> {
 
     @Override
-    public AssigneeDistributeVO doToDto(AssigneeDistributeDO assigneeDistributeDO) {
+    public AssigneeDistributeVO doToDto(AssigneeDistributeDTO assigneeDistributeDTO) {
         AssigneeDistributeVO assigneeDistributeVO = new AssigneeDistributeVO();
-        BeanUtils.copyProperties(assigneeDistributeDO, assigneeDistributeVO);
+        BeanUtils.copyProperties(assigneeDistributeDTO, assigneeDistributeVO);
         return assigneeDistributeVO;
     }
 }

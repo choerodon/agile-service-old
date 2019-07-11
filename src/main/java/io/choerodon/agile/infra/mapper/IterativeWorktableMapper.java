@@ -20,9 +20,9 @@ public interface IterativeWorktableMapper {
 
     Integer queryAssigneeAll(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<AssigneeDistributeDO> queryAssigneeDistribute(@Param("projectId") Long projectId,
-                                                     @Param("sprintId") Long sprintId,
-                                                     @Param("total") Integer total);
+    List<AssigneeDistributeDTO> queryAssigneeDistribute(@Param("projectId") Long projectId,
+                                                        @Param("sprintId") Long sprintId,
+                                                        @Param("total") Integer total);
 
     List<IssueTypeDistributeDTO> queryIssueTypeDistribute(@Param("projectId") Long projectId,
                                                           @Param("sprintId") Long sprintId);

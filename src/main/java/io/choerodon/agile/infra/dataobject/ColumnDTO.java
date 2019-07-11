@@ -6,7 +6,7 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  * @author dinghuang123@gmail.com
  * @since 2018/7/2
  */
-public class ColumnDO {
+public class ColumnDTO {
 
     private Long columnId;
 

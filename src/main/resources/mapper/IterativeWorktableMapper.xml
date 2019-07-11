@@ -61,7 +61,7 @@
         and ai.type_code in ('story','task','bug','sub_task')
     </select>
 
-    <select id="queryAssigneeDistribute" resultType="io.choerodon.agile.infra.dataobject.AssigneeDistributeDO">
+    <select id="queryAssigneeDistribute" resultType="io.choerodon.agile.infra.dataobject.AssigneeDistributeDTO">
         select count(1) as issue_num,(count(1)/#{total})*100 as percent,ai.assignee_id
         from agile_issue ai
         INNER JOIN

@@ -4,7 +4,7 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.dataobject.ColumnDO;
+import io.choerodon.agile.infra.dataobject.ColumnDTO;
 import io.choerodon.agile.infra.dataobject.IssueBurnDownReportDO;
 import io.choerodon.agile.infra.dataobject.SprintDTO;
 import org.springframework.beans.BeanUtils;
@@ -21,14 +21,14 @@ import java.util.Map;
 @Component
 public class ReportAssembler extends AbstractAssembler {
 
-    public List<CumulativeFlowDiagramVO> columnListDoToDto(List<ColumnDO> columnDOList) {
-        List<CumulativeFlowDiagramVO> cumulativeFlowDiagramVOList = new ArrayList<>(columnDOList.size());
-        columnDOList.forEach(columnDO -> {
+    public List<CumulativeFlowDiagramVO> columnListDoToDto(List<ColumnDTO> columnDTOList) {
+        List<CumulativeFlowDiagramVO> cumulativeFlowDiagramVOList = new ArrayList<>(columnDTOList.size());
+        columnDTOList.forEach(columnDTO -> {
             CumulativeFlowDiagramVO cumulativeFlowDiagramVO = new CumulativeFlowDiagramVO();
-            cumulativeFlowDiagramVO.setColumnId(columnDO.getColumnId());
-            cumulativeFlowDiagramVO.setColor(columnDO.getColor());
-            cumulativeFlowDiagramVO.setName(columnDO.getName());
-            cumulativeFlowDiagramVO.setCategoryCode(columnDO.getCategoryCode());
+            cumulativeFlowDiagramVO.setColumnId(columnDTO.getColumnId());
+            cumulativeFlowDiagramVO.setColor(columnDTO.getColor());
+            cumulativeFlowDiagramVO.setName(columnDTO.getName());
+            cumulativeFlowDiagramVO.setCategoryCode(columnDTO.getCategoryCode());
             cumulativeFlowDiagramVOList.add(cumulativeFlowDiagramVO);
         });
         return cumulativeFlowDiagramVOList;

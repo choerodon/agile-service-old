@@ -7,7 +7,7 @@ import java.util.List;
  * Email: fuqianghuang01@gmail.com
  */
 
-public class ColumnAndIssueDO {
+public class ColumnAndIssueDTO {
 
     private Long columnId;
 

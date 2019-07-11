@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.BoardColumnMapper">
 
-    <resultMap id="BoardColumnAndIssues" type="io.choerodon.agile.infra.dataobject.ColumnAndIssueDO">
+    <resultMap id="BoardColumnAndIssues" type="io.choerodon.agile.infra.dataobject.ColumnAndIssueDTO">
         <id property="columnId" column="abc_column_id"/>
         <id property="categoryCode" column="abc_category_code"/>
         <id property="boardId" column="abc_board_id"/>
@@ -261,7 +261,7 @@
             board_id = #{boardId} AND sequence > #{sequence}
     </update>
 
-    <select id="queryColumnByColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnDO">
+    <select id="queryColumnByColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnDTO">
         SELECT abc.column_id ,abc.name,alv.name as color,abc.category_code
         from agile_board_column abc left join agile_lookup_value alv on
         alv.type_code = 'column_color'
@@ -329,7 +329,7 @@
         order by ai.issue_id
     </select>
 
-    <select id="getAllColumnNum" resultType="io.choerodon.agile.infra.dataobject.ColumnIssueNumDO">
+    <select id="getAllColumnNum" resultType="io.choerodon.agile.infra.dataobject.ColumnIssueNumDTO">
         select
         abc.column_id,
         COUNT(ai.issue_id) AS issue_count
