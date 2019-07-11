@@ -134,10 +134,10 @@ public class IssueDTO extends BaseDTO {
     private List<VersionIssueRelDTO> versionIssueRelDTOS;
 
     @Transient
-    private List<IssueSprintDO> issueSprintDOS;
+    private List<IssueSprintDTO> issueSprintDTOS;
 
     @Transient
-    private List<IssueComponentBriefDO> issueComponentBriefDOS;
+    private List<IssueComponentBriefDTO> issueComponentBriefDTOS;
 
     @Transient
     private List<LabelIssueRelDTO> labelIssueRelDTOS;
@@ -199,20 +199,20 @@ public class IssueDTO extends BaseDTO {
         this.epicColor = epicColor;
     }
 
-    public List<IssueComponentBriefDO> getIssueComponentBriefDOS() {
-        return issueComponentBriefDOS;
+    public List<IssueComponentBriefDTO> getIssueComponentBriefDTOS() {
+        return issueComponentBriefDTOS;
     }
 
-    public void setIssueComponentBriefDOS(List<IssueComponentBriefDO> issueComponentBriefDOS) {
-        this.issueComponentBriefDOS = issueComponentBriefDOS;
+    public void setIssueComponentBriefDTOS(List<IssueComponentBriefDTO> issueComponentBriefDTOS) {
+        this.issueComponentBriefDTOS = issueComponentBriefDTOS;
     }
 
-    public List<IssueSprintDO> getIssueSprintDOS() {
-        return issueSprintDOS;
+    public List<IssueSprintDTO> getIssueSprintDTOS() {
+        return issueSprintDTOS;
     }
 
-    public void setIssueSprintDOS(List<IssueSprintDO> issueSprintDOS) {
-        this.issueSprintDOS = issueSprintDOS;
+    public void setIssueSprintDTOS(List<IssueSprintDTO> issueSprintDTOS) {
+        this.issueSprintDTOS = issueSprintDTOS;
     }
 
     public List<VersionIssueRelDTO> getVersionIssueRelDTOS() {

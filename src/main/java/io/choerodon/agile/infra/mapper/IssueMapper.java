@@ -104,21 +104,21 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      */
     int batchUpdateIssueEpicId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 
-    List<IssueCountDO> queryIssueCountByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
+    List<IssueCountDTO> queryIssueCountByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
 
-    List<IssueCountDO> queryProgramIssueCountByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
+    List<IssueCountDTO> queryProgramIssueCountByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
 
-    List<IssueCountDO> queryDoneIssueCountByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
+    List<IssueCountDTO> queryDoneIssueCountByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
 
-    List<IssueCountDO> queryProgramDoneIssueCountByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
+    List<IssueCountDTO> queryProgramDoneIssueCountByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
 
-    List<IssueCountDO> queryNotEstimateIssueCountByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
+    List<IssueCountDTO> queryNotEstimateIssueCountByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
 
-    List<IssueCountDO> queryProgramNotEstimateIssueCountByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
+    List<IssueCountDTO> queryProgramNotEstimateIssueCountByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
 
-    List<IssueCountDO> queryTotalEstimateByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
+    List<IssueCountDTO> queryTotalEstimateByEpicIds(@Param("projectId") Long projectId, @Param("epicIds") List<Long> epicIds);
 
-    List<IssueCountDO> queryProgramTotalEstimateByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
+    List<IssueCountDTO> queryProgramTotalEstimateByEpicIds(@Param("programId") Long programId, @Param("epicIds") List<Long> epicIds);
 
     List<IssueLabelDTO> selectLabelNameByIssueId(@Param("issueId") Long issueId);
 
@@ -128,9 +128,9 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     int featureToDestinationByIdsClosePi(@Param("programId") Long projectId, @Param("piId") Long piId, @Param("issueIds") List<Long> issueIds, @Param("date") Date date, @Param("userId") Long userId);
 
-    int batchUpdateIssueRank(@Param("projectId") Long projectId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
+    int batchUpdateIssueRank(@Param("projectId") Long projectId, @Param("moveIssues") List<MoveIssueDTO> moveIssues);
 
-    int batchUpdateFeatureRank(@Param("programId") Long programId, @Param("moveIssues") List<MoveIssueDO> moveIssues);
+    int batchUpdateFeatureRank(@Param("programId") Long programId, @Param("moveIssues") List<MoveIssueDTO> moveIssues);
 
     int batchUpdateMapIssueRank(@Param("projectId") Long projectId, @Param("storyMapMoveIssueDOS") List<StoryMapMoveIssueDO> storyMapMoveIssueDOS);
 
@@ -196,7 +196,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     IssueNumDTO queryIssueByIssueNumOrIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId, @Param("issueNum") String issueNum);
 
-    List<IssueInfoDO> listByIssueIds(@Param("projectId") Long prjectId, @Param("issueIds") List<Long> issueIds);
+    List<IssueInfoDTO> listByIssueIds(@Param("projectId") Long prjectId, @Param("issueIds") List<Long> issueIds);
 
     /**
      * 根据参数查询issueList提供给测试模块
@@ -220,9 +220,9 @@ public interface IssueMapper extends Mapper<IssueDTO> {
                                              @Param("otherArgs") Map<String, Object> otherArgs,
                                              @Param("contents") List<String> contents);
 
-    List<IssueCreationNumDO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
-                                                     @Param("typeCode") String typeCode,
-                                                     @Param("date") Date date);
+    List<IssueCreationNumDTO> queryIssueNumByTimeSlot(@Param("projectId") Long projectId,
+                                                      @Param("typeCode") String typeCode,
+                                                      @Param("date") Date date);
 
     List<Long> queryInVersionIssueIds(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("issueIds") List<Long> issueIds);
 
@@ -268,17 +268,17 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      * @param projectId  projectId
      * @param type       type查询的类型
      * @param issueTypes issueTypes要排除的issue类型
-     * @return PieChartDO
+     * @return PieChartDTO
      */
-    List<PieChartDO> issueStatistic(@Param("projectId") Long projectId, @Param("type") String type, @Param("issueTypes") List<String> issueTypes);
+    List<PieChartDTO> issueStatistic(@Param("projectId") Long projectId, @Param("type") String type, @Param("issueTypes") List<String> issueTypes);
 
     /**
      * 返回issue的详情列表（测试模块用）
      *
      * @param issueIds issueIds
-     * @return IssueComponentDetailDO
+     * @return IssueComponentDetailInfoDTO
      */
-    List<IssueComponentDetailDO> listIssueWithoutSubDetailByIssueIds(@Param("issueIds") List<Long> issueIds);
+    List<IssueComponentDetailInfoDTO> listIssueWithoutSubDetailByIssueIds(@Param("issueIds") List<Long> issueIds);
 
     /**
      * 返回issueIds（测试模块用）
@@ -288,7 +288,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      * @param advancedSearchArgs advancedSearchArgs
      * @param otherArgs          otherArgs
      * @param contents           contents
-     * @return IssueComponentDetailDO
+     * @return IssueComponentDetailInfoDTO
      */
     List<Long> listIssueIdsWithoutSubDetail(@Param("projectId") Long projectId, @Param("searchArgs") Map<String, Object> searchArgs,
                                             @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs,
@@ -357,8 +357,8 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<UndistributedIssueDTO> queryUnDistributedIssues(Long projectId);
 
-    List<UnfinishedIssueDO> queryUnfinishedIssues(@Param("projectId") Long projectId,
-                                                  @Param("assigneeId") Long assigneeId);
+    List<UnfinishedIssueDTO> queryUnfinishedIssues(@Param("projectId") Long projectId,
+                                                   @Param("assigneeId") Long assigneeId);
 
     /**
      * 查询当前issue的版本关系的版本id
@@ -541,13 +541,13 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<IssueDTO> selectStatusChangeIssueByPiId(@Param("programId") Long programId, @Param("piId") Long piId);
 
-    List<IssueCountDO> selectStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
+    List<IssueCountDTO> selectStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
 
-    List<IssueCountDO> selectCompletedStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
+    List<IssueCountDTO> selectCompletedStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
 
-    List<IssueCountDO> selectUnEstimateStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
+    List<IssueCountDTO> selectUnEstimateStoryCountByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
 
-    List<IssueCountDO> selectTotalStoryPointsByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
+    List<IssueCountDTO> selectTotalStoryPointsByIds(@Param("projectId") Long projectId, @Param("ids") List<Long> ids);
 
     void updateStatusIdBatch(@Param("programId") Long programId,
                              @Param("updateStatusId") Long updateStatusId,
@@ -559,9 +559,9 @@ public interface IssueMapper extends Mapper<IssueDTO> {
 
     List<FeatureExportDTO> selectExportIssuesInProgram(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 
-    List<PiExportNameDO> queryPiNameByIssueIds(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
+    List<PiExportNameDTO> queryPiNameByIssueIds(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 
-    List<PiExportNameDO> queryActivePiNameByIssueIds(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
+    List<PiExportNameDTO> queryActivePiNameByIssueIds(@Param("programId") Long programId, @Param("issueIds") List<Long> issueIds);
 
     List<Long> querySubBugIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * Created by jian_zhang02@163.com on 2018/5/30.
  */
-public class IssueCountDO {
+public class IssueCountDTO {
     private Long id;
     private String name;
     private Integer issueCount;

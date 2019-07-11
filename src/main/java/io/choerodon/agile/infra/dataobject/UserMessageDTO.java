@@ -6,7 +6,7 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  * @author dinghuang123@gmail.com
  * @since 2018/5/24
  */
-public class UserMessageDO {
+public class UserMessageDTO {
     private String name;
 
     private String loginName;
@@ -17,13 +17,13 @@ public class UserMessageDO {
 
     private String email;
 
-    public UserMessageDO(String name, String imageUrl,String email) {
+    public UserMessageDTO(String name, String imageUrl, String email) {
         this.name = name;
         this.imageUrl = imageUrl;
         this.email = email;
     }
 
-    public UserMessageDO(String name, String loginName, String realName, String imageUrl, String email) {
+    public UserMessageDTO(String name, String loginName, String realName, String imageUrl, String email) {
         this.name = name;
         this.loginName = loginName;
         this.realName = realName;

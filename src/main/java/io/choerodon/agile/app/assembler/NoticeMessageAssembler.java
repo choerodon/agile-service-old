@@ -4,7 +4,7 @@ import io.choerodon.agile.api.vo.IdWithNameVO;
 import io.choerodon.agile.api.vo.MessageVO;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.MessageDTO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class NoticeMessageAssembler {
 
     public List<MessageVO> messageDOToIDTO(List<MessageDTO> messageDTOList, List<Long> ids) {
         List<MessageVO> messageVOList = new ArrayList<>(messageDTOList.size());
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(ids, true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(ids, true);
         messageDTOList.forEach(messageDTO -> {
             List<IdWithNameVO> idWithNameVOList = new ArrayList<>();
             if (messageDTO.getEnable() && messageDTO.getUser() != null && messageDTO.getUser().length() != 0 && !"null".equals(messageDTO.getUser())) {

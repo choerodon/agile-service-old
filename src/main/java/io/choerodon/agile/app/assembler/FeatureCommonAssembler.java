@@ -6,7 +6,7 @@ import io.choerodon.agile.api.vo.PiNameVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDTO;
 import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.core.convertor.ConvertHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,17 +31,17 @@ public class FeatureCommonAssembler {
         List<FeatureCommonVO> result = new ArrayList<>();
         List<Long> reporterIds = new ArrayList<>();
         reporterIds.addAll(featureCommonDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(FeatureCommonDTO::getReporterId).collect(Collectors.toSet()));
-        Map<Long, UserMessageDO> userMessageDOMap = userService.queryUsersMap(
+        Map<Long, UserMessageDTO> userMessageDOMap = userService.queryUsersMap(
                 reporterIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
         featureCommonDTOList.forEach(featureCommonDO -> {
             FeatureCommonVO featureCommonVO = ConvertHelper.convert(featureCommonDO, FeatureCommonVO.class);
             featureCommonVO.setPiNameVOList(ConvertHelper.convertList(featureCommonDO.getPiNameDTOList(), PiNameVO.class));
             featureCommonVO.setStatusMapVO(statusMapDTOMap.get(featureCommonDO.getStatusId()));
             featureCommonVO.setIssueTypeVO(issueTypeDTOMap.get(featureCommonDO.getIssueTypeId()));
-            UserMessageDO userMessageDO = userMessageDOMap.get(featureCommonDO.getReporterId());
-            if (userMessageDO != null) {
-                featureCommonVO.setReporterName(userMessageDO.getName());
-                featureCommonVO.setReporterImageUrl(userMessageDO.getImageUrl());
+            UserMessageDTO userMessageDTO = userMessageDOMap.get(featureCommonDO.getReporterId());
+            if (userMessageDTO != null) {
+                featureCommonVO.setReporterName(userMessageDTO.getName());
+                featureCommonVO.setReporterImageUrl(userMessageDTO.getImageUrl());
             }
             result.add(featureCommonVO);
         });

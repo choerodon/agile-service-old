@@ -5,7 +5,7 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.WorkLogVO
 import io.choerodon.agile.app.service.UserService
 import io.choerodon.agile.infra.dataobject.UserDTO
-import io.choerodon.agile.infra.dataobject.UserMessageDO
+import io.choerodon.agile.infra.dataobject.UserMessageDTO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.WorkLogMapper
 import io.choerodon.core.convertor.ConvertHelper
@@ -55,7 +55,7 @@ class WorkLogControllerSpec extends Specification {
         UserDTO userDO = new UserDTO()
         userDO.setRealName("管理员")
         Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
-        Mockito.when(userRepository.queryUsersMap(Matchers.any(List.class), Matchers.anyBoolean())).thenReturn(new HashMap<Long, UserMessageDO>())
+        Mockito.when(userRepository.queryUsersMap(Matchers.any(List.class), Matchers.anyBoolean())).thenReturn(new HashMap<Long, UserMessageDTO>())
     }
 
     def "createWorkLog"() {

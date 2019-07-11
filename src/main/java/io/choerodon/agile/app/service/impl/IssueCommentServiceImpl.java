@@ -2,8 +2,8 @@ package io.choerodon.agile.app.service.impl;
 
 
 import io.choerodon.agile.api.vo.IssueCommentCreateVO;
+import io.choerodon.agile.api.vo.IssueCommentUpdateVO;
 import io.choerodon.agile.api.vo.IssueCommentVO;
-import io.choerodon.agile.api.vo.IssueCommentUpdateDTO;
 import io.choerodon.agile.app.assembler.IssueCommentAssembler;
 import io.choerodon.agile.app.service.IssueCommentService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
@@ -65,9 +65,9 @@ public class IssueCommentServiceImpl implements IssueCommentService {
     }
 
     @Override
-    public IssueCommentVO updateIssueComment(IssueCommentUpdateDTO issueCommentUpdateDTO, List<String> fieldList, Long projectId) {
+    public IssueCommentVO updateIssueComment(IssueCommentUpdateVO issueCommentUpdateVO, List<String> fieldList, Long projectId) {
         if (fieldList != null && !fieldList.isEmpty()) {
-            IssueCommentDTO issueCommentDTO = issueCommentAssembler.toTarget(issueCommentUpdateDTO, IssueCommentDTO.class);
+            IssueCommentDTO issueCommentDTO = issueCommentAssembler.toTarget(issueCommentUpdateVO, IssueCommentDTO.class);
             update(issueCommentDTO, fieldList.toArray(new String[fieldList.size()]));
             return queryByProjectIdAndCommentId(projectId, issueCommentDTO.getCommentId());
         } else {

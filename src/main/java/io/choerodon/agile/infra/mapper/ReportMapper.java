@@ -257,15 +257,15 @@ public interface ReportMapper {
 
     List queryReportIssues(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("status") String status, @Param("type") String type);
 
-    List<VersionIssueChangeDO> queryChangeIssue(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
+    List<VersionIssueChangeDTO> queryChangeIssue(@Param("projectId") Long projectId, @Param("versionId") Long versionId, @Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
     List<Long> queryIssueIdByVersionId(@Param("projectId") Long projectId, @Param("versionId") Long versionId);
 
-    List<IssueChangeDTO> queryChangeFieldIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("field") String field);
+    List<IssueChangeDTO> queryChangeFieldIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDTO> versionIssues, @Param("field") String field);
 
-    List<VersionIssueChangeDO> queryCompletedChangeIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDO> versionIssues, @Param("completed") Boolean completed);
+    List<VersionIssueChangeDTO> queryCompletedChangeIssue(@Param("projectId") Long projectId, @Param("versionIssues") List<VersionIssueChangeDTO> versionIssues, @Param("completed") Boolean completed);
 
-    List<IssueChangeDTO> queryChangIssue(@Param("projectId") Long projectId, @Param("changeIssues") List<VersionIssueChangeDO> changeIssues, @Param("field") String field);
+    List<IssueChangeDTO> queryChangIssue(@Param("projectId") Long projectId, @Param("changeIssues") List<VersionIssueChangeDTO> changeIssues, @Param("field") String field);
 
     Integer queryTotalField(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds, @Param("field") String field);
 
@@ -275,19 +275,19 @@ public interface ReportMapper {
 
     Integer queryCompletedIssueCount(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    List<VelocitySprintDO> selectAllSprint(@Param("projectId") Long projectId);
+    List<VelocitySprintDTO> selectAllSprint(@Param("projectId") Long projectId);
 
-    List<VelocitySingleDO> selectByIssueCountCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDTO> selectByIssueCountCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySingleDO> selectByIssueCountCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDTO> selectByIssueCountCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySingleDO> selectByStoryPointAndNumCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDTO> selectByStoryPointAndNumCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySingleDO> selectByStoryPointAndNumCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDTO> selectByStoryPointAndNumCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySingleDO> selectByRemainTimeCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDTO> selectByRemainTimeCommitted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
-    List<VelocitySingleDO> selectByRemainTimeCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
+    List<VelocitySingleDTO> selectByRemainTimeCompleted(@Param("projectId") Long projectId, @Param("ids") List<Long> ids, @Param("now") String now);
 
     /**
      * 根据参数查询统计信息
@@ -301,11 +301,11 @@ public interface ReportMapper {
      * @param endDate   endDate
      * @param sprintId  sprintId
      * @param versionId versionId
-     * @return PieChartDO
+     * @return PieChartDTO
      */
-    List<PieChartDO> queryPieChartByParam(@Param("projectId") Long projectId, @Param("own") Boolean own,
-                                          @Param("fieldName") String fieldName, @Param("typeCode") Boolean typeCode,
-                                          @Param("total") Integer total, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("sprintId") Long sprintId, @Param("versionId") Long versionId);
+    List<PieChartDTO> queryPieChartByParam(@Param("projectId") Long projectId, @Param("own") Boolean own,
+                                           @Param("fieldName") String fieldName, @Param("typeCode") Boolean typeCode,
+                                           @Param("total") Integer total, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("sprintId") Long sprintId, @Param("versionId") Long versionId);
 
     /**
      * 根据Epic查询统计信息
@@ -316,9 +316,9 @@ public interface ReportMapper {
      * @param endDate   endDate
      * @param sprintId  sprintId
      * @param versionId versionId
-     * @return PieChartDO
+     * @return PieChartDTO
      */
-    List<PieChartDO> queryPieChartByEpic(@Param("projectId") Long projectId, @Param("total") Integer total, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("sprintId") Long sprintId, @Param("versionId") Long versionId);
+    List<PieChartDTO> queryPieChartByEpic(@Param("projectId") Long projectId, @Param("total") Integer total, @Param("startDate") Date startDate, @Param("endDate") Date endDate, @Param("sprintId") Long sprintId, @Param("versionId") Long versionId);
 
 
     /**
@@ -367,25 +367,25 @@ public interface ReportMapper {
      * 问题类型分布图
      *
      * @param projectId projectId
-     * @return IssueTypeDistributionChartDO
+     * @return IssueTypeDistributionChartDTO
      */
-    List<IssueTypeDistributionChartDO> queryIssueTypeDistributionChart(@Param("projectId") Long projectId);
+    List<IssueTypeDistributionChartDTO> queryIssueTypeDistributionChart(@Param("projectId") Long projectId);
 
     /**
      * 问题类型分布图,排序前5个版本
      *
      * @param projectId projectId
-     * @return IssueTypeDistributionChartDO
+     * @return IssueTypeDistributionChartDTO
      */
-    List<IssueTypeDistributionChartDO> queryVersionProgressChart(@Param("projectId") Long projectId);
+    List<IssueTypeDistributionChartDTO> queryVersionProgressChart(@Param("projectId") Long projectId);
 
     /**
      * 问题优先级分布图
      *
      * @param projectId projectId
-     * @return IssuePriorityDistributionChartDO
+     * @return IssuePriorityDistributionChartDTO
      */
-    List<IssuePriorityDistributionChartDO> queryIssuePriorityDistributionChart(@Param("projectId") Long projectId, @Param("priorityIds") List<Long> priorityIds);
+    List<IssuePriorityDistributionChartDTO> queryIssuePriorityDistributionChart(@Param("projectId") Long projectId, @Param("priorityIds") List<Long> priorityIds);
 
     /**
      * 修复数据

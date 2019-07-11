@@ -86,7 +86,7 @@
         </collection>
     </resultMap>
 
-    <resultMap type="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO" id="issueComponentDetail">
+    <resultMap type="io.choerodon.agile.infra.dataobject.IssueComponentDetailInfoDTO" id="issueComponentDetail">
         <id column="issue_id" property="issueId"/>
         <id column="type_code" property="typeCode"/>
         <id column="summary" property="summary"/>
@@ -103,13 +103,13 @@
         <id column="priority_id" property="priorityId"/>
         <id column="issue_type_id" property="issueTypeId"/>
         <collection property="versionIssueRelDTOList" column="issue_id"
-                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailInfoDTO"
                     select="queryVersionIssueRelByIssueId"/>
         <collection property="labelIssueRelDTOList" column="issue_id"
-                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailInfoDTO"
                     select="queryLabelIssueByIssueId"/>
         <collection property="componentIssueRelDTOList" column="issue_id"
-                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailDO"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentDetailInfoDTO"
                     select="queryComponentIssueRelByIssueId"/>
     </resultMap>
 
@@ -208,7 +208,7 @@
         WHERE aisr.issue_id = #{issueId} AND aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
     </select>
 
-    <select id="queryPiNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.PiExportNameDO">
+    <select id="queryPiNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.PiExportNameDTO">
         SELECT
             apf.issue_id,
             CONCAT_WS('-', ap.code, ap.name) as pi_code_name
@@ -221,7 +221,7 @@
         </foreach>
     </select>
 
-    <select id="queryActivePiNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.PiExportNameDO">
+    <select id="queryActivePiNameByIssueIds" resultType="io.choerodon.agile.infra.dataobject.PiExportNameDTO">
         SELECT
             apf.issue_id,
             CONCAT_WS('-', ap.code, ap.name) as pi_code_name
@@ -359,14 +359,14 @@
             <id property="projectId" column="version_project_id"/>
             <id property="name" column="version_name"/>
         </collection>
-        <collection property="issueSprintDOS" autoMapping="true"
-                    ofType="io.choerodon.agile.infra.dataobject.IssueSprintDO">
+        <collection property="issueSprintDTOS" autoMapping="true"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueSprintDTO">
             <id property="sprintId" column="sprint_id"/>
             <id property="sprintName" column="sprint_name"/>
             <id property="statusCode" column="sp_status_code"/>
         </collection>
-        <collection property="issueComponentBriefDOS" autoMapping="true"
-                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentBriefDO">
+        <collection property="issueComponentBriefDTOS" autoMapping="true"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueComponentBriefDTO">
             <id property="componentId" column="component_id"/>
             <id property="name" column="component_name"/>
         </collection>
@@ -976,7 +976,7 @@
         WHERE ai.project_id = #{projectId} AND ai.issue_id = #{issueId}
     </select>
 
-    <select id="queryTotalEstimateByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryTotalEstimateByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT ai.issue_id AS id, IFNULL(ic.sp_count, 0) AS story_point_count
         FROM agile_issue ai
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, SUM(ai1.story_points) AS sp_count
@@ -996,7 +996,7 @@
         </foreach>
     </select>
 
-    <select id="queryProgramTotalEstimateByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryProgramTotalEstimateByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT ai.issue_id AS id, IFNULL(ic.sp_count, 0) AS story_point_count
         FROM agile_issue ai
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, SUM(ai1.story_points) AS sp_count
@@ -1016,7 +1016,7 @@
         </foreach>
     </select>
 
-    <select id="queryNotEstimateIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryNotEstimateIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_issue ai
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
@@ -1037,7 +1037,7 @@
     </select>
 
     <select id="queryProgramNotEstimateIssueCountByEpicIds"
-            resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+            resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_issue ai
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
@@ -1058,7 +1058,7 @@
     </select>
 
 
-    <select id="queryIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_issue ai
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
@@ -1077,7 +1077,7 @@
         </foreach>
     </select>
 
-    <select id="queryProgramIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryProgramIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_issue ai
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
@@ -1096,7 +1096,7 @@
         </foreach>
     </select>
 
-    <select id="queryDoneIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryDoneIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_issue ai
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
@@ -1116,7 +1116,7 @@
         </foreach>
     </select>
 
-    <select id="queryProgramDoneIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryProgramDoneIssueCountByEpicIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT ai.issue_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_issue ai
         LEFT JOIN (SELECT ai1.epic_id AS epic_id, COUNT(1) AS issue_count
@@ -1496,7 +1496,7 @@
         ORDER BY ai.issue_id DESC
     </select>
     
-    <select id="selectStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="selectStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         select ai.feature_id as id, IFNULL(COUNT(ai.issue_id), 0) as issue_count
         from agile_issue ai
         where ai.project_id = #{projectId} and ai.type_code = 'story' and ai.feature_id in
@@ -1507,7 +1507,7 @@
         group by ai.feature_id
     </select>
 
-    <select id="selectCompletedStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="selectCompletedStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         select ai.feature_id as id, IFNULL(COUNT(ai.issue_id), 0) as issue_count
         from agile_issue ai, agile_issue_status ais
         where ai.project_id = #{projectId} and ai.type_code = 'story' and ai.status_id = ais.status_id and ais.project_id = #{projectId} and ais.is_completed = 1
@@ -1519,7 +1519,7 @@
         group by ai.feature_id
     </select>
 
-    <select id="selectUnEstimateStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="selectUnEstimateStoryCountByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         select ai.feature_id as id, IFNULL(COUNT(ai.issue_id), 0) as issue_count
         from agile_issue ai
         where ai.project_id = #{projectId} and ai.type_code = 'story' and ai.story_points is null
@@ -1531,7 +1531,7 @@
         group by ai.feature_id
     </select>
 
-    <select id="selectTotalStoryPointsByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="selectTotalStoryPointsByIds" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         select ai.feature_id as id, IFNULL(SUM(ai.story_points), 0) as story_point_count
         from agile_issue ai
         where ai.project_id = #{projectId} and ai.type_code = 'story'
@@ -1932,7 +1932,7 @@
         </choose>
     </select>
 
-    <select id="listByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueInfoDO">
+    <select id="listByIssueIds" resultType="io.choerodon.agile.infra.dataobject.IssueInfoDTO">
         SELECT
         ai.issue_id,
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
@@ -2313,7 +2313,7 @@
         </foreach>
     </select>
 
-    <select id="queryIssueNumByTimeSlot" resultType="io.choerodon.agile.infra.dataobject.IssueCreationNumDO">
+    <select id="queryIssueNumByTimeSlot" resultType="io.choerodon.agile.infra.dataobject.IssueCreationNumDTO">
         SELECT
             DATE_FORMAT(creation_date, '%Y-%m-%d') AS creation_day,
             COUNT(issue_id)                        AS issue_count
@@ -2370,7 +2370,7 @@
         LIMIT 1;
     </select>
 
-    <select id="issueStatistic" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
+    <select id="issueStatistic" resultType="io.choerodon.agile.infra.dataobject.PieChartDTO">
         select * from (
         SELECT
         <if test="type!=null and type!=''">
@@ -2833,7 +2833,7 @@
         order by ai.issue_id desc
     </select>
 
-    <select id="queryUnfinishedIssues" resultType="io.choerodon.agile.infra.dataobject.UnfinishedIssueDO">
+    <select id="queryUnfinishedIssues" resultType="io.choerodon.agile.infra.dataobject.UnfinishedIssueDTO">
         SELECT
           ai.issue_id,
           CONCAT_WS('-',api.project_code,ai.issue_num) AS issue_num,

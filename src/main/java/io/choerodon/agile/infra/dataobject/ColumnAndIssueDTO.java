@@ -27,7 +27,7 @@ public class ColumnAndIssueDTO {
 
     private Long objectVersionNumber;
 
-    private List<SubStatus> subStatuses;
+    private List<SubStatusDTO> subStatusDTOS;
 
     public Long getColumnId() {
         return columnId;
@@ -69,12 +69,12 @@ public class ColumnAndIssueDTO {
         return name;
     }
 
-    public void setSubStatuses(List<SubStatus> subStatuses) {
-        this.subStatuses = subStatuses;
+    public void setSubStatusDTOS(List<SubStatusDTO> subStatusDTOS) {
+        this.subStatusDTOS = subStatusDTOS;
     }
 
-    public List<SubStatus> getSubStatuses() {
-        return subStatuses;
+    public List<SubStatusDTO> getSubStatusDTOS() {
+        return subStatusDTOS;
     }
 
     public void setCategoryCode(String categoryCode) {

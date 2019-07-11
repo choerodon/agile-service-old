@@ -4,7 +4,7 @@ package io.choerodon.agile.infra.dataobject;
  * Created by HuangFuqiang@choerodon.io on 2018/7/11.
  * Email: fuqianghuang01@gmail.com
  */
-public class IssueInfoDO {
+public class IssueInfoDTO {
 
     private Long issueId;
 

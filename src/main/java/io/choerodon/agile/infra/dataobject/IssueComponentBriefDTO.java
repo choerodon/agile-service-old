@@ -6,7 +6,7 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  * @author dinghuang123@gmail.com
  * @since 2018/11/7
  */
-public class IssueComponentBriefDO {
+public class IssueComponentBriefDTO {
 
     private Long componentId;
 

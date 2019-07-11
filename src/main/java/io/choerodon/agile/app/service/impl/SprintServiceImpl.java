@@ -195,14 +195,14 @@ public class SprintServiceImpl implements SprintService {
     }
 
     private void moveIssueToBacklog(Long projectId, Long sprintId) {
-        List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
+        List<MoveIssueDTO> moveIssueDTOS = new ArrayList<>();
         Long targetSprintId = 0L;
         List<Long> moveIssueRankIds = sprintMapper.queryAllRankIssueIds(projectId, sprintId);
-        beforeRank(projectId, targetSprintId, moveIssueDOS, moveIssueRankIds);
-        if (moveIssueDOS.isEmpty()) {
+        beforeRank(projectId, targetSprintId, moveIssueDTOS, moveIssueRankIds);
+        if (moveIssueDTOS.isEmpty()) {
             return;
         }
-        issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
+        issueRepository.batchUpdateIssueRank(projectId, moveIssueDTOS);
     }
 
     @Override
@@ -264,7 +264,7 @@ public class SprintServiceImpl implements SprintService {
     private void handleSprintNoIssue(List<SprintSearchVO> sprintSearches, Long projectId) {
         SprintSearchDTO sprintSearchDTO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         Set<Long> assigneeIds = sprintMapper.queryBacklogSprintAssigneeIds(projectId);
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(new ArrayList<>(assigneeIds), true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(new ArrayList<>(assigneeIds), true);
         if (sprintSearchDTO != null) {
             List<AssigneeIssueDTO> assigneeIssueDTOS = sprintMapper.queryAssigneeIssueByActiveSprintId(projectId, sprintSearchDTO.getSprintId());
             if (assigneeIssueDTOS != null && !assigneeIssueDTOS.isEmpty()) {
@@ -284,7 +284,7 @@ public class SprintServiceImpl implements SprintService {
         List<Long> allIssueIds = issueIdSprintIdVOS.stream().map(IssueIdSprintIdVO::getIssueId).collect(Collectors.toList());
         //查询出所有经办人用户id
         Set<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(projectId, allIssueIds);
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(new ArrayList<>(assigneeIds), true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(new ArrayList<>(assigneeIds), true);
         SprintSearchDTO sprintSearchDTO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (sprintSearchDTO != null) {
             List<Long> activeSprintIssueIds = issueIdSprintIdVOS.stream().filter(x -> sprintSearchDTO.getSprintId().equals(x.getSprintId())).map(IssueIdSprintIdVO::getIssueId).collect(Collectors.toList());
@@ -370,12 +370,12 @@ public class SprintServiceImpl implements SprintService {
 
     private void moveNotDoneIssueToTargetSprint(Long projectId, SprintCompleteVO sprintCompleteVO) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
+        List<MoveIssueDTO> moveIssueDTOS = new ArrayList<>();
         Long targetSprintId = sprintCompleteVO.getIncompleteIssuesDestination();
         List<Long> moveIssueRankIds = sprintMapper.queryIssueIdOrderByRankDesc(projectId, sprintCompleteVO.getSprintId());
         moveIssueRankIds.addAll(sprintMapper.queryUnDoneSubOfParentIds(projectId, sprintCompleteVO.getSprintId()));
-        beforeRank(projectId, sprintCompleteVO.getIncompleteIssuesDestination(), moveIssueDOS, moveIssueRankIds);
-        if (moveIssueDOS.isEmpty()) {
+        beforeRank(projectId, sprintCompleteVO.getIncompleteIssuesDestination(), moveIssueDTOS, moveIssueRankIds);
+        if (moveIssueDTOS.isEmpty()) {
             return;
         }
         List<Long> moveIssueIds = sprintMapper.queryIssueIds(projectId, sprintCompleteVO.getSprintId());
@@ -384,10 +384,10 @@ public class SprintServiceImpl implements SprintService {
         if (targetSprintId != null && !Objects.equals(targetSprintId, 0L)) {
             issueRepository.issueToDestinationByIdsCloseSprint(projectId, targetSprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
         }
-        issueRepository.batchUpdateIssueRank(projectId, moveIssueDOS);
+        issueRepository.batchUpdateIssueRank(projectId, moveIssueDTOS);
     }
 
-    private void beforeRank(Long projectId, Long targetSprintId, List<MoveIssueDO> moveIssueDOS, List<Long> moveIssueIds) {
+    private void beforeRank(Long projectId, Long targetSprintId, List<MoveIssueDTO> moveIssueDTOS, List<Long> moveIssueIds) {
         if (moveIssueIds.isEmpty()) {
             return;
         }
@@ -395,13 +395,13 @@ public class SprintServiceImpl implements SprintService {
         if (minRank == null) {
             minRank = RankUtil.mid();
             for (Long issueId : moveIssueIds) {
-                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, minRank));
                 minRank = RankUtil.genPre(minRank);
             }
         } else {
             for (Long issueId : moveIssueIds) {
                 minRank = RankUtil.genPre(minRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, minRank));
             }
         }
     }

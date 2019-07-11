@@ -6,7 +6,7 @@ import io.choerodon.agile.app.assembler.NoticeMessageAssembler;
 import io.choerodon.agile.app.service.NoticeService;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.MessageDTO;
-import io.choerodon.agile.infra.dataobject.MessageDetailDO;
+import io.choerodon.agile.infra.dataobject.MessageDetailDTO;
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper;
 import io.choerodon.agile.infra.mapper.NoticeMapper;
 import io.choerodon.core.exception.CommonException;
@@ -77,22 +77,22 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public void updateNotice(Long projectId, List<MessageVO> messageVOList) {
         for (MessageVO messageVO : messageVOList) {
-            MessageDetailDO messageDetailDO = new MessageDetailDO();
-            messageDetailDO.setProjectId(projectId);
-            messageDetailDO.setEnable(messageVO.getEnable());
-            messageDetailDO.setEvent(messageVO.getEvent());
-            messageDetailDO.setNoticeType(messageVO.getNoticeType());
-            messageDetailDO.setNoticeName(messageVO.getNoticeName());
-            messageDetailDO.setUser(messageVO.getUser());
+            MessageDetailDTO messageDetailDTO = new MessageDetailDTO();
+            messageDetailDTO.setProjectId(projectId);
+            messageDetailDTO.setEnable(messageVO.getEnable());
+            messageDetailDTO.setEvent(messageVO.getEvent());
+            messageDetailDTO.setNoticeType(messageVO.getNoticeType());
+            messageDetailDTO.setNoticeName(messageVO.getNoticeName());
+            messageDetailDTO.setUser(messageVO.getUser());
             if (noticeMapper.selectChangeMessageByDetail(projectId, messageVO.getEvent(), messageVO.getNoticeType()) == null) {
-                if (noticeDetailMapper.insert(messageDetailDO) != 1) {
-                    throw new CommonException("error.messageDetailDO.insert");
+                if (noticeDetailMapper.insert(messageDetailDTO) != 1) {
+                    throw new CommonException("error.messageDetailDTO.insert");
                 }
             } else {
-                messageDetailDO.setId(messageVO.getId());
-                messageDetailDO.setObjectVersionNumber(messageVO.getObjectVersionNumber());
-                if (noticeDetailMapper.updateByPrimaryKeySelective(messageDetailDO) != 1) {
-                    throw new CommonException("error.messageDetailDO.update");
+                messageDetailDTO.setId(messageVO.getId());
+                messageDetailDTO.setObjectVersionNumber(messageVO.getObjectVersionNumber());
+                if (noticeDetailMapper.updateByPrimaryKeySelective(messageDetailDTO) != 1) {
+                    throw new CommonException("error.messageDetailDTO.update");
                 }
             }
         }

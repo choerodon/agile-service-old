@@ -425,7 +425,7 @@ public class ReportServiceImpl implements ReportService {
         List<Long> nowVersionIssue = reportMapper.queryIssueIdByVersionId(projectId, versionId);
         Date startDate = versionDO.getStartDate() != null ? versionDO.getStartDate() : versionDO.getCreationDate();
         Date endDate = new Date();
-        List<VersionIssueChangeDO> versionChangeIssue = reportMapper.queryChangeIssue(projectId, versionId, startDate, endDate);
+        List<VersionIssueChangeDTO> versionChangeIssue = reportMapper.queryChangeIssue(projectId, versionId, startDate, endDate);
         switch (type) {
             case STORY_POINTS:
                 statisticsByStoryPointsOrRemainingTime(versionReport, projectId, nowVersionIssue, versionChangeIssue, startDate, endDate, FIELD_STORY_POINTS);
@@ -444,9 +444,9 @@ public class ReportServiceImpl implements ReportService {
         return versionReportMap;
     }
 
-    private void statisticsByIssueCount(List<VersionReportVO> versionReport, Long projectId, List<Long> nowVersionIssue, List<VersionIssueChangeDO> versionChangeIssue, Date startDate, Date endDate) {
-        VersionIssueChangeDO nowVersionIssueChange = new VersionIssueChangeDO();
-        List<VersionIssueChangeDO> versionIssues = new ArrayList<>();
+    private void statisticsByIssueCount(List<VersionReportVO> versionReport, Long projectId, List<Long> nowVersionIssue, List<VersionIssueChangeDTO> versionChangeIssue, Date startDate, Date endDate) {
+        VersionIssueChangeDTO nowVersionIssueChange = new VersionIssueChangeDTO();
+        List<VersionIssueChangeDTO> versionIssues = new ArrayList<>();
         //查统计最末时间点的相关信息
         Integer nowCompletedIssueCount = 0;
         if (!nowVersionIssue.isEmpty()) {
@@ -494,9 +494,9 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private void statisticsByStoryPointsOrRemainingTime(List<VersionReportVO> versionReport, Long projectId, List<Long> nowVersionIssue, List<VersionIssueChangeDO> versionChangeIssue, Date startDate, Date endDate, String field) {
-        VersionIssueChangeDO nowVersionIssueChange = new VersionIssueChangeDO();
-        List<VersionIssueChangeDO> versionIssues = new ArrayList<>();
+    private void statisticsByStoryPointsOrRemainingTime(List<VersionReportVO> versionReport, Long projectId, List<Long> nowVersionIssue, List<VersionIssueChangeDTO> versionChangeIssue, Date startDate, Date endDate, String field) {
+        VersionIssueChangeDTO nowVersionIssueChange = new VersionIssueChangeDTO();
+        List<VersionIssueChangeDTO> versionIssues = new ArrayList<>();
         String fieldName = field.equals(FIELD_STORY_POINTS) ? FIELD_STORY_POINTS_NAME : FIELD_REMAINING_TIME_NAME;
         //查统计最末时间点的相关信息
         Integer nowTotalField = 0;
@@ -613,11 +613,11 @@ public class ReportServiceImpl implements ReportService {
         ).collect(Collectors.toList()).size();
     }
 
-    private Map<Date, List<IssueChangeVO>> statisticalRemoveChangeIssue(Long projectId, List<VersionIssueChangeDO> versionChangeIssue, Set<Date> dateSet, String field) {
+    private Map<Date, List<IssueChangeVO>> statisticalRemoveChangeIssue(Long projectId, List<VersionIssueChangeDTO> versionChangeIssue, Set<Date> dateSet, String field) {
         //issue移除
-        List<VersionIssueChangeDO> versionRemoveChangeIssue = versionChangeIssue.stream().filter(versionIssueChangeDO -> !versionIssueChangeDO.getRemoveIssueIds().isEmpty()).map(versionIssueChangeDO -> {
-            versionIssueChangeDO.setIssueIds(versionIssueChangeDO.getRemoveIssueIds());
-            return versionIssueChangeDO;
+        List<VersionIssueChangeDTO> versionRemoveChangeIssue = versionChangeIssue.stream().filter(versionIssueChangeDTO -> !versionIssueChangeDTO.getRemoveIssueIds().isEmpty()).map(versionIssueChangeDTO -> {
+            versionIssueChangeDTO.setIssueIds(versionIssueChangeDTO.getRemoveIssueIds());
+            return versionIssueChangeDTO;
         }).collect(Collectors.toList());
         List<IssueChangeDTO> versionRemoveChangeIssues = versionRemoveChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionRemoveChangeIssue, field);
         List<IssueChangeVO> removeIssues = issueAssembler.toTargetList(versionRemoveChangeIssues, IssueChangeVO.class);
@@ -626,11 +626,11 @@ public class ReportServiceImpl implements ReportService {
         return removeIssuesMap;
     }
 
-    private Map<Date, List<IssueChangeVO>> statisticalAddChangeIssue(Long projectId, List<VersionIssueChangeDO> versionChangeIssue, Set<Date> dateSet, String field) {
+    private Map<Date, List<IssueChangeVO>> statisticalAddChangeIssue(Long projectId, List<VersionIssueChangeDTO> versionChangeIssue, Set<Date> dateSet, String field) {
         //issue移入
-        List<VersionIssueChangeDO> versionAddChangeIssue = versionChangeIssue.stream().filter(versionIssueChangeDO -> !versionIssueChangeDO.getAddIssueIds().isEmpty()).map(versionIssueChangeDO -> {
-            versionIssueChangeDO.setIssueIds(versionIssueChangeDO.getAddIssueIds());
-            return versionIssueChangeDO;
+        List<VersionIssueChangeDTO> versionAddChangeIssue = versionChangeIssue.stream().filter(versionIssueChangeDTO -> !versionIssueChangeDTO.getAddIssueIds().isEmpty()).map(versionIssueChangeDTO -> {
+            versionIssueChangeDTO.setIssueIds(versionIssueChangeDTO.getAddIssueIds());
+            return versionIssueChangeDTO;
         }).collect(Collectors.toList());
         List<IssueChangeDTO> versionAddChangeIssues = versionAddChangeIssue.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, versionAddChangeIssue, field);
         List<IssueChangeVO> addIssues = issueAssembler.toTargetList(versionAddChangeIssues, IssueChangeVO.class);
@@ -639,32 +639,32 @@ public class ReportServiceImpl implements ReportService {
         return addIssuesMap;
     }
 
-    private Map<Date, List<IssueChangeVO>> statisticalUnCompletedChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
+    private Map<Date, List<IssueChangeVO>> statisticalUnCompletedChange(Long projectId, List<VersionIssueChangeDTO> versionIssues, Set<Date> dateSet, String field) {
         //issue由完成变为未完成
-        List<VersionIssueChangeDO> unCompletedChangeIssues = reportMapper.queryCompletedChangeIssue(projectId, versionIssues, false);
+        List<VersionIssueChangeDTO> unCompletedChangeIssues = reportMapper.queryCompletedChangeIssue(projectId, versionIssues, false);
         List<IssueChangeVO> unCompletedIssues = issueAssembler.toTargetList(unCompletedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, unCompletedChangeIssues, field), IssueChangeVO.class);
         Map<Date, List<IssueChangeVO>> unCompletedIssuesMap = unCompletedIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(unCompletedIssuesMap.keySet());
         return unCompletedIssuesMap;
     }
 
-    private Map<Date, List<IssueChangeVO>> statisticalCompletedChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
+    private Map<Date, List<IssueChangeVO>> statisticalCompletedChange(Long projectId, List<VersionIssueChangeDTO> versionIssues, Set<Date> dateSet, String field) {
         //issue由未完成变为完成
-        List<VersionIssueChangeDO> completedChangeIssues = reportMapper.queryCompletedChangeIssue(projectId, versionIssues, true);
+        List<VersionIssueChangeDTO> completedChangeIssues = reportMapper.queryCompletedChangeIssue(projectId, versionIssues, true);
         List<IssueChangeVO> completedIssues = issueAssembler.toTargetList(completedChangeIssues.isEmpty() ? new ArrayList<>() : reportMapper.queryChangIssue(projectId, completedChangeIssues, field), IssueChangeVO.class);
         Map<Date, List<IssueChangeVO>> completedIssuesMap = completedIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(completedIssuesMap.keySet());
         return completedIssuesMap;
     }
 
-    private Map<Date, List<IssueChangeVO>> statisticalFieldChange(Long projectId, List<VersionIssueChangeDO> versionIssues, Set<Date> dateSet, String field) {
+    private Map<Date, List<IssueChangeVO>> statisticalFieldChange(Long projectId, List<VersionIssueChangeDTO> versionIssues, Set<Date> dateSet, String field) {
         List<IssueChangeVO> changeIssues = issueAssembler.toTargetList(reportMapper.queryChangeFieldIssue(projectId, versionIssues, field), IssueChangeVO.class);
         Map<Date, List<IssueChangeVO>> changeIssuesMap = changeIssues.stream().collect(Collectors.groupingBy(IssueChangeVO::getChangeDate));
         dateSet.addAll(changeIssuesMap.keySet());
         return changeIssuesMap;
     }
 
-    private void statisticalTimePointIssue(List<Long> nowVersionIssue, List<VersionIssueChangeDO> versionIssues, List<VersionIssueChangeDO> versionChangeIssue, Date startDate) {
+    private void statisticalTimePointIssue(List<Long> nowVersionIssue, List<VersionIssueChangeDTO> versionIssues, List<VersionIssueChangeDTO> versionChangeIssue, Date startDate) {
         for (int i = 0; i < versionChangeIssue.size(); i++) {
             int j = i + 1;
             if (j < versionChangeIssue.size()) {
@@ -1020,16 +1020,16 @@ public class ReportServiceImpl implements ReportService {
         return sdf.format(d);
     }
 
-    private List<VelocitySprintDO> dealStoryPointResult(List<VelocitySingleDO> committedList, List<VelocitySingleDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
-        for (VelocitySprintDO temp : sprintDOList) {
+    private List<VelocitySprintDTO> dealStoryPointResult(List<VelocitySingleDTO> committedList, List<VelocitySingleDTO> completedList, List<VelocitySprintDTO> sprintDOList, List<VelocitySprintDTO> result) {
+        for (VelocitySprintDTO temp : sprintDOList) {
             BigDecimal committedStoryPoints = new BigDecimal(0);
             BigDecimal completedStoryPoints = new BigDecimal(0);
-            for (VelocitySingleDO committed : committedList) {
+            for (VelocitySingleDTO committed : committedList) {
                 if (committed.getSprintId().equals(temp.getSprintId())) {
                     committedStoryPoints = committedStoryPoints.add(committed.getStoryPoint());
                 }
             }
-            for (VelocitySingleDO completed : completedList) {
+            for (VelocitySingleDTO completed : completedList) {
                 if (completed.getSprintId().equals(temp.getSprintId())) {
                     completedStoryPoints = completedStoryPoints.add(completed.getStoryPoint());
                 }
@@ -1041,16 +1041,16 @@ public class ReportServiceImpl implements ReportService {
         return result;
     }
 
-    private List<VelocitySprintDO> dealIssueCountResult(List<VelocitySingleDO> committedList, List<VelocitySingleDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
-        for (VelocitySprintDO temp : sprintDOList) {
+    private List<VelocitySprintDTO> dealIssueCountResult(List<VelocitySingleDTO> committedList, List<VelocitySingleDTO> completedList, List<VelocitySprintDTO> sprintDOList, List<VelocitySprintDTO> result) {
+        for (VelocitySprintDTO temp : sprintDOList) {
             int committedIssueNum = 0;
             int completedIssueNum = 0;
-            for (VelocitySingleDO committed : committedList) {
+            for (VelocitySingleDTO committed : committedList) {
                 if (committed.getSprintId().equals(temp.getSprintId())) {
                     committedIssueNum += 1;
                 }
             }
-            for (VelocitySingleDO completed : completedList) {
+            for (VelocitySingleDTO completed : completedList) {
                 if (completed.getSprintId().equals(temp.getSprintId())) {
                     completedIssueNum += 1;
                 }
@@ -1062,16 +1062,16 @@ public class ReportServiceImpl implements ReportService {
         return result;
     }
 
-    private List<VelocitySprintDO> dealRemainTimeResult(List<VelocitySingleDO> committedList, List<VelocitySingleDO> completedList, List<VelocitySprintDO> sprintDOList, List<VelocitySprintDO> result) {
-        for (VelocitySprintDO temp : sprintDOList) {
+    private List<VelocitySprintDTO> dealRemainTimeResult(List<VelocitySingleDTO> committedList, List<VelocitySingleDTO> completedList, List<VelocitySprintDTO> sprintDOList, List<VelocitySprintDTO> result) {
+        for (VelocitySprintDTO temp : sprintDOList) {
             BigDecimal committedRemainTime = new BigDecimal(0);
             BigDecimal completedRemainTime = new BigDecimal(0);
-            for (VelocitySingleDO committed : committedList) {
+            for (VelocitySingleDTO committed : committedList) {
                 if (committed.getSprintId().equals(temp.getSprintId())) {
                     committedRemainTime = committedRemainTime.add(committed.getRemainTime());
                 }
             }
-            for (VelocitySingleDO completed : completedList) {
+            for (VelocitySingleDTO completed : completedList) {
                 if (completed.getSprintId().equals(temp.getSprintId())) {
                     completedRemainTime = completedRemainTime.add(completed.getRemainTime());
                 }
@@ -1086,27 +1086,27 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Cacheable(cacheNames = AGILE, key = "'VelocityChart' + #projectId + ':' + #type")
     public List<VelocitySprintVO> queryVelocityChart(Long projectId, String type) {
-        List<VelocitySprintDO> sprintDOList = reportMapper.selectAllSprint(projectId);
+        List<VelocitySprintDTO> sprintDOList = reportMapper.selectAllSprint(projectId);
         if (sprintDOList.isEmpty()) {
             return new ArrayList<>();
         }
-        List<Long> ids = sprintDOList.stream().map(VelocitySprintDO::getSprintId).collect(Collectors.toList());
+        List<Long> ids = sprintDOList.stream().map(VelocitySprintDTO::getSprintId).collect(Collectors.toList());
         String now = getNowTime();
-        List<VelocitySprintDO> result = new ArrayList<>();
+        List<VelocitySprintDTO> result = new ArrayList<>();
         switch (type) {
             case TYPE_ISSUE_COUNT:
-                List<VelocitySingleDO> issueCountCommitted = reportMapper.selectByIssueCountCommitted(projectId, ids, now);
-                List<VelocitySingleDO> issueCountCompleted = reportMapper.selectByIssueCountCompleted(projectId, ids, now);
+                List<VelocitySingleDTO> issueCountCommitted = reportMapper.selectByIssueCountCommitted(projectId, ids, now);
+                List<VelocitySingleDTO> issueCountCompleted = reportMapper.selectByIssueCountCompleted(projectId, ids, now);
                 dealIssueCountResult(issueCountCommitted, issueCountCompleted, sprintDOList, result);
                 break;
             case TYPE_STORY_POINT:
-                List<VelocitySingleDO> storyPointCommitted = reportMapper.selectByStoryPointAndNumCommitted(projectId, ids, now);
-                List<VelocitySingleDO> storyPointCompleted = reportMapper.selectByStoryPointAndNumCompleted(projectId, ids, now);
+                List<VelocitySingleDTO> storyPointCommitted = reportMapper.selectByStoryPointAndNumCommitted(projectId, ids, now);
+                List<VelocitySingleDTO> storyPointCompleted = reportMapper.selectByStoryPointAndNumCompleted(projectId, ids, now);
                 dealStoryPointResult(storyPointCommitted, storyPointCompleted, sprintDOList, result);
                 break;
             case TYPE_REMAIN_TIME:
-                List<VelocitySingleDO> remainTimeCommitted = reportMapper.selectByRemainTimeCommitted(projectId, ids, now);
-                List<VelocitySingleDO> remainTimeCompleted = reportMapper.selectByRemainTimeCompleted(projectId, ids, now);
+                List<VelocitySingleDTO> remainTimeCommitted = reportMapper.selectByRemainTimeCommitted(projectId, ids, now);
+                List<VelocitySingleDTO> remainTimeCompleted = reportMapper.selectByRemainTimeCompleted(projectId, ids, now);
                 dealRemainTimeResult(remainTimeCommitted, remainTimeCompleted, sprintDOList, result);
                 break;
             default:
@@ -1157,10 +1157,10 @@ public class ReportServiceImpl implements ReportService {
 
     private List<PieChartVO> handlePieChartByStatusType(Long projectId, Date startDate, Date endDate, Long sprintId, Long versionId) {
         Integer total = reportMapper.queryIssueCountByFieldName(projectId, "status_id", startDate, endDate, sprintId, versionId);
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "status_id", false, total,
+        List<PieChartDTO> pieChartDTOS = reportMapper.queryPieChartByParam(projectId, true, "status_id", false, total,
                 startDate, endDate, sprintId, versionId);
-        if (pieChartDOS != null && !pieChartDOS.isEmpty()) {
-            List<PieChartVO> pieChartVOS = reportAssembler.toTargetList(pieChartDOS, PieChartVO.class);
+        if (pieChartDTOS != null && !pieChartDTOS.isEmpty()) {
+            List<PieChartVO> pieChartVOS = reportAssembler.toTargetList(pieChartDTOS, PieChartVO.class);
             Map<Long, StatusMapVO> statusMap = ConvertUtil.getIssueStatusMap(projectId);
             pieChartVOS.forEach(pieChartDTO -> pieChartDTO.setName(statusMap.get(Long.parseLong(pieChartDTO.getTypeName())).getName()));
             return pieChartVOS;
@@ -1171,10 +1171,10 @@ public class ReportServiceImpl implements ReportService {
 
     private List<PieChartVO> handlePieChartByTypeCode(Long projectId, Date startDate, Date endDate, Long sprintId, Long versionId) {
         Integer total = reportMapper.queryIssueCountByFieldName(projectId, "type_code", startDate, endDate, sprintId, versionId);
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "issue_type_id", true, total,
+        List<PieChartDTO> pieChartDTOS = reportMapper.queryPieChartByParam(projectId, true, "issue_type_id", true, total,
                 startDate, endDate, sprintId, versionId);
-        if (pieChartDOS != null && !pieChartDOS.isEmpty()) {
-            List<PieChartVO> pieChartVOS = reportAssembler.toTargetList(pieChartDOS, PieChartVO.class);
+        if (pieChartDTOS != null && !pieChartDTOS.isEmpty()) {
+            List<PieChartVO> pieChartVOS = reportAssembler.toTargetList(pieChartDTOS, PieChartVO.class);
             Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             pieChartVOS.forEach(pieChartDTO -> {
                 IssueTypeVO issueTypeVO = issueTypeDTOMap.get(Long.parseLong(pieChartDTO.getTypeName()));
@@ -1197,28 +1197,28 @@ public class ReportServiceImpl implements ReportService {
 
     private List<PieChartVO> handlePieChartByType(Long projectId, String fieldName, Boolean own, Date startDate, Date endDate, Long sprintId, Long versionId) {
         Integer total = reportMapper.queryIssueCountByFieldName(projectId, fieldName, startDate, endDate, sprintId, versionId);
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, own, fieldName, false, total, startDate, endDate, sprintId, versionId);
-        return reportAssembler.toTargetList(pieChartDOS, PieChartVO.class);
+        List<PieChartDTO> pieChartDTOS = reportMapper.queryPieChartByParam(projectId, own, fieldName, false, total, startDate, endDate, sprintId, versionId);
+        return reportAssembler.toTargetList(pieChartDTOS, PieChartVO.class);
     }
 
     private List<PieChartVO> handlePieChartByAssignee(Long projectId, Date startDate, Date endDate, Long sprintId, Long versionId) {
         Integer total = reportMapper.queryIssueCountByFieldName(projectId, "assignee_id", startDate, endDate, sprintId, versionId);
-        List<PieChartDO> pieChartDOS = reportMapper.queryPieChartByParam(projectId, true, "assignee_id", false, total, startDate, endDate, sprintId, versionId);
-        List<PieChartVO> pieChartVOList = reportAssembler.toTargetList(pieChartDOS, PieChartVO.class);
+        List<PieChartDTO> pieChartDTOS = reportMapper.queryPieChartByParam(projectId, true, "assignee_id", false, total, startDate, endDate, sprintId, versionId);
+        List<PieChartVO> pieChartVOList = reportAssembler.toTargetList(pieChartDTOS, PieChartVO.class);
         if (pieChartVOList != null && !pieChartVOList.isEmpty()) {
             List<Long> userIds = pieChartVOList.stream().filter(pieChartDTO ->
                     pieChartDTO.getTypeName() != null && !"0".equals(pieChartDTO.getTypeName())).map(pieChartDTO ->
                     Long.parseLong(pieChartDTO.getTypeName())).collect(Collectors.toList());
-            Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(userIds, true);
+            Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(userIds, true);
             pieChartVOList.parallelStream().forEach(pieChartDTO -> {
                 JSONObject jsonObject = new JSONObject();
                 if (pieChartDTO.getTypeName() != null && usersMap.get(Long.parseLong(pieChartDTO.getTypeName())) != null) {
-                    UserMessageDO userMessageDO = usersMap.get(Long.parseLong(pieChartDTO.getTypeName()));
-                    String assigneeName = userMessageDO.getName();
-                    String assigneeLoginName = userMessageDO.getLoginName();
-                    String assigneeRealName = userMessageDO.getRealName();
-                    String assigneeImageUrl = userMessageDO.getImageUrl();
-                    String email = userMessageDO.getEmail();
+                    UserMessageDTO userMessageDTO = usersMap.get(Long.parseLong(pieChartDTO.getTypeName()));
+                    String assigneeName = userMessageDTO.getName();
+                    String assigneeLoginName = userMessageDTO.getLoginName();
+                    String assigneeRealName = userMessageDTO.getRealName();
+                    String assigneeImageUrl = userMessageDTO.getImageUrl();
+                    String email = userMessageDTO.getEmail();
                     pieChartDTO.setName(assigneeName);
                     pieChartDTO.setLoginName(assigneeLoginName);
                     pieChartDTO.setRealName(assigneeRealName);

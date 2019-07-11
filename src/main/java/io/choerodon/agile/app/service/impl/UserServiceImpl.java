@@ -8,7 +8,7 @@ import io.choerodon.agile.api.vo.UserVO;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.UserDTO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -52,19 +52,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<Long, UserMessageDO> queryUsersMap(List<Long> assigneeIdList, Boolean withLoginName) {
+    public Map<Long, UserMessageDTO> queryUsersMap(List<Long> assigneeIdList, Boolean withLoginName) {
         if (assigneeIdList == null) {
             return new HashMap<>();
         }
-        Map<Long, UserMessageDO> userMessageMap = new HashMap<>(assigneeIdList.size());
+        Map<Long, UserMessageDTO> userMessageMap = new HashMap<>(assigneeIdList.size());
         if (!assigneeIdList.isEmpty()) {
             Long[] assigneeIds = new Long[assigneeIdList.size()];
             assigneeIdList.toArray(assigneeIds);
             List<UserDTO> userDTOS = userFeignClient.listUsersByIds(assigneeIds, false).getBody();
             if (withLoginName) {
-                userDTOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getLoginName() + userDO.getRealName(), userDO.getLoginName(), userDO.getRealName(), userDO.getImageUrl(), userDO.getEmail())));
+                userDTOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDTO(userDO.getLoginName() + userDO.getRealName(), userDO.getLoginName(), userDO.getRealName(), userDO.getImageUrl(), userDO.getEmail())));
             } else {
-                userDTOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDO(userDO.getRealName(), userDO.getLoginName(), userDO.getRealName(), userDO.getImageUrl(), userDO.getEmail())));
+                userDTOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDTO(userDO.getRealName(), userDO.getLoginName(), userDO.getRealName(), userDO.getImageUrl(), userDO.getEmail())));
             }
         }
         return userMessageMap;

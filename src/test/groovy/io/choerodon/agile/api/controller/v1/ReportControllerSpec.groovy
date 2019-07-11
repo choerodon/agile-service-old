@@ -111,8 +111,8 @@ class ReportControllerSpec extends Specification {
     def setup() {
         given: '设置feign调用mockito'
         // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
-        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-        UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
+        Map<Long, UserMessageDTO> userMessageDOMap = new HashMap<>()
+        UserMessageDTO userMessageDO = new UserMessageDTO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         userRepository.queryUsersMap(*_) >> userMessageDOMap
         UserDTO userDO = new UserDTO()
@@ -330,8 +330,8 @@ class ReportControllerSpec extends Specification {
         given: 'mock issueMapper'
         def reportMapperMock = Mock(ReportMapper)
         reportService.setReportMapper(reportMapperMock)
-        List<VersionIssueChangeDO> versionIssueChangeDOList = new ArrayList<>()
-        VersionIssueChangeDO versionIssueChangeDO = new VersionIssueChangeDO()
+        List<VersionIssueChangeDTO> versionIssueChangeDOList = new ArrayList<>()
+        VersionIssueChangeDTO versionIssueChangeDO = new VersionIssueChangeDTO()
         versionIssueChangeDO.addIssueIds = [1]
         versionIssueChangeDO.removeIssueIds = [2]
         versionIssueChangeDOList.add(versionIssueChangeDO)

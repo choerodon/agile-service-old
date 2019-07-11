@@ -9,7 +9,7 @@ import javax.persistence.*;
  * Email: fuqianghuang01@gmail.com
  */
 @Table(name = "agile_message_detail")
-public class MessageDetailDO extends BaseDTO {
+public class MessageDetailDTO extends BaseDTO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -153,7 +153,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         if (assigneeDistributeVOList != null && !assigneeDistributeVOList.isEmpty()) {
             List<Long> userIds = assigneeDistributeVOList.stream().filter(assigneeDistributeVO ->
                     assigneeDistributeVO.getAssigneeId() != null).map(assigneeDistributeVO -> (assigneeDistributeVO.getAssigneeId())).collect(Collectors.toList());
-            Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(userIds, true);
+            Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(userIds, true);
             assigneeDistributeVOList.parallelStream().forEach(assigneeDistributeVO -> {
                 if (assigneeDistributeVO.getAssigneeId() != null && usersMap.get(assigneeDistributeVO.getAssigneeId()) != null) {
                     assigneeDistributeVO.setAssigneeName(usersMap.get(assigneeDistributeVO.getAssigneeId()).getName());

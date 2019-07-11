@@ -4,7 +4,7 @@ package io.choerodon.agile.infra.repository
 //import io.choerodon.agile.AgileTestConfiguration
 //import io.choerodon.agile.api.vo.ProjectVO
 //import io.choerodon.agile.infra.dataobject.UserDTO
-//import io.choerodon.agile.infra.dataobject.UserMessageDO
+//import io.choerodon.agile.infra.dataobject.UserMessageDTO
 //import io.choerodon.agile.infra.feign.UserFeignClient
 //import io.choerodon.agile.infra.repository.impl.UserRepositoryImpl
 //import org.springframework.beans.factory.annotation.Autowired
@@ -79,7 +79,7 @@ package io.choerodon.agile.infra.repository
 //        assigneeIdList.add(1L)
 //
 //        when: '根据用户id列表查询用户信息'
-//        Map<Long, UserMessageDO> userMessageDOMap = userService.queryUsersMap(assigneeIdList, withLoginName)
+//        Map<Long, UserMessageDTO> userMessageDOMap = userService.queryUsersMap(assigneeIdList, withLoginName)
 //
 //        then: '判断mock交互并且设置返回值'
 //        1 * userFeignClient.listUsersByIds(*_) >> responseEntity

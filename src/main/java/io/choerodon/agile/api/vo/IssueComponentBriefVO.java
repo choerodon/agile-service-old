@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author dinghuang123@gmail.com
  * @since 2018/11/7
  */
-public class IssueComponentBriefDTO implements Serializable {
+public class IssueComponentBriefVO implements Serializable {
 
     @ApiModelProperty(value = "模块主键id")
     private Long componentId;

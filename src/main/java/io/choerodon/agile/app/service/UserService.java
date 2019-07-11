@@ -6,7 +6,7 @@ import io.choerodon.agile.api.vo.RoleAssignmentSearchVO;
 import io.choerodon.agile.api.vo.RoleVO;
 import io.choerodon.agile.api.vo.UserVO;
 import io.choerodon.agile.infra.dataobject.UserDTO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +26,7 @@ public interface UserService {
      */
     UserDTO queryUserNameByOption(Long userId, Boolean withId);
 
-    Map<Long, UserMessageDO> queryUsersMap(List<Long> assigneeIds, Boolean withLoginName);
+    Map<Long, UserMessageDTO> queryUsersMap(List<Long> assigneeIds, Boolean withLoginName);
 
     /**
      * 根据项目id和名称查询用户信息

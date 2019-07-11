@@ -1,25 +1,22 @@
-package io.choerodon.agile.api.vo;
+package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.infra.common.utils.StringUtil;
-import io.swagger.annotations.ApiModelProperty;
+import io.choerodon.mybatis.entity.BaseDTO;
+
+import javax.persistence.Table;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/7/6
  */
-public class IssueSprintRelDTO {
+@Table(name = "agile_issue_sprint_rel")
+public class IssueSprintRelDTO extends BaseDTO {
 
-    @ApiModelProperty(value = "问题id")
     private Long issueId;
 
-    @ApiModelProperty(value = "冲刺id")
     private Long sprintId;
 
-    @ApiModelProperty(value = "项目id")
     private Long projectId;
-
-    @ApiModelProperty(value = "版本号")
-    private Long objectVersionNumber;
 
     public Long getIssueId() {
         return issueId;
@@ -43,14 +40,6 @@ public class IssueSprintRelDTO {
 
     public void setProjectId(Long projectId) {
         this.projectId = projectId;
-    }
-
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
-    }
-
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
     }
 
     @Override

@@ -90,7 +90,7 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDTO> {
 
     List<Long> sortAndJudgeCompleted(@Param("projectId") Long projectId, @Param("parentIds") List<Long> parentIds);
 
-    List<ParentIssueDO> queryParentIssuesByIds(@Param("projectId") Long projectId, @Param("parentIds") List<Long> parentIds);
+    List<ParentIssueDTO> queryParentIssuesByIds(@Param("projectId") Long projectId, @Param("parentIds") List<Long> parentIds);
 
     List<ColumnIssueNumDTO> getAllColumnNum(@Param("projectId") Long projectId,
                                             @Param("boardId") Long boardId,

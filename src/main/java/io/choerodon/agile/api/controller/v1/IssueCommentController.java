@@ -57,9 +57,9 @@ public class IssueCommentController {
                                                              @ApiParam(value = "更新issue对象", required = true)
                                                               @RequestBody JSONObject issueCommentUpdate) {
         issueCommentValidator.verifyUpdateData(projectId, issueCommentUpdate);
-        IssueCommentUpdateDTO issueCommentUpdateDTO = new IssueCommentUpdateDTO();
-        List<String> stringList = verifyUpdateUtil.verifyUpdateData(issueCommentUpdate, issueCommentUpdateDTO);
-        return Optional.ofNullable(issueCommentService.updateIssueComment(issueCommentUpdateDTO, stringList,projectId))
+        IssueCommentUpdateVO issueCommentUpdateVO = new IssueCommentUpdateVO();
+        List<String> stringList = verifyUpdateUtil.verifyUpdateData(issueCommentUpdate, issueCommentUpdateVO);
+        return Optional.ofNullable(issueCommentService.updateIssueComment(issueCommentUpdateVO, stringList,projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.IssueComment.updateIssueComment"));
     }

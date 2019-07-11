@@ -9,7 +9,7 @@ import io.choerodon.agile.infra.dataobject.WorkLogDTO;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.WorkLogMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -143,7 +143,7 @@ public class WorkLogServiceImpl implements WorkLogService {
     public List<WorkLogVO> queryWorkLogListByIssueId(Long projectId, Long issueId) {
         List<WorkLogVO> workLogVOList = ConvertHelper.convertList(workLogMapper.queryByIssueId(issueId, projectId), WorkLogVO.class);
         List<Long> assigneeIds = workLogVOList.stream().filter(workLogDTO -> workLogDTO.getUserId() != null && !Objects.equals(workLogDTO.getUserId(), 0L)).map(WorkLogVO::getUserId).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
         workLogVOList.forEach(workLogDTO -> {
             String assigneeName = usersMap.get(workLogDTO.getUserId()) != null ? usersMap.get(workLogDTO.getUserId()).getName() : null;
             workLogDTO.setUserName(assigneeName);

@@ -60,38 +60,38 @@ public class ReportAssembler extends AbstractAssembler {
         return issueBurnDownReportVOS;
     }
 
-    public List<IssueTypeDistributionChartVO> toIssueTypeDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDO> issueTypeDistributionChartDOS) {
+    public List<IssueTypeDistributionChartVO> toIssueTypeDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS) {
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-        List<IssueTypeDistributionChartVO> issueTypeDistributionChartVOS = new ArrayList<>(issueTypeDistributionChartDOS.size());
-        issueTypeDistributionChartDOS.forEach(issueTypeDistributionChartDO -> {
-            IssueTypeDistributionChartVO issueTypeDistributionChartVO = toTarget(issueTypeDistributionChartDO, IssueTypeDistributionChartVO.class);
-            issueTypeDistributionChartVO.setIssueTypeVO(issueTypeDTOMap.get(issueTypeDistributionChartDO.getIssueTypeId()));
-            issueTypeDistributionChartVO.setName(issueTypeDTOMap.get(issueTypeDistributionChartDO.getIssueTypeId()).getName());
-            issueTypeDistributionChartVO.setStatusMapVO(statusMapDTOMap.get(issueTypeDistributionChartDO.getStatusId()));
+        List<IssueTypeDistributionChartVO> issueTypeDistributionChartVOS = new ArrayList<>(issueTypeDistributionChartDTOS.size());
+        issueTypeDistributionChartDTOS.forEach(issueTypeDistributionChartDTO -> {
+            IssueTypeDistributionChartVO issueTypeDistributionChartVO = toTarget(issueTypeDistributionChartDTO, IssueTypeDistributionChartVO.class);
+            issueTypeDistributionChartVO.setIssueTypeVO(issueTypeDTOMap.get(issueTypeDistributionChartDTO.getIssueTypeId()));
+            issueTypeDistributionChartVO.setName(issueTypeDTOMap.get(issueTypeDistributionChartDTO.getIssueTypeId()).getName());
+            issueTypeDistributionChartVO.setStatusMapVO(statusMapDTOMap.get(issueTypeDistributionChartDTO.getStatusId()));
             issueTypeDistributionChartVOS.add(issueTypeDistributionChartVO);
         });
         return issueTypeDistributionChartVOS;
     }
 
-    public List<IssueTypeDistributionChartVO> toIssueTypeVersionDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDO> issueTypeDistributionChartDOS) {
+    public List<IssueTypeDistributionChartVO> toIssueTypeVersionDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS) {
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-        List<IssueTypeDistributionChartVO> issueTypeDistributionChartVOS = new ArrayList<>(issueTypeDistributionChartDOS.size());
-        issueTypeDistributionChartDOS.forEach(issueTypeDistributionChartDO -> {
-            IssueTypeDistributionChartVO issueTypeDistributionChartVO = toTarget(issueTypeDistributionChartDO, IssueTypeDistributionChartVO.class);
-            issueTypeDistributionChartVO.setStatusMapVO(statusMapDTOMap.get(issueTypeDistributionChartDO.getStatusId()));
+        List<IssueTypeDistributionChartVO> issueTypeDistributionChartVOS = new ArrayList<>(issueTypeDistributionChartDTOS.size());
+        issueTypeDistributionChartDTOS.forEach(issueTypeDistributionChartDTO -> {
+            IssueTypeDistributionChartVO issueTypeDistributionChartVO = toTarget(issueTypeDistributionChartDTO, IssueTypeDistributionChartVO.class);
+            issueTypeDistributionChartVO.setStatusMapVO(statusMapDTOMap.get(issueTypeDistributionChartDTO.getStatusId()));
             issueTypeDistributionChartVOS.add(issueTypeDistributionChartVO);
         });
         return issueTypeDistributionChartVOS;
     }
 
-    public List<IssuePriorityDistributionChartVO> toIssuePriorityDistributionChartDTO(Long projectId, List<IssuePriorityDistributionChartDO> issuePriorityDistributionChartDOS) {
+    public List<IssuePriorityDistributionChartVO> toIssuePriorityDistributionChartDTO(Long projectId, List<IssuePriorityDistributionChartDTO> issuePriorityDistributionChartDTOS) {
         Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
-        List<IssuePriorityDistributionChartVO> issuePriorityDistributionChartVOS = new ArrayList<>(issuePriorityDistributionChartDOS.size());
-        issuePriorityDistributionChartDOS.forEach(issuePriorityDistributionChartDO -> {
-            IssuePriorityDistributionChartVO issueTypeDistributionChartDTO = toTarget(issuePriorityDistributionChartDO, IssuePriorityDistributionChartVO.class);
-            issueTypeDistributionChartDTO.setName(priorityDTOMap.get(issuePriorityDistributionChartDO.getPriorityId()).getName());
-            issueTypeDistributionChartDTO.setPriorityVO(priorityDTOMap.get(issuePriorityDistributionChartDO.getPriorityId()));
+        List<IssuePriorityDistributionChartVO> issuePriorityDistributionChartVOS = new ArrayList<>(issuePriorityDistributionChartDTOS.size());
+        issuePriorityDistributionChartDTOS.forEach(issuePriorityDistributionChartDTO -> {
+            IssuePriorityDistributionChartVO issueTypeDistributionChartDTO = toTarget(issuePriorityDistributionChartDTO, IssuePriorityDistributionChartVO.class);
+            issueTypeDistributionChartDTO.setName(priorityDTOMap.get(issuePriorityDistributionChartDTO.getPriorityId()).getName());
+            issueTypeDistributionChartDTO.setPriorityVO(priorityDTOMap.get(issuePriorityDistributionChartDTO.getPriorityId()));
             issuePriorityDistributionChartVOS.add(issueTypeDistributionChartDTO);
         });
         return issuePriorityDistributionChartVOS;

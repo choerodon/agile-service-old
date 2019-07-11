@@ -46,8 +46,8 @@ class IterativeWorktableControllerSpec extends Specification {
 
 //    def setup() {
 //        given:
-//        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-//        UserMessageDO userMessageDO = new UserMessageDO("admin", "http://XXX.png", "admin@gmail.com")
+//        Map<Long, UserMessageDTO> userMessageDOMap = new HashMap<>()
+//        UserMessageDTO userMessageDO = new UserMessageDTO("admin", "http://XXX.png", "admin@gmail.com")
 //        userMessageDOMap.put(1, userMessageDO)
 //        userService.queryUsersMap(*_) >> userMessageDOMap
 //        UserDTO userDO = new UserDTO()

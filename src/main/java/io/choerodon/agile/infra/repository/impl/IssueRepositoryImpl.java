@@ -9,7 +9,7 @@ import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.domain.service.IIssueService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.dataobject.MoveIssueDO;
+import io.choerodon.agile.infra.dataobject.MoveIssueDTO;
 import io.choerodon.agile.infra.dataobject.StoryMapMoveIssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -139,12 +139,12 @@ public class IssueRepositoryImpl implements IssueRepository {
     }
 
     @Override
-    public int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssues) {
+    public int batchUpdateIssueRank(Long projectId, List<MoveIssueDTO> moveIssues) {
         return issueMapper.batchUpdateIssueRank(projectId, moveIssues);
     }
 
     @Override
-    public int batchUpdateFeatureRank(Long programId, List<MoveIssueDO> moveIssues) {
+    public int batchUpdateFeatureRank(Long programId, List<MoveIssueDTO> moveIssues) {
         return issueMapper.batchUpdateFeatureRank(programId, moveIssues);
     }
 

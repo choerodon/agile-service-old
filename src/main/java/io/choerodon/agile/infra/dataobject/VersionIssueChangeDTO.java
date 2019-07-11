@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by jian_zhang02@163.com on 2018/7/5.
  */
-public class VersionIssueChangeDO {
+public class VersionIssueChangeDTO {
     private Date preDate;
     private Date changeDate;
     private List<Long> logIds;

@@ -12,7 +12,7 @@
         <id property="sequence" column="abc_sequence"/>
         <id property="color" column="abc_color"/>
         <id property="objectVersionNumber" column="abc_object_version_number"/>
-        <collection property="subStatuses" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.SubStatus">
+        <collection property="subStatusDTOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.SubStatusDTO">
             <id property="id" column="ais_id"/>
             <id property="completed" column="ais_completed"/>
             <id property="statusId" column="ais_status_id"/>
@@ -82,7 +82,7 @@
         ORDER BY abc.sequence
     </select>
 
-    <select id="queryParentIssuesByIds" resultType="io.choerodon.agile.infra.dataobject.ParentIssueDO">
+    <select id="queryParentIssuesByIds" resultType="io.choerodon.agile.infra.dataobject.ParentIssueDTO">
         select
         ai.issue_id,
         IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS issue_num,

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.ReportMapper">
 
-    <resultMap id="versionIssue" type="io.choerodon.agile.infra.dataobject.VersionIssueChangeDO">
+    <resultMap id="versionIssue" type="io.choerodon.agile.infra.dataobject.VersionIssueChangeDTO">
         <id property="changeDate" column="change_date"/>
         <collection property="issueIds" autoMapping="true" ofType="java.lang.Long">
             <id column="issue_id"/>
@@ -1339,7 +1339,7 @@
     </select>
 
 
-    <select id="selectByIssueCountCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+    <select id="selectByIssueCountCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDTO">
         SELECT
             aisr.sprint_id,
             aisr.issue_id
@@ -1348,7 +1348,7 @@
         WHERE aisr.project_id = #{projectId} and aisr.issue_id = ai.issue_id and ai.apply_type = 'agile'
     </select>
 
-    <select id="selectByIssueCountCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+    <select id="selectByIssueCountCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDTO">
         SELECT
             aisr.sprint_id,
             aisr.issue_id
@@ -1393,7 +1393,7 @@
     </select>
 
 
-    <select id="selectByStoryPointAndNumCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+    <select id="selectByStoryPointAndNumCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDTO">
         SELECT
         t1.sprint_id,
         t1.issue_id,
@@ -1430,7 +1430,7 @@
         and t1.issue_id = ai.issue_id and ai.apply_type = 'agile'
     </select>
 
-    <select id="selectByStoryPointAndNumCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+    <select id="selectByStoryPointAndNumCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDTO">
         SELECT
         t1.sprint_id,
         t1.issue_id,
@@ -1500,7 +1500,7 @@
     </select>
 
 
-    <select id="selectByRemainTimeCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+    <select id="selectByRemainTimeCommitted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDTO">
         SELECT
         t1.sprint_id,
         t1.issue_id,
@@ -1559,7 +1559,7 @@
         and t1.issue_id = ai.issue_id and ai.apply_type = 'agile'
     </select>
 
-    <select id="selectByRemainTimeCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDO">
+    <select id="selectByRemainTimeCompleted" resultType="io.choerodon.agile.infra.dataobject.VelocitySingleDTO">
         SELECT
         t1.sprint_id,
         t1.issue_id,
@@ -1653,7 +1653,7 @@
     </select>
 
 
-    <select id="selectAllSprint" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDO">
+    <select id="selectAllSprint" resultType="io.choerodon.agile.infra.dataobject.VelocitySprintDTO">
         SELECT
             sprint_id,
             sprint_name
@@ -1665,7 +1665,7 @@
     </select>
 
 
-    <select id="queryPieChartByParam" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
+    <select id="queryPieChartByParam" resultType="io.choerodon.agile.infra.dataobject.PieChartDTO">
         select *,(pieData.value/#{total})*100 as percent from (
         SELECT
         <choose>
@@ -1753,7 +1753,7 @@
         )pieData ORDER BY pieData.value DESC
     </select>
 
-    <select id="queryPieChartByEpic" resultType="io.choerodon.agile.infra.dataobject.PieChartDO">
+    <select id="queryPieChartByEpic" resultType="io.choerodon.agile.infra.dataobject.PieChartDTO">
         select *,(pieData.value/#{total})*100 as percent from (
         SELECT
         IFNULL( epica.epic_id, 0 ) AS type_name,
@@ -3160,7 +3160,7 @@
     </select>
 
     <select id="queryIssueTypeDistributionChart"
-            resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
+            resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDTO">
        SELECT
             ai.issue_type_id,
             ai.status_id,
@@ -3178,7 +3178,7 @@
     </select>
 
     <select id="queryVersionProgressChart"
-            resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDO">
+            resultType="io.choerodon.agile.infra.dataobject.IssueTypeDistributionChartDTO">
        SELECT
             apv.name,
             ai.status_id,
@@ -3213,7 +3213,7 @@
     </select>
 
     <select id="queryIssuePriorityDistributionChart"
-            resultType="io.choerodon.agile.infra.dataobject.IssuePriorityDistributionChartDO">
+            resultType="io.choerodon.agile.infra.dataobject.IssuePriorityDistributionChartDTO">
         SELECT
         aaa.priority_id,
         SUM( CASE WHEN aaa.is_completed = 1 THEN aaa.count ELSE 0 END ) AS done_count,

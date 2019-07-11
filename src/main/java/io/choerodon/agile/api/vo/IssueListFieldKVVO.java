@@ -106,7 +106,7 @@ public class IssueListFieldKVVO {
     private List<IssueSprintVO> issueSprintVOS;
 
     @ApiModelProperty(value = "评论列表")
-    private List<IssueComponentBriefDTO> issueComponentBriefDTOS;
+    private List<IssueComponentBriefVO> issueComponentBriefVOS;
 
     @ApiModelProperty(value = "自定义字段kv")
     private Map<String, String> foundationFieldValue;
@@ -127,12 +127,12 @@ public class IssueListFieldKVVO {
         this.issueSprintVOS = issueSprintVOS;
     }
 
-    public List<IssueComponentBriefDTO> getIssueComponentBriefDTOS() {
-        return issueComponentBriefDTOS;
+    public List<IssueComponentBriefVO> getIssueComponentBriefVOS() {
+        return issueComponentBriefVOS;
     }
 
-    public void setIssueComponentBriefDTOS(List<IssueComponentBriefDTO> issueComponentBriefDTOS) {
-        this.issueComponentBriefDTOS = issueComponentBriefDTOS;
+    public void setIssueComponentBriefVOS(List<IssueComponentBriefVO> issueComponentBriefVOS) {
+        this.issueComponentBriefVOS = issueComponentBriefVOS;
     }
 
     public Long getEpicId() {

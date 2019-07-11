@@ -384,7 +384,7 @@ public class PiServiceImpl implements PiService {
         return result;
     }
 
-    private void beforeRankInProgram(Long programId, Long targetSprintId, List<MoveIssueDO> moveIssueDOS, List<Long> moveIssueIds) {
+    private void beforeRankInProgram(Long programId, Long targetSprintId, List<MoveIssueDTO> moveIssueDTOS, List<Long> moveIssueIds) {
         if (moveIssueIds.isEmpty()) {
             return;
         }
@@ -392,13 +392,13 @@ public class PiServiceImpl implements PiService {
         if (minRank == null) {
             minRank = RankUtil.mid();
             for (Long issueId : moveIssueIds) {
-                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, minRank));
                 minRank = RankUtil.genPre(minRank);
             }
         } else {
             for (Long issueId : moveIssueIds) {
                 minRank = RankUtil.genPre(minRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, minRank));
             }
         }
     }
@@ -406,10 +406,10 @@ public class PiServiceImpl implements PiService {
     @Override
     public void dealUnCompleteFeature(Long programId, Long piId, Long targetPiId) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
+        List<MoveIssueDTO> moveIssueDTOS = new ArrayList<>();
         List<Long> moveFeatureRankIds = piMapper.queryFeatureIdOrderByRankDesc(programId, piId);
-        beforeRankInProgram(programId, targetPiId, moveIssueDOS, moveFeatureRankIds);
-        if (moveIssueDOS.isEmpty()) {
+        beforeRankInProgram(programId, targetPiId, moveIssueDTOS, moveFeatureRankIds);
+        if (moveIssueDTOS.isEmpty()) {
             return;
         }
         List<Long> moveFeatureIds = piMapper.queryFeatureIds(programId, piId);
@@ -437,7 +437,7 @@ public class PiServiceImpl implements PiService {
         if (targetPiId != null && !Objects.equals(targetPiId, 0L)) {
             issueRepository.featureToDestinationByIdsClosePi(programId, targetPiId, moveFeatureIds, new Date(), customUserDetails.getUserId());
         }
-        issueRepository.batchUpdateFeatureRank(programId, moveIssueDOS);
+        issueRepository.batchUpdateFeatureRank(programId, moveIssueDTOS);
     }
 
     @Override
@@ -540,60 +540,60 @@ public class PiServiceImpl implements PiService {
         return piDTO;
     }
 
-    private void noOutsetBeforeRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+    private void noOutsetBeforeRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDTO> moveIssueDTOS) {
         String minRank = piMapper.queryPiMinRank(programId, piId);
         if (minRank == null) {
             minRank = RankUtil.mid();
             for (Long issueId : moveIssueVO.getIssueIds()) {
-                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, minRank));
                 minRank = RankUtil.genPre(minRank);
             }
         } else {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 minRank = RankUtil.genPre(minRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, minRank));
             }
         }
     }
 
-    private void outsetBeforeRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+    private void outsetBeforeRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDTO> moveIssueDTOS) {
         String rightRank = issueMapper.queryRankByProgram(programId, moveIssueVO.getOutsetIssueId());
         String leftRank = issueMapper.queryLeftRankByProgram(programId, piId, rightRank);
         if (leftRank == null) {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 rightRank = RankUtil.genPre(rightRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, rightRank));
             }
         } else {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 rightRank = RankUtil.between(leftRank, rightRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, rightRank));
             }
         }
     }
 
-    private void beforeRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+    private void beforeRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDTO> moveIssueDTOS) {
         moveIssueVO.setIssueIds(issueMapper.queryFeatureIdOrderByRankDesc(programId, moveIssueVO.getIssueIds()));
         if (moveIssueVO.getOutsetIssueId() == null || Objects.equals(moveIssueVO.getOutsetIssueId(), 0L)) {
-            noOutsetBeforeRank(programId, piId, moveIssueVO, moveIssueDOS);
+            noOutsetBeforeRank(programId, piId, moveIssueVO, moveIssueDTOS);
         } else {
-            outsetBeforeRank(programId, piId, moveIssueVO, moveIssueDOS);
+            outsetBeforeRank(programId, piId, moveIssueVO, moveIssueDTOS);
         }
     }
 
-    private void afterRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+    private void afterRank(Long programId, Long piId, MoveIssueVO moveIssueVO, List<MoveIssueDTO> moveIssueDTOS) {
         moveIssueVO.setIssueIds(issueMapper.queryFeatureIdOrderByRankAsc(programId, moveIssueVO.getIssueIds()));
         String leftRank = issueMapper.queryRankByProgram(programId, moveIssueVO.getOutsetIssueId());
         String rightRank = issueMapper.queryRightRankByProgram(programId, piId, leftRank);
         if (rightRank == null) {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 leftRank = RankUtil.genNext(leftRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, leftRank));
             }
         } else {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 leftRank = RankUtil.between(leftRank, rightRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, leftRank));
             }
         }
     }
@@ -609,13 +609,13 @@ public class PiServiceImpl implements PiService {
     @Override
     public List<SubFeatureDTO> batchFeatureToPi(Long programId, Long piId, MoveIssueVO moveIssueVO) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
+        List<MoveIssueDTO> moveIssueDTOS = new ArrayList<>();
         if (moveIssueVO.getBefore()) {
-            beforeRank(programId, piId, moveIssueVO, moveIssueDOS);
+            beforeRank(programId, piId, moveIssueVO, moveIssueDTOS);
         } else {
-            afterRank(programId, piId, moveIssueVO, moveIssueDOS);
+            afterRank(programId, piId, moveIssueVO, moveIssueDTOS);
         }
-        issueRepository.batchUpdateFeatureRank(programId, moveIssueDOS);
+        issueRepository.batchUpdateFeatureRank(programId, moveIssueDTOS);
         List<Long> moveIssueIds = moveIssueVO.getIssueIds();
         List<SubFeatureDTO> featureDTOList = piMapper.selectFeatureIdByFeatureIds(programId, moveIssueIds).stream().filter(subFeatureDO -> subFeatureDO.getPiId() == null ? piId != 0 : !subFeatureDO.getPiId().equals(piId)).collect(Collectors.toList());
         if (featureDTOList != null && !featureDTOList.isEmpty()) {

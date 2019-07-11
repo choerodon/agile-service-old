@@ -3,11 +3,11 @@ package io.choerodon.agile.infra.dataobject;
 /**
  * Created by jian_zhang02@163.com on 2018/5/28.
  */
-public class MoveIssueDO {
+public class MoveIssueDTO {
     private Long issueId;
     private String rank;
 
-    public MoveIssueDO(Long issueId, String rank) {
+    public MoveIssueDTO(Long issueId, String rank) {
         this.issueId = issueId;
         this.rank = rank;
     }

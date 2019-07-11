@@ -3,7 +3,7 @@ package io.choerodon.agile.api.controller.v1
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.DataLogCreateVO
 import io.choerodon.agile.api.vo.DataLogVO
-import io.choerodon.agile.infra.dataobject.UserMessageDO
+import io.choerodon.agile.infra.dataobject.UserMessageDTO
 import io.choerodon.agile.infra.mapper.DataLogMapper
 import io.choerodon.agile.app.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
@@ -71,8 +71,8 @@ class DataLogControllerSpec extends Specification {
 
     def 'listByIssueId'() {
         given:
-        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-        UserMessageDO userMessageDO = new UserMessageDO("admin", "http://admin.png", "admin@gmail.com")
+        Map<Long, UserMessageDTO> userMessageDOMap = new HashMap<>()
+        UserMessageDTO userMessageDO = new UserMessageDTO("admin", "http://admin.png", "admin@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         userRepository.queryUsersMap(*_) >> userMessageDOMap
 

@@ -59,10 +59,10 @@ public class IssueAssembler extends AbstractAssembler {
         if (issueCommentCondition) {
             assigneeIdList.addAll(issueVO.getIssueCommentVOList().stream().map(IssueCommentVO::getUserId).collect(Collectors.toList()));
         }
-        Map<Long, UserMessageDO> userMessageDOMap = userService.queryUsersMap(
+        Map<Long, UserMessageDTO> userMessageDOMap = userService.queryUsersMap(
                 assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
-        UserMessageDO assigneeUserDO = userMessageDOMap.get(issueVO.getAssigneeId());
-        UserMessageDO reporterUserDO = userMessageDOMap.get(issueVO.getReporterId());
+        UserMessageDTO assigneeUserDO = userMessageDOMap.get(issueVO.getAssigneeId());
+        UserMessageDTO reporterUserDO = userMessageDOMap.get(issueVO.getReporterId());
         String assigneeName = assigneeUserDO != null ? assigneeUserDO.getName() : null;
         String assigneeLoginName = assigneeUserDO != null ? assigneeUserDO.getLoginName() : null;
         String assigneeRealName = assigneeUserDO != null ? assigneeUserDO.getRealName() : null;
@@ -101,10 +101,10 @@ public class IssueAssembler extends AbstractAssembler {
         List<IssueListFieldKVVO> issueListFieldKVDTOList = new ArrayList<>(issueDTOList.size());
         Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
         userIds.addAll(issueDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDTO::getReporterId).collect(Collectors.toSet()));
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(Lists.newArrayList(userIds), true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(Lists.newArrayList(userIds), true);
         issueDTOList.forEach(issueDO -> {
-            UserMessageDO assigneeUserDO = usersMap.get(issueDO.getAssigneeId());
-            UserMessageDO reporterUserDO = usersMap.get(issueDO.getReporterId());
+            UserMessageDTO assigneeUserDO = usersMap.get(issueDO.getAssigneeId());
+            UserMessageDTO reporterUserDO = usersMap.get(issueDO.getReporterId());
             String assigneeName = assigneeUserDO != null ? assigneeUserDO.getName() : null;
             String assigneeLoginName = assigneeUserDO != null ? assigneeUserDO.getLoginName() : null;
             String assigneeRealName = assigneeUserDO != null ? assigneeUserDO.getRealName() : null;
@@ -126,8 +126,8 @@ public class IssueAssembler extends AbstractAssembler {
             issueListFieldKVVO.setAssigneeImageUrl(assigneeImageUrl);
             issueListFieldKVVO.setReporterImageUrl(reporterImageUrl);
             issueListFieldKVVO.setVersionIssueRelVOS(toTargetList(issueDO.getVersionIssueRelDTOS(), VersionIssueRelVO.class));
-            issueListFieldKVVO.setIssueComponentBriefDTOS(toTargetList(issueDO.getIssueComponentBriefDOS(), IssueComponentBriefDTO.class));
-            issueListFieldKVVO.setIssueSprintVOS(toTargetList(issueDO.getIssueSprintDOS(), IssueSprintVO.class));
+            issueListFieldKVVO.setIssueComponentBriefVOS(toTargetList(issueDO.getIssueComponentBriefDTOS(), IssueComponentBriefVO.class));
+            issueListFieldKVVO.setIssueSprintVOS(toTargetList(issueDO.getIssueSprintDTOS(), IssueSprintVO.class));
             issueListFieldKVVO.setLabelIssueRelVOS(toTargetList(issueDO.getLabelIssueRelDTOS(), LabelIssueRelVO.class));
             issueListFieldKVVO.setFoundationFieldValue(foundationCodeValue.get(issueDO.getIssueId()) != null ? foundationCodeValue.get(issueDO.getIssueId()) : new HashMap<>());
             issueListFieldKVDTOList.add(issueListFieldKVVO);
@@ -146,10 +146,10 @@ public class IssueAssembler extends AbstractAssembler {
         List<IssueListVO> issueListDTOList = new ArrayList<>(issueDTOList.size());
         Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
         userIds.addAll(issueDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(IssueDTO::getReporterId).collect(Collectors.toSet()));
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(Lists.newArrayList(userIds), true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(Lists.newArrayList(userIds), true);
         issueDTOList.forEach(issueDO -> {
-            UserMessageDO assigneeUserDO = usersMap.get(issueDO.getAssigneeId());
-            UserMessageDO reporterUserDO = usersMap.get(issueDO.getReporterId());
+            UserMessageDTO assigneeUserDO = usersMap.get(issueDO.getAssigneeId());
+            UserMessageDTO reporterUserDO = usersMap.get(issueDO.getReporterId());
             String assigneeName = assigneeUserDO != null ? assigneeUserDO.getName() : null;
             String assigneeLoginName = assigneeUserDO != null ? assigneeUserDO.getLoginName() : null;
             String assigneeRealName = assigneeUserDO != null ? assigneeUserDO.getRealName() : null;
@@ -171,8 +171,8 @@ public class IssueAssembler extends AbstractAssembler {
             issueListVO.setAssigneeImageUrl(assigneeImageUrl);
             issueListVO.setReporterImageUrl(reporterImageUrl);
             issueListVO.setVersionIssueRelVOS(toTargetList(issueDO.getVersionIssueRelDTOS(), VersionIssueRelVO.class));
-            issueListVO.setIssueComponentBriefDTOS(toTargetList(issueDO.getIssueComponentBriefDOS(), IssueComponentBriefDTO.class));
-            issueListVO.setIssueSprintVOS(toTargetList(issueDO.getIssueSprintDOS(), IssueSprintVO.class));
+            issueListVO.setIssueComponentBriefVOS(toTargetList(issueDO.getIssueComponentBriefDTOS(), IssueComponentBriefVO.class));
+            issueListVO.setIssueSprintVOS(toTargetList(issueDO.getIssueSprintDTOS(), IssueSprintVO.class));
             issueListVO.setLabelIssueRelVOS(toTargetList(issueDO.getLabelIssueRelDTOS(), LabelIssueRelVO.class));
             issueListDTOList.add(issueListVO);
         });
@@ -188,13 +188,13 @@ public class IssueAssembler extends AbstractAssembler {
     private List<IssueSubListVO> issueDoToSubIssueDto(List<IssueDTO> issueDTOList, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         List<IssueSubListVO> subIssueDTOList = new ArrayList<>(issueDTOList.size());
         List<Long> assigneeIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
         issueDTOList.forEach(issueDO -> {
-            UserMessageDO userMessageDO = usersMap.get(issueDO.getAssigneeId());
-            String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
-            String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
-            String loginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
-            String realName = userMessageDO != null ? userMessageDO.getRealName() : null;
+            UserMessageDTO userMessageDTO = usersMap.get(issueDO.getAssigneeId());
+            String assigneeName = userMessageDTO != null ? userMessageDTO.getName() : null;
+            String imageUrl = userMessageDTO != null ? userMessageDTO.getImageUrl() : null;
+            String loginName = userMessageDTO != null ? userMessageDTO.getLoginName() : null;
+            String realName = userMessageDTO != null ? userMessageDTO.getRealName() : null;
             IssueSubListVO subIssueDTO = new IssueSubListVO();
             BeanUtils.copyProperties(issueDO, subIssueDTO);
             subIssueDTO.setAssigneeName(assigneeName);
@@ -233,7 +233,7 @@ public class IssueAssembler extends AbstractAssembler {
         if (issueCommentCondition) {
             assigneeIdList.addAll(issueSubVO.getIssueCommentVOList().stream().map(IssueCommentVO::getUserId).collect(Collectors.toList()));
         }
-        Map<Long, UserMessageDO> userMessageDOMap = userService.queryUsersMap(
+        Map<Long, UserMessageDTO> userMessageDOMap = userService.queryUsersMap(
                 assigneeIdList.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
         String assigneeName = userMessageDOMap.get(issueSubVO.getAssigneeId()) != null ? userMessageDOMap.get(issueSubVO.getAssigneeId()).getName() : null;
         String reporterName = userMessageDOMap.get(issueSubVO.getReporterId()) != null ? userMessageDOMap.get(issueSubVO.getReporterId()).getName() : null;
@@ -258,7 +258,7 @@ public class IssueAssembler extends AbstractAssembler {
         List<ExportIssuesVO> exportIssuesVOS = new ArrayList<>(exportIssues.size());
         Set<Long> userIds = exportIssues.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(ExportIssuesDTO::getAssigneeId).collect(Collectors.toSet());
         userIds.addAll(exportIssues.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(ExportIssuesDTO::getReporterId).collect(Collectors.toSet()));
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(new ArrayList<>(userIds), true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(new ArrayList<>(userIds), true);
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
@@ -354,19 +354,19 @@ public class IssueAssembler extends AbstractAssembler {
         return issueCreateDTO;
     }
 
-    public List<IssueComponentDetailDTO> issueComponentDetailDoToDto(Long projectId, List<IssueComponentDetailDO> issueComponentDetailDOS) {
-        List<IssueComponentDetailDTO> issueComponentDetailDTOS = new ArrayList<>(issueComponentDetailDOS.size());
-        if (!issueComponentDetailDOS.isEmpty()) {
-            List<Long> userIds = issueComponentDetailDOS.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueComponentDetailDO::getAssigneeId).collect(Collectors.toList());
-            userIds.addAll(issueComponentDetailDOS.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).
-                    map(IssueComponentDetailDO::getReporterId).collect(Collectors.toList()));
-            Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(userIds.stream().distinct().collect(Collectors.toList()), true);
+    public List<IssueComponentDetailDTO> issueComponentDetailDoToDto(Long projectId, List<IssueComponentDetailInfoDTO> issueComponentDetailInfoDTOS) {
+        List<IssueComponentDetailDTO> issueComponentDetailDTOS = new ArrayList<>(issueComponentDetailInfoDTOS.size());
+        if (!issueComponentDetailInfoDTOS.isEmpty()) {
+            List<Long> userIds = issueComponentDetailInfoDTOS.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueComponentDetailInfoDTO::getAssigneeId).collect(Collectors.toList());
+            userIds.addAll(issueComponentDetailInfoDTOS.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).
+                    map(IssueComponentDetailInfoDTO::getReporterId).collect(Collectors.toList()));
+            Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(userIds.stream().distinct().collect(Collectors.toList()), true);
             Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
             Map<Long, IssueTypeVO> issueTypeDTOMapAgile = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             issueTypeDTOMap.putAll(issueTypeDTOMapAgile);
             Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
             Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
-            issueComponentDetailDOS.parallelStream().forEachOrdered(issueDO -> {
+            issueComponentDetailInfoDTOS.parallelStream().forEachOrdered(issueDO -> {
                 String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
                 String assigneeLoginName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getLoginName() : null;
                 String assigneeRealName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getRealName() : null;
@@ -400,7 +400,7 @@ public class IssueAssembler extends AbstractAssembler {
     public List<IssueListTestVO> issueDoToIssueTestListDto(List<IssueDTO> issueDTOList, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<IssueListTestVO> issueListTestVOS = new ArrayList<>(issueDTOList.size());
         Set<Long> userIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).collect(Collectors.toSet());
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(Lists.newArrayList(userIds), true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(Lists.newArrayList(userIds), true);
         issueDTOList.forEach(issueDO -> {
             String assigneeName = usersMap.get(issueDO.getAssigneeId()) != null ? usersMap.get(issueDO.getAssigneeId()).getName() : null;
             String assigneeImageUrl = assigneeName != null ? usersMap.get(issueDO.getAssigneeId()).getImageUrl() : null;
@@ -429,17 +429,17 @@ public class IssueAssembler extends AbstractAssembler {
         return issueNumVOS;
     }
 
-    public List<UnfinishedIssueVO> unfinishedIssueDoToDto(List<UnfinishedIssueDO> unfinishedIssueDOS, Long projectId) {
-        List<UnfinishedIssueVO> unfinishedIssueVOS = new ArrayList<>(unfinishedIssueDOS.size());
-        if (!unfinishedIssueDOS.isEmpty()) {
+    public List<UnfinishedIssueVO> unfinishedIssueDoToDto(List<UnfinishedIssueDTO> unfinishedIssueDTOS, Long projectId) {
+        List<UnfinishedIssueVO> unfinishedIssueVOS = new ArrayList<>(unfinishedIssueDTOS.size());
+        if (!unfinishedIssueDTOS.isEmpty()) {
             Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
             Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
-            unfinishedIssueDOS.forEach(unfinishedIssueDO -> {
-                UnfinishedIssueVO unfinishedIssueVO = toTarget(unfinishedIssueDO, UnfinishedIssueVO.class);
-                unfinishedIssueVO.setIssueTypeVO(issueTypeDTOMap.get(unfinishedIssueDO.getIssueTypeId()));
-                unfinishedIssueVO.setStatusMapVO(statusMapDTOMap.get(unfinishedIssueDO.getStatusId()));
-                unfinishedIssueVO.setPriorityVO(priorityDTOMap.get(unfinishedIssueDO.getPriorityId()));
+            unfinishedIssueDTOS.forEach(unfinishedIssueDTO -> {
+                UnfinishedIssueVO unfinishedIssueVO = toTarget(unfinishedIssueDTO, UnfinishedIssueVO.class);
+                unfinishedIssueVO.setIssueTypeVO(issueTypeDTOMap.get(unfinishedIssueDTO.getIssueTypeId()));
+                unfinishedIssueVO.setStatusMapVO(statusMapDTOMap.get(unfinishedIssueDTO.getStatusId()));
+                unfinishedIssueVO.setPriorityVO(priorityDTOMap.get(unfinishedIssueDTO.getPriorityId()));
                 unfinishedIssueVOS.add(unfinishedIssueVO);
             });
 

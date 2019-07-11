@@ -321,7 +321,7 @@ class AgileTestConfiguration {
         sprintDO.endDate = sdf.parse("2018-06-06 00:00:00")
         sprintDO.actualEndDate = sdf.parse("2018-06-06 00:00:00")
         sprintMapper.insert(sprintDO)
-        IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO()
+        IssueSprintRelDTO issueSprintRelDO = new IssueSprintRelDTO()
         issueSprintRelDO.sprintId = 1L
         issueSprintRelDO.issueId = 2L
         issueSprintRelDO.projectId = 1L

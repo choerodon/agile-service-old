@@ -7,7 +7,7 @@ import io.choerodon.agile.api.vo.IssueVO
 import io.choerodon.agile.app.service.UserService
 import io.choerodon.agile.infra.dataobject.IssueComponentDTO
 import io.choerodon.agile.infra.dataobject.UserDTO
-import io.choerodon.agile.infra.dataobject.UserMessageDO
+import io.choerodon.agile.infra.dataobject.UserMessageDTO
 import io.choerodon.agile.infra.mapper.IssueComponentMapper
 import com.github.pagehelper.PageInfo
 import org.mockito.Matchers
@@ -56,8 +56,8 @@ class IssueComponentControllerSpec extends Specification {
     def setup() {
         given: '设置feign调用mockito'
         // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
-        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-        UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
+        Map<Long, UserMessageDTO> userMessageDOMap = new HashMap<>()
+        UserMessageDTO userMessageDO = new UserMessageDTO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         Mockito.when(userRepository.queryUsersMap(Matchers.any(List.class), Matchers.anyBoolean())).thenReturn(userMessageDOMap)
         UserDTO userDO = new UserDTO()

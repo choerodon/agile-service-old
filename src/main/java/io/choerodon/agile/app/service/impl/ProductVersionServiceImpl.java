@@ -12,11 +12,11 @@ import io.choerodon.agile.api.vo.event.VersionPayload;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.infra.dataobject.IssueCountDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
 import io.choerodon.agile.infra.repository.ProductVersionRepository;
 import io.choerodon.agile.app.service.VersionIssueRelService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.dataobject.IssueCountDO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
@@ -249,10 +249,10 @@ public class ProductVersionServiceImpl implements ProductVersionService {
                     .stream().collect(Collectors.groupingBy(StatusMapVO::getType, Collectors.mapping(StatusMapVO::getId, Collectors.toList())));
             List<Long> done = statusMap.get(CATEGORY_DONE_CODE);
             Boolean condition = done != null && !done.isEmpty();
-            Map<Long, Integer> doneIssueCountMap = condition ? productVersionMapper.queryIssueCount(projectId, productVersionIds, done).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount)) : null;
-            Map<Long, Integer> issueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, null).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> notEstimateMap = productVersionMapper.queryNotEstimate(projectId, productVersionIds).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> totalEstimateMap = productVersionMapper.queryTotalEstimate(projectId, productVersionIds).stream().collect(toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
+            Map<Long, Integer> doneIssueCountMap = condition ? productVersionMapper.queryIssueCount(projectId, productVersionIds, done).stream().collect(toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount)) : null;
+            Map<Long, Integer> issueCountMap = productVersionMapper.queryIssueCount(projectId, productVersionIds, null).stream().collect(toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, Integer> notEstimateMap = productVersionMapper.queryNotEstimate(projectId, productVersionIds).stream().collect(toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, Integer> totalEstimateMap = productVersionMapper.queryTotalEstimate(projectId, productVersionIds).stream().collect(toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
             productVersions.forEach(productVersion -> {
                 productVersion.setIssueCount(issueCountMap.get(productVersion.getVersionId()));
                 productVersion.setDoneIssueCount(condition ? doneIssueCountMap.get(productVersion.getVersionId()) : null);

@@ -5,7 +5,7 @@ import io.choerodon.agile.domain.agile.entity.BatchRemoveSprintE;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
-import io.choerodon.agile.infra.dataobject.MoveIssueDO;
+import io.choerodon.agile.infra.dataobject.MoveIssueDTO;
 import io.choerodon.agile.infra.dataobject.StoryMapMoveIssueDO;
 
 import java.util.Date;
@@ -69,9 +69,9 @@ public interface IssueRepository {
 
     int issueToDestinationByIds(Long projectId, Long sprintId, List<Long> issueIds, Date date, Long userId);
 
-    int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
+    int batchUpdateIssueRank(Long projectId, List<MoveIssueDTO> moveIssueDTOS);
 
-    int batchUpdateFeatureRank(Long projectId, List<MoveIssueDO> moveIssueDOS);
+    int batchUpdateFeatureRank(Long projectId, List<MoveIssueDTO> moveIssueDTOS);
 
     int batchUpdateMapIssueRank(Long projectId, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS);
 

@@ -6,7 +6,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/5/15.
  * Email: fuqianghuang01@gmail.com
  */
-public class SubStatus {
+public class SubStatusDTO {
 
     private Long id;
 

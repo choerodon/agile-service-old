@@ -6,7 +6,7 @@ import java.math.BigDecimal;
  * Created by HuangFuqiang@choerodon.io on 2018/7/23.
  * Email: fuqianghuang01@gmail.com
  */
-public class VelocitySprintDO {
+public class VelocitySprintDTO {
 
     private Long sprintId;
 

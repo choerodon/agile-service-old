@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 import io.choerodon.agile.api.vo.IssueCreationNumVO;
-import io.choerodon.agile.infra.dataobject.IssueCreationNumDO;
+import io.choerodon.agile.infra.dataobject.IssueCreationNumDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class IssueCreationNumConverter implements ConvertorI<Object, IssueCreationNumDO, IssueCreationNumVO> {
+public class IssueCreationNumConverter implements ConvertorI<Object, IssueCreationNumDTO, IssueCreationNumVO> {
 
     @Override
-    public IssueCreationNumVO doToDto(IssueCreationNumDO issueCreationNumDO) {
+    public IssueCreationNumVO doToDto(IssueCreationNumDTO issueCreationNumDTO) {
         IssueCreationNumVO issueCreationNumVO = new IssueCreationNumVO();
-        BeanUtils.copyProperties(issueCreationNumDO, issueCreationNumVO);
+        BeanUtils.copyProperties(issueCreationNumDTO, issueCreationNumVO);
         return issueCreationNumVO;
     }
 }

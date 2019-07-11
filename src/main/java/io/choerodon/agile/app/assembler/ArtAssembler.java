@@ -6,7 +6,7 @@ import io.choerodon.agile.api.vo.SprintCalendarVO;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.core.convertor.ConvertHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +37,10 @@ public class ArtAssembler {
         if (rteIds.isEmpty()) {
             return artVO;
         }
-        Map<Long, UserMessageDO> userMessageDOMap = userService.queryUsersMap(
+        Map<Long, UserMessageDTO> userMessageDOMap = userService.queryUsersMap(
                 rteIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
-        UserMessageDO userMessageDO = userMessageDOMap.get(artDTO.getRteId());
-        String rteName = userMessageDO != null ? userMessageDO.getLoginName() + userMessageDO.getName() : null;
+        UserMessageDTO userMessageDTO = userMessageDOMap.get(artDTO.getRteId());
+        String rteName = userMessageDTO != null ? userMessageDTO.getLoginName() + userMessageDTO.getName() : null;
         artVO.setRteName(rteName);
         return artVO;
     }

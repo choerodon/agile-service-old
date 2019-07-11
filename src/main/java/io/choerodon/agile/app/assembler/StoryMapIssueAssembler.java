@@ -8,7 +8,7 @@
 //import io.choerodon.agile.app.service.UserService;
 //import io.choerodon.agile.infra.common.utils.ColorUtil;
 //import io.choerodon.agile.infra.dataobject.StoryMapIssueDO;
-//import io.choerodon.agile.infra.dataobject.UserMessageDO;
+//import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 //import io.choerodon.agile.infra.mapper.LookupValueMapper;
 //import org.springframework.beans.BeanUtils;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@
 //        List<StoryMapIssueDTO> storyMapIssueDTOList = new ArrayList<>(storyMapIssueDOList.size());
 //        Map<String, String> lookupValueMap = lookupValueMapper.select(lookupValueDTO).stream().collect(Collectors.toMap(LookupValueDTO::getValueCode, LookupValueDTO::getName));
 //        List<Long> assigneeIds = storyMapIssueDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(StoryMapIssueDO::getAssigneeId).distinct().collect(Collectors.toList());
-//        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+//        Map<Long, UserMessageDTO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
 //        storyMapIssueDOList.forEach(storyMapIssueDO -> {
 //            String assigneeName = usersMap.get(storyMapIssueDO.getAssigneeId()) != null ? usersMap.get(storyMapIssueDO.getAssigneeId()).getName() : null;
 //            String imageUrl = assigneeName != null ? usersMap.get(storyMapIssueDO.getAssigneeId()).getImageUrl() : null;

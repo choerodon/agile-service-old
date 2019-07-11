@@ -1,7 +1,7 @@
 package io.choerodon.agile.domain.agile.converter;
 
 import io.choerodon.agile.api.vo.IssueInfoVO;
-import io.choerodon.agile.infra.dataobject.IssueInfoDO;
+import io.choerodon.agile.infra.dataobject.IssueInfoDTO;
 import io.choerodon.core.convertor.ConvertorI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -11,12 +11,12 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class IssueInfoConverter implements ConvertorI<Object, IssueInfoDO, IssueInfoVO> {
+public class IssueInfoConverter implements ConvertorI<Object, IssueInfoDTO, IssueInfoVO> {
 
     @Override
-    public IssueInfoVO doToDto(IssueInfoDO issueInfoDO) {
+    public IssueInfoVO doToDto(IssueInfoDTO issueInfoDTO) {
         IssueInfoVO issueInfoVO = new IssueInfoVO();
-        BeanUtils.copyProperties(issueInfoDO, issueInfoVO);
+        BeanUtils.copyProperties(issueInfoDTO, issueInfoVO);
         return issueInfoVO;
     }
 

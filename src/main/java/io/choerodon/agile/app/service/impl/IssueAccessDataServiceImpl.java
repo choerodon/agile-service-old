@@ -9,14 +9,13 @@ import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
-import io.choerodon.agile.infra.dataobject.MoveIssueDO;
+import io.choerodon.agile.infra.dataobject.MoveIssueDTO;
 import io.choerodon.agile.infra.dataobject.StoryMapMoveIssueDO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.entity.Criteria;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -132,12 +131,12 @@ public class IssueAccessDataServiceImpl implements IssueAccessDataService {
     }
 
     @Override
-    public int batchUpdateIssueRank(Long projectId, List<MoveIssueDO> moveIssues) {
+    public int batchUpdateIssueRank(Long projectId, List<MoveIssueDTO> moveIssues) {
         return issueMapper.batchUpdateIssueRank(projectId, moveIssues);
     }
 
     @Override
-    public int batchUpdateFeatureRank(Long programId, List<MoveIssueDO> moveIssues) {
+    public int batchUpdateFeatureRank(Long programId, List<MoveIssueDTO> moveIssues) {
         return issueMapper.batchUpdateFeatureRank(programId, moveIssues);
     }
 

@@ -7,7 +7,7 @@ import io.choerodon.agile.api.vo.StatusMapVO;
  * Created by HuangFuqiang@choerodon.io on 2019/01/24.
  * Email: fuqianghuang01@gmail.com
  */
-public class ParentIssueDO {
+public class ParentIssueDTO {
 
     private Long issueId;
 

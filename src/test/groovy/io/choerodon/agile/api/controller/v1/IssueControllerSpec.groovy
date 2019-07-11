@@ -125,8 +125,8 @@ class IssueControllerSpec extends Specification {
     def setup() {
         given: '设置feign调用mockito'
         // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
-        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-        UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
+        Map<Long, UserMessageDTO> userMessageDOMap = new HashMap<>()
+        UserMessageDTO userMessageDO = new UserMessageDTO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         userRepository.queryUsersMap(*_) >> userMessageDOMap
         issues = issueMapper.selectAll()
@@ -1089,7 +1089,7 @@ class IssueControllerSpec extends Specification {
 //        sprintDO.statusCode = 'sprint_planning'
 //        sprintMapper.insert(sprintDO)
 //        testSprintId = sprintMapper.selectOne(sprintDO).sprintId
-//        IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO()
+//        IssueSprintRelDTO issueSprintRelDO = new IssueSprintRelDTO()
 //        issueSprintRelDO.sprintId = testSprintId
 //        issueSprintRelDO.issueId = resultId
 //        issueSprintRelDO.projectId = 1L

@@ -9,7 +9,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/7/30
  */
-public class IssueComponentDetailDO {
+public class IssueComponentDetailInfoDTO {
 
     private Long issueId;
 

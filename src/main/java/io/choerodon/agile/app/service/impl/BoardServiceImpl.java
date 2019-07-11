@@ -273,18 +273,18 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId, Map<Long, List<Long>> parentWithSubs, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    private void getDatas(List<SubStatusDTO> subStatusDTOS, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId, Map<Long, List<Long>> parentWithSubs, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap, issueTypeDTOMap, parentWithSubs)));
+        subStatusDTOS.forEach(subStatusDTO -> subStatusDTO.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap, issueTypeDTOMap, parentWithSubs)));
     }
 
     public void putDatasAndSort(List<ColumnAndIssueDTO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId, Map<Long, List<Long>> parentWithSubss, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<Long> issueIds = new ArrayList<>();
         for (ColumnAndIssueDTO column : columns) {
-            List<SubStatus> subStatuses = column.getSubStatuses();
-            fillStatusData(subStatuses, statusMap);
-            getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds, organizationId, parentWithSubss, issueTypeDTOMap);
-            Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
+            List<SubStatusDTO> subStatusDTOS = column.getSubStatusDTOS();
+            fillStatusData(subStatusDTOS, statusMap);
+            getDatas(subStatusDTOS, parentIds, assigneeIds, issueIds, epicIds, organizationId, parentWithSubss, issueTypeDTOMap);
+            Collections.sort(subStatusDTOS, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
         //选择故事泳道选择仅我的任务后，子任务经办人为自己，父任务经办人不为自己的情况
         if (condition) {
@@ -294,12 +294,12 @@ public class BoardServiceImpl implements BoardService {
         Collections.sort(assigneeIds);
     }
 
-    private void fillStatusData(List<SubStatus> subStatuses, Map<Long, StatusMapVO> statusMap) {
-        for (SubStatus subStatus : subStatuses) {
-            StatusMapVO status = statusMap.get(subStatus.getStatusId());
-            subStatus.setCategoryCode(status.getType());
-            subStatus.setName(status.getName());
-            Collections.sort(subStatus.getIssues(), Comparator.comparing(IssueForBoardDO::getIssueId));
+    private void fillStatusData(List<SubStatusDTO> subStatusDTOS, Map<Long, StatusMapVO> statusMap) {
+        for (SubStatusDTO subStatusDTO : subStatusDTOS) {
+            StatusMapVO status = statusMap.get(subStatusDTO.getStatusId());
+            subStatusDTO.setCategoryCode(status.getType());
+            subStatusDTO.setName(status.getName());
+            Collections.sort(subStatusDTO.getIssues(), Comparator.comparing(IssueForBoardDO::getIssueId));
         }
     }
 
@@ -322,9 +322,9 @@ public class BoardServiceImpl implements BoardService {
         Optional<ColumnAndIssueDTO> sameColumn = columns.stream().filter(columnAndIssue -> columnAndIssue.getColumnId().equals(columnAndIssueDTO.getColumnId()))
                 .findFirst();
         if (sameColumn.isPresent()) {
-            sameColumn.get().getSubStatuses().forEach(subStatus -> columnAndIssueDTO.getSubStatuses().forEach(s -> {
-                if (subStatus.getId().equals(s.getId())) {
-                    subStatus.getIssues().addAll(s.getIssues());
+            sameColumn.get().getSubStatusDTOS().forEach(subStatusDTO -> columnAndIssueDTO.getSubStatusDTOS().forEach(s -> {
+                if (subStatusDTO.getId().equals(s.getId())) {
+                    subStatusDTO.getIssues().addAll(s.getIssues());
                 }
             }));
         } else {
@@ -382,16 +382,16 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private List<ParentIssueDO> getParentIssues(Long projectId, List<Long> parentIds, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    private List<ParentIssueDTO> getParentIssues(Long projectId, List<Long> parentIds, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         if (parentIds == null || parentIds.isEmpty()) {
             return new ArrayList<>();
         }
-        List<ParentIssueDO> parentIssueDOList = boardColumnMapper.queryParentIssuesByIds(projectId, parentIds);
-        for (ParentIssueDO parentIssueDO : parentIssueDOList) {
-            parentIssueDO.setStatusMapVO(statusMap.get(parentIssueDO.getStatusId()));
-            parentIssueDO.setIssueTypeVO(issueTypeDTOMap.get(parentIssueDO.getIssueTypeId()));
+        List<ParentIssueDTO> parentIssueDTOList = boardColumnMapper.queryParentIssuesByIds(projectId, parentIds);
+        for (ParentIssueDTO parentIssueDTO : parentIssueDTOList) {
+            parentIssueDTO.setStatusMapVO(statusMap.get(parentIssueDTO.getStatusId()));
+            parentIssueDTO.setIssueTypeVO(issueTypeDTOMap.get(parentIssueDTO.getIssueTypeId()));
         }
-        return parentIssueDOList;
+        return parentIssueDTOList;
     }
 
     private List<ColumnIssueNumDTO> getAllColumnNum(Long projectId, Long boardId, Long activeSprintId) {
@@ -431,21 +431,21 @@ public class BoardServiceImpl implements BoardService {
         jsonObject.put("parentCompleted", sortAndJudgeCompleted(projectId, parentIds));
         jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
         jsonObject.put("allColumnNum", getAllColumnNum(projectId, boardId, activeSprintId));
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
         Comparator<IssueForBoardDO> comparator = Comparator.comparing(IssueForBoardDO::getRank, nullsFirst(naturalOrder()));
-        columns.forEach(columnAndIssueDTO -> columnAndIssueDTO.getSubStatuses().forEach(subStatus -> {
-                    subStatus.getIssues().forEach(issueForBoardDO -> {
-                        UserMessageDO userMessageDO = usersMap.get(issueForBoardDO.getAssigneeId());
-                        String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
-                        String assigneeLoginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
-                        String assigneeRealName = userMessageDO != null ? userMessageDO.getRealName() : null;
-                        String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
+        columns.forEach(columnAndIssueDTO -> columnAndIssueDTO.getSubStatusDTOS().forEach(subStatusDTO -> {
+                    subStatusDTO.getIssues().forEach(issueForBoardDO -> {
+                        UserMessageDTO userMessageDTO = usersMap.get(issueForBoardDO.getAssigneeId());
+                        String assigneeName = userMessageDTO != null ? userMessageDTO.getName() : null;
+                        String assigneeLoginName = userMessageDTO != null ? userMessageDTO.getLoginName() : null;
+                        String assigneeRealName = userMessageDTO != null ? userMessageDTO.getRealName() : null;
+                        String imageUrl = userMessageDTO != null ? userMessageDTO.getImageUrl() : null;
                         issueForBoardDO.setAssigneeName(assigneeName);
                         issueForBoardDO.setAssigneeLoginName(assigneeLoginName);
                         issueForBoardDO.setAssigneeRealName(assigneeRealName);
                         issueForBoardDO.setImageUrl(imageUrl);
                     });
-                    subStatus.getIssues().sort(comparator);
+                    subStatusDTO.getIssues().sort(comparator);
                 }
         ));
         jsonObject.put("columnsData", putColumnData(columns));
@@ -688,15 +688,15 @@ public class BoardServiceImpl implements BoardService {
 
     private void setColumnDeatil(List<ColumnAndIssueDTO> columns, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         for (ColumnAndIssueDTO column : columns) {
-            List<SubStatus> subStatuses = column.getSubStatuses();
-            fillStatusData(subStatuses, statusMap);
-            for (SubStatus subStatus : subStatuses) {
-                List<IssueForBoardDO> issueForBoardDOS = subStatus.getIssues();
+            List<SubStatusDTO> subStatusDTOS = column.getSubStatusDTOS();
+            fillStatusData(subStatusDTOS, statusMap);
+            for (SubStatusDTO subStatusDTO : subStatusDTOS) {
+                List<IssueForBoardDO> issueForBoardDOS = subStatusDTO.getIssues();
                 for (IssueForBoardDO issueForBoardDO : issueForBoardDOS) {
                     issueForBoardDO.setIssueTypeVO(issueTypeDTOMap.get(issueForBoardDO.getIssueTypeId()));
                 }
             }
-            Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
+            Collections.sort(subStatusDTOS, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
     }
 
@@ -715,8 +715,8 @@ public class BoardServiceImpl implements BoardService {
         List<Long> epicIds = new ArrayList<>();
         List<ColumnAndIssueDTO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId, searchVO);
         columns.forEach(columnAndIssueDTO -> {
-            columnAndIssueDTO.getSubStatuses().forEach(subStatus -> {
-                subStatus.getIssues().forEach(issueForBoardDO -> {
+            columnAndIssueDTO.getSubStatusDTOS().forEach(subStatusDTO -> {
+                subStatusDTO.getIssues().forEach(issueForBoardDO -> {
                     if (issueForBoardDO.getEpicId() != null && !epicIds.contains(issueForBoardDO.getEpicId())) {
                         epicIds.add(issueForBoardDO.getEpicId());
                     }

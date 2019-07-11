@@ -5,7 +5,7 @@ package io.choerodon.agile.infra.dataobject;
  * Date:  16:28 2018/8/28
  * Description:
  */
-public class UnfinishedIssueDO {
+public class UnfinishedIssueDTO {
 
     private Long issueId;
 

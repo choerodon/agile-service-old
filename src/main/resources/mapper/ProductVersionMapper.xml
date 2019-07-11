@@ -84,7 +84,7 @@
         ORDER BY sequence DESC
     </select>
 
-    <select id="queryIssueCount" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryIssueCount" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT
         apv.version_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_product_version apv
@@ -115,7 +115,7 @@
         </foreach>
     </select>
 
-    <select id="queryNotEstimate" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryNotEstimate" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT
         apv.version_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_product_version apv
@@ -139,7 +139,7 @@
         </foreach>
     </select>
 
-    <select id="queryTotalEstimate" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryTotalEstimate" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT
         apv.version_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_product_version apv
@@ -191,7 +191,7 @@
         <id column="assignee_id" property="assigneeId"/>
         <id column="project_id" property="projectId"/>
         <id column="project_id" property="projectId"/>
-        <collection property="issueComponentBriefDOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.IssueComponentBriefDO">
+        <collection property="issueComponentBriefDTOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.IssueComponentBriefDTO">
             <id column="component_id" property="componentId"/>
             <id column="name" property="name"/>
         </collection>

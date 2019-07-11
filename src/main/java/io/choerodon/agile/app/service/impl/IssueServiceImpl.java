@@ -742,10 +742,10 @@ public class IssueServiceImpl implements IssueService {
         }
         if (!epicDataList.isEmpty()) {
             List<Long> epicIds = epicDataList.stream().map(EpicDataVO::getIssueId).collect(Collectors.toList());
-            Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> doneIssueCountMap = issueMapper.queryDoneIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryNotEstimateIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, BigDecimal> totalEstimateMap = issueMapper.queryTotalEstimateByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getStoryPointCount));
+            Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, Integer> doneIssueCountMap = issueMapper.queryDoneIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryNotEstimateIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, BigDecimal> totalEstimateMap = issueMapper.queryTotalEstimateByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getStoryPointCount));
             epicDataList.forEach(epicData -> {
                 epicData.setIssueCount(issueCountMap.get(epicData.getIssueId()));
                 epicData.setDoneIssueCount(doneIssueCountMap.get(epicData.getIssueId()));
@@ -761,10 +761,10 @@ public class IssueServiceImpl implements IssueService {
         List<EpicDataVO> epicDataList = epicDataAssembler.toTargetList(issueMapper.queryProgramEpicList(programId), EpicDataVO.class);
         if (!epicDataList.isEmpty()) {
             List<Long> epicIds = epicDataList.stream().map(EpicDataVO::getIssueId).collect(Collectors.toList());
-            Map<Long, Integer> issueCountMap = issueMapper.queryProgramIssueCountByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> doneIssueCountMap = issueMapper.queryProgramDoneIssueCountByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryProgramNotEstimateIssueCountByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, BigDecimal> totalEstimateMap = issueMapper.queryProgramTotalEstimateByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getStoryPointCount));
+            Map<Long, Integer> issueCountMap = issueMapper.queryProgramIssueCountByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, Integer> doneIssueCountMap = issueMapper.queryProgramDoneIssueCountByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryProgramNotEstimateIssueCountByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, BigDecimal> totalEstimateMap = issueMapper.queryProgramTotalEstimateByEpicIds(programId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getStoryPointCount));
             epicDataList.forEach(epicData -> {
                 epicData.setIssueCount(issueCountMap.get(epicData.getIssueId()));
                 epicData.setDoneIssueCount(doneIssueCountMap.get(epicData.getIssueId()));
@@ -786,10 +786,10 @@ public class IssueServiceImpl implements IssueService {
 //            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
 //            Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
 //            List<Long> epicIds = storyMapEpicDTOList.stream().map(StoryMapEpicDTO::getIssueId).collect(Collectors.toList());
-//            Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-//            Map<Long, Integer> doneIssueCountMap = issueMapper.queryDoneIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-//            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryNotEstimateIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-//            Map<Long, BigDecimal> totalEstimateMap = issueMapper.queryTotalEstimateByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getStoryPointCount));
+//            Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+//            Map<Long, Integer> doneIssueCountMap = issueMapper.queryDoneIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+//            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryNotEstimateIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+//            Map<Long, BigDecimal> totalEstimateMap = issueMapper.queryTotalEstimateByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getStoryPointCount));
 //            storyMapEpicDTOList.forEach(epicData -> {
 //                epicData.setStatusMapVO(statusMapDTOMap.get(epicData.getStatusId()));
 //                epicData.setIssueTypeVO(issueTypeDTOMap.get(epicData.getIssueTypeId()));
@@ -1019,11 +1019,11 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueSearchVO> batchIssueToSprint(Long projectId, Long sprintId, MoveIssueVO moveIssueVO) {
         sprintValidator.judgeExist(projectId, sprintId);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        List<MoveIssueDO> moveIssueDOS = new ArrayList<>();
+        List<MoveIssueDTO> moveIssueDTOS = new ArrayList<>();
         if (moveIssueVO.getBefore()) {
-            beforeRank(projectId, sprintId, moveIssueVO, moveIssueDOS);
+            beforeRank(projectId, sprintId, moveIssueVO, moveIssueDTOS);
         } else {
-            afterRank(projectId, sprintId, moveIssueVO, moveIssueDOS);
+            afterRank(projectId, sprintId, moveIssueVO, moveIssueDTOS);
         }
         //处理评级日志
         if (moveIssueVO.getRankIndex() != null && !moveIssueVO.getRankIndex()) {
@@ -1031,7 +1031,7 @@ public class IssueServiceImpl implements IssueService {
         } else if (moveIssueVO.getRankIndex() != null && moveIssueVO.getRankIndex()) {
             dataLogRank(projectId, moveIssueVO, RANK_HIGHER, sprintId);
         }
-        issueAccessDataService.batchUpdateIssueRank(projectId, moveIssueDOS);
+        issueAccessDataService.batchUpdateIssueRank(projectId, moveIssueDTOS);
         List<Long> moveIssueIds = moveIssueVO.getIssueIds();
         //处理子任务与子缺陷
         List<Long> subTaskIds = issueMapper.querySubIssueIds(projectId, moveIssueIds);
@@ -1055,7 +1055,7 @@ public class IssueServiceImpl implements IssueService {
 //            //如果移动冲刺不是活跃冲刺，则状态回到默认状态
 //            batchHandleIssueStatus(projectId, moveIssueIdsFilter, sprintId);
             List<Long> assigneeIds = issueSearchDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDTO::getAssigneeId).distinct().collect(Collectors.toList());
-            Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
+            Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
             return issueSearchAssembler.doListToDTO(issueSearchDTOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
         } else {
             return new ArrayList<>();
@@ -1211,7 +1211,7 @@ public class IssueServiceImpl implements IssueService {
 //        }
 //        List<IssueSearchDTO> issueSearchDTOList = issueMapper.queryIssueByIssueIds(projectId, storyMapMoveDTO.getSprintIssueIds());
 //        List<Long> assigneeIds = issueSearchDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDTO::getAssigneeId).distinct().collect(Collectors.toList());
-//        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(assigneeIds, true);
+//        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
 //        return issueSearchAssembler.doListToDTO(issueSearchDTOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
 //    }
 
@@ -1231,60 +1231,60 @@ public class IssueServiceImpl implements IssueService {
 //        }
 //    }
 
-    private void beforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+    private void beforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDTO> moveIssueDTOS) {
         moveIssueVO.setIssueIds(issueMapper.queryIssueIdOrderByRankDesc(projectId, moveIssueVO.getIssueIds()));
         if (moveIssueVO.getOutsetIssueId() == null || Objects.equals(moveIssueVO.getOutsetIssueId(), 0L)) {
-            noOutsetBeforeRank(projectId, sprintId, moveIssueVO, moveIssueDOS);
+            noOutsetBeforeRank(projectId, sprintId, moveIssueVO, moveIssueDTOS);
         } else {
-            outsetBeforeRank(projectId, sprintId, moveIssueVO, moveIssueDOS);
+            outsetBeforeRank(projectId, sprintId, moveIssueVO, moveIssueDTOS);
         }
     }
 
-    private void outsetBeforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+    private void outsetBeforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDTO> moveIssueDTOS) {
         String rightRank = issueMapper.queryRank(projectId, moveIssueVO.getOutsetIssueId());
         String leftRank = issueMapper.queryLeftRank(projectId, sprintId, rightRank);
         if (leftRank == null) {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 rightRank = RankUtil.genPre(rightRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, rightRank));
             }
         } else {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 rightRank = RankUtil.between(leftRank, rightRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, rightRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, rightRank));
             }
         }
     }
 
-    private void noOutsetBeforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+    private void noOutsetBeforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDTO> moveIssueDTOS) {
         String minRank = sprintMapper.queryMinRank(projectId, sprintId);
         if (minRank == null) {
             minRank = RankUtil.mid();
             for (Long issueId : moveIssueVO.getIssueIds()) {
-                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, minRank));
                 minRank = RankUtil.genPre(minRank);
             }
         } else {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 minRank = RankUtil.genPre(minRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, minRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, minRank));
             }
         }
     }
 
-    private void afterRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDO> moveIssueDOS) {
+    private void afterRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDTO> moveIssueDTOS) {
         moveIssueVO.setIssueIds(issueMapper.queryIssueIdOrderByRankAsc(projectId, moveIssueVO.getIssueIds()));
         String leftRank = issueMapper.queryRank(projectId, moveIssueVO.getOutsetIssueId());
         String rightRank = issueMapper.queryRightRank(projectId, sprintId, leftRank);
         if (rightRank == null) {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 leftRank = RankUtil.genNext(leftRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, leftRank));
             }
         } else {
             for (Long issueId : moveIssueVO.getIssueIds()) {
                 leftRank = RankUtil.between(leftRank, rightRank);
-                moveIssueDOS.add(new MoveIssueDO(issueId, leftRank));
+                moveIssueDTOS.add(new MoveIssueDTO(issueId, leftRank));
             }
         }
     }
@@ -1307,10 +1307,10 @@ public class IssueServiceImpl implements IssueService {
     private void setFeatureStatisticDetail(Long projectId, List<IssueFeatureVO> featureList) {
         if (featureList != null && !featureList.isEmpty()) {
             List<Long> ids = featureList.stream().map(IssueFeatureVO::getIssueId).collect(Collectors.toList());
-            Map<Long, Integer> storyCountMap = issueMapper.selectStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> completedStoryCountMap = issueMapper.selectCompletedStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, Integer> unestimateStoryCountMap = issueMapper.selectUnEstimateStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getIssueCount));
-            Map<Long, BigDecimal> totalStoryPointsMap = issueMapper.selectTotalStoryPointsByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDO::getId, IssueCountDO::getStoryPointCount));
+            Map<Long, Integer> storyCountMap = issueMapper.selectStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, Integer> completedStoryCountMap = issueMapper.selectCompletedStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, Integer> unestimateStoryCountMap = issueMapper.selectUnEstimateStoryCountByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
+            Map<Long, BigDecimal> totalStoryPointsMap = issueMapper.selectTotalStoryPointsByIds(projectId, ids).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getStoryPointCount));
             featureList.forEach(issueFeatureVO -> {
                 issueFeatureVO.setStoryCount(storyCountMap.get(issueFeatureVO.getIssueId()) == null ? 0 : storyCountMap.get(issueFeatureVO.getIssueId()));
                 issueFeatureVO.setStoryCompletedCount(completedStoryCountMap.get(issueFeatureVO.getIssueId()) == null ? 0 : completedStoryCountMap.get(issueFeatureVO.getIssueId()));
@@ -1743,10 +1743,10 @@ public class IssueServiceImpl implements IssueService {
         if (featureExportVOList != null && !featureExportVOList.isEmpty()) {
             Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-            Map<Long, List<PiExportNameDO>> closePiIssueMap = issueMapper.queryPiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.groupingBy(PiExportNameDO::getIssueId));
-            Map<Long, PiExportNameDO> activePiIssueMap = issueMapper.queryActivePiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.toMap(PiExportNameDO::getIssueId, Function.identity()));
+            Map<Long, List<PiExportNameDTO>> closePiIssueMap = issueMapper.queryPiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.groupingBy(PiExportNameDTO::getIssueId));
+            Map<Long, PiExportNameDTO> activePiIssueMap = issueMapper.queryActivePiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.toMap(PiExportNameDTO::getIssueId, Function.identity()));
             featureExportVOList.forEach(featureExportVO -> {
-                String closePiName = closePiIssueMap.get(featureExportVO.getIssueId()) != null ? closePiIssueMap.get(featureExportVO.getIssueId()).stream().map(PiExportNameDO::getPiCodeName).collect(Collectors.joining(",")) : "";
+                String closePiName = closePiIssueMap.get(featureExportVO.getIssueId()) != null ? closePiIssueMap.get(featureExportVO.getIssueId()).stream().map(PiExportNameDTO::getPiCodeName).collect(Collectors.joining(",")) : "";
                 String activePiName = activePiIssueMap.get(featureExportVO.getIssueId()) != null ? activePiIssueMap.get(featureExportVO.getIssueId()).getPiCodeName() : "";
                 featureExportVO.setPiName(exportIssuesPiName(closePiName, activePiName));
                 featureExportVO.setStatusName(statusMapDTOMap.get(featureExportVO.getStatusId()).getName());
@@ -1996,17 +1996,17 @@ public class IssueServiceImpl implements IssueService {
 
     private void insertSprintWhenTransform(Long issueId, Long sprintId, Long projectId, List<Long> issueIds) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-        IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO();
-        issueSprintRelDO.setIssueId(issueId);
-        issueSprintRelDO.setSprintId(sprintId);
-        issueSprintRelDO.setProjectId(projectId);
-        if (issueSprintRelMapper.selectOne(issueSprintRelDO) == null) {
+        IssueSprintRelDTO issueSprintRelDTO = new IssueSprintRelDTO();
+        issueSprintRelDTO.setIssueId(issueId);
+        issueSprintRelDTO.setSprintId(sprintId);
+        issueSprintRelDTO.setProjectId(projectId);
+        if (issueSprintRelMapper.selectOne(issueSprintRelDTO) == null) {
             if (issueMapper.selectUnCloseSprintId(projectId, issueId) != null) {
                 BatchRemoveSprintE batchRemoveSprintE = new BatchRemoveSprintE(projectId, sprintId, issueIds);
                 issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
                 issueAccessDataService.issueToDestinationByIds(projectId, sprintId, issueIds, new Date(), customUserDetails.getUserId());
             } else {
-                issueSprintRelRepository.createIssueSprintRel(ConvertHelper.convert(issueSprintRelDO, IssueSprintRelE.class));
+                issueSprintRelRepository.createIssueSprintRel(ConvertHelper.convert(issueSprintRelDTO, IssueSprintRelE.class));
             }
         }
     }
@@ -2262,11 +2262,11 @@ public class IssueServiceImpl implements IssueService {
         PageInfo<Long> issueIds = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
                 PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> issueMapper.listIssueIdsWithoutSubDetail(projectId, searchVO.getSearchArgs(),
                 searchVO.getAdvancedSearchArgs(), searchVO.getOtherArgs(), searchVO.getContents()));
-        List<IssueComponentDetailDO> issueComponentDetailDOS = new ArrayList<>(issueIds.getList().size());
+        List<IssueComponentDetailInfoDTO> issueComponentDetailInfoDTOS = new ArrayList<>(issueIds.getList().size());
         if (issueIds.getList() != null && !issueIds.getList().isEmpty()) {
-            issueComponentDetailDOS.addAll(issueMapper.listIssueWithoutSubDetailByIssueIds(issueIds.getList()));
+            issueComponentDetailInfoDTOS.addAll(issueMapper.listIssueWithoutSubDetailByIssueIds(issueIds.getList()));
         }
-        return PageUtil.buildPageInfoWithPageInfoList(issueIds, issueAssembler.issueComponentDetailDoToDto(projectId, issueComponentDetailDOS));
+        return PageUtil.buildPageInfoWithPageInfoList(issueIds, issueAssembler.issueComponentDetailDoToDto(projectId, issueComponentDetailInfoDTOS));
     }
 
 

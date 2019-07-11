@@ -6,7 +6,7 @@ import io.choerodon.agile.infra.common.utils.StringUtil;
  * @author dinghuang123@gmail.com
  * @since 2018/9/14
  */
-public class IssueTypeDistributionChartDO {
+public class IssueTypeDistributionChartDTO {
 
     private String name;
 

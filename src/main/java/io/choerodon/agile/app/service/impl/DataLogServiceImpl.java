@@ -9,7 +9,7 @@ import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.DataLogDTO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDTO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.agile.infra.repository.DataLogRepository;
@@ -85,14 +85,14 @@ public class DataLogServiceImpl implements DataLogService {
     private void fillUserAndStatus(Long projectId, List<DataLogVO> dataLogVOS) {
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<Long> createByIds = dataLogVOS.stream().filter(dataLogDTO -> dataLogDTO.getCreatedBy() != null && !Objects.equals(dataLogDTO.getCreatedBy(), 0L)).map(DataLogVO::getCreatedBy).distinct().collect(Collectors.toList());
-        Map<Long, UserMessageDO> usersMap = userService.queryUsersMap(createByIds, true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(createByIds, true);
         for (DataLogVO dto : dataLogVOS) {
-            UserMessageDO userMessageDO = usersMap.get(dto.getCreatedBy());
-            String name = userMessageDO != null ? userMessageDO.getName() : null;
-            String loginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
-            String realName = userMessageDO != null ? userMessageDO.getRealName() : null;
-            String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
-            String email = userMessageDO != null ? userMessageDO.getEmail() : null;
+            UserMessageDTO userMessageDTO = usersMap.get(dto.getCreatedBy());
+            String name = userMessageDTO != null ? userMessageDTO.getName() : null;
+            String loginName = userMessageDTO != null ? userMessageDTO.getLoginName() : null;
+            String realName = userMessageDTO != null ? userMessageDTO.getRealName() : null;
+            String imageUrl = userMessageDTO != null ? userMessageDTO.getImageUrl() : null;
+            String email = userMessageDTO != null ? userMessageDTO.getEmail() : null;
             dto.setName(name);
             dto.setLoginName(loginName);
             dto.setRealName(realName);
