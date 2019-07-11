@@ -350,43 +350,46 @@ export default class IssueFilterControler {
    * 重置当前 cache
    */
   resetCacheMap = () => {
+    const filter = {
+      advancedSearchArgs: {
+        statusId: [],
+        priorityId: [],
+        issueTypeId: [],
+      },
+      content: '',
+      quickFilterIds: [],
+      assigneeFilterIds: null,
+      otherArgs: {
+        component: [],
+        epic: [],
+        issueIds: [],
+        label: [],
+        reporter: [],
+        summary: [],
+        version: [],
+        sprint: [],
+      },
+      searchArgs: {
+        assignee: '',
+        component: '',
+        epic: '',
+        issueNum: '',
+        sprint: '',
+        summary: '',
+        version: '',
+      },
+    };
     this.cache = new Map([
       [
         'filter', {
-          advancedSearchArgs: {
-            statusId: [],
-            priorityId: [],
-            issueTypeId: [],
-          },
-          content: '',
-          quickFilterIds: [],
-          assigneeFilterIds: null,
-          otherArgs: {
-            component: [],
-            epic: [],
-            issueIds: [],
-            label: [],
-            reporter: [],
-            summary: [],
-            version: [],
-            sprint: [],
-          },
-          searchArgs: {
-            assignee: '',
-            component: '',
-            epic: '',
-            issueNum: '',
-            sprint: '',
-            summary: '',
-            version: '',
-          },
+          ...filter,
         },
       ],
       [
         'paramFilter', {},
       ],
       [
-        'userFilter', {},
+        'userFilter', { ...filter },
       ],
     ]);
     IssueStore.reset(this.cache);

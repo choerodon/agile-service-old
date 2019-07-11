@@ -321,16 +321,16 @@ class CreateIssue extends Component {
         const exitComponents = originComponents;
         const componentIssueRelDTOList = _.map(componentIssueRel
           && componentIssueRel.filter(v => v && v.trim()), (component) => {
-          const target = _.find(exitComponents, { name: component.trim() });
-          if (target) {
-            return target;
-          } else {
-            return ({
-              name: component.trim(),
-              projectId: AppState.currentMenuType.id,
-            });
-          }
-        });
+            const target = _.find(exitComponents, { name: component.trim() });
+            if (target) {
+              return target;
+            } else {
+              return ({
+                name: component.trim(),
+                projectId: AppState.currentMenuType.id,
+              });
+            }
+          });
         const exitLabels = originLabels;
         const labelIssueRelDTOList = _.map(issueLabel, (label) => {
           const target = _.find(exitLabels, { labelName: label });
@@ -346,20 +346,20 @@ class CreateIssue extends Component {
         const exitFixVersions = originFixVersions;
         const fixVersionIssueRelDTOList = _.map(fixVersionIssueRel
           && fixVersionIssueRel.filter(v => v && v.trim()), (version) => {
-          const target = _.find(exitFixVersions, { name: version.trim() });
-          if (target) {
-            return {
-              ...target,
-              relationType: 'fix',
-            };
-          } else {
-            return ({
-              name: version.trim(),
-              relationType: 'fix',
-              projectId: AppState.currentMenuType.id,
-            });
-          }
-        });
+            const target = _.find(exitFixVersions, { name: version.trim() });
+            if (target) {
+              return {
+                ...target,
+                relationType: 'fix',
+              };
+            } else {
+              return ({
+                name: version.trim(),
+                relationType: 'fix',
+                projectId: AppState.currentMenuType.id,
+              });
+            }
+          });
         const issueLinkCreateDTOList = [];
         if (linkTypeId) {
           Object.keys(linkTypeId).forEach((link) => {
@@ -466,7 +466,7 @@ class CreateIssue extends Component {
         return (
           <Radio.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             {fieldOptions && fieldOptions.length > 0
               && fieldOptions.filter(option => option.enabled).map(item => (
@@ -484,7 +484,7 @@ class CreateIssue extends Component {
         return (
           <Radio.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Radio.Group>
@@ -495,7 +495,7 @@ class CreateIssue extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <Row>
               {fieldOptions && fieldOptions.length > 0
@@ -520,7 +520,7 @@ class CreateIssue extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Checkbox.Group>
@@ -530,7 +530,7 @@ class CreateIssue extends Component {
       return (
         <TimePicker
           label={fieldName}
-          className="fieldWith"
+          style={{ display: 'block' }}
           defaultOpenValue={moment('00:00:00', 'HH:mm:ss')}
           allowEmpty={!required}
         />
@@ -541,7 +541,7 @@ class CreateIssue extends Component {
           showTime
           label={fieldName}
           format="YYYY-MM-DD HH:mm:ss"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -550,7 +550,7 @@ class CreateIssue extends Component {
         <DatePicker
           label={fieldName}
           format="YYYY-MM-DD"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -559,7 +559,7 @@ class CreateIssue extends Component {
         <Select
           label={fieldName}
           dropdownMatchSelectWidth
-          className="fieldWith"
+
           allowClear={!required}
         >
           {field.fieldOptions && field.fieldOptions.length > 0
@@ -579,7 +579,7 @@ class CreateIssue extends Component {
           label={fieldName}
           dropdownMatchSelectWidth
           mode="multiple"
-          className="fieldWith"
+
         >
           {field.fieldOptions && field.fieldOptions.length > 0
             && field.fieldOptions.filter(option => option.enabled).map(item => (
@@ -596,7 +596,7 @@ class CreateIssue extends Component {
       return (
         <InputNumber
           label={fieldName}
-          className="fieldWith"
+
           step={field.extraConfig === '1' ? 0.1 : 1}
           maxLength={8}
         />
@@ -606,7 +606,7 @@ class CreateIssue extends Component {
         <TextArea
           autosize
           label={fieldName}
-          className="fieldWith"
+
           maxLength={255}
         />
       );
@@ -640,7 +640,7 @@ class CreateIssue extends Component {
       return (
         <Input
           label={fieldName}
-          className="fieldWith"
+
           maxLength={100}
         />
       );
@@ -688,7 +688,7 @@ class CreateIssue extends Component {
                       context: typeCode,
                       pageCode: 'agile_issue_create',
                     };
-                    getFields(param).then((res) => {
+                    getFields(param, typeCode).then((res) => {
                       this.setState({
                         fields: res,
                       });
@@ -729,11 +729,12 @@ class CreateIssue extends Component {
         );
       case 'assignee':
         return (
-          <div style={{ position: 'relative' }}>
-            <FormItem label="经办人" style={{ width: '100%', display: 'inline-block' }}>
+          <FormItem label="经办人">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               {getFieldDecorator('assigneedId', {})(
                 <Select
                   label="经办人"
+                  style={{ flex: 1 }}
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   loading={selectLoading}
                   filter
@@ -757,23 +758,21 @@ class CreateIssue extends Component {
                   ))}
                 </Select>,
               )}
-            </FormItem>
-            <span
-              onClick={this.assigneeMe}
-              role="none"
-              style={{
-                width: 100,
-                position: 'absolute',
-                display: 'inline-block',
-                color: 'rgba(63, 81, 181)',
-                marginLeft: 10,
-                marginTop: 15,
-                cursor: 'pointer',
-              }}
-            >
-              {'分派给我'}
-            </span>
-          </div>
+              <span
+                onClick={this.assigneeMe}
+                role="none"
+                style={{
+                  display: 'inline-block',
+                  color: 'rgba(63, 81, 181)',
+                  marginLeft: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                {'分派给我'}
+              </span>
+            </div>
+          </FormItem>
+
         );
       case 'sprint':
         return (
@@ -990,7 +989,7 @@ class CreateIssue extends Component {
         );
       case 'summary':
         return (
-          <FormItem label="概要">
+          <FormItem label="概要" className="c7nagile-line">
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '概要为必输项', whitespace: true }],
             })(
@@ -1015,7 +1014,7 @@ class CreateIssue extends Component {
       case 'remainingTime':
         return (
           newIssueTypeCode !== 'issue_epic' && (
-            <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
+            <FormItem>
               <Select
                 label="预估时间"
                 value={estimatedTime && estimatedTime.toString()}
@@ -1037,13 +1036,13 @@ class CreateIssue extends Component {
                   </Option>
                 ))}
               </Select>
-            </div>
+            </FormItem>
           )
         );
       case 'storyPoints':
         return (
           newIssueTypeCode === 'story' && (
-            <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
+            <FormItem>
               <Select
                 label="故事点"
                 value={storyPoints && storyPoints.toString()}
@@ -1065,12 +1064,12 @@ class CreateIssue extends Component {
                   </Option>
                 ))}
               </Select>
-            </div>
+            </FormItem>
           )
         );
       case 'description':
         return (
-          <FormItem label={fieldName}>
+          <FormItem label={fieldName} className="c7nagile-line">
             {getFieldDecorator(fieldCode)(
               <WYSIWYGEditor
                 style={{ height: 200, width: '100%' }}
@@ -1116,6 +1115,8 @@ class CreateIssue extends Component {
       createLoading, selectLoading, fields, loading,
       fileList, newIssueTypeCode, issueLinkArr, originIssues, links,
     } = this.state;
+    const singleGroups = ['description', 'summary', 'epicName'];
+    const groups = fieldGroups(fields || [], singleGroups);
     return (
       <Sidebar
         className="c7n-createIssue"
@@ -1133,8 +1134,15 @@ class CreateIssue extends Component {
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/create-issue/"
         >
           <Spin spinning={loading}>
-            <Form layout="vertical" style={{ width: 520 }}>
-              {fields && fields.map(field => this.getFieldComponent(field))}
+            <Form layout="vertical" style={{ width: 670 }} className="c7nagile-form">
+              {/* {groups.map(group => (
+                <div className="c7nagile-line">
+                  {group.map(field => <div className={singleGroups.includes(field.fieldCode) ? 'c7nagile-total' : 'c7nagile-half'}>{this.getFieldComponent(field)}</div>)}
+                </div>
+              ))} */}
+              <div className="c7nagile-createIssue-fields">
+                {fields && fields.map(field => this.getFieldComponent(field))}
+              </div>
               {
                 newIssueTypeCode !== 'issue_epic' && (
                   issueLinkArr && issueLinkArr.length > 0 && (

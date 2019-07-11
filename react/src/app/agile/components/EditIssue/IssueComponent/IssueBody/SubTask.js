@@ -187,6 +187,7 @@ const { AppState } = stores;
                   className="hidden-label"
                   placeholder="在此输入子任务概要"
                   maxLength={44}
+                  onPressEnter={this.handleSave}
                   onChange={this.onSummaryChange}
                 />
                 <Button

@@ -103,13 +103,11 @@ class EditRelease extends Component {
         {
           visible ? (
             <Content
-              style={{
-                padding: 0,
-              }}
+              style={{ paddingLeft: 0, paddingTop: 0 }}
               title={`在项目“${AppState.currentMenuType.name}”中修改发布计划`}
               description="请在下面输入版本的名称、描述、开始和预计发布日期，对版本信息进行修改。"
             >
-              <Form style={{ width: 512 }}>
+              <Form style={{ width: 512 }} className="c7nagile-form">
                 <FormItem>
                   {getFieldDecorator('name', {
                     initialValue: data.name ? data.name : null,

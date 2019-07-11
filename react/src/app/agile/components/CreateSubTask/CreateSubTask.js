@@ -7,7 +7,7 @@ import {
 } from 'choerodon-ui';
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
-import { handleFileUpload, beforeTextUpload } from '../../common/utils';
+import { handleFileUpload, beforeTextUpload, fieldGroups } from '../../common/utils';
 import {
   loadIssue, loadLabels, loadPriorities, loadVersions,
   createSubIssue, getFields, createFieldValue,
@@ -99,8 +99,9 @@ class CreateSubIssue extends Component {
       pageCode: 'agile_issue_create',
     };
     getFields(param).then((fields) => {
+      const Fields = fields.filter(({ fieldCode }) => !['issueType', 'epic', 'component'].includes(fieldCode));
       this.setState({
-        fields,
+        fields: Fields,
         loading: false,
       });
     });
@@ -471,12 +472,10 @@ class CreateSubIssue extends Component {
       originFixVersions, originLabels, sprint,
     } = this.state;
     switch (field.fieldCode) {
-      case 'issueType':
-        return '';
       case 'assignee':
         return (
-          <React.Fragment>
-            <FormItem label="经办人" style={{ width: 520, display: 'inline-block' }}>
+          <div style={{ display: 'flex' }}>
+            <FormItem label="经办人" style={{ flex: 1 }}>
               {getFieldDecorator('assigneedId', {})(
                 <Select
                   label="经办人"
@@ -517,11 +516,11 @@ class CreateSubIssue extends Component {
             >
               {'分派给我'}
             </span>
-          </React.Fragment>
+          </div>
         );
       case 'sprint':
         return (
-          <FormItem label="冲刺" style={{ width: 520 }}>
+          <FormItem label="冲刺">
             {getFieldDecorator('sprintId', {
               initialValue: sprint.sprintName,
             })(
@@ -531,7 +530,7 @@ class CreateSubIssue extends Component {
         );
       case 'priority':
         return (
-          <FormItem label="优先级" style={{ width: 520 }}>
+          <FormItem label="优先级">
             {getFieldDecorator('priorityId', {
               rules: [{ required: true, message: '优先级为必选项' }],
               initialValue: defaultPriorityId,
@@ -553,7 +552,7 @@ class CreateSubIssue extends Component {
         );
       case 'label':
         return (
-          <FormItem label="标签" style={{ width: 520 }}>
+          <FormItem label="标签">
             {getFieldDecorator('issueLink', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
               normalize: value => (value ? value.map(s => s.toString().substr(0, 10)) : value),
@@ -587,7 +586,7 @@ class CreateSubIssue extends Component {
         );
       case 'fixVersion':
         return (
-          <FormItem label="版本" style={{ width: 520 }}>
+          <FormItem label="版本">
             {getFieldDecorator('fixVersionIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
             })(
@@ -620,7 +619,7 @@ class CreateSubIssue extends Component {
         return '';
       case 'summary':
         return (
-          <FormItem label="子任务概要" style={{ width: 520 }}>
+          <FormItem label="子任务概要">
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '子任务概要为必输项' }],
             })(
@@ -632,7 +631,7 @@ class CreateSubIssue extends Component {
         return '';
       case 'remainingTime':
         return (
-          <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
+          <FormItem>
             <Select
               label="预估时间"
               value={estimatedTime && estimatedTime.toString()}
@@ -644,7 +643,7 @@ class CreateSubIssue extends Component {
                 this.componentRef.rcSelect.focus();
               }}
               tokenSeparators={[',']}
-              style={{ marginTop: 0, paddingTop: 0, width: 520 }}
+              style={{ marginTop: 0, paddingTop: 0 }}
               onChange={value => this.handleChangeEstimatedTime(value)}
             >
               {storyPointList.map(sp => (
@@ -653,13 +652,13 @@ class CreateSubIssue extends Component {
                 </Option>
               ))}
             </Select>
-          </div>
+          </FormItem>
         );
       case 'storyPoints':
         return '';
       case 'description':
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
+          <FormItem label={fieldName}>
             {getFieldDecorator(fieldCode)(
               <WYSIWYGEditor
                 style={{ height: 200, width: '100%' }}
@@ -669,7 +668,7 @@ class CreateSubIssue extends Component {
         );
       default:
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
+          <FormItem label={fieldName}>
             {getFieldDecorator(fieldCode, {
               rules: [{ required, message: `${fieldName}为必填项` }],
               initialValue: this.transformValue(fieldType, defaultValue),
@@ -702,11 +701,12 @@ class CreateSubIssue extends Component {
 
     const {
       createLoading,
-      fields,     
+      fields,
       fileList,
       loading,
     } = this.state;
-
+    const singleGroups = ['description', 'summary'];
+    const groups = fieldGroups(fields || [], singleGroups);
     return (
       <Sidebar
         className="c7n-createSubIssue"
@@ -719,19 +719,24 @@ class CreateSubIssue extends Component {
         confirmLoading={createLoading}
       >
         <Spin spinning={loading}>
-          <h2>
-            {'在项目“'}
-            {AppState.currentMenuType.name}
-            {' ”中创建子任务'}
-          </h2>
-          <p style={{ width: 520, marginBottom: 24 }}>
-            {' 请在下面输入子任务的详细信息，创建问题的子任务。子任务会与父级问题的冲刺、史诗保持一致，并且子任务的状态会受父级问题的限制。'}
-          </p>
-          <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
-            <Input label="父任务概要" value={parentSummary} disabled />
-          </div>
-          <Form layout="vertical">
-            {fields && fields.map(field => this.getFieldComponent(field))}
+
+          <Form layout="vertical" style={{ width: 670 }} className="c7nagile-form">
+            <h2>
+              {'在项目“'}
+              {AppState.currentMenuType.name}
+              {' ”中创建子任务'}
+            </h2>
+            <p style={{ marginBottom: 24 }}>
+              {' 请在下面输入子任务的详细信息，创建问题的子任务。子任务会与父级问题的冲刺、史诗保持一致，并且子任务的状态会受父级问题的限制。'}
+            </p>
+            <div style={{ paddingBottom: 8, marginBottom: 12 }}>
+              <Input label="父任务概要" value={parentSummary} disabled />
+            </div>
+            {groups.map(group => (
+              <div className="c7nagile-line">
+                {group.map(field => <div className={singleGroups.includes(field.fieldCode) ? 'c7nagile-total' : 'c7nagile-half'}>{this.getFieldComponent(field)}</div>)}
+              </div>
+            ))}
           </Form>
 
           <div className="sign-upload" style={{ marginTop: 20 }}>
@@ -746,7 +751,7 @@ class CreateSubIssue extends Component {
               />
             </div>
           </div>
-        </Spin>        
+        </Spin>
       </Sidebar>
     );
   }

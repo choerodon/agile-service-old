@@ -6,7 +6,7 @@ import {
 import moment from 'moment';
 import { Content, stores } from '@choerodon/boot';
 import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
-import BacklogStore from "../../../../stores/project/backlog/BacklogStore";
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 
 const { Sidebar } = Modal;
 const { TextArea } = Input;
@@ -106,12 +106,12 @@ class AddRelease extends Component {
         confirmLoading={loading}
       >
         <Content
-          style={{ padding: 0 }}
+          style={{ paddingLeft: 0, paddingTop: 0 }}
           title={`在项目“${AppState.currentMenuType.name}”中创建发布版本`}
           description="请在下面输入版本的名称、描述、开始和预计发布日期，创建新的软件版本。"
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/release/"
         >
-          <Form style={{ width: 512 }}>
+          <Form style={{ width: 512 }} className="c7nagile-form">
             <FormItem>
               {getFieldDecorator('name', {
                 rules: [{

@@ -113,6 +113,7 @@ class EditNotificationType extends Component {
       {
         render: (text, record, index) => (index > 2 ? (
           <Select
+            className="hidden-label"
             style={{ width: 520 }}
             value={selectedValue}
             // value={}

@@ -853,8 +853,8 @@ class AddComponent extends Component {
           description="通过定义快速搜索，可以在待办事项和活跃冲刺的快速搜索工具栏生效，帮助您更好的筛选过滤问题面板。"
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/setup/quick-search/"
         >
-          <Form layout="vertical">
-            <FormItem style={{ width: 520, marginBottom: 20 }}>
+          <Form layout="vertical" className="c7nagile-form">
+            <FormItem style={{ width: 520 }}>
               {getFieldDecorator('name', {
                 rules: [{
                   required: true,
@@ -880,7 +880,7 @@ class AddComponent extends Component {
                         {
                           index !== 0 && (
                             <FormItem style={{
-                              width: 100, display: 'inline-block', marginRight: 10, marginBottom: 20, 
+                              width: 100, display: 'inline-block', marginRight: 10,
                             }}
                             >
                               {getFieldDecorator(`filter-${index}-ao`, {
@@ -899,7 +899,7 @@ class AddComponent extends Component {
                           )
                         }
                         <FormItem style={{
-                          width: index === 0 ? 230 : 120, display: 'inline-block', marginRight: 10, marginBottom: 20, 
+                          width: index === 0 ? 230 : 120, display: 'inline-block', marginRight: 10,
                         }}
                         >
                           {getFieldDecorator(`filter-${index}-prop`, {
@@ -927,7 +927,7 @@ class AddComponent extends Component {
                           )}
                         </FormItem>
                         <FormItem style={{
-                          width: 80, display: 'inline-block', marginRight: 10, marginBottom: 20, 
+                          width: 80, display: 'inline-block', marginRight: 10,
                         }}
                         >
                           {getFieldDecorator(`filter-${index}-rule`, {
@@ -940,7 +940,7 @@ class AddComponent extends Component {
                             this.renderOperation(form.getFieldValue(`filter-${index}-prop`), index),
                           )}
                         </FormItem>
-                        <FormItem style={{ width: 190, display: 'inline-block', marginBottom: 20 }}>
+                        <FormItem style={{ width: 190, display: 'inline-block' }}>
                           {getFieldDecorator(`filter-${index}-value`, {
                             rules: [{
                               required: true,
@@ -990,7 +990,7 @@ class AddComponent extends Component {
                 </div>
               ))
             }            
-            <FormItem style={{ width: 520, marginBottom: 20 }}>
+            <FormItem style={{ width: 520 }}>
               {getFieldDecorator('description', {
                 initialValue: origin.description,
               })(

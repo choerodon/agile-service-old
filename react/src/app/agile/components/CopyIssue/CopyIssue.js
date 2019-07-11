@@ -73,13 +73,13 @@ class CopyIssue extends Component {
         cancelText="取消"
         confirmLoading={this.state.loading}
       >
-        <Form layout="vertical">
+        <Form layout="vertical" className="c7nagile-form">
           <FormItem>
             {getFieldDecorator('issueSummary', {
               rules: [{ required: true, message: '请输入概要' }],
               initialValue: issueSummary,
             })(
-              <Input
+              <Input   
                 ref={(input) => { this.textInput = input; }}
                 label="概要"
                 prefix="CLONE - "

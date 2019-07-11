@@ -4,14 +4,6 @@
     padding-top: 0;
   }
 
-  .c7n-form-item {
-    margin-bottom: 12px !important;
-
-    .c7n-input-length-info {
-      margin-bottom: -18px !important;
-    }
-  }
-
   input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px #fff inset;
   }
@@ -37,6 +29,7 @@
 
   .c7n-upload-list-item {
     display: inline-block;
+
     .icon-close {
       transform: none;
       font-size: 14px;
@@ -52,11 +45,8 @@
     display: block;
     height: 30px;
     line-height: 30px;
-  }
+  }  
 
-  .fieldWith {
-    width: 520px;
-  }
 }
 
 .is-required {

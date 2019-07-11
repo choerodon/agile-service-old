@@ -134,7 +134,7 @@ class CreateBranch extends Component {
           description="您可以在此选择应用、分支来源，可以修改默认的分支类型及分支名称，即可为该问题创建关联的分支。"
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/manage-branch/"
         >
-          <Form layout="vertical" className="c7nagile-sidebar-form">
+          <Form layout="vertical" className="c7nagile-sidebar-form c7nagile-form">
             <div className="branch-formItem-icon">
               <span className="icon icon-widgets" />
             </div>

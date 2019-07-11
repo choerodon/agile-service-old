@@ -86,7 +86,7 @@
         margin-top: 4px;
         padding: 0 !important;
 
-        ul >li {
+        ul>li {
           height: 23px;
           margin-bottom: -1px;
         }
@@ -140,7 +140,7 @@
   }
 
   .c7n-input-focused {
-    .hidden-label +.c7n-input-label-wrapper {
+    .hidden-label+.c7n-input-label-wrapper {
       transition: none;
       display: none;
     }
@@ -159,7 +159,7 @@
   .c7n-input {
     height: 0.32rem;
 
-    & +.c7n-input-label-wrapper {
+    &+.c7n-input-label-wrapper {
       .c7n-input-label {
         margin-top: -4px;
       }
@@ -177,9 +177,31 @@
       margin-top: -4px;
     }
   }
+
   .hidden-length-info {
     .c7n-input-length-info {
       display: none;
     }
+  }
+}
+
+// 修改
+.c7nagile-form {
+  .c7n-form-item {
+    margin-bottom: 12px;
+  }
+}
+
+.c7nagile-createIssue-fields {
+  margin-left: -10px;
+
+  .c7n-form-item {
+    width: calc(50% - 10px);
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  .c7nagile-line {
+    width: calc(100% - 10px);
   }
 }
