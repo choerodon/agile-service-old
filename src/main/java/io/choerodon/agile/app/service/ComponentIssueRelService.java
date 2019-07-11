@@ -1,4 +1,4 @@
-package io.choerodon.agile.infra.repository;
+package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
@@ -8,15 +8,15 @@ import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 16:47:27
  */
-public interface ComponentIssueRelRepository {
+public interface ComponentIssueRelService {
 
     /**
      * 添加一个
      *
-     * @param componentIssueRelE componentIssueRelE
+     * @param componentIssueRelDTO componentIssueRelDTO
      * @return ComponentIssueRelE
      */
-    ComponentIssueRelE create(ComponentIssueRelE componentIssueRelE);
+    ComponentIssueRelDTO create(ComponentIssueRelDTO componentIssueRelDTO);
 
     /**
      * 根据issueId删除

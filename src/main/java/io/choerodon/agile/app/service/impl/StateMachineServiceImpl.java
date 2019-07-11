@@ -10,7 +10,7 @@ import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.RankService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.domain.agile.entity.FeatureE;
-import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.domain.agile.entity.PiFeatureE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.api.vo.event.CreateIssuePayload;
@@ -21,16 +21,13 @@ import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.dataobject.IssueDTO;
-import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
-import io.choerodon.agile.infra.dataobject.RankDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.agile.infra.mapper.RankMapper;
-import io.choerodon.agile.infra.repository.FeatureRepository;
+import io.choerodon.agile.app.service.FeatureService;
 import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.repository.PiFeatureRepository;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -45,6 +42,8 @@ import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.dto.StateMachineConfigDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +52,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -98,7 +98,7 @@ public class StateMachineServiceImpl implements StateMachineService {
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
     @Autowired
-    private FeatureRepository featureRepository;
+    private FeatureService featureService;
     @Autowired
     private PiFeatureRepository piFeatureRepository;
     @Autowired
@@ -109,6 +109,13 @@ public class StateMachineServiceImpl implements StateMachineService {
     private RankService rankService;
     @Autowired
     private IssueValidator issueValidator;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     private void insertRank(Long projectId, Long issueId, String type, RankVO rankVO) {
         List<RankDTO> rankDTOList = new ArrayList<>();
@@ -195,7 +202,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             if (issueCreateVO.getProgramId() != null) {
                 featureVO.setProgramId(issueCreateVO.getProgramId());
             }
-            featureRepository.create(ConvertHelper.convert(featureVO, FeatureE.class));
+            featureService.create(modelMapper.map(featureVO, FeatureDTO.class));
             if (issueCreateVO.getPiId() != null && issueCreateVO.getPiId() != 0L) {
                 piFeatureRepository.create(new PiFeatureE(issueId, issueCreateVO.getPiId(), projectId));
             }

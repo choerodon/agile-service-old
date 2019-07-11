@@ -1,14 +1,16 @@
-package io.choerodon.agile.infra.repository.impl;
+package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
-import io.choerodon.agile.infra.repository.ComponentIssueRelRepository;
+import io.choerodon.agile.app.service.ComponentIssueRelService;
 import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 
 /**
@@ -16,17 +18,23 @@ import org.springframework.stereotype.Component;
  * @since 2018-05-15 16:47:27
  */
 @Component
-public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelRepository {
+public class ComponentIssueRelServiceImpl implements ComponentIssueRelService {
 
     private static final String INSERT_ERROR = "error.ComponentIssueRel.create";
 
     @Autowired
     private ComponentIssueRelMapper componentIssueRelMapper;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     @Override
     @DataLog(type = "componentCreate")
-    public ComponentIssueRelE create(ComponentIssueRelE componentIssueRelE) {
-        ComponentIssueRelDTO componentIssueRelDTO = ConvertHelper.convert(componentIssueRelE, ComponentIssueRelDTO.class);
+    public ComponentIssueRelDTO create(ComponentIssueRelDTO componentIssueRelDTO) {
         if (componentIssueRelMapper.insert(componentIssueRelDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
@@ -34,7 +42,7 @@ public class ComponentIssueRelRepositoryImpl implements ComponentIssueRelReposit
         query.setComponentId(componentIssueRelDTO.getComponentId());
         query.setIssueId(componentIssueRelDTO.getIssueId());
         query.setProjectId(componentIssueRelDTO.getProjectId());
-        return ConvertHelper.convert(componentIssueRelMapper.selectOne(query), ComponentIssueRelE.class);
+        return modelMapper.map(componentIssueRelMapper.selectOne(query), ComponentIssueRelDTO.class);
     }
 
     @Override

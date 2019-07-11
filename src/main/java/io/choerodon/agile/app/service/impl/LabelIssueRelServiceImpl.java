@@ -1,7 +1,7 @@
-package io.choerodon.agile.infra.repository.impl;
+package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.infra.dataobject.LabelIssueRelDTO;
-import io.choerodon.agile.infra.repository.LabelIssueRelRepository;
+import io.choerodon.agile.app.service.LabelIssueRelService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  * @since 2018-05-14 21:31:22
  */
 @Component
-public class LabelIssueRelRepositoryImpl implements LabelIssueRelRepository {
+public class LabelIssueRelServiceImpl implements LabelIssueRelService {
 
     private static final String INSERT_ERROR = "error.LabelIssue.insert";
 
@@ -28,15 +28,14 @@ public class LabelIssueRelRepositoryImpl implements LabelIssueRelRepository {
 
     @Override
     @DataLog(type = "labelCreate")
-    public LabelIssueRelE create(LabelIssueRelE labelIssueRelE) {
-        LabelIssueRelDTO labelIssueRelDTO = ConvertHelper.convert(labelIssueRelE, LabelIssueRelDTO.class);
+    public LabelIssueRelDTO create(LabelIssueRelDTO labelIssueRelDTO) {
         if (labelIssueRelMapper.insert(labelIssueRelDTO) != 1) {
             throw new CommonException(INSERT_ERROR);
         }
         LabelIssueRelDTO query = new LabelIssueRelDTO();
         query.setIssueId(labelIssueRelDTO.getIssueId());
         query.setLabelId(labelIssueRelDTO.getLabelId());
-        return ConvertHelper.convert(labelIssueRelMapper.selectOne(query), LabelIssueRelE.class);
+        return labelIssueRelMapper.selectOne(query);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package io.choerodon.agile.infra.repository;
+package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
 import io.choerodon.agile.infra.dataobject.LabelIssueRelDTO;
@@ -11,15 +11,15 @@ import io.choerodon.agile.infra.dataobject.LabelIssueRelDTO;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:31:22
  */
-public interface LabelIssueRelRepository {
+public interface LabelIssueRelService {
 
     /**
      * 添加一个敏捷开发Issue标签关联
      *
-     * @param labelIssueRelE labelIssueRelE
+     * @param labelIssueRelDTO labelIssueRelDTO
      * @return LabelIssueRelE
      */
-    LabelIssueRelE create(LabelIssueRelE labelIssueRelE);
+    LabelIssueRelDTO create(LabelIssueRelDTO labelIssueRelDTO);
 
     /**
      * 根据issueId删除labelIssue

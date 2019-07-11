@@ -14,6 +14,13 @@ import javax.persistence.Table;
 @Table(name = "agile_issue_component")
 public class IssueComponentDTO extends BaseDTO {
 
+    public IssueComponentDTO() {}
+
+    public IssueComponentDTO(String name, Long projectId) {
+        this.name = name;
+        this.projectId = projectId;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long componentId;

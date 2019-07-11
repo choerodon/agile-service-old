@@ -199,10 +199,10 @@ public class IssueValidator {
         }
     }
 
-    public void verifyLabelIssueData(LabelIssueRelE labelIssueRelE) {
-        if (labelIssueRelE.getProjectId() == null) {
+    public void verifyLabelIssueData(LabelIssueRelDTO labelIssueRelDTO) {
+        if (labelIssueRelDTO.getProjectId() == null) {
             throw new CommonException("error.label.ProjectId");
-        } else if (labelIssueRelE.getLabelName() == null && labelIssueRelE.getLabelId() == null) {
+        } else if (labelIssueRelDTO.getLabelName() == null && labelIssueRelDTO.getLabelId() == null) {
             throw new CommonException("error.label.LabelName");
         }
     }
@@ -213,8 +213,8 @@ public class IssueValidator {
         }
     }
 
-    public void verifyComponentIssueRelData(ComponentIssueRelE componentIssueRelE) {
-        if (componentIssueRelE.getComponentId() == null && componentIssueRelE.getName() == null) {
+    public void verifyComponentIssueRelData(ComponentIssueRelDTO componentIssueRelDTO) {
+        if (componentIssueRelDTO.getComponentId() == null && componentIssueRelDTO.getName() == null) {
             throw new CommonException("error.componentIssueRelE.Name");
         }
     }
@@ -261,18 +261,18 @@ public class IssueValidator {
         return versionIssueRelMapper.selectOne(versionIssueRelDTO) == null;
     }
 
-    public Boolean existComponentIssueRel(ComponentIssueRelE componentIssueRelE) {
-        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
-        componentIssueRelDTO.setIssueId(componentIssueRelE.getIssueId());
-        componentIssueRelDTO.setComponentId(componentIssueRelE.getComponentId());
-        return componentIssueRelMapper.selectOne(componentIssueRelDTO) == null;
+    public Boolean existComponentIssueRel(ComponentIssueRelDTO componentIssueRelDTO) {
+        ComponentIssueRelDTO componentIssueRel = new ComponentIssueRelDTO();
+        componentIssueRel.setIssueId(componentIssueRelDTO.getIssueId());
+        componentIssueRel.setComponentId(componentIssueRelDTO.getComponentId());
+        return componentIssueRelMapper.selectOne(componentIssueRel) == null;
     }
 
-    public Boolean existLabelIssue(LabelIssueRelE labelIssueRelE) {
-        LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
-        labelIssueRelDTO.setLabelId(labelIssueRelE.getLabelId());
-        labelIssueRelDTO.setIssueId(labelIssueRelE.getIssueId());
-        return labelIssueRelMapper.selectOne(labelIssueRelDTO) == null;
+    public Boolean existLabelIssue(LabelIssueRelDTO labelIssueRelDTO) {
+        LabelIssueRelDTO labelIssueRel = new LabelIssueRelDTO();
+        labelIssueRel.setLabelId(labelIssueRelDTO.getLabelId());
+        labelIssueRel.setIssueId(labelIssueRelDTO.getIssueId());
+        return labelIssueRelMapper.selectOne(labelIssueRel) == null;
     }
 
     public void verifyTransformedSubTask(IssueTransformSubTask issueTransformSubTask) {

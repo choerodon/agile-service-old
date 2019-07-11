@@ -78,13 +78,13 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueAccessDataService issueAccessDataService;
     @Autowired
-    private ComponentIssueRelRepository componentIssueRelRepository;
+    private ComponentIssueRelService componentIssueRelService;
 //    @Autowired
 //    private IssueLinkRepository issueLinkRepository;
     @Autowired
     private IssueLinkService issueLinkService;
     @Autowired
-    private LabelIssueRelRepository labelIssueRelRepository;
+    private LabelIssueRelService labelIssueRelService;
     @Autowired
     private LabelIssueRelMapper labelIssueRelMapper;
     @Autowired
@@ -102,9 +102,13 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueComponentRepository issueComponentRepository;
     @Autowired
+    private IssueComponentService issueComponentService;
+    @Autowired
     private ProductVersionService productVersionService;
     @Autowired
     private IssueLabelRepository issueLabelRepository;
+    @Autowired
+    private IssueLabelService issueLabelService;
     @Autowired
     private SprintValidator sprintValidator;
     @Autowired
@@ -178,7 +182,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private FeatureMapper featureMapper;
     @Autowired
-    private FeatureRepository featureRepository;
+    private FeatureService featureService;
     @Autowired
     private FeatureCommonAssembler featureCommonAssembler;
     @Autowired
@@ -695,7 +699,7 @@ public class IssueServiceImpl implements IssueService {
         if (issueUpdateVO.getFeatureVO() != null && issueUpdateVO.getFeatureVO().getIssueId() != null) {
             FeatureVO featureVO = issueUpdateVO.getFeatureVO();
             if (featureVO != null) {
-                featureRepository.updateSelective(ConvertHelper.convert(featureVO, FeatureE.class));
+                featureService.updateSelective(modelMapper.map(featureVO, FeatureDTO.class));
             }
         }
     }
@@ -830,11 +834,11 @@ public class IssueServiceImpl implements IssueService {
         //删除issueLink
         issueLinkService.deleteByIssueId(issueConvertDTO.getIssueId());
         //删除标签关联
-        labelIssueRelRepository.deleteByIssueId(issueConvertDTO.getIssueId());
+        labelIssueRelService.deleteByIssueId(issueConvertDTO.getIssueId());
         //没有issue使用的标签进行垃圾回收
-        issueLabelRepository.labelGarbageCollection(projectId);
+        issueLabelService.labelGarbageCollection(projectId);
         //删除模块关联
-        componentIssueRelRepository.deleteByIssueId(issueConvertDTO.getIssueId());
+        componentIssueRelService.deleteByIssueId(issueConvertDTO.getIssueId());
         //删除版本关联
         versionIssueRelService.deleteByIssueId(issueConvertDTO.getIssueId());
         //删除冲刺关联
@@ -847,7 +851,7 @@ public class IssueServiceImpl implements IssueService {
         boardFeatureService.deleteByFeatureId(projectId, issueId);
 
         if (ISSUE_TYPE_FEATURE.equals(issueConvertDTO.getTypeCode())) {
-            featureRepository.delete(issueId);
+            featureService.delete(issueId);
         }
         //不是子任务的issue删除子任务
         if (!(SUB_TASK).equals(issueConvertDTO.getTypeCode())) {
@@ -1411,10 +1415,10 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleCreateLabelIssue(List<LabelIssueRelVO> labelIssueRelVOList, Long issueId) {
         if (labelIssueRelVOList != null && !labelIssueRelVOList.isEmpty()) {
-            List<LabelIssueRelE> labelIssueEList = ConvertHelper.convertList(labelIssueRelVOList, LabelIssueRelE.class);
-            labelIssueEList.forEach(labelIssueRelE -> {
-                labelIssueRelE.setIssueId(issueId);
-                handleLabelIssue(labelIssueRelE);
+            List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<LabelIssueRelDTO>(){}.getType());
+            labelIssueDTOList.forEach(labelIssueRelDTO -> {
+                labelIssueRelDTO.setIssueId(issueId);
+                handleLabelIssue(labelIssueRelDTO);
             });
         }
     }
@@ -1476,51 +1480,52 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleCreateComponentIssueRel(List<ComponentIssueRelVO> componentIssueRelVOList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Boolean assigneeCondition) {
         if (componentIssueRelVOList != null && !componentIssueRelVOList.isEmpty()) {
-            handleComponentIssueRelWithHandleAssignee(ConvertHelper.convertList(componentIssueRelVOList, ComponentIssueRelE.class), projectId, issueId, projectInfoE, assigneeCondition);
+            handleComponentIssueRelWithHandleAssignee(modelMapper.map(componentIssueRelVOList, new TypeToken<ComponentIssueRelDTO>(){}.getType()), projectId, issueId, projectInfoE, assigneeCondition);
         }
     }
 
-    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelE> componentIssueRelEList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Boolean assigneeCondition) {
-        componentIssueRelEList.forEach(componentIssueRelE -> {
-            handleComponentIssueRel(componentIssueRelE, projectId, issueId);
+    private void handleComponentIssueRelWithHandleAssignee(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long projectId, Long issueId, ProjectInfoE projectInfoE, Boolean assigneeCondition) {
+        componentIssueRelDTOList.forEach(componentIssueRelDTO -> {
+            handleComponentIssueRel(componentIssueRelDTO, projectId, issueId);
             //issue经办人可以根据模块策略进行区分
             if (assigneeCondition) {
-                handleComponentIssue(componentIssueRelE, issueId, projectInfoE);
+                handleComponentIssue(componentIssueRelDTO, issueId, projectInfoE);
             }
         });
     }
 
-    private void handleComponentIssueRel(ComponentIssueRelE componentIssueRelE, Long projectId, Long issueId) {
-        componentIssueRelE.setIssueId(issueId);
-        componentIssueRelE.setProjectId(projectId);
-        issueValidator.verifyComponentIssueRelData(componentIssueRelE);
+
+    private void handleComponentIssueRel(ComponentIssueRelDTO componentIssueRelDTO, Long projectId, Long issueId) {
+        componentIssueRelDTO.setIssueId(issueId);
+        componentIssueRelDTO.setProjectId(projectId);
+        issueValidator.verifyComponentIssueRelData(componentIssueRelDTO);
         //重名校验
-        if (componentIssueRelE.getName() != null && componentIssueRelE.getComponentId() == null) {
-            if (issueComponentMapper.checkNameExist(componentIssueRelE.getName(), componentIssueRelE.getProjectId())) {
-                componentIssueRelE.setComponentId(issueComponentMapper.queryComponentIdByNameAndProjectId(
-                        componentIssueRelE.getName(), componentIssueRelE.getProjectId()));
+        if (componentIssueRelDTO.getName() != null && componentIssueRelDTO.getComponentId() == null) {
+            if (issueComponentMapper.checkNameExist(componentIssueRelDTO.getName(), componentIssueRelDTO.getProjectId())) {
+                componentIssueRelDTO.setComponentId(issueComponentMapper.queryComponentIdByNameAndProjectId(
+                        componentIssueRelDTO.getName(), componentIssueRelDTO.getProjectId()));
             } else {
-                IssueComponentE issueComponentE = componentIssueRelE.createIssueComponent();
-                issueComponentE = issueComponentRepository.create(issueComponentE);
-                componentIssueRelE.setComponentId(issueComponentE.getComponentId());
+                IssueComponentDTO issueComponentDTO = new IssueComponentDTO(componentIssueRelDTO.getName(), componentIssueRelDTO.getProjectId());
+                issueComponentDTO = issueComponentService.createBase(issueComponentDTO);
+                componentIssueRelDTO.setComponentId(issueComponentDTO.getComponentId());
             }
         }
-        if (issueValidator.existComponentIssueRel(componentIssueRelE)) {
-            componentIssueRelRepository.create(componentIssueRelE);
+        if (issueValidator.existComponentIssueRel(componentIssueRelDTO)) {
+            componentIssueRelService.create(componentIssueRelDTO);
         }
     }
 
-    private void handleComponentIssue(ComponentIssueRelE componentIssueRelE, Long issueId, ProjectInfoE projectInfoE) {
-        IssueComponentE issueComponentE = ConvertHelper.convert(issueComponentMapper.selectByPrimaryKey(
-                componentIssueRelE.getComponentId()), IssueComponentE.class);
-        if (ISSUE_MANAGER_TYPE.equals(issueComponentE.getDefaultAssigneeRole()) && issueComponentE.getManagerId() !=
-                null && issueComponentE.getManagerId() != 0) {
+    private void handleComponentIssue(ComponentIssueRelDTO componentIssueRelDTO, Long issueId, ProjectInfoE projectInfoE) {
+        IssueComponentDTO issueComponentDTO = modelMapper.map(issueComponentMapper.selectByPrimaryKey(
+                componentIssueRelDTO.getComponentId()), IssueComponentDTO.class);
+        if (ISSUE_MANAGER_TYPE.equals(issueComponentDTO.getDefaultAssigneeRole()) && issueComponentDTO.getManagerId() !=
+                null && issueComponentDTO.getManagerId() != 0) {
             //如果模块有选择模块负责人或者经办人的话，对应的issue的负责人要修改
             IssueConvertDTO issueConvertDTO = ConvertHelper.convert(issueMapper.selectByPrimaryKey(issueId), IssueConvertDTO.class);
             Boolean condition = (issueConvertDTO.getAssigneeId() == null || issueConvertDTO.getAssigneeId() == 0) ||
                     (projectInfoE.getDefaultAssigneeType() != null);
             if (condition) {
-                issueConvertDTO.setAssigneeId(issueComponentE.getManagerId());
+                issueConvertDTO.setAssigneeId(issueComponentDTO.getManagerId());
                 issueAccessDataService.update(issueConvertDTO, new String[]{"assigneeId"});
             }
         }
@@ -1531,32 +1536,32 @@ public class IssueServiceImpl implements IssueService {
             if (!labelIssueRelVOList.isEmpty()) {
                 LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
                 labelIssueRelDTO.setIssueId(issueId);
-                List<LabelIssueRelE> originLabels = ConvertHelper.convertList(labelIssueRelMapper.select(labelIssueRelDTO), LabelIssueRelE.class);
-                List<LabelIssueRelE> labelIssueEList = ConvertHelper.convertList(labelIssueRelVOList, LabelIssueRelE.class);
-                List<LabelIssueRelE> labelIssueCreateList = labelIssueEList.stream().filter(labelIssueRelE ->
-                        labelIssueRelE.getLabelId() != null).collect(Collectors.toList());
+                List<LabelIssueRelDTO> originLabels = modelMapper.map(labelIssueRelMapper.select(labelIssueRelDTO), new TypeToken<LabelIssueRelDTO>(){}.getType());
+                List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<LabelIssueRelDTO>(){}.getType());
+                List<LabelIssueRelDTO> labelIssueCreateList = labelIssueDTOList.stream().filter(labelIssueRel ->
+                        labelIssueRel.getLabelId() != null).collect(Collectors.toList());
                 List<Long> curLabelIds = originLabels.stream().
-                        map(LabelIssueRelE::getLabelId).collect(Collectors.toList());
+                        map(LabelIssueRelDTO::getLabelId).collect(Collectors.toList());
                 List<Long> createLabelIds = labelIssueCreateList.stream().
-                        map(LabelIssueRelE::getLabelId).collect(Collectors.toList());
+                        map(LabelIssueRelDTO::getLabelId).collect(Collectors.toList());
                 curLabelIds.forEach(id -> {
                     if (!createLabelIds.contains(id)) {
                         LabelIssueRelDTO delete = new LabelIssueRelDTO();
                         delete.setIssueId(issueId);
                         delete.setLabelId(id);
                         delete.setProjectId(projectId);
-                        labelIssueRelRepository.delete(delete);
+                        labelIssueRelService.delete(delete);
                     }
                 });
-                labelIssueEList.forEach(labelIssueRelE -> {
-                    labelIssueRelE.setIssueId(issueId);
-                    handleLabelIssue(labelIssueRelE);
+                labelIssueDTOList.forEach(labelIssueRel -> {
+                    labelIssueRel.setIssueId(issueId);
+                    handleLabelIssue(labelIssueRel);
                 });
             } else {
-                labelIssueRelRepository.batchDeleteByIssueId(issueId);
+                labelIssueRelService.batchDeleteByIssueId(issueId);
             }
             //没有issue使用的标签进行垃圾回收
-            issueLabelRepository.labelGarbageCollection(projectId);
+            issueLabelService.labelGarbageCollection(projectId);
         }
 
     }
@@ -1598,43 +1603,43 @@ public class IssueServiceImpl implements IssueService {
     private void handleUpdateComponentIssueRel(List<ComponentIssueRelVO> componentIssueRelVOList, Long projectId, Long issueId) {
         if (componentIssueRelVOList != null) {
             if (!componentIssueRelVOList.isEmpty()) {
-                List<ComponentIssueRelE> componentIssueRelEList = ConvertHelper.convertList(componentIssueRelVOList, ComponentIssueRelE.class);
-                List<ComponentIssueRelE> componentIssueRelCreate = componentIssueRelEList.stream().filter(componentIssueRelE ->
-                        componentIssueRelE.getComponentId() != null).collect(Collectors.toList());
+                List<ComponentIssueRelDTO> componentIssueRelDTOList = modelMapper.map(componentIssueRelVOList, new TypeToken<ComponentIssueRelDTO>(){}.getType());
+                List<ComponentIssueRelDTO> componentIssueRelCreate = componentIssueRelDTOList.stream().filter(componentIssueRel ->
+                        componentIssueRel.getComponentId() != null).collect(Collectors.toList());
                 List<Long> curComponentIds = getComponentIssueRel(projectId, issueId).stream().
                         map(ComponentIssueRelDTO::getComponentId).collect(Collectors.toList());
                 List<Long> createComponentIds = componentIssueRelCreate.stream().
-                        map(ComponentIssueRelE::getComponentId).collect(Collectors.toList());
+                        map(ComponentIssueRelDTO::getComponentId).collect(Collectors.toList());
                 curComponentIds.forEach(id -> {
                     if (!createComponentIds.contains(id)) {
                         ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
                         componentIssueRelDTO.setIssueId(issueId);
                         componentIssueRelDTO.setComponentId(id);
                         componentIssueRelDTO.setProjectId(projectId);
-                        componentIssueRelRepository.delete(componentIssueRelDTO);
+                        componentIssueRelService.delete(componentIssueRelDTO);
                     }
                 });
-                componentIssueRelEList.forEach(componentIssueRelE -> handleComponentIssueRel(componentIssueRelE, projectId, issueId));
+                componentIssueRelDTOList.forEach(componentIssueRel -> handleComponentIssueRel(componentIssueRel, projectId, issueId));
             } else {
-                componentIssueRelRepository.batchComponentDelete(issueId);
+                componentIssueRelService.batchComponentDelete(issueId);
             }
         }
     }
 
-    private void handleLabelIssue(LabelIssueRelE labelIssueRelE) {
-        issueValidator.verifyLabelIssueData(labelIssueRelE);
-        if (labelIssueRelE.getLabelName() != null && labelIssueRelE.getLabelId() == null) {
+    private void handleLabelIssue(LabelIssueRelDTO labelIssueRelDTO) {
+        issueValidator.verifyLabelIssueData(labelIssueRelDTO);
+        if (labelIssueRelDTO.getLabelName() != null && labelIssueRelDTO.getLabelId() == null) {
             //重名校验
-            if (issueLabelMapper.checkNameExist(labelIssueRelE.getLabelName(), labelIssueRelE.getProjectId())) {
-                labelIssueRelE.setLabelId(issueLabelMapper.queryLabelIdByLabelNameAndProjectId(labelIssueRelE.getLabelName(), labelIssueRelE.getProjectId()));
+            if (issueLabelMapper.checkNameExist(labelIssueRelDTO.getLabelName(), labelIssueRelDTO.getProjectId())) {
+                labelIssueRelDTO.setLabelId(issueLabelMapper.queryLabelIdByLabelNameAndProjectId(labelIssueRelDTO.getLabelName(), labelIssueRelDTO.getProjectId()));
             } else {
-                IssueLabelE issueLabelE = labelIssueRelE.createIssueLabelE();
-                issueLabelE = issueLabelRepository.create(issueLabelE);
-                labelIssueRelE.setLabelId(issueLabelE.getLabelId());
+                IssueLabelDTO issueLabelDTO = new IssueLabelDTO(labelIssueRelDTO.getLabelName(), labelIssueRelDTO.getProjectId());
+                issueLabelDTO = issueLabelService.createBase(issueLabelDTO);
+                labelIssueRelDTO.setLabelId(issueLabelDTO.getLabelId());
             }
         }
-        if (issueValidator.existLabelIssue(labelIssueRelE)) {
-            labelIssueRelRepository.create(labelIssueRelE);
+        if (issueValidator.existLabelIssue(labelIssueRelDTO)) {
+            labelIssueRelService.create(labelIssueRelDTO);
         }
     }
 
@@ -2493,21 +2498,21 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleCreateCopyComponentIssueRel(List<ComponentIssueRelDTO> componentIssueRelDTOList, Long issueId) {
         componentIssueRelDTOList.forEach(componentIssueRelDO -> {
-            ComponentIssueRelE componentIssueRelE = new ComponentIssueRelE();
-            BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelE);
-            componentIssueRelE.setIssueId(issueId);
-            componentIssueRelE.setObjectVersionNumber(null);
-            componentIssueRelRepository.create(componentIssueRelE);
+            ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
+            BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelDTO);
+            componentIssueRelDTO.setIssueId(issueId);
+            componentIssueRelDTO.setObjectVersionNumber(null);
+            componentIssueRelService.create(componentIssueRelDTO);
         });
     }
 
     private void handleCreateCopyLabelIssueRel(List<LabelIssueRelDTO> labelIssueRelDTOList, Long issueId) {
-        labelIssueRelDTOList.forEach(labelIssueRelDO -> {
-            LabelIssueRelE labelIssueRelE = new LabelIssueRelE();
-            BeanUtils.copyProperties(labelIssueRelDO, labelIssueRelE);
-            labelIssueRelE.setIssueId(issueId);
-            labelIssueRelE.setObjectVersionNumber(null);
-            labelIssueRelRepository.create(labelIssueRelE);
+        labelIssueRelDTOList.forEach(labelIssueRel -> {
+            LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
+            BeanUtils.copyProperties(labelIssueRel, labelIssueRelDTO);
+            labelIssueRelDTO.setIssueId(issueId);
+            labelIssueRelDTO.setObjectVersionNumber(null);
+            labelIssueRelService.create(labelIssueRelDTO);
         });
     }
 

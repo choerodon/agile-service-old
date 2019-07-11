@@ -6,7 +6,7 @@ import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
-import io.choerodon.agile.infra.repository.ComponentIssueRelRepository;
+import io.choerodon.agile.app.service.ComponentIssueRelService;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
@@ -57,7 +57,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     private IssueComponentMapper issueComponentMapper;
 
     @Autowired
-    private ComponentIssueRelRepository componentIssueRelRepository;
+    private ComponentIssueRelService componentIssueRelService;
 
     @Autowired
     private ComponentIssueRelMapper componentIssueRelMapper;
@@ -85,7 +85,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         }
         IssueComponentValidator.checkCreateComponent(projectId, issueComponentVO);
         IssueComponentDTO issueComponentDTO = modelMapper.map(issueComponentVO, IssueComponentDTO.class);
-        return ConvertHelper.convert(insertComponent(issueComponentDTO), IssueComponentVO.class);
+        return ConvertHelper.convert(createBase(issueComponentDTO), IssueComponentVO.class);
     }
 
     private Boolean checkNameUpdate(Long projectId, Long componentId, String componentName) {
@@ -107,11 +107,11 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         }
         issueComponentVO.setComponentId(id);
         IssueComponentDTO issueComponentDTO = modelMapper.map(issueComponentVO, IssueComponentDTO.class);
-        return modelMapper.map(updateComponent(issueComponentDTO), IssueComponentVO.class);
+        return modelMapper.map(updateBase(issueComponentDTO), IssueComponentVO.class);
     }
 
     private void unRelateIssueWithComponent(Long projectId, Long id) {
-        componentIssueRelRepository.deleteByComponentId(projectId, id);
+        componentIssueRelService.deleteByComponentId(projectId, id);
     }
 
     private void reRelateIssueWithComponent(Long projectId, Long id, Long relateComponentId) {
@@ -121,11 +121,11 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         List<ComponentIssueRelDTO> componentIssueRelDTOList = componentIssueRelMapper.select(componentIssueRelDTO);
         unRelateIssueWithComponent(projectId, id);
         for (ComponentIssueRelDTO componentIssue : componentIssueRelDTOList) {
-            ComponentIssueRelE relate = new ComponentIssueRelE();
+            ComponentIssueRelDTO relate = new ComponentIssueRelDTO();
             relate.setProjectId(projectId);
             relate.setIssueId(componentIssue.getIssueId());
             relate.setComponentId(relateComponentId);
-            componentIssueRelRepository.create(relate);
+            componentIssueRelService.create(relate);
         }
     }
 
@@ -136,7 +136,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         } else {
             reRelateIssueWithComponent(projectId, id, relateComponentId);
         }
-        deleteComponent(id);
+        deleteBase(id);
     }
 
     @Override
@@ -226,7 +226,8 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         return issueComponentDTOList != null && !issueComponentDTOList.isEmpty();
     }
 
-    public IssueComponentDTO insertComponent(IssueComponentDTO issueComponentDTO) {
+    @Override
+    public IssueComponentDTO createBase(IssueComponentDTO issueComponentDTO) {
         if (issueComponentMapper.insert(issueComponentDTO) != 1) {
             throw new CommonException("error.scrum_issue_component.insert");
         }
@@ -234,7 +235,8 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         return modelMapper.map(issueComponentMapper.selectByPrimaryKey(issueComponentDTO.getComponentId()), IssueComponentDTO.class);
     }
 
-    public IssueComponentDTO updateComponent(IssueComponentDTO issueComponentDTO) {
+    @Override
+    public IssueComponentDTO updateBase(IssueComponentDTO issueComponentDTO) {
         if (issueComponentMapper.updateByPrimaryKeySelective(issueComponentDTO) != 1) {
             throw new CommonException("error.scrum_issue_component.update");
         }
@@ -242,7 +244,8 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         return modelMapper.map(issueComponentMapper.selectByPrimaryKey(issueComponentDTO.getComponentId()), IssueComponentDTO.class);
     }
 
-    public void deleteComponent(Long id) {
+    @Override
+    public void deleteBase(Long id) {
         IssueComponentDTO issueComponentDTO = issueComponentMapper.selectByPrimaryKey(id);
         if (issueComponentDTO == null) {
             throw new CommonException("error.component.get");

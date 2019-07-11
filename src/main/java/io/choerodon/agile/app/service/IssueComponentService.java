@@ -5,6 +5,7 @@ import io.choerodon.agile.api.vo.IssueComponentVO;
 import io.choerodon.agile.api.vo.IssueVO;
 import io.choerodon.agile.api.vo.SearchVO;
 import com.github.pagehelper.PageInfo;
+import io.choerodon.agile.infra.dataobject.IssueComponentDTO;
 import io.choerodon.base.domain.PageRequest;
 
 import java.util.List;
@@ -31,4 +32,10 @@ public interface IssueComponentService {
     List<ComponentForListVO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest);
 
     Boolean checkComponentName(Long projectId, String componentName);
+
+    IssueComponentDTO createBase(IssueComponentDTO issueComponentDTO);
+
+    IssueComponentDTO updateBase(IssueComponentDTO issueComponentDTO);
+
+    void deleteBase(Long id);
 }

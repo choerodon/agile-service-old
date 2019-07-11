@@ -1,7 +1,7 @@
-package io.choerodon.agile.infra.repository.impl;
+package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.domain.agile.entity.FeatureE;
-import io.choerodon.agile.infra.repository.FeatureRepository;
+import io.choerodon.agile.app.service.FeatureService;
 import io.choerodon.agile.infra.dataobject.FeatureDTO;
 import io.choerodon.agile.infra.mapper.FeatureMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -15,27 +15,25 @@ import org.springframework.stereotype.Component;
  * Email: fuqianghuang01@gmail.com
  */
 @Component
-public class FeatureRepositoryImpl implements FeatureRepository {
+public class FeatureServiceImpl implements FeatureService {
 
     @Autowired
     private FeatureMapper featureMapper;
 
     @Override
-    public FeatureE create(FeatureE featureE) {
-        FeatureDTO featureDTO = ConvertHelper.convert(featureE, FeatureDTO.class);
+    public FeatureDTO create(FeatureDTO featureDTO) {
         if (featureMapper.insert(featureDTO) != 1) {
             throw new CommonException("error.feature.insert");
         }
-        return ConvertHelper.convert(featureMapper.selectByPrimaryKey(featureDTO.getId()), FeatureE.class);
+        return featureMapper.selectByPrimaryKey(featureDTO.getId());
     }
 
     @Override
-    public FeatureE updateSelective(FeatureE featureE) {
-        FeatureDTO featureDTO = ConvertHelper.convert(featureE, FeatureDTO.class);
+    public FeatureDTO updateSelective(FeatureDTO featureDTO) {
         if (featureMapper.updateByPrimaryKeySelective(featureDTO) != 1) {
             throw new CommonException("error.feature.update");
         }
-        return ConvertHelper.convert(featureMapper.selectByPrimaryKey(featureDTO.getId()), FeatureE.class);
+        return featureMapper.selectByPrimaryKey(featureDTO.getId());
     }
 
     @Override

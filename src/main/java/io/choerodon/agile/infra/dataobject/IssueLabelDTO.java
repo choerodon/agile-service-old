@@ -19,6 +19,13 @@ import javax.validation.constraints.NotNull;
 @Table(name = "agile_issue_label")
 public class IssueLabelDTO extends BaseDTO {
 
+    public IssueLabelDTO() {}
+
+    public IssueLabelDTO(String labelName, Long projectId) {
+        this.labelName = labelName;
+        this.projectId = projectId;
+    }
+
     /***/
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
