@@ -12,7 +12,6 @@ import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
-import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
@@ -34,8 +33,8 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class DataLogServiceImpl implements DataLogService {
 
-    @Autowired
-    private DataLogRepository dataLogRepository;
+//    @Autowired
+//    private DataLogRepository dataLogRepository;
     @Autowired
     private DataLogMapper dataLogMapper;
     @Autowired

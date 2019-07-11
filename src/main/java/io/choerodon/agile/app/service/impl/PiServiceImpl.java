@@ -10,7 +10,6 @@ import io.choerodon.agile.app.service.PiService;
 import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.agile.domain.agile.entity.BatchRemovePiE;
-import io.choerodon.agile.domain.agile.entity.PiE;
 import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
@@ -19,14 +18,9 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.agile.infra.repository.ArtRepository;
-import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.PiRepository;
-import io.choerodon.agile.infra.repository.SprintRepository;
 
 import com.github.pagehelper.PageInfo;
 
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -70,11 +64,11 @@ public class PiServiceImpl implements PiService {
     private static final String SPRINT_COMPLETE_SETTING_BACKLOG = "backlog";
     private static final String SPRINT_COMPLETE_SETTING_NEXT_SPRINT = "next_sprint";
 
-    @Autowired
-    private PiRepository piRepository;
-
-    @Autowired
-    private ArtRepository artRepository;
+//    @Autowired
+//    private PiRepository piRepository;
+//
+//    @Autowired
+//    private ArtRepository artRepository;
 
     @Autowired
     private PiMapper piMapper;
@@ -94,8 +88,8 @@ public class PiServiceImpl implements PiService {
     @Autowired
     private SprintService sprintService;
 
-    @Autowired
-    private IssueRepository issueRepository;
+//    @Autowired
+//    private IssueRepository issueRepository;
 
     @Autowired
     private IssueMapper issueMapper;
@@ -103,8 +97,8 @@ public class PiServiceImpl implements PiService {
     @Autowired
     private SprintMapper sprintMapper;
 
-    @Autowired
-    private SprintRepository sprintRepository;
+//    @Autowired
+//    private SprintRepository sprintRepository;
 
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;

@@ -14,7 +14,6 @@ import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueCountDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
-import io.choerodon.agile.infra.repository.ProductVersionRepository;
 import io.choerodon.agile.app.service.VersionIssueRelService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.VersionIssueDTO;
@@ -77,8 +76,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionStatisticsAssembler versionStatisticsAssembler;
     @Autowired
     private IssueAssembler issueAssembler;
-    @Autowired
-    private ProductVersionRepository productVersionRepository;
+//    @Autowired
+//    private ProductVersionRepository productVersionRepository;
     @Autowired
     private VersionIssueRelService versionIssueRelService;
     @Autowired

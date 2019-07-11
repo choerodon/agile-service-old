@@ -4,7 +4,6 @@ import io.choerodon.agile.api.vo.PriorityVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.agile.domain.agile.entity.*;
-import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -138,8 +137,8 @@ public class DataLogAspect {
     private IssueStatusMapper issueStatusMapper;
     @Autowired
     private IssueMapper issueMapper;
-    @Autowired
-    private DataLogRepository dataLogRepository;
+//    @Autowired
+//    private DataLogRepository dataLogRepository;
     @Autowired
     private DataLogService dataLogService;
     @Autowired

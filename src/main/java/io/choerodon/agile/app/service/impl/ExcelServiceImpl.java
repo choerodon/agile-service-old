@@ -5,7 +5,6 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.ExcelService;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.infra.repository.FileOperationHistoryRepository;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.FileFeignClient;
@@ -68,8 +67,8 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private StateMachineService stateMachineService;
 
-    @Autowired
-    private FileOperationHistoryRepository fileOperationHistoryRepository;
+//    @Autowired
+//    private FileOperationHistoryRepository fileOperationHistoryRepository;
 
     @Autowired
     private IssueFeignClient issueFeignClient;

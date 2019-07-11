@@ -20,9 +20,6 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.SprintRepository;
-import io.choerodon.agile.infra.repository.SprintWorkCalendarRefRepository;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -50,14 +47,14 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class SprintServiceImpl implements SprintService {
 
-    @Autowired
-    private SprintRepository sprintRepository;
+//    @Autowired
+//    private SprintRepository sprintRepository;
     @Autowired
     private SprintMapper sprintMapper;
     @Autowired
     private IssueMapper issueMapper;
-    @Autowired
-    private IssueRepository issueRepository;
+//    @Autowired
+//    private IssueRepository issueRepository;
     @Autowired
     private SprintCreateAssembler sprintCreateAssembler;
     @Autowired
@@ -84,8 +81,8 @@ public class SprintServiceImpl implements SprintService {
     private DateUtil dateUtil;
     @Autowired
     private WorkCalendarRefMapper workCalendarRefMapper;
-    @Autowired
-    private SprintWorkCalendarRefRepository sprintWorkCalendarRefRepository;
+//    @Autowired
+//    private SprintWorkCalendarRefRepository sprintWorkCalendarRefRepository;
     @Autowired
     private WorkCalendarRefService workCalendarRefService;
     @Autowired

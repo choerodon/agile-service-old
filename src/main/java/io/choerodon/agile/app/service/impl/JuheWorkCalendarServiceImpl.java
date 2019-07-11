@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.app.service.WorkCalendarService;
 import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDTO;
-import io.choerodon.agile.infra.repository.WorkCalendarHolidayRefRepository;
 import io.choerodon.agile.infra.common.properties.WorkCalendarHolidayProperties;
 import io.choerodon.agile.infra.common.scheduled.WorkCalendarHolidayRefJobs;
 import io.choerodon.agile.infra.common.utils.DateUtil;
@@ -47,12 +46,12 @@ public class JuheWorkCalendarServiceImpl implements WorkCalendarService {
 
     private WorkCalendarHolidayRefMapper workCalendarHolidayRefMapper;
 
-    private WorkCalendarHolidayRefRepository workCalendarHolidayRefRepository;
+//    private WorkCalendarHolidayRefRepository workCalendarHolidayRefRepository;
 
-    public JuheWorkCalendarServiceImpl(WorkCalendarHolidayProperties workCalendarHolidayProperties, WorkCalendarHolidayRefMapper workCalendarHolidayRefMapper, WorkCalendarHolidayRefRepository workCalendarHolidayRefRepository) {
+    public JuheWorkCalendarServiceImpl(WorkCalendarHolidayProperties workCalendarHolidayProperties, WorkCalendarHolidayRefMapper workCalendarHolidayRefMapper) {
         this.workCalendarHolidayProperties = workCalendarHolidayProperties;
         this.workCalendarHolidayRefMapper = workCalendarHolidayRefMapper;
-        this.workCalendarHolidayRefRepository = workCalendarHolidayRefRepository;
+//        this.workCalendarHolidayRefRepository = workCalendarHolidayRefRepository;
     }
 
     @Override

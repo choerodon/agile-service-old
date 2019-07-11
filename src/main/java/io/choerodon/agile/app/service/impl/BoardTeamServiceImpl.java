@@ -6,7 +6,6 @@ import io.choerodon.agile.app.service.BoardTeamService;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.BoardTeamDTO;
 import io.choerodon.agile.infra.mapper.BoardTeamMapper;
-import io.choerodon.agile.infra.repository.BoardTeamRepository;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -28,8 +27,8 @@ public class BoardTeamServiceImpl implements BoardTeamService {
     private static final String ERROR_BOARDTEAM_NOTFOUND = "error.boardTeam.notFound";
     private static final String ERROR_BOARDTEAM_ILLEGAL = "error.boardTeam.illegal";
 
-    @Autowired
-    private BoardTeamRepository boardTeamRepository;
+//    @Autowired
+//    private BoardTeamRepository boardTeamRepository;
     @Autowired
     private BoardTeamMapper boardTeamMapper;
 

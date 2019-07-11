@@ -10,7 +10,6 @@ import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.RankService;
 import io.choerodon.agile.app.service.StateMachineService;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.domain.agile.entity.PiFeatureE;
 import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
 import io.choerodon.agile.api.vo.event.CreateIssuePayload;
 import io.choerodon.agile.api.vo.event.CreateSubIssuePayload;
@@ -27,7 +26,6 @@ import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.agile.infra.mapper.RankMapper;
 import io.choerodon.agile.app.service.FeatureService;
-import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.app.service.PiFeatureService;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
@@ -86,8 +84,8 @@ public class StateMachineServiceImpl implements StateMachineService {
     private InstanceFeignClient instanceFeignClient;
     @Autowired
     private IssueFeignClient issueFeignClient;
-    @Autowired
-    private IssueRepository issueRepository;
+//    @Autowired
+//    private IssueRepository issueRepository;
     @Autowired
     private IssueAccessDataService issueAccessDataService;
     @Autowired

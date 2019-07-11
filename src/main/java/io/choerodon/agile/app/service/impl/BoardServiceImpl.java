@@ -17,7 +17,6 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.agile.infra.repository.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
@@ -59,8 +58,8 @@ public class BoardServiceImpl implements BoardService {
     private static final String RANK = "rank";
     private static final String UPDATE_STATUS_MOVE = "updateStatusMove";
 
-    @Autowired
-    private BoardRepository boardRepository;
+//    @Autowired
+//    private BoardRepository boardRepository;
 
     @Autowired
     private BoardMapper boardMapper;
@@ -77,11 +76,11 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private IssueMapper issueMapper;
 
-    @Autowired
-    private ColumnStatusRelRepository columnStatusRelRepository;
-
-    @Autowired
-    private BoardColumnRepository boardColumnRepository;
+//    @Autowired
+//    private ColumnStatusRelRepository columnStatusRelRepository;
+//
+//    @Autowired
+//    private BoardColumnRepository boardColumnRepository;
 
     @Autowired
     private UserService userService;
@@ -113,8 +112,8 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private SprintMapper sprintMapper;
 
-    @Autowired
-    private IssueRepository issueRepository;
+//    @Autowired
+//    private IssueRepository issueRepository;
 
     @Autowired
     private PiMapper piMapper;

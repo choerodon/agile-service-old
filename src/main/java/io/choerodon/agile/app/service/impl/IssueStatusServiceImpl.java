@@ -9,8 +9,6 @@ import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.repository.ColumnStatusRelRepository;
-import io.choerodon.agile.infra.repository.IssueStatusRepository;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
@@ -46,11 +44,11 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     private static final String PIECHART = AGILE + "PieChart";
     private static final String STATUS = "status";
 
-    @Autowired
-    private IssueStatusRepository issueStatusRepository;
-
-    @Autowired
-    private ColumnStatusRelRepository columnStatusRelRepository;
+//    @Autowired
+//    private IssueStatusRepository issueStatusRepository;
+//
+//    @Autowired
+//    private ColumnStatusRelRepository columnStatusRelRepository;
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;

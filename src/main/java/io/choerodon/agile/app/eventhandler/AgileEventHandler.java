@@ -3,12 +3,7 @@ package io.choerodon.agile.app.eventhandler;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.event.*;
 import io.choerodon.agile.app.service.*;
-import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO;
-import io.choerodon.agile.infra.repository.BoardColumnRepository;
-import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.IssueStatusRepository;
-import io.choerodon.agile.infra.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
@@ -36,20 +31,20 @@ public class AgileEventHandler {
     private IssueLinkTypeService issueLinkTypeService;
     @Autowired
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
-    @Autowired
-    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
+//    @Autowired
+//    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
     @Autowired
     private TimeZoneWorkCalendarService timeZoneWorkCalendarService;
     @Autowired
     private IssueStatusService issueStatusService;
-    @Autowired
-    private BoardColumnRepository boardColumnRepository;
+//    @Autowired
+//    private BoardColumnRepository boardColumnRepository;
     @Autowired
     private BoardColumnService boardColumnService;
-    @Autowired
-    private IssueStatusRepository issueStatusRepository;
-    @Autowired
-    private IssueRepository issueRepository;
+//    @Autowired
+//    private IssueStatusRepository issueStatusRepository;
+//    @Autowired
+//    private IssueRepository issueRepository;
     @Autowired
     private IssueAccessDataService issueAccessDataService;
     @Autowired

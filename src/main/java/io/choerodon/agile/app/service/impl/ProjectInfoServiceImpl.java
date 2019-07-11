@@ -7,7 +7,6 @@ import io.choerodon.agile.api.vo.RoleAssignmentSearchVO;
 import io.choerodon.agile.api.vo.UserWithRoleVO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.api.vo.event.ProjectEvent;
-import io.choerodon.agile.infra.repository.ProjectInfoRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -30,8 +29,8 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class ProjectInfoServiceImpl implements ProjectInfoService {
 
-    @Autowired
-    private ProjectInfoRepository projectInfoRepository;
+//    @Autowired
+//    private ProjectInfoRepository projectInfoRepository;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
     @Autowired

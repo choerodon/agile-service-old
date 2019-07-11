@@ -5,7 +5,6 @@ import io.choerodon.agile.api.vo.PiObjectiveVO;
 import io.choerodon.agile.api.vo.ProjectRelationshipVO;
 import io.choerodon.agile.app.service.PiObjectiveService;
 import io.choerodon.agile.infra.feign.UserFeignClient;
-import io.choerodon.agile.infra.repository.PiObjectiveRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.PiObjectiveDTO;
 import io.choerodon.agile.infra.mapper.PiObjectiveMapper;
@@ -29,8 +28,8 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class PiObjectiveServiceImpl implements PiObjectiveService {
 
-    @Autowired
-    private PiObjectiveRepository piObjectiveRepository;
+//    @Autowired
+//    private PiObjectiveRepository piObjectiveRepository;
 
     @Autowired
     private PiObjectiveMapper piObjectiveMapper;

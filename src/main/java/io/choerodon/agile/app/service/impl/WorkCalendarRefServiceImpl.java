@@ -7,7 +7,6 @@ import io.choerodon.agile.api.validator.WorkCalendarValidator;
 import io.choerodon.agile.app.assembler.SprintCreateAssembler;
 import io.choerodon.agile.app.assembler.SprintSearchAssembler;
 import io.choerodon.agile.app.service.WorkCalendarRefService;
-import io.choerodon.agile.infra.repository.SprintWorkCalendarRefRepository;
 import io.choerodon.agile.infra.dataobject.SprintSearchDTO;
 import io.choerodon.agile.infra.dataobject.WorkCalendarRefDTO;
 import io.choerodon.agile.infra.mapper.SprintMapper;
@@ -37,8 +36,8 @@ public class WorkCalendarRefServiceImpl implements WorkCalendarRefService {
     private SprintSearchAssembler sprintSearchAssembler;
     @Autowired
     private WorkCalendarRefMapper workCalendarRefMapper;
-    @Autowired
-    private SprintWorkCalendarRefRepository sprintWorkCalendarRefRepository;
+//    @Autowired
+//    private SprintWorkCalendarRefRepository sprintWorkCalendarRefRepository;
 
     @Override
     public SprintWorkCalendarVO querySprintWorkCalendarRefs(Long projectId, Integer year) {

@@ -5,11 +5,9 @@ import io.choerodon.agile.app.service.DemoService;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.app.service.TimeZoneWorkCalendarService;
-import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
 import io.choerodon.agile.api.vo.event.OrganizationRegisterEventPayload;
 import io.choerodon.agile.api.vo.event.OrganizationRegisterPayload;
 import io.choerodon.agile.api.vo.event.ProjectEvent;
-import io.choerodon.agile.infra.repository.TimeZoneWorkCalendarRepository;
 import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
@@ -36,8 +34,8 @@ public class DemoEventHandler {
     @Autowired
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
 
-    @Autowired
-    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
+//    @Autowired
+//    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
 
     @Autowired
     private TimeZoneWorkCalendarService timeZoneWorkCalendarService;

@@ -2,7 +2,6 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueComponentValidator;
-import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
@@ -17,7 +16,6 @@ import com.github.pagehelper.PageInfo;
 
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.IssueComponentService;
-import io.choerodon.agile.infra.repository.IssueComponentRepository;
 import io.choerodon.agile.infra.dataobject.IssueComponentDTO;
 import io.choerodon.agile.infra.mapper.IssueComponentMapper;
 
@@ -50,8 +48,8 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     private static final String PIECHART = AGILE + "PieChart";
     private static final String CPMPONENT = "component";
 
-    @Autowired
-    private IssueComponentRepository issueComponentRepository;
+//    @Autowired
+//    private IssueComponentRepository issueComponentRepository;
 
     @Autowired
     private IssueComponentMapper issueComponentMapper;

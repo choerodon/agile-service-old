@@ -8,7 +8,6 @@ import io.choerodon.agile.app.assembler.IssueCommentAssembler;
 import io.choerodon.agile.app.service.IssueCommentService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.IssueCommentDTO;
-import io.choerodon.agile.infra.repository.IssueCommentRepository;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
 import io.choerodon.core.convertor.ConvertHelper;
@@ -39,8 +38,8 @@ public class IssueCommentServiceImpl implements IssueCommentService {
     private static final String INSERT_ERROR = "error.IssueComment.insert";
     private static final String DELETE_ERROR = "error.IssueComment.delete";
 
-    @Autowired
-    private IssueCommentRepository issueCommentRepository;
+//    @Autowired
+//    private IssueCommentRepository issueCommentRepository;
     @Autowired
     private IssueCommentAssembler issueCommentAssembler;
     @Autowired

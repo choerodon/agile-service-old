@@ -2,7 +2,6 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.PriorityService;
-import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,8 @@ import java.util.List;
 public class PriorityServiceImpl implements PriorityService {
     @Autowired
     IssueMapper issueMapper;
-    @Autowired
-    IssueRepository issueRepository;
+//    @Autowired
+//    IssueRepository issueRepository;
     @Autowired
     private IssueAccessDataService issueAccessDataService;
 

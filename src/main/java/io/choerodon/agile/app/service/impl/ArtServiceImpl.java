@@ -5,8 +5,6 @@ import io.choerodon.agile.api.validator.ArtValidator;
 import io.choerodon.agile.app.assembler.ArtAssembler;
 import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.app.service.PiService;
-import io.choerodon.agile.domain.agile.entity.PiE;
-import io.choerodon.agile.infra.repository.PiRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
@@ -67,8 +65,8 @@ public class ArtServiceImpl implements ArtService {
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
 
-    @Autowired
-    private PiRepository piRepository;
+//    @Autowired
+//    private PiRepository piRepository;
 
     private final ModelMapper modelMapper = new ModelMapper();
 

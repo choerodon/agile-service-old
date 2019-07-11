@@ -27,7 +27,6 @@ import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.agile.infra.repository.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
@@ -73,8 +72,8 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class IssueServiceImpl implements IssueService {
 
-    @Autowired
-    private IssueRepository issueRepository;
+//    @Autowired
+//    private IssueRepository issueRepository;
     @Autowired
     private IssueAccessDataService issueAccessDataService;
     @Autowired
@@ -99,14 +98,14 @@ public class IssueServiceImpl implements IssueService {
     private ReportAssembler reportAssembler;
     @Autowired
     private ProductVersionValidator productVersionValidator;
-    @Autowired
-    private IssueComponentRepository issueComponentRepository;
+//    @Autowired
+//    private IssueComponentRepository issueComponentRepository;
     @Autowired
     private IssueComponentService issueComponentService;
     @Autowired
     private ProductVersionService productVersionService;
-    @Autowired
-    private IssueLabelRepository issueLabelRepository;
+//    @Autowired
+//    private IssueLabelRepository issueLabelRepository;
     @Autowired
     private IssueLabelService issueLabelService;
     @Autowired
@@ -125,14 +124,14 @@ public class IssueServiceImpl implements IssueService {
     private IssueCommentService issueCommentService;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
-    @Autowired
-    private ProjectInfoRepository projectInfoRepository;
+//    @Autowired
+//    private ProjectInfoRepository projectInfoRepository;
     @Autowired
     private UserService userService;
     @Autowired
     private LookupValueMapper lookupValueMapper;
-    @Autowired
-    private DataLogRepository dataLogRepository;
+//    @Autowired
+//    private DataLogRepository dataLogRepository;
     @Autowired
     private DataLogService dataLogService;
     @Autowired

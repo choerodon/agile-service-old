@@ -2,12 +2,9 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.IssueAttachmentDTO;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.vo.IssueAttachmentVO;
 import io.choerodon.agile.app.service.IssueAttachmentService;
-import io.choerodon.agile.domain.agile.entity.IssueAttachmentE;
-import io.choerodon.agile.infra.repository.IssueAttachmentRepository;
 import io.choerodon.agile.infra.feign.FileFeignClient;
 import io.choerodon.agile.infra.mapper.IssueAttachmentMapper;
 import org.slf4j.Logger;
@@ -50,8 +47,8 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         this.fileFeignClient = fileFeignClient;
     }
 
-    @Autowired
-    private IssueAttachmentRepository issueAttachmentRepository;
+//    @Autowired
+//    private IssueAttachmentRepository issueAttachmentRepository;
 
     @Autowired
     private IssueAttachmentMapper issueAttachmentMapper;

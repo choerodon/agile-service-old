@@ -9,7 +9,6 @@ import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.agile.infra.repository.BoardFeatureRepository;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -33,8 +32,8 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     private BoardFeatureMapper boardFeatureMapper;
     @Autowired
     private BoardDependMapper boardDependMapper;
-    @Autowired
-    private BoardFeatureRepository boardFeatureRepository;
+//    @Autowired
+//    private BoardFeatureRepository boardFeatureRepository;
     @Autowired
     private ArtMapper artMapper;
     @Autowired

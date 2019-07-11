@@ -6,19 +6,14 @@ import io.choerodon.agile.api.vo.event.RemoveStatusWithProject;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.app.service.ColumnStatusRelService;
 import io.choerodon.agile.app.service.IssueStatusService;
-import io.choerodon.agile.domain.agile.entity.BoardColumnE;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.repository.BoardColumnRepository;
-import io.choerodon.agile.infra.repository.ColumnStatusRelRepository;
-import io.choerodon.agile.infra.repository.IssueStatusRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -57,17 +52,17 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     private static final String COLUMN_COLOR_PREPARE = "column_color_prepare";
     private static final String APPLY_TYPE_PROGRAM = "program";
 
-    @Autowired
-    private BoardColumnRepository boardColumnRepository;
-
-    @Autowired
-    private ColumnStatusRelRepository columnStatusRelRepository;
+//    @Autowired
+//    private BoardColumnRepository boardColumnRepository;
+//
+//    @Autowired
+//    private ColumnStatusRelRepository columnStatusRelRepository;
 
     @Autowired
     private ColumnStatusRelService columnStatusRelService;
 
-    @Autowired
-    private IssueStatusRepository issueStatusRepository;
+//    @Autowired
+//    private IssueStatusRepository issueStatusRepository;
 
     @Autowired
     private BoardColumnMapper boardColumnMapper;

@@ -7,7 +7,6 @@ import io.choerodon.agile.app.service.WorkLogService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.infra.dataobject.WorkLogDTO;
-import io.choerodon.agile.infra.repository.IssueRepository;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.IssueDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
@@ -48,8 +47,8 @@ public class WorkLogServiceImpl implements WorkLogService {
     @Autowired
     private WorkLogMapper workLogMapper;
 
-    @Autowired
-    private IssueRepository issueRepository;
+//    @Autowired
+//    private IssueRepository issueRepository;
 
     @Autowired
     private IssueMapper issueMapper;

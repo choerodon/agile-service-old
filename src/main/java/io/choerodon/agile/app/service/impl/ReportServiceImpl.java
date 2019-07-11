@@ -12,7 +12,6 @@ import io.choerodon.agile.infra.dataobject.ReportIssueConvertDTO;
 import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.common.utils.PageUtil;
-import io.choerodon.agile.infra.repository.DataLogRepository;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
@@ -86,8 +85,8 @@ public class ReportServiceImpl implements ReportService {
     private IssueFeignClient issueFeignClient;
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
-    @Autowired
-    private DataLogRepository dataLogRepository;
+//    @Autowired
+//    private DataLogRepository dataLogRepository;
     @Autowired
     private DataLogService dataLogService;
     @Autowired
