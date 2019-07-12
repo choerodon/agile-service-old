@@ -31,10 +31,11 @@
     padding-right: 20px;
     max-width: 100%;
   }
-
-  .fieldWith {
-    width: 520px;
-  }
+  .radioStyle {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+  }  
 }
 
 .is-required {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { stores } from '@choerodon/boot';
 import _ from 'lodash';
 import {
@@ -277,7 +277,7 @@ class CreateSubBug extends Component {
         return (
           <Radio.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             {fieldOptions && fieldOptions.length > 0
               && fieldOptions.filter(option => option.enabled).map(item => (
@@ -295,7 +295,7 @@ class CreateSubBug extends Component {
         return (
           <Radio.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Radio.Group>
@@ -306,7 +306,7 @@ class CreateSubBug extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <Row>
               {fieldOptions && fieldOptions.length > 0
@@ -331,7 +331,7 @@ class CreateSubBug extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Checkbox.Group>
@@ -341,7 +341,7 @@ class CreateSubBug extends Component {
       return (
         <TimePicker
           label={fieldName}
-          className="fieldWith"
+          style={{ display: 'block' }}
           defaultOpenValue={moment('00:00:00', 'HH:mm:ss')}
           allowEmpty={!required}
         />
@@ -351,7 +351,7 @@ class CreateSubBug extends Component {
         <DatePicker
           label={fieldName}
           format="YYYY-MM-DD HH:mm:ss"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -360,7 +360,7 @@ class CreateSubBug extends Component {
         <DatePicker
           label={fieldName}
           format="YYYY-MM-DD"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -369,7 +369,7 @@ class CreateSubBug extends Component {
         <Select
           label={fieldName}
           dropdownMatchSelectWidth
-          className="fieldWith"
+
           allowClear={!required}
         >
           {field.fieldOptions && field.fieldOptions.length > 0
@@ -389,7 +389,7 @@ class CreateSubBug extends Component {
           label={fieldName}
           dropdownMatchSelectWidth
           mode="multiple"
-          className="fieldWith"
+
         >
           {field.fieldOptions && field.fieldOptions.length > 0
             && field.fieldOptions.filter(option => option.enabled).map(item => (
@@ -406,7 +406,7 @@ class CreateSubBug extends Component {
       return (
         <InputNumber
           label={fieldName}
-          className="fieldWith"
+
           step={field.extraConfig === '1' ? 0.1 : 1}
         />
       );
@@ -415,7 +415,7 @@ class CreateSubBug extends Component {
         <TextArea
           autosize
           label={fieldName}
-          className="fieldWith"
+
         />
       );
     } else if (field.fieldType === 'member') {
@@ -448,7 +448,7 @@ class CreateSubBug extends Component {
       return (
         <Input
           label={fieldName}
-          className="fieldWith"
+
         />
       );
     }
@@ -654,13 +654,22 @@ class CreateSubBug extends Component {
         return '';
       case 'description':
         return (
-          <FormItem label={fieldName} className="c7nagile-line">
-            {getFieldDecorator(fieldCode)(
-              <WYSIWYGEditor
-                style={{ height: 200, width: '100%' }}
-              />,
-            )}
-          </FormItem>
+          <Fragment>
+            <FormItem label={fieldName} className="c7nagile-line">
+              {getFieldDecorator(fieldCode)(
+                <WYSIWYGEditor
+                  style={{ height: 200, width: '100%' }}
+                />,
+              )}
+            </FormItem>
+            <FormItem className="c7nagile-line">
+              <UploadButton
+                onRemove={this.setFileList}
+                onBeforeUpload={this.setFileList}
+                fileList={this.state.fileList}
+              />
+            </FormItem>
+          </Fragment>
         );
       default:
         return (
@@ -724,18 +733,13 @@ class CreateSubBug extends Component {
             <p style={{ marginBottom: 24 }}>
               {' 请在下面输入缺陷的详细信息，创建问题的缺陷。缺陷会与父级问题的冲刺、史诗保持一致，并且缺陷的状态会受父级问题的限制。'}
             </p>
-            <div style={{ paddingBottom: 8, marginBottom: 12 }}>
-              <Input label="父任务概要" value={parentSummary} disabled />
-            </div>
             <div className="c7nagile-createIssue-fields">
+              <FormItem>
+                <Input label="父任务概要" value={parentSummary} disabled />
+              </FormItem>
               {fields && fields.map(field => this.getFieldComponent(field))}
             </div>
-            <UploadButton
-              onRemove={this.setFileList}
-              onBeforeUpload={this.setFileList}
-              fileList={fileList}
-            />
-          </Form>          
+          </Form>
         </Spin>
       </Sidebar>
     );

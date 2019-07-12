@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component,Fragment } from 'react';
 import { stores, axios, Content } from '@choerodon/boot';
 import _ from 'lodash';
 import {
@@ -1000,7 +1000,7 @@ class CreateIssue extends Component {
       case 'epicName':
         return (
           newIssueTypeCode === 'issue_epic' && (
-            <FormItem label="史诗名称">
+            <FormItem label="史诗名称" className="c7nagile-line">
               {getFieldDecorator('epicName', {
                 rules: [{ required: true, message: '史诗名称为必输项' }, {
                   validator: this.checkEpicNameRepeat,
@@ -1069,13 +1069,22 @@ class CreateIssue extends Component {
         );
       case 'description':
         return (
-          <FormItem label={fieldName} className="c7nagile-line">
-            {getFieldDecorator(fieldCode)(
-              <WYSIWYGEditor
-                style={{ height: 200, width: '100%' }}
-              />,
-            )}
-          </FormItem>
+          <Fragment>
+            <FormItem label={fieldName} className="c7nagile-line">
+              {getFieldDecorator(fieldCode)(
+                <WYSIWYGEditor
+                  style={{ height: 200, width: '100%' }}
+                />,
+              )}
+            </FormItem>
+            <FormItem className="c7nagile-line">
+              <UploadButton
+                onRemove={this.setFileList}
+                onBeforeUpload={this.setFileList}
+                fileList={this.state.fileList}
+              />
+            </FormItem>
+          </Fragment>
         );
       default:
         return (
@@ -1244,12 +1253,7 @@ class CreateIssue extends Component {
                       </div>
                     )))
                 )
-              }
-              <UploadButton
-                onRemove={this.setFileList}
-                onBeforeUpload={this.setFileList}
-                fileList={fileList}
-              />
+              }             
             </Form>
           </Spin>
         </Content>

@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { stores, axios } from '@choerodon/boot';
+import { stores } from '@choerodon/boot';
 import moment from 'moment';
 import {
-  Select, DatePicker, Button, Modal, Radio, message, Icon, InputNumber,
+  Select, DatePicker, Modal, Radio,
 } from 'choerodon-ui';
-import { NumericInput } from '../CommonComponent';
 import { beforeTextUpload } from '../../common/utils';
 import { createWorklog } from '../../api/NewIssueApi';
 import WYSIWYGEditor from '../WYSIWYGEditor';
@@ -247,20 +246,10 @@ class DailyLog extends Component {
     } = this.state;
     const radioStyle = {
       display: 'block',
+      width: '100%',
       height: '30px',
       lineHeight: '30px',
-      marginBottom: '20px',
-    };
-    const tempAlignStyle = {
-      lineHeight: '21px',
-      marginBottom: -3,
-      width: 100,
-    };
-    const callback = (value) => {
-      this.setState({
-        delta: value,
-        edit: false,
-      });
+      marginBottom: '15px',
     };
 
     return (
@@ -295,7 +284,7 @@ class DailyLog extends Component {
                   this.componentRef.rcSelect.focus();
                 }}
                 tokenSeparators={[',']}
-                style={{ marginTop: 0, paddingTop: 0 }}
+                style={{ flex: 1, marginTop: 0, paddingTop: 0 }}
                 onChange={value => this.handleChangeDissipate(value)}
               >
                 {storyPointList.map(sp => (
@@ -306,7 +295,7 @@ class DailyLog extends Component {
               </Select>
               <Select
                 value={dissipateUnit}
-                style={{ width: 100, marginLeft: 18 }}
+                style={{ width: 160, marginLeft: 18 }}
                 onChange={this.handleDissipateUnitChange.bind(this)}
               >
                 {['小时', '天', '周'].map(type => (
@@ -320,10 +309,11 @@ class DailyLog extends Component {
             <div
               className="dataPicker"
               style={{
-                width: 218, margin: '32px 0', display: 'flex', flexDirection: 'column', position: 'relative',
+                width: '100%', margin: '32px 0', display: 'flex', flexDirection: 'column', position: 'relative',
               }}
             >
               <DatePicker
+                style={{ width: '100%' }}
                 label="工作日期*"
                 value={startTime}
                 format={DATA_FORMAT}
@@ -357,7 +347,7 @@ class DailyLog extends Component {
                       this.componentRef.rcSelect.focus();
                     }}
                     tokenSeparators={[',']}
-                    style={{ marginTop: 0, paddingTop: 0 }}
+                    style={{ width: 265, marginTop: 0, paddingTop: 0 }}
                     onChange={value => this.handleChangeTime(value)}
                   >
                     {storyPointList.map(sp => (
@@ -368,7 +358,7 @@ class DailyLog extends Component {
                   </Select>
                   <Select
                     disabled={radio !== 3}
-                    style={{ width: 100, marginLeft: 18 }}
+                    style={{ width: 160, marginLeft: 18 }}
                     value={timeUnit}
                     onChange={this.handleTimeUnitChange.bind(this)}
                   >
@@ -395,7 +385,7 @@ class DailyLog extends Component {
                       this.componentRef.rcSelect.focus();
                     }}
                     tokenSeparators={[',']}
-                    style={{ marginTop: 0, paddingTop: 0 }}
+                    style={{ width: 265, marginTop: 0, paddingTop: 0 }}
                     onChange={value => this.handleChangeReduce(value)}
                   >
                     {storyPointList.map(sp => (
@@ -406,7 +396,7 @@ class DailyLog extends Component {
                   </Select>
                   <Select
                     disabled={radio !== 4}
-                    style={{ width: 100, marginLeft: 18 }}
+                    style={{ width: 160, marginLeft: 18 }}
                     value={reduceUnit}
                     onChange={this.handleReduceUnitChange.bind(this)}
                   >
