@@ -20,7 +20,7 @@ public class FeatureCommonVO {
 
     private Long statusId;
 
-    private Long issuetypeId;
+    private Long issueTypeId;
 
     private BigDecimal storyPoints;
 
@@ -212,11 +212,11 @@ public class FeatureCommonVO {
         return issueTypeVO;
     }
 
-    public void setIssuetypeId(Long issuetypeId) {
-        this.issuetypeId = issuetypeId;
+    public void setIssueTypeId(Long issueTypeId) {
+        this.issueTypeId = issueTypeId;
     }
 
-    public Long getIssuetypeId() {
-        return issuetypeId;
+    public Long getIssueTypeId() {
+        return issueTypeId;
     }
 }

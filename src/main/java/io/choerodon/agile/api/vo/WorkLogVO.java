@@ -40,7 +40,7 @@ public class WorkLogVO {
     private BigDecimal predictionTime;
 
     @ApiModelProperty(value = "用户id")
-    private Long userId;
+    private Long createdBy;
 
     @ApiModelProperty(value = "用户名称")
     private String userName;
@@ -120,12 +120,12 @@ public class WorkLogVO {
         return predictionTime;
     }
 
-    public Long getUserId() {
-        return userId;
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public Long getCreatedBy() {
+        return createdBy;
     }
 
     public String getUserName() {

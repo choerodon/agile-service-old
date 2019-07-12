@@ -73,7 +73,7 @@
         <id property="endDate" column="pi_end_date"/>
         <id property="artId" column="pi_art_id"/>
         <id property="objectVersionNumber" column="pi_object_version_number"/>
-        <collection property="subFeatureVOList" autoMapping="true" columnPrefix="ai_"
+        <collection property="subFeatureDTOList" autoMapping="true" columnPrefix="ai_"
                     ofType="io.choerodon.agile.infra.dataobject.SubFeatureDTO"/>
     </resultMap>
 

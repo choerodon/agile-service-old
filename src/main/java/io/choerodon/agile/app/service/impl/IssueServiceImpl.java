@@ -2585,8 +2585,8 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         List<FeatureCommonVO> featureCommonVOS = modelMapper.map(issueMapper.selectFeatureByPiId(programId, piId), new TypeToken<List<FeatureCommonVO>>() {
         }.getType());
-        for (FeatureCommonVO dto : featureCommonVOS) {
-            dto.setIssueTypeVO(issueTypeDTOMap.get(dto.getIssuetypeId()));
+        for (FeatureCommonVO featureCommon : featureCommonVOS) {
+            featureCommon.setIssueTypeVO(issueTypeDTOMap.get(featureCommon.getIssueTypeId()));
         }
         return featureCommonVOS;
     }

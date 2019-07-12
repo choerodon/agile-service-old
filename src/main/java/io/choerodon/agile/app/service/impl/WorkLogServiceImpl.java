@@ -138,17 +138,17 @@ public class WorkLogServiceImpl implements WorkLogService {
         workLogDTO.setProjectId(projectId);
         workLogDTO.setLogId(logId);
         WorkLogVO workLogVO = modelMapper.map(workLogMapper.selectOne(workLogDTO), WorkLogVO.class);
-        workLogVO.setUserName(userService.queryUserNameByOption(workLogVO.getUserId(), true).getRealName());
+        workLogVO.setUserName(userService.queryUserNameByOption(workLogVO.getCreatedBy(), true).getRealName());
         return workLogVO;
     }
 
     @Override
     public List<WorkLogVO> queryWorkLogListByIssueId(Long projectId, Long issueId) {
         List<WorkLogVO> workLogVOList = modelMapper.map(workLogMapper.queryByIssueId(issueId, projectId), new TypeToken<List<WorkLogVO>>(){}.getType());
-        List<Long> assigneeIds = workLogVOList.stream().filter(workLogVO -> workLogVO.getUserId() != null && !Objects.equals(workLogVO.getUserId(), 0L)).map(WorkLogVO::getUserId).distinct().collect(Collectors.toList());
+        List<Long> assigneeIds = workLogVOList.stream().filter(workLogVO -> workLogVO.getCreatedBy() != null && !Objects.equals(workLogVO.getCreatedBy(), 0L)).map(WorkLogVO::getCreatedBy).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
         workLogVOList.forEach(workLogVO -> {
-            String assigneeName = usersMap.get(workLogVO.getUserId()) != null ? usersMap.get(workLogVO.getUserId()).getName() : null;
+            String assigneeName = usersMap.get(workLogVO.getCreatedBy()) != null ? usersMap.get(workLogVO.getCreatedBy()).getName() : null;
             workLogVO.setUserName(assigneeName);
         });
         return workLogVOList;
