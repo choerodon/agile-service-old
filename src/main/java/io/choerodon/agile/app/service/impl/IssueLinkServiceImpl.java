@@ -80,7 +80,7 @@ public class IssueLinkServiceImpl implements IssueLinkService {
         }
         IssueLinkDTO query = new IssueLinkDTO();
         query.setIssueId(issueLinkDTO.getIssueId());
-        return modelMapper.map(issueLinkMapper.select(query), new TypeToken<IssueLinkDTO>(){}.getType());
+        return modelMapper.map(issueLinkMapper.select(query), new TypeToken<List<IssueLinkDTO>>(){}.getType());
     }
 
     @Override
