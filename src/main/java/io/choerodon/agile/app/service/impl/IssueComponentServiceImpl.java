@@ -4,6 +4,7 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueComponentValidator;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.infra.dataobject.ComponentForListDTO;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
 import io.choerodon.agile.app.service.ComponentIssueRelService;
 import io.choerodon.agile.app.service.UserService;
@@ -152,15 +153,17 @@ public class IssueComponentServiceImpl implements IssueComponentService {
         //处理用户搜索
         Boolean condition = handleSearchUser(searchVO, projectId);
         if (condition) {
-            PageInfo<ComponentForListVO> componentForListDTOPage = ConvertPageHelper.convertPageInfo(PageHelper.startPage(pageRequest.getPage(),
+            PageInfo<ComponentForListDTO> componentForListDTOPage = PageHelper.startPage(pageRequest.getPage(),
                     pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
                     issueComponentMapper.queryComponentByOption(projectId, noIssueTest, componentId, searchVO.getSearchArgs(),
-                            searchVO.getAdvancedSearchArgs(), searchVO.getContents())), ComponentForListVO.class);
-            if ((componentForListDTOPage.getList() != null) && !componentForListDTOPage.getList().isEmpty()) {
-                List<Long> assigneeIds = componentForListDTOPage.getList().stream().filter(componentForListVO -> componentForListVO.getManagerId() != null
+                            searchVO.getAdvancedSearchArgs(), searchVO.getContents()));
+            PageInfo<ComponentForListVO> componentForListVOPageInfo = modelMapper.map(componentForListDTOPage, new TypeToken<PageInfo>(){}.getType());
+            componentForListVOPageInfo.setList(modelMapper.map(componentForListDTOPage.getList(), new TypeToken<List<ComponentForListVO>>(){}.getType()));
+            if ((componentForListVOPageInfo.getList() != null) && !componentForListVOPageInfo.getList().isEmpty()) {
+                List<Long> assigneeIds = componentForListVOPageInfo.getList().stream().filter(componentForListVO -> componentForListVO.getManagerId() != null
                         && !Objects.equals(componentForListVO.getManagerId(), 0L)).map(ComponentForListVO::getManagerId).distinct().collect(Collectors.toList());
                 Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
-                componentForListDTOPage.getList().forEach(componentForListVO -> {
+                componentForListVOPageInfo.getList().forEach(componentForListVO -> {
                     UserMessageDTO userMessageDTO = usersMap.get(componentForListVO.getManagerId());
                     String assigneeName = userMessageDTO != null ? userMessageDTO.getName() : null;
                     String assigneeLoginName = userMessageDTO != null ? userMessageDTO.getLoginName() : null;
@@ -172,7 +175,7 @@ public class IssueComponentServiceImpl implements IssueComponentService {
                     componentForListVO.setImageUrl(imageUrl);
                 });
             }
-            return componentForListDTOPage;
+            return componentForListVOPageInfo;
         } else {
             return new PageInfo<>(new ArrayList<>());
         }

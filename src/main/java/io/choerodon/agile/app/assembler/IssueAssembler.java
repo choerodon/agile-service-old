@@ -46,7 +46,7 @@ public class IssueAssembler extends AbstractAssembler {
     public IssueVO issueDetailDoToDto(IssueDetailDTO issueDetailDTO, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         IssueVO issueVO = new IssueVO();
         BeanUtils.copyProperties(issueDetailDTO, issueVO);
-        issueVO.setFeatureVO(modelMapper.map(issueDetailDTO.getFeatureDTO(), FeatureVO.class));
+        issueVO.setFeatureVO(issueDetailDTO.getFeatureDTO() != null ? modelMapper.map(issueDetailDTO.getFeatureDTO(), FeatureVO.class) : null);
         issueVO.setComponentIssueRelVOList(modelMapper.map(issueDetailDTO.getComponentIssueRelDTOList(), new TypeToken<List<ComponentIssueRelVO>>(){}.getType()));
         issueVO.setActiveSprint(sprintNameAssembler.toTarget(issueDetailDTO.getActiveSprint(), SprintNameVO.class));
         issueVO.setCloseSprint(sprintNameAssembler.toTargetList(issueDetailDTO.getCloseSprint(), SprintNameVO.class));
