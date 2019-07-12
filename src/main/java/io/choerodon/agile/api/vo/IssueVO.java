@@ -86,10 +86,10 @@ public class IssueVO {
     private List<IssueAttachmentVO> issueAttachmentVOList;
 
     @ApiModelProperty(value = "子任务列表")
-    private List<IssueSubListVO> subIssueDTOList;
+    private List<IssueSubListVO> subIssueVOList;
 
     @ApiModelProperty(value = "子缺陷列表")
-    private List<IssueSubListVO> subBugDTOList;
+    private List<IssueSubListVO> subBugVOList;
 
     @ApiModelProperty(value = "问题版本号")
     private Long objectVersionNumber;
@@ -379,14 +379,6 @@ public class IssueVO {
         this.issueAttachmentVOList = issueAttachmentVOList;
     }
 
-    public List<IssueSubListVO> getSubIssueDTOList() {
-        return subIssueDTOList;
-    }
-
-    public void setSubIssueDTOList(List<IssueSubListVO> subIssueDTOList) {
-        this.subIssueDTOList = subIssueDTOList;
-    }
-
     public Date getCreationDate() {
         return creationDate;
     }
@@ -635,12 +627,20 @@ public class IssueVO {
         return relateIssueNum;
     }
 
-    public void setSubBugDTOList(List<IssueSubListVO> subBugDTOList) {
-        this.subBugDTOList = subBugDTOList;
+    public void setSubIssueVOList(List<IssueSubListVO> subIssueVOList) {
+        this.subIssueVOList = subIssueVOList;
     }
 
-    public List<IssueSubListVO> getSubBugDTOList() {
-        return subBugDTOList;
+    public List<IssueSubListVO> getSubIssueVOList() {
+        return subIssueVOList;
+    }
+
+    public void setSubBugVOList(List<IssueSubListVO> subBugVOList) {
+        this.subBugVOList = subBugVOList;
+    }
+
+    public List<IssueSubListVO> getSubBugVOList() {
+        return subBugVOList;
     }
 
     @Override

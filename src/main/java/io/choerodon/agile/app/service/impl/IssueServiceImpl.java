@@ -1569,7 +1569,7 @@ public class IssueServiceImpl implements IssueService {
         if (versionIssueRelVOList != null && versionType != null) {
             if (!versionIssueRelVOList.isEmpty()) {
                 //归档状态的版本之间的关联不删除
-                List<VersionIssueRelDTO> versionIssueRelDTOS = modelMapper.map(versionIssueRelVOList, new TypeToken<VersionIssueRelDTO>(){}.getType());
+                List<VersionIssueRelDTO> versionIssueRelDTOS = modelMapper.map(versionIssueRelVOList, new TypeToken<List<VersionIssueRelDTO>>(){}.getType());
                 List<VersionIssueRelDTO> versionIssueRelCreate = versionIssueRelDTOS.stream().filter(versionIssueRel ->
                         versionIssueRel.getVersionId() != null).collect(Collectors.toList());
                 List<Long> curVersionIds = versionIssueRelMapper.queryByIssueIdAndProjectIdNoArchivedExceptInfluence(projectId, issueId, versionType);

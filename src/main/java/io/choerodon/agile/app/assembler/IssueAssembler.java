@@ -56,8 +56,8 @@ public class IssueAssembler extends AbstractAssembler {
         issueVO.setLabelIssueRelVOList(modelMapper.map(issueDetailDTO.getLabelIssueRelDTOList(), new TypeToken<List<LabelIssueRelVO>>(){}.getType()));
         issueVO.setIssueAttachmentVOList(modelMapper.map(issueDetailDTO.getIssueAttachmentDTOList(), new TypeToken<List<IssueAttachmentVO>>(){}.getType()));
         issueVO.setIssueCommentVOList(modelMapper.map(issueDetailDTO.getIssueCommentDTOList(), new TypeToken<List<IssueCommentVO>>(){}.getType()));
-        issueVO.setSubIssueDTOList(issueDoToSubIssueDto(issueDetailDTO.getSubIssueDTOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
-        issueVO.setSubBugDTOList(issueDoToSubIssueDto(issueDetailDTO.getSubBugDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
+        issueVO.setSubIssueVOList(issueDoToSubIssueDto(issueDetailDTO.getSubIssueDTOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
+        issueVO.setSubBugVOList(issueDoToSubIssueDto(issueDetailDTO.getSubBugDOList(), issueTypeDTOMap, statusMapDTOMap, priorityDTOMap));
         issueVO.setPriorityVO(priorityDTOMap.get(issueVO.getPriorityId()));
         issueVO.setIssueTypeVO(issueTypeDTOMap.get(issueVO.getIssueTypeId()));
         issueVO.setStatusMapVO(statusMapDTOMap.get(issueVO.getStatusId()));
@@ -196,7 +196,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @return SubIssueDTO
      */
     private List<IssueSubListVO> issueDoToSubIssueDto(List<IssueDTO> issueDTOList, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
-        List<IssueSubListVO> subIssueDTOList = new ArrayList<>(issueDTOList.size());
+        List<IssueSubListVO> subIssueVOList = new ArrayList<>(issueDTOList.size());
         List<Long> assigneeIds = issueDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueDTO::getAssigneeId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
         issueDTOList.forEach(issueDO -> {
@@ -214,9 +214,9 @@ public class IssueAssembler extends AbstractAssembler {
             subIssueDTO.setPriorityVO(priorityDTOMap.get(issueDO.getPriorityId()));
             subIssueDTO.setIssueTypeVO(issueTypeDTOMap.get(issueDO.getIssueTypeId()));
             subIssueDTO.setStatusMapVO(statusMapDTOMap.get(issueDO.getStatusId()));
-            subIssueDTOList.add(subIssueDTO);
+            subIssueVOList.add(subIssueDTO);
         });
-        return subIssueDTOList;
+        return subIssueVOList;
     }
 
     /**

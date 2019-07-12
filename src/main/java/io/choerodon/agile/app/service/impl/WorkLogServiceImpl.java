@@ -145,11 +145,11 @@ public class WorkLogServiceImpl implements WorkLogService {
     @Override
     public List<WorkLogVO> queryWorkLogListByIssueId(Long projectId, Long issueId) {
         List<WorkLogVO> workLogVOList = modelMapper.map(workLogMapper.queryByIssueId(issueId, projectId), new TypeToken<List<WorkLogVO>>(){}.getType());
-        List<Long> assigneeIds = workLogVOList.stream().filter(workLogDTO -> workLogDTO.getUserId() != null && !Objects.equals(workLogDTO.getUserId(), 0L)).map(WorkLogVO::getUserId).distinct().collect(Collectors.toList());
+        List<Long> assigneeIds = workLogVOList.stream().filter(workLogVO -> workLogVO.getUserId() != null && !Objects.equals(workLogVO.getUserId(), 0L)).map(WorkLogVO::getUserId).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
-        workLogVOList.forEach(workLogDTO -> {
-            String assigneeName = usersMap.get(workLogDTO.getUserId()) != null ? usersMap.get(workLogDTO.getUserId()).getName() : null;
-            workLogDTO.setUserName(assigneeName);
+        workLogVOList.forEach(workLogVO -> {
+            String assigneeName = usersMap.get(workLogVO.getUserId()) != null ? usersMap.get(workLogVO.getUserId()).getName() : null;
+            workLogVO.setUserName(assigneeName);
         });
         return workLogVOList;
     }
