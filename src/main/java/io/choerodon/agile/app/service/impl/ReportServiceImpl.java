@@ -7,7 +7,6 @@ import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.assembler.ReportAssembler;
 import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.agile.app.service.ReportService;
-import io.choerodon.agile.domain.agile.converter.SprintConverter;
 import io.choerodon.agile.infra.dataobject.ReportIssueConvertDTO;
 import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
@@ -65,8 +64,6 @@ public class ReportServiceImpl implements ReportService {
     private SprintServiceImpl sprintService;
     @Autowired
     private ReportMapper reportMapper;
-    @Autowired
-    private SprintConverter sprintConverter;
     @Autowired
     private ColumnStatusRelMapper columnStatusRelMapper;
     @Autowired
@@ -234,7 +231,7 @@ public class ReportServiceImpl implements ReportService {
         SprintDTO sprintDTO = new SprintDTO();
         sprintDTO.setSprintId(sprintId);
         sprintDTO.setProjectId(projectId);
-        SprintConvertDTO sprintConvertDTO = sprintConverter.doToEntity(sprintMapper.selectOne(sprintDTO));
+        SprintConvertDTO sprintConvertDTO = modelMapper.map(sprintMapper.selectOne(sprintDTO), SprintConvertDTO.class);
         if (sprintConvertDTO != null && !sprintConvertDTO.getStatusCode().equals(SPRINT_PLANNING_CODE)) {
             sprintConvertDTO.initStartAndEndTime();
             switch (type) {
@@ -705,7 +702,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void queryIssueCount(SprintConvertDTO sprintConvertDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList) {
-        SprintDTO sprintDTO = sprintConverter.entityToDo(sprintConvertDTO);
+        SprintDTO sprintDTO = modelMapper.map(sprintConvertDTO, SprintDTO.class);
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList;
         //获取当前冲刺期间加入的issue
@@ -739,7 +736,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void queryStoryPointsOrRemainingEstimatedTime(SprintConvertDTO sprintConvertDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, String field) {
-        SprintDTO sprintDTO = sprintConverter.entityToDo(sprintConvertDTO);
+        SprintDTO sprintDTO = modelMapper.map(sprintConvertDTO, SprintDTO.class);
         //获取冲刺开启前的issue
         List<Long> issueIdBeforeSprintList;
         //获取当前冲刺期间加入的issue

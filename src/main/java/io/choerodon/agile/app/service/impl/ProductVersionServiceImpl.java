@@ -7,7 +7,6 @@ import io.choerodon.agile.api.validator.ProductVersionValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.ProductVersionService;
-import io.choerodon.agile.domain.agile.converter.ProductVersionConverter;
 import io.choerodon.agile.api.vo.event.VersionPayload;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.utils.PageUtil;
@@ -86,8 +85,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionValidator productVersionValidator;
     @Autowired
     private ProductVersionMapper productVersionMapper;
-    @Autowired
-    private ProductVersionConverter productVersionConverter;
 
     @Autowired
     private IssueFeignClient issueFeignClient;
