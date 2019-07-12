@@ -49,13 +49,13 @@ class VersionProgress extends Component {
         let doingValue = 0;
         let doneValue = 0;
         version.forEach((obj) => {
-          if (obj.statusMapDTO && obj.statusMapDTO.type === 'todo') {
+          if (obj.statusMapVO && obj.statusMapVO.type === 'todo') {
             todoValue += obj.count || 0;
           }
-          if (obj.statusMapDTO && obj.statusMapDTO.type === 'doing') {
+          if (obj.statusMapVO && obj.statusMapVO.type === 'doing') {
             doingValue += obj.count || 0;
           }
-          if (obj.statusMapDTO && obj.statusMapDTO.type === 'done') {
+          if (obj.statusMapVO && obj.statusMapVO.type === 'done') {
             doneValue += obj.count || 0;
           }
         });

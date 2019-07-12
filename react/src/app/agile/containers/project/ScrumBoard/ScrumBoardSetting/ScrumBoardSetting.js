@@ -64,7 +64,7 @@ class ScrumBoardSetting extends Component {
           const unsetColumn = {
             columnId: 'unset',
             name: '未对应的状态',
-            subStatuses: data2,
+            subStatusDTOS: data2,
           };
           data.columnsData.columns.push(unsetColumn);
           ScrumBoardStore.setBoardData(data.columnsData.columns);

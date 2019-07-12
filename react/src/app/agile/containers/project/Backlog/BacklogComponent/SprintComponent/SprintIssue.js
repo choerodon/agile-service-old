@@ -29,10 +29,10 @@ class SprintIssue extends Component {
           className={classnames('c7n-backlog-IssueCard-left')}
         >
           <TypeTag
-            data={item.issueTypeDTO}
+            data={item.issueTypeVO}
           />
           <div className="c7n-backlog-IssueCard-left-summaryContainer">
-            <div className="c7n-backlog-IssueCard-left-issueNum" style={{ textDecoration: item.statusMapDTO && item.statusMapDTO.completed ? 'line-through' : 'none' }}>
+            <div className="c7n-backlog-IssueCard-left-issueNum" style={{ textDecoration: item.statusMapVO && item.statusMapVO.completed ? 'line-through' : 'none' }}>
               {`${item.issueNum}`}
             </div>
             <Tooltip title={item.summary} placement="topLeft">
@@ -77,21 +77,21 @@ class SprintIssue extends Component {
               }}
             />
             )}
-            <Tooltip title={`状态: ${item.statusMapDTO ? item.statusMapDTO.name : ''}`}>
+            <Tooltip title={`状态: ${item.statusMapVO ? item.statusMapVO.name : ''}`}>
               <div className="c7n-backlog-IssueCard-right-status">
                 <StatusTag
-                  data={item.statusMapDTO}
+                  data={item.statusMapVO}
                 />
               </div>
             </Tooltip>
-            <Tooltip title={`优先级: ${item.priorityDTO ? item.priorityDTO.name : ''}`}>
-              <PriorityTag priority={item.priorityDTO} />
+            <Tooltip title={`优先级: ${item.priorityVO ? item.priorityVO.name : ''}`}>
+              <PriorityTag priority={item.priorityVO} />
             </Tooltip>
             <Tooltip title={`故事点: ${item.storyPoints}`}>
               <div
                 label="sprintIssue"
                 className={classnames('c7n-backlog-IssueCard-right-storyPoint', {
-                  visible: item.storyPoints && item.issueTypeDTO && item.issueTypeDTO.typeCode === 'story',
+                  visible: item.storyPoints && item.issueTypeVO && item.issueTypeVO.typeCode === 'story',
                 })}
               >
                 {item.storyPoints}

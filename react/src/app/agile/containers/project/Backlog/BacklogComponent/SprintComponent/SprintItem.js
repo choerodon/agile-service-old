@@ -28,7 +28,7 @@ class SprintItem extends Component {
     const that = this;
     const { store, refresh } = this.props;
     if (e.key === '0') {
-      if (item.issueSearchDTOList && item.issueSearchDTOList.length > 0) {
+      if (item.issueSearchVOList && item.issueSearchVOList.length > 0) {
         confirm({
           width: 560,
           wrapClassName: 'deleteConfirm',

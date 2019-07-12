@@ -97,7 +97,7 @@ class EditIssueStore {
     this.workLogs = workLogs;
     this.dataLogs = dataLogs;
     this.linkIssues = linkIssues || [];
-    this.branches = branches;
+    this.branches = branches || [];
   }
 }
 export default new EditIssueStore();

@@ -262,11 +262,11 @@ class SprintDetails extends Component {
         width: 100,
         render: (typeCode, record) => (
           <div>
-            <Tooltip mouseEnterDelay={0.5} title={`任务类型： ${record.issueTypeDTO.name}`}>
+            <Tooltip mouseEnterDelay={0.5} title={`任务类型： ${record.issueTypeVO.name}`}>
               <div>
                 <TypeTag
                   style={{ minWidth: 100 }}
-                  data={record.issueTypeDTO}
+                  data={record.issueTypeVO}
                   showName
                 />
               </div>
@@ -280,11 +280,11 @@ class SprintDetails extends Component {
         width: 40,
         render: (text, record) => (
           <div>
-            <Tooltip mouseEnterDelay={0.5} title={`优先级： ${record.priorityDTO.name}`}>
+            <Tooltip mouseEnterDelay={0.5} title={`优先级： ${record.priorityVO.name}`}>
               <div style={{ marginRight: 12 }}>
                 <PriorityTag
                   style={{ minWidth: 40 }}
-                  priority={record.priorityDTO}
+                  priority={record.priorityVO}
                 />
               </div>
             </Tooltip>
@@ -297,11 +297,11 @@ class SprintDetails extends Component {
         width: 40,
         render: (text, record) => (
           <div>
-            <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${record.statusMapDTO.name}`}>
+            <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${record.statusMapVO.name}`}>
               <div>
                 <StatusTag
                   style={{ minWidth: 40 }}
-                  data={record.statusMapDTO}
+                  data={record.statusMapVO}
                 />
               </div>
             </Tooltip>

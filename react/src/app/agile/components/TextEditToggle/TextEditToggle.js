@@ -163,11 +163,8 @@ class TextEditToggle extends Component {
     const EditChildren = children.filter(child => child.type === Edit);
     const childrenArray = React.Children.toArray(EditChildren);
     const targetElement = React.Children.toArray(childrenArray[0].props.children)[0];
-    if (!targetElement) {
-      throw new Error('使用Form功能时，Edit的children必须是Component');
-    }   
     // 替换成自动打开的Select
-    if (targetElement.type.displayName === 'Select') {
+    if (targetElement && targetElement.type.displayName === 'Select') {
       return 'Select';
     }
     return 'Input';

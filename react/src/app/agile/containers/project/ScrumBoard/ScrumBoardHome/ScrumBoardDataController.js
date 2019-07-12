@@ -29,14 +29,14 @@ export default class ScrumBoardDataController {
       return null;
     }
     return this.columnStructureMap.map(({
-      maxNum, minNum, columnId, name, subStatuses,
+      maxNum, minNum, columnId, name, subStatusDTOS,
     }) => [columnId, {
       maxNum,
       minNum,
       columnId,
       columnName: name,
       columnIssueCount: this.flattenedArr.filter(issue => issue.columnId === columnId).length,
-      hasStatus: subStatuses.length > 0,
+      hasStatus: subStatusDTOS.length > 0,
     }]);
   }
 
@@ -74,8 +74,8 @@ export default class ScrumBoardDataController {
   addEpicLabelToFlattenData(flattenedArr, epicInfo, parentWithSubs, parentIssues, parentCompleted) {
     const combinedIssueArr = [...flattenedArr, ...parentIssues.filter(issue => !this.flattenedArrSet.has(issue.issueId)).map(issue => ({
       ...issue,
-      statusName: issue.statusMapDTO.name,
-      categoryCode: issue.statusMapDTO.type,
+      statusName: issue.statusMapVO.name,
+      categoryCode: issue.statusMapVO.type,
     }))];
     // 遍历 epicInfo，找出与史诗相对应的 issue 组成 Arr
     return {
@@ -161,8 +161,8 @@ export default class ScrumBoardDataController {
     } else {
       combinedIssueArr = [...flattenedArr, ...parentIssues.filter(issue => !this.flattenedArrSet.has(issue.issueId)).map(issue => ({
         ...issue,
-        statusName: issue.statusMapDTO.name,
-        categoryCode: issue.statusMapDTO.type,
+        statusName: issue.statusMapVO.name,
+        categoryCode: issue.statusMapVO.type,
       }))];
       this.combinedIssueArr = combinedIssueArr;
     }
@@ -239,8 +239,8 @@ export default class ScrumBoardDataController {
     const column_StatusStructureMap = new Map();
     data.columnsData.columns.forEach((columnObj) => {
       columnStructureMap.push(columnObj);
-      column_StatusStructureMap.set(columnObj.columnId, columnObj.subStatuses);
-      columnObj.subStatuses.forEach((subStatusObj) => {
+      column_StatusStructureMap.set(columnObj.columnId, columnObj.subStatusDTOS);
+      columnObj.subStatusDTOS.forEach((subStatusObj) => {
         statusId_ColumnMap.set(subStatusObj.statusId, columnObj.columnId);
         statusMap.push([subStatusObj.statusId, subStatusObj]);
         statusStructureMap[subStatusObj.statusId] = [];

@@ -46,7 +46,7 @@ class Issue extends Component {
    */
   constructor(props) {
     super(props);
-    this.filterControler = new IssueFilterControler();
+    this.filterControler = IssueFilterControler;
   }
 
   /**
@@ -88,7 +88,7 @@ class Issue extends Component {
    */
   componentWillUnmount() {
     document.getElementsByClassName('page-body')[0].style.overflow = '';
-    this.filterControler = new IssueFilterControler();
+    this.filterControler = IssueFilterControler;
     IssueStore.resetFilterSelect(this.filterControler, true);
     this.filterControler.resetCacheMap();
     IssueStore.setDefaultTableShowColumns(); // 列配置恢复默认
@@ -98,7 +98,7 @@ class Issue extends Component {
    * 刷新函数
    */
   Refresh = () => {
-    this.filterControler = new IssueFilterControler();
+    this.filterControler = IssueFilterControler;
     IssueStore.setLoading(true);
     this.filterControler.refresh('refresh').then((data) => {
       if (data.failed) {
@@ -130,7 +130,7 @@ class Issue extends Component {
    * @param Array => moreChecked 点击其余选项
    */
   onQuickSearchChange = (onlyMeChecked, onlyStoryChecked, moreChecked) => {
-    this.filterControler = new IssueFilterControler();
+    this.filterControler = IssueFilterControler;
     this.filterControler.quickSearchFilterUpdate(
       onlyMeChecked,
       onlyStoryChecked,

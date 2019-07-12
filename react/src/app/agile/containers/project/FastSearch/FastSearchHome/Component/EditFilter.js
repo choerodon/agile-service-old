@@ -666,7 +666,7 @@ class AddComponent extends Component {
           name: values.name.trim(),
           description: `${values.description || ''}+++${json}`,
           projectId: AppState.currentMenuType.id,
-          quickFilterValueDTOList: arrCopy,
+          quickFilterValueVOList: arrCopy,
           relationOperations: o,
         };
         this.setState({

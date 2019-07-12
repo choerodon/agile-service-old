@@ -370,7 +370,7 @@ class AddComponent extends Component {
           name: values.name.trim(),
           description: `${values.description || ''}+++${json}`,
           projectId: AppState.currentMenuType.id,
-          quickFilterValueDTOList: arr,
+          quickFilterValueVOList: arr,
           relationOperations: o,
         };
         this.setState({

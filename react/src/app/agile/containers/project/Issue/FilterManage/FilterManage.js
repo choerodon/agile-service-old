@@ -85,7 +85,7 @@ class FilterManage extends Component {
 
     deleteFilter = (filter) => {
       const selectedFilterId = IssueStore.getSelectedFilterId;
-      const filterControler = new IssueFilterControler();
+      const filterControler = IssueFilterControler;
       IssueStore.setLoading(true);
       axios.delete(`/agile/v1/projects/${AppState.currentMenuType.id}/personal_filter/${filter.filterId}`)
         .then((res) => {

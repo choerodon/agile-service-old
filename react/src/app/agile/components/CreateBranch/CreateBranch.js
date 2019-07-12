@@ -52,7 +52,7 @@ class CreateBranch extends Component {
     const { form, issueId, onOk } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const devopsBranchDTO = {
+        const devopsBranchVO = {
           branchName: values.type === 'custom' ? values.name : `${values.type}-${values.name}`,
           issueId,
           originBranch: values.branch,
@@ -62,7 +62,7 @@ class CreateBranch extends Component {
         this.setState({
           confirmLoading: true,
         });
-        axios.post(`/devops/v1/projects/${projectId}/apps/${applicationId}/git/branch`, devopsBranchDTO)
+        axios.post(`/devops/v1/projects/${projectId}/apps/${applicationId}/git/branch`, devopsBranchVO)
           .then((res) => {
             this.setState({
               confirmLoading: false,

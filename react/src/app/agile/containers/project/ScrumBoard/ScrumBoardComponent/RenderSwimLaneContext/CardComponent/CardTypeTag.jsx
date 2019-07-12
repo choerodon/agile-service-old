@@ -5,21 +5,21 @@ import TypeTag from '../../../../../../components/TypeTag/TypeTag';
 /**
  * 任务编号呈现
  * @returns React 函数式组件
- * @param issueTypeDTO
+ * @param issueTypeVO
  */
 
 export default class CardTypeTag extends Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    const { issueTypeDTO } = this.props;
-    return nextProps.issueTypeDTO.name !== issueTypeDTO.name;
+    const { issueTypeVO } = this.props;
+    return nextProps.issueTypeVO.name !== issueTypeVO.name;
   }
 
   render() {
-    const { issueTypeDTO } = this.props;
+    const { issueTypeVO } = this.props;
     return (
-      <Tooltip title={issueTypeDTO ? issueTypeDTO.name : ''}>
+      <Tooltip title={issueTypeVO ? issueTypeVO.name : ''}>
         <TypeTag
-          data={issueTypeDTO}
+          data={issueTypeVO}
         />
       </Tooltip>
     );

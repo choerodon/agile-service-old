@@ -57,7 +57,7 @@ class QuickCreateIssue extends Component {
         epicId: 0,
         epicName: selectIssueType === 'issue_epic' ? createIssueValue.trim() : undefined,
         parentIssueId: 0,
-        featureDTO: {
+        featureVO: {
           // benfitHypothesis: values.benfitHypothesis,
           // acceptanceCritera: values.acceptanceCritera,
           featureType,
@@ -74,7 +74,7 @@ class QuickCreateIssue extends Component {
             pageCode: 'agile_issue_create',
           };
           createIssueField(response.issueId, dto);
-          this.filterControler = new IssueFilterControler();
+          this.filterControler = IssueFilterControler;
           this.filterControler.resetCacheMap();
           IssueStore.setLoading(true);
           IssueStore.resetFilterSelect(this.filterControler, true);

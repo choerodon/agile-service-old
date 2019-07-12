@@ -46,11 +46,11 @@ class StoryCard extends Component {
   handlRemoveStory = (e) => {
     e.stopPropagation();
     const { story, version } = this.props;
-    const { issueId, storyMapVersionDOList } = story;
+    const { issueId, storyMapVersionDTOList } = story;
     const { swimLine } = StoryMapStore;
     // 未规划或无泳道
-    if (swimLine === 'none' || storyMapVersionDOList.length === 0) {
-      const storyMapDragDTO = {
+    if (swimLine === 'none' || storyMapVersionDTOList.length === 0) {
+      const storyMapDragVO = {
         // 问题id列表，移动到版本，配合versionId使用
         // versionIssueIds: [],     
         epicId: 0, // 要关联的史诗id          
@@ -59,20 +59,20 @@ class StoryCard extends Component {
         // 问题id列表，移动到特性，配合featureId使用
         featureIssueIds: [issueId],
       }; 
-      storyMove(storyMapDragDTO).then(() => {
+      storyMove(storyMapDragVO).then(() => {
         StoryMapStore.removeStoryFromStoryMap(story);
         StoryMapStore.loadIssueList();
       });
     } else if (swimLine === 'version') {
-      const storyMapDragDTO = {
+      const storyMapDragVO = {
         versionId: 0,
-        versionIssueRelDTOList: [],
+        versionIssueRelVOList: [],
       };
-      if (storyMapVersionDOList.length > 0) {
-        const removeVersion = find(storyMapVersionDOList, { versionId: version.versionId });        
-        storyMapDragDTO.versionIssueRelDTOList = [{ ...removeVersion, issueId }];        
+      if (storyMapVersionDTOList.length > 0) {
+        const removeVersion = find(storyMapVersionDTOList, { versionId: version.versionId });        
+        storyMapDragVO.versionIssueRelVOList = [{ ...removeVersion, issueId }];        
       }
-      storyMove(storyMapDragDTO).then(() => {
+      storyMove(storyMapDragVO).then(() => {
         StoryMapStore.removeStoryFromStoryMap(story, version.versionId);
         StoryMapStore.loadIssueList();
       });    
@@ -133,16 +133,16 @@ export default DragSource(
       }
       const { story, version: sourceVersion } = item;
       const {
-        issueId, epicId, storyMapVersionDOList,
+        issueId, epicId, storyMapVersionDTOList,
       } = story;
       const featureId = story.featureId || 'none';
       const { epic: { issueId: targetEpicId }, feature: { issueId: targetFeatureId }, version } = dropResult;
       const { versionId: targetVersionId } = version || {};
-      const storyMapDragDTO = {
+      const storyMapDragVO = {
         versionIssueIds: [],
         versionId: 0, // 要关联的版本id
         epicId: 0, // 要关联的史诗id
-        versionIssueRelDTOList: [],
+        versionIssueRelVOList: [],
         // 问题id列表，移动到史诗，配合epicId使用
         epicIssueIds: [],
         featureId: 0, // 要关联的特性id
@@ -152,7 +152,7 @@ export default DragSource(
       // 史诗，特性，版本都不变时
       if (epicId === targetEpicId && featureId === targetFeatureId) {
         if (StoryMapStore.swimLine === 'version') {
-          if (find(storyMapVersionDOList, { versionId: targetVersionId }) || (storyMapVersionDOList.length === 0 && targetVersionId === 'none')) {
+          if (find(storyMapVersionDTOList, { versionId: targetVersionId }) || (storyMapVersionDTOList.length === 0 && targetVersionId === 'none')) {
             return;
           }
         } else if (StoryMapStore.swimLine === 'none') {
@@ -160,47 +160,47 @@ export default DragSource(
         }
       }
       if (epicId !== targetEpicId) {
-        storyMapDragDTO.epicId = targetEpicId;
-        storyMapDragDTO.epicIssueIds = [issueId];
+        storyMapDragVO.epicId = targetEpicId;
+        storyMapDragVO.epicIssueIds = [issueId];
       }
       if (featureId !== targetFeatureId) {
         // 移动到直接关联史诗的列，将史诗传过去，否则会将史诗清掉
         if (targetFeatureId === 'none') {
-          storyMapDragDTO.epicId = targetEpicId;
-          storyMapDragDTO.epicIssueIds = [issueId];
-          storyMapDragDTO.featureId = 0;
+          storyMapDragVO.epicId = targetEpicId;
+          storyMapDragVO.epicIssueIds = [issueId];
+          storyMapDragVO.featureId = 0;
         } else {
-          storyMapDragDTO.featureId = targetFeatureId;
+          storyMapDragVO.featureId = targetFeatureId;
         }
-        storyMapDragDTO.featureId = targetFeatureId === 'none' ? 0 : targetFeatureId;
-        storyMapDragDTO.featureIssueIds = [issueId];
+        storyMapDragVO.featureId = targetFeatureId === 'none' ? 0 : targetFeatureId;
+        storyMapDragVO.featureIssueIds = [issueId];
       }
       // 对版本进行处理
       if (StoryMapStore.swimLine === 'version') {
         // 在不同的版本移动
         if (sourceVersion.versionId !== targetVersionId) {
           // 如果原先有版本，就移除离开的版本
-          if (storyMapVersionDOList.length > 0) {
-            const removeVersion = find(storyMapVersionDOList, { versionId: sourceVersion.versionId });
+          if (storyMapVersionDTOList.length > 0) {
+            const removeVersion = find(storyMapVersionDTOList, { versionId: sourceVersion.versionId });
             if (removeVersion) {
-              storyMapDragDTO.versionIssueRelDTOList = [{ ...removeVersion, issueId }];
+              storyMapDragVO.versionIssueRelVOList = [{ ...removeVersion, issueId }];
             }
           }
         }
 
-        if (!find(storyMapVersionDOList, { versionId: targetVersionId })) {
-          storyMapDragDTO.versionIssueIds = [issueId];
+        if (!find(storyMapVersionDTOList, { versionId: targetVersionId })) {
+          storyMapDragVO.versionIssueIds = [issueId];
           // 拖到未规划
           if (targetVersionId === 'none') {
-            storyMapDragDTO.versionId = 0;
+            storyMapDragVO.versionId = 0;
           } else {
-            storyMapDragDTO.versionId = targetVersionId;
+            storyMapDragVO.versionId = targetVersionId;
           }
         }
       }
 
-      // console.log(storyMapDragDTO);
-      storyMove(storyMapDragDTO).then(() => {
+      // console.log(storyMapDragVO);
+      storyMove(storyMapDragVO).then(() => {
         // StoryMapStore.removeStoryFromStoryMap(story);
         StoryMapStore.getStoryMap();
       });

@@ -17,7 +17,7 @@ const { Text, Edit } = TextEditToggle;
     this.state = {
       originLabels: [],
       selectLoading: true,
-      newLabelIssueRelDTOList: [],
+      newLabelIssueRelVOList: [],
     };
   }
 
@@ -45,15 +45,15 @@ const { Text, Edit } = TextEditToggle;
   };
 
   updateIssuePriority = () => {
-    const { newLabelIssueRelDTOList, originLabels } = this.state;
+    const { newLabelIssueRelVOList, originLabels } = this.state;
     const {
       store, onUpdate, reloadIssue, AppState,
     } = this.props;
     const issue = store.getIssue;
-    const { labelIssueRelDTOList = [], issueId, objectVersionNumber } = issue;
-    if (JSON.stringify(labelIssueRelDTOList) !== JSON.stringify(newLabelIssueRelDTOList)) {
+    const { labelIssueRelVOList = [], issueId, objectVersionNumber } = issue;
+    if (JSON.stringify(labelIssueRelVOList) !== JSON.stringify(newLabelIssueRelVOList)) {
       const labelList = [];
-      newLabelIssueRelDTOList.forEach((label) => {
+      newLabelIssueRelVOList.forEach((label) => {
         const target = _.find(originLabels, { labelName: label });
         if (target) {
           labelList.push(target);
@@ -67,7 +67,7 @@ const { Text, Edit } = TextEditToggle;
       const obj = {
         issueId,
         objectVersionNumber,
-        labelIssueRelDTOList: labelList,
+        labelIssueRelVOList: labelList,
       };
       updateIssue(obj)
         .then(() => {
@@ -86,7 +86,7 @@ const { Text, Edit } = TextEditToggle;
     const { selectLoading, originLabels } = this.state;
     const { store, disabled } = this.props;
     const issue = store.getIssue;
-    const { labelIssueRelDTOList = [] } = issue;
+    const { labelIssueRelVOList = [] } = issue;
 
     return (
       <div className="line-start mt-10">
@@ -100,14 +100,14 @@ const { Text, Edit } = TextEditToggle;
             disabled={disabled}
             formKey="label"
             onSubmit={this.updateIssuePriority}
-            originData={this.transToArr(labelIssueRelDTOList, 'labelName', 'array')}
+            originData={this.transToArr(labelIssueRelVOList, 'labelName', 'array')}
           >
             <Text>
               {
-                labelIssueRelDTOList.length > 0 ? (
+                labelIssueRelVOList.length > 0 ? (
                   <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                     {
-                      this.transToArr(labelIssueRelDTOList, 'labelName', 'array').map(label => (
+                      this.transToArr(labelIssueRelVOList, 'labelName', 'array').map(label => (
                         <div
                           key={label}
                           style={{
@@ -141,7 +141,7 @@ const { Text, Edit } = TextEditToggle;
                 getPopupContainer={triggerNode => triggerNode.parentNode}       
                 onChange={(value) => {
                   this.setState({
-                    newLabelIssueRelDTOList: value.map(
+                    newLabelIssueRelVOList: value.map(
                       item => item.substr(0, 10),
                     ),
                   });

@@ -49,7 +49,7 @@ class EpicReport extends Component {
 
   getLabel(record) {
     if (VS.beforeCurrentUnit === 'story_point') {
-      if (record.issueTypeDTO.typeCode === 'story') {
+      if (record.issueTypeVO.typeCode === 'story') {
         return record.storyPoints === null ? '未预估' : record.storyPoints;
       } else {
         return '';
@@ -452,8 +452,8 @@ class EpicReport extends Component {
     }
     if (type === 'unFinishAndunEstimate') {
       return VS.tableData.filter(v => v.completed === 0
-        && ((v.storyPoints === null && v.issueTypeDTO && v.issueTypeDTO.typeCode === 'story')
-          || (v.remainTime === null && v.issueTypeDTO && v.issueTypeDTO.typeCode !== 'story')));
+        && ((v.storyPoints === null && v.issueTypeVO && v.issueTypeVO.typeCode === 'story')
+          || (v.remainTime === null && v.issueTypeVO && v.issueTypeVO.typeCode !== 'story')));
     }
     return [];
   }
@@ -555,7 +555,7 @@ class EpicReport extends Component {
             <div>
               <TypeTag
                 style={{ minWidth: 90 }}
-                data={record.issueTypeDTO}
+                data={record.issueTypeVO}
                 showName
               />
             </div>
@@ -569,7 +569,7 @@ class EpicReport extends Component {
             <div>
               <PriorityTag
                 style={{ minWidth: 55 }}
-                priority={record.priorityDTO}
+                priority={record.priorityVO}
               />
             </div>
           ),
@@ -580,12 +580,12 @@ class EpicReport extends Component {
           dataIndex: 'statusCode',
           render: (statusCode, record) => (
             <div>
-              <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${record.statusMapDTO.name}`}>
+              <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${record.statusMapVO.name}`}>
                 <div>
                   <StatusTag
                     style={{ display: 'inline-block' }}
-                    name={record.statusMapDTO.name}
-                    color={STATUS[record.statusMapDTO.type]}
+                    name={record.statusMapVO.name}
+                    color={STATUS[record.statusMapVO.type]}
                   />
                 </div>
               </Tooltip>

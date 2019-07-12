@@ -17,7 +17,7 @@ let previousClick = false;
 class IssueTable extends Component {
   constructor(props) {
     super(props);
-    this.filterControler = new IssueFilterControler();
+    this.filterControler = IssueFilterControler;
   }
 
   componentDidMount() {
@@ -366,10 +366,10 @@ class IssueTable extends Component {
         filterMultiple: true,
         render: record => (
           <Sprint
-            objArray={record.issueSprintDTOS}
+            objArray={record.issueSprintVOS}
             name={
-              record.issueSprintDTOS && record.issueSprintDTOS.length
-                ? record.issueSprintDTOS[0].sprintName
+              record.issueSprintVOS && record.issueSprintVOS.length
+                ? record.issueSprintVOS[0].sprintName
                 : null
             }
           />
@@ -413,14 +413,14 @@ class IssueTable extends Component {
         filteredValue: versionFilterValue,
         hidden: true,
         render: record => (
-          record.versionIssueRelDTOS && record.versionIssueRelDTOS.length > 0 && (
-            <Tooltip title={() => record.versionIssueRelDTOS.map(item => item.name).join(',')}>
+          record.versionIssueRelVOS && record.versionIssueRelVOS.length > 0 && (
+            <Tooltip title={() => record.versionIssueRelVOS.map(item => item.name).join(',')}>
               <div>
                 <Sprint
-                  objArray={record.versionIssueRelDTOS}
+                  objArray={record.versionIssueRelVOS}
                   name={
-                    record.versionIssueRelDTOS && record.versionIssueRelDTOS.length
-                      ? record.versionIssueRelDTOS[0].name
+                    record.versionIssueRelVOS && record.versionIssueRelVOS.length
+                      ? record.versionIssueRelVOS[0].name
                       : null}
                 />
               </div>
@@ -438,14 +438,14 @@ class IssueTable extends Component {
         filteredValue: componentFilterValue,
         hidden: true,
         render: record => (
-          record.issueComponentBriefDTOS && record.issueComponentBriefDTOS.length > 0 && (
-            <Tooltip title={() => record.issueComponentBriefDTOS.map(item => item.name).join(',')}>
+          record.issueComponentBriefVOS && record.issueComponentBriefVOS.length > 0 && (
+            <Tooltip title={() => record.issueComponentBriefVOS.map(item => item.name).join(',')}>
               <div>
                 <Sprint
-                  objArray={record.issueComponentBriefDTOS}
+                  objArray={record.issueComponentBriefVOS}
                   name={
-                    record.issueComponentBriefDTOS && record.issueComponentBriefDTOS.length
-                      ? record.issueComponentBriefDTOS[0].name
+                    record.issueComponentBriefVOS && record.issueComponentBriefVOS.length
+                      ? record.issueComponentBriefVOS[0].name
                       : null
                   }
                 />
@@ -475,14 +475,14 @@ class IssueTable extends Component {
         filteredValue: labelFilterValue,
         filterMultiple: true,
         hidden: true,
-        render: record => record.labelIssueRelDTOS && record.labelIssueRelDTOS.length > 0 && (
-          <Tooltip title={() => record.labelIssueRelDTOS.map(item => item.labelName).join(',')}>
+        render: record => record.labelIssueRelVOS && record.labelIssueRelVOS.length > 0 && (
+          <Tooltip title={() => record.labelIssueRelVOS.map(item => item.labelName).join(',')}>
             <div>
               <Sprint
-                objArray={record.labelIssueRelDTOS}
+                objArray={record.labelIssueRelVOS}
                 name={
-                  record.labelIssueRelDTOS && record.labelIssueRelDTOS.length
-                    ? record.labelIssueRelDTOS[0].labelName
+                  record.labelIssueRelVOS && record.labelIssueRelVOS.length
+                    ? record.labelIssueRelVOS[0].labelName
                     : null
                 }
               />

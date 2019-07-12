@@ -38,7 +38,7 @@ class SaveFilterModal extends Component {
       form.validateFields(['filterName'], (err, value, modify) => {
         if (!err && userFilter) {
           const createFilterData = IssueStore.getCreateFilterData;
-          const personalFilterSearchDTO = IssueStore.setCFDArgs({
+          const personalFilterSearchVO = IssueStore.setCFDArgs({
             issueTypeId: selectedIssueType,
             statusId: selectedStatus,
             assigneeIds: selectedAssignee.filter(item => item !== 'none'),
@@ -47,7 +47,7 @@ class SaveFilterModal extends Component {
             createEndDate,
             createStartDate,
           }), _.pick(userFilter.otherArgs, ['assigneeId', 'component', 'sprint', 'epic', 'label', 'version']), userFilter.contents);
-          IssueStore.setCreateFilterData(createFilterData, { name: value.filterName, personalFilterSearchDTO, filterJson: JSON.stringify(personalFilterSearchDTO) });
+          IssueStore.setCreateFilterData(createFilterData, { name: value.filterName, personalFilterSearchVO, filterJson: JSON.stringify(personalFilterSearchVO) });
           IssueStore.setLoading(true);   
           axios.post(`/agile/v1/projects/${AppState.currentMenuType.id}/personal_filter`, IssueStore.getCreateFilterData)
             .then((res) => {

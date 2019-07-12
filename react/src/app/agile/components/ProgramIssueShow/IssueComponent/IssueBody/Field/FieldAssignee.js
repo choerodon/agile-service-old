@@ -160,7 +160,7 @@ const { Text, Edit } = TextEditToggle;
               </Select>
             </Edit>
           </TextEditToggle>
-          {assigneeId !== loginUserId
+          {!disabled && assigneeId !== loginUserId
             ? (
               <span
                 role="none"

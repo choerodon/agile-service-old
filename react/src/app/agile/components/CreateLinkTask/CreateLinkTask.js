@@ -111,7 +111,7 @@ class CreateLinkTask extends Component {
     form.validateFields((err, values) => {
       if (!err) {
         const { linkTypeId, issues } = values;
-        const labelIssueRelDTOList = _.map(selected, (issue) => {
+        const labelIssueRelVOList = _.map(selected, (issue) => {
           const currentLinkType = _.find(originLinks, { linkTypeId: linkTypeId.split('+')[0] * 1 });
           if (currentLinkType.outWard === linkTypeId.split('+')[1]) {
             return ({
@@ -128,7 +128,7 @@ class CreateLinkTask extends Component {
           }
         });
         this.setState({ createLoading: true });
-        createLink(issueId, labelIssueRelDTOList)
+        createLink(issueId, labelIssueRelVOList)
           .then((res) => {
             this.setState({ createLoading: false });
             onOk();
@@ -215,7 +215,7 @@ class CreateLinkTask extends Component {
                         >
                           <div>
                             <TypeTag
-                              data={issue.issueTypeDTO}
+                              data={issue.issueTypeVO}
                             />
                           </div>
                           <div style={{

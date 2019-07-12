@@ -224,7 +224,7 @@ class SprintCommonStore {
     filterId: 0,
     objectVersionNumber: 0,
     name: '',
-    personalFilterSearchDTO: {
+    personalFilterSearchVO: {
       advancedSearchArgs: {
         issueTypeId: [],
         statusId: [],
@@ -264,12 +264,12 @@ class SprintCommonStore {
   }
 
   @action setCFDArgs(advArgsData, searchArgsData, otherArgsData, contentsData) {
-    const { personalFilterSearchDTO } = this.createFilterData;
-    if (advArgsData) { personalFilterSearchDTO.advancedSearchArgs = advArgsData; }
-    if (searchArgsData) { Object.assign(personalFilterSearchDTO.searchArgs, searchArgsData); }
-    if (otherArgsData) { Object.assign(personalFilterSearchDTO.otherArgs, otherArgsData); }
-    if (contentsData) { personalFilterSearchDTO.contents = contentsData; }
-    return personalFilterSearchDTO;
+    const { personalFilterSearchVO } = this.createFilterData;
+    if (advArgsData) { personalFilterSearchVO.advancedSearchArgs = advArgsData; }
+    if (searchArgsData) { Object.assign(personalFilterSearchVO.searchArgs, searchArgsData); }
+    if (otherArgsData) { Object.assign(personalFilterSearchVO.otherArgs, otherArgsData); }
+    if (contentsData) { personalFilterSearchVO.contents = contentsData; }
+    return personalFilterSearchVO;
   }
 
   // 控制保存按钮是否显示
@@ -857,8 +857,8 @@ class SprintCommonStore {
 
     if (filterAdvEveryFieldIsEmpty && filterAssigneeIsEmpty && filterOtherAssignee.length === 0 && filterSeaArgsFieldIsEmpty && filterOtherArgsFieldIsEmpty && filterContentsIsEmpty) {
       for (let i = 0; i < myFilters.length; i += 1) {
-        if (myFilters[i].personalFilterSearchDTO) {
-          const { searchArgs } = myFilters[i].personalFilterSearchDTO;
+        if (myFilters[i].personalFilterSearchVO) {
+          const { searchArgs } = myFilters[i].personalFilterSearchVO;
           const createStartDateIsEqual = filterCreateStartDate && moment(filterCreateStartDate).format('YYYY-MM-DD') !== moment(this.getProjectInfo.creationDate).format('YYYY-MM-DD') && moment(searchArgs.createStartDate).format('YYYY-MM-DD') === moment(filterCreateStartDate).format('YYYY-MM-DD');
           const createEndDateIsEqual = filterCreateEndDate && moment(filterCreateEndDate).format('YYYY-MM-DD') !== moment().format('YYYY-MM-DD') && moment(searchArgs.createEndDate).format('YYYY-MM-DD') === moment(filterCreateEndDate).format('YYYY-MM-DD');
           if (createStartDateIsEqual && createEndDateIsEqual) { // 其他条件都为空 & 创建时间范围和已有筛选一样
@@ -881,10 +881,10 @@ class SprintCommonStore {
       this.setSelectedStatus(filterAdvancedSearchArgs.statusId ? filterAdvancedSearchArgs.statusId.map(item => Number(item)) : []);
 
       for (let i = 0; i < myFilters.length; i += 1) {
-        if (myFilters[i].personalFilterSearchDTO) {
+        if (myFilters[i].personalFilterSearchVO) {
           const {
             advancedSearchArgs, searchArgs, otherArgs, contents,
-          } = myFilters[i].personalFilterSearchDTO;
+          } = myFilters[i].personalFilterSearchVO;
 
           const advancedSearchArgsIsEqual = _.pull(Object.keys(advancedSearchArgs), 'reporterIds', 'assigneeIds').every(key => _.isEqual(advancedSearchArgs[key].sort(), filterAdvancedSearchArgs[key].map(item => Number(item)).sort()));
           const assigneeIdsIsEqual = _.isEqual(advancedSearchArgs.assigneeIds.sort(), filterAssigneeFilterIds.map(item => Number(item)).sort());
@@ -897,8 +897,8 @@ class SprintCommonStore {
           const itemIsEqual = advancedSearchArgsIsEqual && assigneeIdsIsEqual && searchArgsIsEqual && otherArgsIsEqual && contentsIsEqual;
 
           if (itemIsEqual) {
-            const { filterId, personalFilterSearchDTO } = myFilters[i];
-            // const advSearchArgs = personalFilterSearchDTO.advancedSearchArgs;
+            const { filterId, personalFilterSearchVO } = myFilters[i];
+            // const advSearchArgs = personalFilterSearchVO.advancedSearchArgs;
             this.setSelectedFilterId(filterId);
 
             this.setIsExistFilter(true);

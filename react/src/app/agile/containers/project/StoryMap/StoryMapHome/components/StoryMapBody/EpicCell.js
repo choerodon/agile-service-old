@@ -154,7 +154,7 @@ class EpicCell extends Component {
     const { collapse, storys, feature } = otherData || {};
     const { isInProgram } = IsInProgramStore;
     const {
-      // featureCommonDOList,
+      // featureCommonDTOList,
       issueId,
       // issueNum,
       // summary,

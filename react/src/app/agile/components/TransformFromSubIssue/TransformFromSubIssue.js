@@ -64,7 +64,7 @@ class TransformFromSubIssue extends Component {
       if (!err) {
         const { originTypes, isEpicType } = this.state;
         const { typeCode } = originTypes.find(t => t.id === values.typeId);
-        const issueUpdateTypeDTO = {
+        const issueUpdateTypeVO = {
           epicName: isEpicType ? values.epicName : undefined,
           issueId,
           objectVersionNumber: ovn,
@@ -75,7 +75,7 @@ class TransformFromSubIssue extends Component {
         this.setState({
           loading: true,
         });
-        transformedTask(issueUpdateTypeDTO)
+        transformedTask(issueUpdateTypeVO)
           .then((res) => {
             this.setState({
               loading: false,

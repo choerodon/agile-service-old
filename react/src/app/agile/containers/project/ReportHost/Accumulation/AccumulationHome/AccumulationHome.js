@@ -150,8 +150,8 @@ class AccumulationHome extends Component {
       boardId,
     }).then((res) => {
       _.map(res, (item) => {
-        if (item.coordinateDTOList && item.coordinateDTOList.length) {
-          _.map(item.coordinateDTOList, (subItem) => {
+        if (item.coordinateVOList && item.coordinateVOList.length) {
+          _.map(item.coordinateVOList, (subItem) => {
             subItem.issueCount = subItem.issueCount < 0 ? 0 : subItem.issueCount;
           });
         }
@@ -212,11 +212,11 @@ class AccumulationHome extends Component {
     let newxAxis = [];
     if (data.length > 0) {
       for (let index = 0, len = data.length; index < len; index += 1) {
-        for (let index2 = 0, len2 = data[index].coordinateDTOList.length; index2 < len2; index2 += 1) {
+        for (let index2 = 0, len2 = data[index].coordinateVOList.length; index2 < len2; index2 += 1) {
           if (newxAxis.length === 0) {
-            newxAxis.push(data[index].coordinateDTOList[index2].date.split(' ')[0]);
-          } else if (newxAxis.indexOf(data[index].coordinateDTOList[index2].date.split(' ')[0]) === -1) {
-            newxAxis.push(data[index].coordinateDTOList[index2].date.split(' ')[0]);
+            newxAxis.push(data[index].coordinateVOList[index2].date.split(' ')[0]);
+          } else if (newxAxis.indexOf(data[index].coordinateVOList[index2].date.split(' ')[0]) === -1) {
+            newxAxis.push(data[index].coordinateVOList[index2].date.split(' ')[0]);
           }
         }
       }
@@ -251,15 +251,15 @@ class AccumulationHome extends Component {
         let date = '';
         let max = 0;
         let flag = 0;
-        for (let index3 = 0, len3 = data[index].coordinateDTOList.length; index3 < len3; index3 += 1) {
-          if (data[index].coordinateDTOList[index3].date.split(' ')[0] === newxAxis[index2]) {
+        for (let index3 = 0, len3 = data[index].coordinateVOList.length; index3 < len3; index3 += 1) {
+          if (data[index].coordinateVOList[index3].date.split(' ')[0] === newxAxis[index2]) {
             flag = 1;
             if (date === '') {
-              date = data[index].coordinateDTOList[index3].date;
-              max = data[index].coordinateDTOList[index3].issueCount;
-            } else if (moment(data[index].coordinateDTOList[index3].date).isAfter(date)) {
-              date = data[index].coordinateDTOList[index3].date;
-              max = data[index].coordinateDTOList[index3].issueCount;
+              date = data[index].coordinateVOList[index3].date;
+              max = data[index].coordinateVOList[index3].issueCount;
+            } else if (moment(data[index].coordinateVOList[index3].date).isAfter(date)) {
+              date = data[index].coordinateVOList[index3].date;
+              max = data[index].coordinateVOList[index3].issueCount;
             }
           }
         }

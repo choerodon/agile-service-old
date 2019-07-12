@@ -71,7 +71,7 @@ class ColumnPage extends Component {
       for (let index = 0, len = newState.length; index < len; index += 1) {
         if (String(newState[index].columnId) === String(result.source.droppableId.split(',')[1])) {
           columnIndex = index;
-          [draggableData] = newState[index].subStatuses.splice(result.source.index, 1);
+          [draggableData] = newState[index].subStatusDTOS.splice(result.source.index, 1);
         }
       }
       if (result.destination.droppableId.split(',')[1] === 'unset') {
@@ -81,16 +81,16 @@ class ColumnPage extends Component {
         let totalNum = 0;
         if (ScrumBoardStore.getCurrentConstraint !== 'constraint_none') {
           for (
-            let index = 0, len = newState[columnIndex].subStatuses.length;
+            let index = 0, len = newState[columnIndex].subStatusDTOS.length;
             index < len;
             index += 1) {
             for (
-              let index2 = 0, len2 = newState[columnIndex].subStatuses[index].issues.length;
+              let index2 = 0, len2 = newState[columnIndex].subStatusDTOS[index].issues.length;
               index2 < len2;
               index2 += 1) {
               if (ScrumBoardStore.getCurrentConstraint === 'issue') {
                 totalNum += 1;
-              } else if (newState[columnIndex].subStatuses[index].issues[index2].issueTypeDTO.typeCode !== 'sub_task') {
+              } else if (newState[columnIndex].subStatusDTOS[index].issues[index2].issueTypeVO.typeCode !== 'sub_task') {
                 totalNum += 1;
               }
             }
@@ -105,7 +105,7 @@ class ColumnPage extends Component {
         }
         for (let index = 0, len = newState.length; index < len; index += 1) {
           if (String(newState[index].columnId) === String(result.destination.droppableId.split(',')[1])) {
-            newState[index].subStatuses.splice(result.destination.index, 0, draggableData);
+            newState[index].subStatusDTOS.splice(result.destination.index, 0, draggableData);
           }
         }
         ScrumBoardStore.setBoardData(newState);
@@ -116,7 +116,7 @@ class ColumnPage extends Component {
           newData.issues = draggableData.issues;
           for (let index = 0, len = newState.length; index < len; index += 1) {
             if (String(newState[index].columnId) === String(result.destination.droppableId.split(',')[1])) {
-              newState[index].subStatuses.splice(result.destination.index, 1, newData);
+              newState[index].subStatusDTOS.splice(result.destination.index, 1, newData);
             }
           }
           ScrumBoardStore.setBoardData(newState);
@@ -136,16 +136,16 @@ class ColumnPage extends Component {
         let totalNum = 0;
         if (ScrumBoardStore.getCurrentConstraint !== 'constraint_none') {
           for (
-            let index = 0, len = newState[columnIndex].subStatuses.length;
+            let index = 0, len = newState[columnIndex].subStatusDTOS.length;
             index < len;
             index += 1) {
             for (
-              let index2 = 0, len2 = newState[columnIndex].subStatuses[index].issues.length;
+              let index2 = 0, len2 = newState[columnIndex].subStatusDTOS[index].issues.length;
               index2 < len2;
               index2 += 1) {
               if (ScrumBoardStore.getCurrentConstraint === 'issue') {
                 totalNum += 1;
-              } else if (newState[columnIndex].subStatuses[index].issues[index2].issueTypeDTO.typeCode !== 'sub_task') {
+              } else if (newState[columnIndex].subStatusDTOS[index].issues[index2].issueTypeVO.typeCode !== 'sub_task') {
                 totalNum += 1;
               }
             }
@@ -162,16 +162,16 @@ class ColumnPage extends Component {
           for (let index = 0, len = newState.length; index < len; index += 1) {
             if (parseInt(newState[index].columnId, 10) === parseInt(columnId, 10)) {
               for (
-                let index2 = 0, len2 = newState[index].subStatuses.length;
+                let index2 = 0, len2 = newState[index].subStatusDTOS.length;
                 index2 < len2;
                 index2 += 1) {
                 for (
-                  let index3 = 0, len3 = newState[index].subStatuses[index2].issues.length;
+                  let index3 = 0, len3 = newState[index].subStatusDTOS[index2].issues.length;
                   index3 < len3;
                   index3 += 1) {
                   if (ScrumBoardStore.getCurrentConstraint === 'issue') {
                     destinationTotal += 1;
-                  } else if (newState[index].subStatuses[index2].issues[index3].issueTypeDTO.typeCode !== 'sub_task') {
+                  } else if (newState[index].subStatusDTOS[index2].issues[index3].issueTypeVO.typeCode !== 'sub_task') {
                     destinationTotal += 1;
                   }
                 }
@@ -182,7 +182,7 @@ class ColumnPage extends Component {
           for (let index = 0, len = draggableData.issues.length; index < len; index += 1) {
             if (ScrumBoardStore.getCurrentConstraint === 'issue') {
               draggableTotal += 1;
-            } else if (draggableData.issues[index].issueTypeDTO.typeCode !== 'sub_task') {
+            } else if (draggableData.issues[index].issueTypeVO.typeCode !== 'sub_task') {
               draggableTotal += 1;
             }
           }
@@ -193,7 +193,7 @@ class ColumnPage extends Component {
         }
         for (let index = 0, len = newState.length; index < len; index += 1) {
           if (String(newState[index].columnId) === String(result.destination.droppableId.split(',')[1])) {
-            newState[index].subStatuses.splice(result.destination.index, 0, draggableData);
+            newState[index].subStatusDTOS.splice(result.destination.index, 0, draggableData);
           }
         }
         ScrumBoardStore.setBoardData(newState);
@@ -208,7 +208,7 @@ class ColumnPage extends Component {
           newData.issues = draggableData.issues;
           for (let index = 0, len = newState.length; index < len; index += 1) {
             if (String(newState[index].columnId) === String(result.destination.droppableId.split(',')[1])) {
-              newState[index].subStatuses.splice(result.destination.index, 1, newData);
+              newState[index].subStatusDTOS.splice(result.destination.index, 1, newData);
             }
           }
           ScrumBoardStore.setBoardData(newState);

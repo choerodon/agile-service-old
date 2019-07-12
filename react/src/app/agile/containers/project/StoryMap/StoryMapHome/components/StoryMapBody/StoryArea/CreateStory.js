@@ -41,7 +41,7 @@ class CreateStory extends Component {
         priorityCode: `priority-${defaultPriority.id}`,
         priorityId: defaultPriority.id,
         ...swimLine === 'version' && version.versionId !== 'none' ? {
-          versionIssueRelDTOList: [{
+          versionIssueRelVOList: [{
             ...version,
             relationType: 'fix',
           }],
@@ -57,8 +57,8 @@ class CreateStory extends Component {
           adding: false,
           value: '',
         });
-        const { versionIssueRelDTOList } = res;
-        onCreate({ ...res, storyMapVersionDOList: versionIssueRelDTOList });
+        const { versionIssueRelVOList } = res;
+        onCreate({ ...res, storyMapVersionDTOList: versionIssueRelVOList });
         createIssueField(res.issueId, dto);
       });
     } else {

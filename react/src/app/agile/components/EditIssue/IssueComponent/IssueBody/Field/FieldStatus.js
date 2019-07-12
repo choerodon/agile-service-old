@@ -33,11 +33,11 @@ const { Text, Edit } = TextEditToggle;
     const { store } = this.props;
     const issue = store.getIssue;
     const {
-      issueTypeDTO = {},
+      issueTypeVO = {},
       issueId,
       statusId,
     } = issue;
-    const typeId = issueTypeDTO.id;
+    const typeId = issueTypeVO.id;
     loadStatus(statusId, issueId, typeId).then((res) => {
       this.setState({
         originStatus: res,
@@ -71,8 +71,8 @@ const { Text, Edit } = TextEditToggle;
     const { selectLoading, originStatus } = this.state;
     const { store, disabled } = this.props;
     const issue = store.getIssue;
-    const { statusMapDTO = {}, statusId } = issue;
-    const { type, name } = statusMapDTO;
+    const { statusMapVO = {}, statusId } = issue;
+    const { type, name } = statusMapVO;
     return (
       <div className="line-start mt-10">
         <div className="c7n-property-wrapper">

@@ -34,7 +34,7 @@ class ExpandWideCard extends Component {
             expand: false,
             selectedIssue: {},
           });
-          const filterControler = new IssueFilterControler();
+          const filterControler = IssueFilterControler;
           filterControler.refresh('refresh').then((res) => {
             IssueStore.refreshTrigger(res);
             Promise.resolve();
@@ -42,14 +42,14 @@ class ExpandWideCard extends Component {
         }}
         onUpdate={this.handleIssueUpdate.bind(this)}
         onCopyAndTransformToSubIssue={() => {
-          const filterControler = new IssueFilterControler();
+          const filterControler = IssueFilterControler;
           filterControler.refresh('refresh').then((res) => {
             IssueStore.refreshTrigger(res);
             Promise.resolve();
           });
         }}
         onDeleteSubIssue={() => {
-          const filterControler = new IssueFilterControler();
+          const filterControler = IssueFilterControler;
           filterControler.refresh('refresh').then((res) => {
             IssueStore.refreshTrigger(res);
             Promise.resolve();

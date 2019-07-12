@@ -22,16 +22,16 @@ import { getUsers } from '../../../api/CommonApi';
 const { AppState } = stores;
 
 
-export default class IssueFilterControler {
+class IssueFilterControler {
   /**
    * cache => Map => 用于缓存用户修改的 filter
    * paramName => String => 用户跳转进问题列表时的 ParamName
-   * orderDTO => Object => 用于存取用户排序信息
+   * orderVO => Object => 用于存取用户排序信息
    */
   constructor() {
     this.cache = IssueStore.getFilterMap;
     this.paramName = '';
-    this.orderDTO = {};
+    this.orderVO = {};
   }
 
   /**
@@ -126,7 +126,7 @@ export default class IssueFilterControler {
   refresh = (mode) => {
     // 存在 paramFilter 时调用 paramFilter 进行刷新
     const filter = Object.keys(this.cache.get('paramFilter')).length ? this.cache.get('paramFilter') : this.cache.get('filter');
-    return IssueFilterControler.loadCurrentSetting(
+    return this.loadCurrentSetting(
       filter,
       mode,
       IssueStore.getPagination.current - 1 > 0 ? IssueStore.getPagination.current : 1,
@@ -144,15 +144,21 @@ export default class IssueFilterControler {
    * @param size => Number => 当前每页显示数量，
    * @returns Promise.all / Promise
    */
-  static loadCurrentSetting(filters, mode, page = 1, size = 10) {
+  loadCurrentSetting = (filters, mode, page = 1, size = 10) => {
     if (mode === 'init') {
       const loadIssue = axios.post(
         `/agile/v1/projects/${AppState.currentMenuType.id}/issues/include_sub?organizationId=${AppState.currentMenuType.organizationId}&page=${page}&size=${size}`, filters,
+        {
+          params: this.orderVO,
+        },
       );
       return Promise.all([loadIssueTypes(), loadStatusList(), loadPriorities(), getUsers(), loadLabels(), loadComponents(), loadVersions(), loadEpics(), loadSprints(), getFoundationHeader(), loadIssue]);
     } else {
       return axios.post(
         `/agile/v1/projects/${AppState.currentMenuType.id}/issues/include_sub?organizationId=${AppState.currentMenuType.organizationId}&page=${page}&size=${size}`, filters,
+        {
+          params: this.orderVO,
+        },
       );
     }
   }
@@ -209,11 +215,11 @@ export default class IssueFilterControler {
    * Table Filter 更新时所生成的请求
    * @param page => Number => 页数
    * @param size => Number => 当前单个分页任务数
-   * @param orderDTO => Object => 排序对象
+   * @param orderVO => Object => 排序对象
    * @param barFilters => Array => 让 Table Filter 受控的数组
    * @returns {Promise}
    */
-  update = (page = 1, size = 10, orderDTO = {}, barFilters = []) => {
+  update = (page = 1, size = 10, orderVO = {}, barFilters = []) => {
     // 如果当前页面是从其他页跳转过来，且受控的 barFilters 中没有跳转时设定的 paramName
     // 说明用户清除了 barFilter 中跳转时的默认操作
     // 清除当前 cache 中 userFilter 里的 otherArgs，并设置进 store 中
@@ -234,7 +240,7 @@ export default class IssueFilterControler {
     }
     return axios.post(
       `/agile/v1/projects/${AppState.currentMenuType.id}/issues/include_sub?organizationId=${AppState.currentMenuType.organizationId}&page=${page}&size=${size}`, this.cache.get('userFilter'), {
-        params: this.setOrderDTO(orderDTO),
+        params: this.setOrderVO(orderVO),
       },
     );
   };
@@ -249,19 +255,19 @@ export default class IssueFilterControler {
 
   /**
    *
-   * @param orderDTO => Object => 排序对象
+   * @param orderVO => Object => 排序对象
    * @returns Object => ajax 请求时所需要的排序对象
    */
-  setOrderDTO(orderDTO) {
-    const { column } = orderDTO;
-    let { order = '' } = orderDTO;
+  setOrderVO(orderVO) {
+    const { column } = orderVO;
+    let { order = '' } = orderVO;
     if (order) {
       order = order === 'ascend' ? 'asc' : 'desc';
     }
-    this.orderDTO = {
+    this.orderVO = {
       sort: `${column && order ? `${column.sorterId},${order}` : ''}`,
     };
-    return this.orderDTO;
+    return this.orderVO;
   }
 
   /**
@@ -379,6 +385,7 @@ export default class IssueFilterControler {
         version: '',
       },
     };
+    this.orderVO = {};
     this.cache = new Map([
       [
         'filter', {
@@ -395,3 +402,4 @@ export default class IssueFilterControler {
     IssueStore.reset(this.cache);
   }
 }
+export default new IssueFilterControler();

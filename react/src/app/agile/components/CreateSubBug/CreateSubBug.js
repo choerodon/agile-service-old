@@ -126,7 +126,7 @@ class CreateSubBug extends Component {
         const { description } = values;
         const subIssueType = store.getIssueTypes && store.getIssueTypes.find(t => t.typeCode === 'bug');
         const exitLabels = originLabels;
-        const labelIssueRelDTOList = _.map(values.issueLink, (label) => {
+        const labelIssueRelVOList = _.map(values.issueLink, (label) => {
           const target = _.find(exitLabels, { labelName: label.substr(0, 10) });
           if (target) {
             return target;
@@ -138,7 +138,7 @@ class CreateSubBug extends Component {
           }
         });
         const exitFixVersions = originFixVersions;
-        const fixVersionIssueRelDTOList = _.map(values.fixVersionIssueRel
+        const fixVersionIssueRelVOList = _.map(values.fixVersionIssueRel
           && values.fixVersionIssueRel.filter(v => v && v.trim()), (version) => {
           const target = _.find(exitFixVersions, { name: version.trim() });
           if (target) {
@@ -160,9 +160,9 @@ class CreateSubBug extends Component {
           priorityCode: `priority-${values.priorityId}`,
           assigneeId: values.assigneedId,
           projectId: AppState.currentMenuType.id,
-          labelIssueRelDTOList,
+          labelIssueRelVOList,
           sprintId: sprint.sprintId || 0,
-          versionIssueRelDTOList: fixVersionIssueRelDTOList,
+          versionIssueRelVOList: fixVersionIssueRelVOList,
           issueTypeId: subIssueType && subIssueType.id,
           typeCode: 'bug',
           remainingTime: estimatedTime,

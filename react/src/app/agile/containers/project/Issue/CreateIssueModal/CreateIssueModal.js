@@ -12,7 +12,7 @@ class CreateIssueModal extends Component {
   // 点击创建时触发
   handleCreateIssue = (issueObj) => {
     IssueStore.createQuestion(false);
-    this.filterControler = new IssueFilterControler();
+    this.filterControler = IssueFilterControler;
     this.filterControler.resetCacheMap();
     IssueStore.setLoading(true);
     if (issueObj) {

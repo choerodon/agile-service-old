@@ -319,7 +319,7 @@ class CreateIssue extends Component {
         } = values;
         const { typeCode } = originIssueTypes.find(t => t.id === typeId);
         const exitComponents = originComponents;
-        const componentIssueRelDTOList = _.map(componentIssueRel
+        const componentIssueRelVOList = _.map(componentIssueRel
           && componentIssueRel.filter(v => v && v.trim()), (component) => {
           const target = _.find(exitComponents, { name: component.trim() });
           if (target) {
@@ -332,7 +332,7 @@ class CreateIssue extends Component {
           }
         });
         const exitLabels = originLabels;
-        const labelIssueRelDTOList = _.map(issueLabel, (label) => {
+        const labelIssueRelVOList = _.map(issueLabel, (label) => {
           const target = _.find(exitLabels, { labelName: label });
           if (target) {
             return target;
@@ -344,7 +344,7 @@ class CreateIssue extends Component {
           }
         });
         const exitFixVersions = originFixVersions;
-        const fixVersionIssueRelDTOList = _.map(fixVersionIssueRel
+        const fixVersionIssueRelVOList = _.map(fixVersionIssueRel
           && fixVersionIssueRel.filter(v => v && v.trim()), (version) => {
           const target = _.find(exitFixVersions, { name: version.trim() });
           if (target) {
@@ -360,20 +360,20 @@ class CreateIssue extends Component {
             });
           }
         });
-        const issueLinkCreateDTOList = [];
+        const issueLinkCreateVOList = [];
         if (linkTypeId) {
           Object.keys(linkTypeId).forEach((link) => {
             if (linkTypeId[link] && linkIssues[link]) {
               const currentLinkType = _.find(originLinks, { linkTypeId: linkTypeId[link].split('+')[0] * 1 });
               linkIssues[link].forEach((issueId) => {
                 if (currentLinkType.inWard === linkTypeId[link].split('+')[1]) {
-                  issueLinkCreateDTOList.push({
+                  issueLinkCreateVOList.push({
                     linkTypeId: linkTypeId[link].split('+')[0] * 1,
                     linkedIssueId: issueId * 1,
                     in: false,
                   });
                 } else {
-                  issueLinkCreateDTOList.push({
+                  issueLinkCreateVOList.push({
                     linkTypeId: linkTypeId[link].split('+')[0] * 1,
                     linkedIssueId: issueId * 1,
                     in: true,
@@ -395,13 +395,13 @@ class CreateIssue extends Component {
           epicName,
           parentIssueId: 0,
           assigneeId: assigneedId,
-          labelIssueRelDTOList,
-          versionIssueRelDTOList: fixVersionIssueRelDTOList,
-          componentIssueRelDTOList,
+          labelIssueRelVOList,
+          versionIssueRelVOList: fixVersionIssueRelVOList,
+          componentIssueRelVOList,
           storyPoints,
           remainingTime: estimatedTime,
-          issueLinkCreateDTOList,
-          featureDTO: {
+          issueLinkCreateVOList,
+          featureVO: {
             benfitHypothesis,
             acceptanceCritera,
             featureType,
@@ -1199,7 +1199,7 @@ class CreateIssue extends Component {
                                     }}
                                     >
                                       <TypeTag
-                                        data={issue.issueTypeDTO}
+                                        data={issue.issueTypeVO}
                                       />
                                       <span style={{
                                         paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',

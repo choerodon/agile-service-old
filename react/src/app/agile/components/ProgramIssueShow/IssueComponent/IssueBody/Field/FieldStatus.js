@@ -33,12 +33,12 @@ const { Text, Edit } = TextEditToggle;
   //   const { store, projectId } = this.props;
   //   const issue = store.getIssue;
   //   const {
-  //     issueTypeDTO = {},
+  //     issueTypeVO = {},
   //     issueId,
   //     statusId,
   //     activePi = {},
   //   } = issue;
-  //   const typeId = issueTypeDTO.id;
+  //   const typeId = issueTypeVO.id;
   //   loadStatus(statusId, issueId, typeId, 'program', projectId).then((res) => {
   //     if (activePi && activePi.statusCode === 'doing') {
   //       this.setState({
@@ -47,12 +47,12 @@ const { Text, Edit } = TextEditToggle;
   //       });
   //     } else if (activePi && activePi.statusCode === 'todo') {
   //       this.setState({
-  //         originStatus: res.filter(item => item.statusDTO && ['prepare', 'todo'].indexOf(item.statusDTO.type) !== -1),
+  //         originStatus: res.filter(item => item.statusVO && ['prepare', 'todo'].indexOf(item.statusVO.type) !== -1),
   //         selectLoading: false,
   //       });
   //     } else {
   //       this.setState({
-  //         originStatus: res.filter(item => item.statusDTO && ['prepare'].indexOf(item.statusDTO.type) !== -1),
+  //         originStatus: res.filter(item => item.statusVO && ['prepare'].indexOf(item.statusVO.type) !== -1),
   //         selectLoading: false,
   //       });
   //     }
@@ -84,8 +84,8 @@ const { Text, Edit } = TextEditToggle;
     const { selectLoading, originStatus } = this.state;
     const { store, disabled } = this.props;
     const issue = store.getIssue;
-    const { statusMapDTO = {}, statusId } = issue;
-    const { type, name } = statusMapDTO;
+    const { statusMapVO = {}, statusId } = issue;
+    const { type, name } = statusMapVO;
     return (
       <div className="line-start mt-10">
         <div className="c7n-property-wrapper">
@@ -135,9 +135,9 @@ const { Text, Edit } = TextEditToggle;
               >
                 {
                   originStatus && originStatus.length
-                    ? originStatus.map(transform => (transform.statusDTO ? (
+                    ? originStatus.map(transform => (transform.statusVO ? (
                       <Option key={transform.id} value={transform.endStatusId}>
-                        {transform.statusDTO.name}
+                        {transform.statusVO.name}
                       </Option>
                     ) : ''))
                     : null

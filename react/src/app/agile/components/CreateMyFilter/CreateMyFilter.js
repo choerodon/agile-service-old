@@ -25,22 +25,22 @@ class CreateMyFilter extends Component {
   }
 
   handleSaveFilterOk = () => {
-    const { form, searchDTO, onCreate } = this.props;
+    const { form, searchVO, onCreate } = this.props;
     form.validateFields((err, values) => {
       if (!err) {
         const { filterName } = values;
-        const filterDTO = {
+        const filterVO = {
           name: filterName,
           // filterId: 0,
           // objectVersionNumber: 0,
-          filterJson: JSON.stringify(searchDTO),
+          filterJson: JSON.stringify(searchVO),
           projectId: AppState.currentMenuType.id,
           userId: AppState.userInfo.id,
         };  
         this.setState({
           loading: true,
         });
-        createMyFilter(filterDTO)
+        createMyFilter(filterVO)
           .then((res) => {
             form.setFieldsValue({ filterName: '' });
             onCreate();

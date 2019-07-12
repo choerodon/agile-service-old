@@ -63,11 +63,11 @@ const { AppState } = stores;
 
   renderSubIssues = () => {
     const { store } = this.props;
-    const { subIssueDTOList = [] } = store.getIssue;
+    const { subIssueVOList = [] } = store.getIssue;
     return (
       <div className="c7n-tasks">
         {
-          subIssueDTOList.map((subIssue, i) => this.renderIssueList(subIssue, i))
+          subIssueVOList.map((subIssue, i) => this.renderIssueList(subIssue, i))
         }
       </div>
     );
@@ -86,9 +86,9 @@ const { AppState } = stores;
 
   getPercent = () => {
     const { store } = this.props;
-    const { subIssueDTOList = [] } = store.getIssue;
-    const completeList = subIssueDTOList.filter(issue => issue.completed);
-    const allLength = (subIssueDTOList && subIssueDTOList.length) || 0;
+    const { subIssueVOList = [] } = store.getIssue;
+    const completeList = subIssueVOList.filter(issue => issue.completed);
+    const allLength = (subIssueVOList && subIssueVOList.length) || 0;
     const completeLength = completeList.length;
     if (allLength === 0) {
       return 100;
@@ -148,7 +148,7 @@ const { AppState } = stores;
     const { store, disabled } = this.props;
     const { issueId, summary } = store.getIssue;
     const { getCreateSubTaskShow: createSubTaskShow } = VisibleStore;
-    const { subIssueDTOList = [] } = store.getIssue;
+    const { subIssueVOList = [] } = store.getIssue;
     return (
       <div id="sub_task">
         <div className="c7n-title-wrapper">
@@ -170,7 +170,7 @@ const { AppState } = stores;
           </div>
           )}
         </div>
-        {subIssueDTOList && subIssueDTOList.length
+        {subIssueVOList && subIssueVOList.length
           ? (
             <div className="c7n-subTask-progress">
               <Progress percent={this.getPercent()} />

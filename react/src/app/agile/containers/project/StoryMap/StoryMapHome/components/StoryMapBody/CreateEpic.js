@@ -32,7 +32,7 @@ class CreateEpic extends Component {
         issueTypeId: epicType.id,
         priorityCode: `priority-${defaultPriority.id}`,
         priorityId: defaultPriority.id,
-        rankDTO: {
+        rankVO: {
           projectId: getProjectId(),
           // objectVersionNumber: source.epicRankObjectVersionNumber, // 乐观锁     
           // issueId: source.issueId,

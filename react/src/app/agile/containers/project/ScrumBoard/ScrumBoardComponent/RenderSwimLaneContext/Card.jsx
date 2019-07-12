@@ -20,7 +20,7 @@ export default class CardProvider extends Component {
   };
 
   myOnMouseDown = (issue) => {
-    ScrumBoardStore.setWhichCanNotDragOn(issue.statusId, issue.issueTypeDTO);
+    ScrumBoardStore.setWhichCanNotDragOn(issue.statusId, issue.issueTypeVO);
   };
 
 
@@ -87,7 +87,7 @@ export default class CardProvider extends Component {
                           marginBottom: 4,
                         }}
                       >
-                        <CardTypeTag issueTypeDTO={issue.issueTypeDTO} />
+                        <CardTypeTag issueTypeVO={issue.issueTypeVO} />
                         <IssueNum issueNum={issue.issueNum} completed={completed} />
                         <StayDay stayDay={issue.stayDay} completed={completed} />
                       </div>
@@ -103,7 +103,7 @@ export default class CardProvider extends Component {
                           statusName={statusName}
                         />
                         <Priority
-                          priorityDTO={issue.priorityDTO}
+                          priorityVO={issue.priorityVO}
                         />
                       </div>
                     </div>

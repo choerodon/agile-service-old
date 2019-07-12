@@ -50,8 +50,8 @@ const { Text, Edit } = TextEditToggle;
       store, onUpdate, reloadIssue, AppState, onCreateVersion,
     } = this.props;
     const issue = store.getIssue;
-    const { versionIssueRelDTOList = [], issueId, objectVersionNumber } = issue;
-    const influenceVersions = _.filter(versionIssueRelDTOList, { relationType: 'influence' }) || [];
+    const { versionIssueRelVOList = [], issueId, objectVersionNumber } = issue;
+    const influenceVersions = _.filter(versionIssueRelVOList, { relationType: 'influence' }) || [];
 
     if (JSON.stringify(influenceVersions) !== JSON.stringify(newVersion)) {
       const versionList = [];
@@ -72,7 +72,7 @@ const { Text, Edit } = TextEditToggle;
       const obj = {
         issueId,
         objectVersionNumber,
-        versionIssueRelDTOList: versionList,
+        versionIssueRelVOList: versionList,
         versionType: 'fix',
       };
       updateIssue(obj)
@@ -95,8 +95,8 @@ const { Text, Edit } = TextEditToggle;
     const { selectLoading, originVersions } = this.state;
     const { store, disabled } = this.props;
     const issue = store.getIssue;
-    const { versionIssueRelDTOList = [] } = issue;
-    const fixVersionsTotal = _.filter(versionIssueRelDTOList, { relationType: 'fix' }) || [];
+    const { versionIssueRelVOList = [] } = issue;
+    const fixVersionsTotal = _.filter(versionIssueRelVOList, { relationType: 'fix' }) || [];
     const fixVersionsFixed = _.filter(fixVersionsTotal, { statusCode: 'archived' }) || [];
     const fixVersions = _.filter(fixVersionsTotal, v => v.statusCode !== 'archived') || [];
 

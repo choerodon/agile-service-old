@@ -20,23 +20,23 @@ import './IssueComponent.scss';
     } = this.props;
     const issue = store.getIssue;
     const {
-      issueId, objectVersionNumber, summary, featureDTO = {}, issueTypeDTO = {},
+      issueId, objectVersionNumber, summary, featureVO = {}, issueTypeVO = {},
     } = issue;
     const { featureType, value } = type.item.props;
-    const { typeCode } = issueTypeDTO;
+    const { typeCode } = issueTypeVO;
     if (typeCode === 'feature') {
-      const { id, objectVersionNumber: featureObjNum } = featureDTO;
-      const issueUpdateDTO = {
+      const { id, objectVersionNumber: featureObjNum } = featureVO;
+      const issueUpdateVO = {
         issueId,
         objectVersionNumber,
-        featureDTO: {
+        featureVO: {
           id,
           issueId,
           objectVersionNumber: featureObjNum,
           featureType: type.item.props.value,
         },
       };
-      updateIssue(issueUpdateDTO)
+      updateIssue(issueUpdateVO)
         .then(() => {
           if (reloadIssue) {
             reloadIssue(issueId);
@@ -46,7 +46,7 @@ import './IssueComponent.scss';
           }
         });
     } else {
-      const issueUpdateTypeDTO = {
+      const issueUpdateTypeVO = {
         epicName: type.key === 'issue_epic' ? summary : undefined,
         issueId,
         objectVersionNumber,
@@ -54,7 +54,7 @@ import './IssueComponent.scss';
         issueTypeId: value,
         featureType,
       };
-      updateIssueType(issueUpdateTypeDTO)
+      updateIssueType(issueUpdateTypeVO)
         .then(() => {
           if (reloadIssue) {
             reloadIssue(issueId);
@@ -74,26 +74,26 @@ import './IssueComponent.scss';
     const issueTypes = store.getIssueTypes ? store.getIssueTypes : [];
     const issue = store.getIssue;
     const {
-      issueTypeId, issueTypeDTO, typeCode, featureDTO = {}, 
+      issueTypeId, issueTypeVO, typeCode, featureVO = {}, 
     } = issue;
     const currentType = issueTypes.find(t => t.id === issueTypeId);
     let transformIssueTypes = [];
     if (typeCode === 'feature') {
       transformIssueTypes = [
         {
-          ...issueTypeDTO,
+          ...issueTypeVO,
           colour: '#29B6F6',
           featureType: 'business',
           name: '特性',
           id: 'business',
         }, {
-          ...issueTypeDTO,
+          ...issueTypeVO,
           colour: '#FFCA28',
           featureType: 'enabler',
           name: '使能',
           id: 'enabler',
         },
-      ].filter(t => t.featureType !== featureDTO.featureType);      
+      ].filter(t => t.featureType !== featureVO.featureType);      
     } else if (currentType) {
       transformIssueTypes = issueTypes.filter(t => (t.stateMachineId === currentType.stateMachineId
           && t.typeCode !== typeCode && t.typeCode !== 'sub_task' && t.typeCode !== 'feature'
@@ -133,7 +133,7 @@ import './IssueComponent.scss';
             >
               <TypeTag
                 data={currentType}
-                featureType={featureDTO && featureDTO.featureType}
+                featureType={featureVO && featureVO.featureType}
               />
               <Icon
                 type="arrow_drop_down"

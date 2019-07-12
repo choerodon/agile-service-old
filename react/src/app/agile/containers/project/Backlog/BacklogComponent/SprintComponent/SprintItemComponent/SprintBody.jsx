@@ -67,7 +67,7 @@ const loadFeature = () => {
           epicId: BacklogStore.getChosenEpic,
         } : {},
         ...!isNaN(BacklogStore.getChosenVersion) ? {
-          versionIssueRelDTOList: [
+          versionIssueRelVOList: [
             {
               versionId: BacklogStore.getChosenVersion,
             },
@@ -97,8 +97,8 @@ const loadFeature = () => {
         BacklogStore.createIssue({
           ...res,
           imageUrl: res.assigneeImageUrl,
-          versionIds: res.versionIssueRelDTOList.length ? [res.versionIssueRelDTOList[0].versionId] : [],
-          versionNames: res.versionIssueRelDTOList.length ? [res.versionIssueRelDTOList[0].name] : [],
+          versionIds: res.versionIssueRelVOList.length ? [res.versionIssueRelVOList[0].versionId] : [],
+          versionNames: res.versionIssueRelVOList.length ? [res.versionIssueRelVOList[0].name] : [],
         }, sprintId);
       }).catch((error) => {
         this.setState({

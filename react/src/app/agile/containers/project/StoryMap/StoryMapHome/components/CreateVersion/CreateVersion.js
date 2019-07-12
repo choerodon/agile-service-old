@@ -34,13 +34,13 @@ class CreateVersion extends Component {
         //     });
         // } else {
         // 创建版本
-        const versionCreateDTO = {
+        const versionCreateVO = {
           name,
           projectId,
           releaseDate: null,
           startDate: null,
         };
-        createVersion(versionCreateDTO).then((res) => {
+        createVersion(versionCreateVO).then((res) => {
           if (!res.failed) {
             resetFields();
             onOk(res);

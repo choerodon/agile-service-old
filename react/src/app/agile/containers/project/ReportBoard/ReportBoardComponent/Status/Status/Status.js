@@ -124,11 +124,11 @@ class Status extends Component {
 
   transformStatus = (statusArr) => {
     const todo = _.reduce(statusArr,
-      (sum, n) => sum + (n.statusMapDTO && n.statusMapDTO.type === 'todo' ? n.count : 0), 0);
+      (sum, n) => sum + (n.statusMapVO && n.statusMapVO.type === 'todo' ? n.count : 0), 0);
     const doing = _.reduce(statusArr,
-      (sum, n) => sum + (n.statusMapDTO && n.statusMapDTO.type === 'doing' ? n.count : 0), 0);
+      (sum, n) => sum + (n.statusMapVO && n.statusMapVO.type === 'doing' ? n.count : 0), 0);
     const done = _.reduce(statusArr,
-      (sum, n) => sum + (n.statusMapDTO && n.statusMapDTO.type === 'done' ? n.count : 0), 0);
+      (sum, n) => sum + (n.statusMapVO && n.statusMapVO.type === 'done' ? n.count : 0), 0);
     const result = [
       todo || 0,
       doing || 0,

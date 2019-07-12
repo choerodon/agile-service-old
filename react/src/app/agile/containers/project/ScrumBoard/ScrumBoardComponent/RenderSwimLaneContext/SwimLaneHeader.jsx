@@ -45,7 +45,7 @@ export default class SwimLaneHeader extends Component {
   }
 
   renderStoryComponent = ({
-    issueTypeDTO, issueNum, categoryCode, statusName, summary, assigneeId,
+    issueTypeVO, issueNum, categoryCode, statusName, summary, assigneeId,
     assigneeName, imageUrl, assigneeLoginName, assigneeRealName,
   }) => {
     const { parentIssue } = this.props;
@@ -56,7 +56,7 @@ export default class SwimLaneHeader extends Component {
             marginLeft: 8,
             marginRight: 6,
           }}
-          data={issueTypeDTO}
+          data={issueTypeVO}
         />
         <span
           style={{ cursor: 'pointer', minWidth: 70, marginRight: 10 }}

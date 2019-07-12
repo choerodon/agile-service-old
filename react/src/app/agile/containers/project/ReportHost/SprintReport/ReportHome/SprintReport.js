@@ -595,11 +595,11 @@ class SprintReport extends Component {
         dataIndex: 'typeCode',
         render: (typeCode, record) => (
           <div>
-            <Tooltip mouseEnterDelay={0.5} title={`任务类型： ${record.issueTypeDTO.name}`}>
+            <Tooltip mouseEnterDelay={0.5} title={`任务类型： ${record.issueTypeVO.name}`}>
               <div>
                 <TypeTag
                   style={{ minWidth: 90 }}
-                  data={record.issueTypeDTO}
+                  data={record.issueTypeVO}
                   showName
                 />
               </div>
@@ -612,11 +612,11 @@ class SprintReport extends Component {
         dataIndex: 'priorityId',
         render: (priorityId, record) => (
           <div>
-            <Tooltip mouseEnterDelay={0.5} placement="topLeft" title={`优先级： ${record.priorityDTO.name}`}>
+            <Tooltip mouseEnterDelay={0.5} placement="topLeft" title={`优先级： ${record.priorityVO.name}`}>
               <div style={{ marginRight: 12 }}>
                 <PriorityTag
                   style={{ minWidth: 55 }}
-                  priority={record.priorityDTO}
+                  priority={record.priorityVO}
                 />
               </div>
             </Tooltip>
@@ -628,12 +628,12 @@ class SprintReport extends Component {
         dataIndex: 'statusCode',
         render: (statusCode, record) => (
           <div>
-            <Tooltip mouseEnterDelay={0.5} placement="topLeft" title={`任务状态： ${record.statusMapDTO.name}`}>
+            <Tooltip mouseEnterDelay={0.5} placement="topLeft" title={`任务状态： ${record.statusMapVO.name}`}>
               <div>
                 <StatusTag
                   style={{ display: 'inline-block' }}
-                  name={record.statusMapDTO.name}
-                  color={STATUS[record.statusMapDTO.type]}
+                  name={record.statusMapVO.name}
+                  color={STATUS[record.statusMapVO.type]}
                 />
               </div>
             </Tooltip>

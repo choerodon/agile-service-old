@@ -279,7 +279,7 @@ class FeatureStore {
     this.issueMap.set('0', backlogAllFeatures);
     this.backlogData = backlogAllFeatures;   
     allPiList.forEach((pi) => {
-      this.issueMap.set(pi.id.toString(), pi.subFeatureDTOList || []);
+      this.issueMap.set(pi.id.toString(), pi.subFeatureVOList || []);
     });
     this.allPiList = allPiList;
     this.hasActivePI = Boolean(allPiList.find(element => element.statusCode === 'doing'));

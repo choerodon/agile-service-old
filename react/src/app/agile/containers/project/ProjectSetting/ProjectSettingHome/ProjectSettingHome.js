@@ -148,7 +148,7 @@ class ProjectSetting extends Component {
   handleUpdateProjectSetting = () => {
     this.props.form.validateFields((err, values, modify) => {
       if (!err && modify) {
-        const projectInfoDTO = {
+        const projectInfoVO = {
           ...this.state.origin,
           projectCode: values.code,
           defaultAssigneeType: values.strategy,
@@ -157,7 +157,7 @@ class ProjectSetting extends Component {
         this.setState({
           loading: true,
         });
-        axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/project_info`, projectInfoDTO)
+        axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/project_info`, projectInfoVO)
           .then((res) => {
             if (res.failed) {
               Choerodon.prompt(res.message);

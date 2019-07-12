@@ -5,8 +5,8 @@ import { getProjectId, getOrganizationId } from '../common/utils';
 /**
  * @returns
  */
-export function getStoryMap(searchDTO) {
-  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/main?organizationId=${getOrganizationId()}`, searchDTO);
+export function getStoryMap(searchVO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/main?organizationId=${getOrganizationId()}`, searchVO);
 }
 /** {
   //问题id列表，移动到版本，配合versionId使用
@@ -15,7 +15,7 @@ export function getStoryMap(searchDTO) {
   ],
   "versionId": "integer",  //要关联的版本id
   "epicId": "integer",  //要关联的史诗id
-  "versionIssueRelDTOList": [
+  "versionIssueRelVOList": [
     {
       "relationType": "string",  //版本关系：fix、influence
       "issueId": "integer",  //问题id
@@ -37,12 +37,12 @@ export function getStoryMap(searchDTO) {
 }
  * @returns
  */
-export function storyMove(storyMapDragDTO) {
-  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/move?organizationId=${getOrganizationId()}`, storyMapDragDTO);
+export function storyMove(storyMapDragVO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/move?organizationId=${getOrganizationId()}`, storyMapDragVO);
 }
 
-export function getSideIssueList(searchDTO) {
-  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/demand?organizationId=${getOrganizationId()}`, searchDTO);
+export function getSideIssueList(searchVO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map/demand?organizationId=${getOrganizationId()}`, searchVO);
 }
 // {
 //   "objectVersionNumber": "integer",
@@ -52,11 +52,11 @@ export function getSideIssueList(searchDTO) {
 //   "type": "string",
 //   "projectId": "integer"
 // }
-export function createWidth(storyMapWidthDTO) {
-  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map_width/?organizationId=${getOrganizationId()}`, storyMapWidthDTO);
+export function createWidth(storyMapWidthVO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/story_map_width/?organizationId=${getOrganizationId()}`, storyMapWidthVO);
 }
-export function changeWidth(storyMapWidthDTO) {
-  return axios.put(`/agile/v1/projects/${getProjectId()}/story_map_width/?organizationId=${getOrganizationId()}`, storyMapWidthDTO);
+export function changeWidth(storyMapWidthVO) {
+  return axios.put(`/agile/v1/projects/${getProjectId()}/story_map_width/?organizationId=${getOrganizationId()}`, storyMapWidthVO);
 }
 // {
 //   "projectId": 28,
@@ -67,6 +67,6 @@ export function changeWidth(storyMapWidthDTO) {
 //   "issueId": 65771,
 //   "objectVersionNumber": null
 //  }
-export function sort(sortDTO) {
-  return axios.post(`/agile/v1/projects/${getProjectId()}/rank`, sortDTO);
+export function sort(sortVO) {
+  return axios.post(`/agile/v1/projects/${getProjectId()}/rank`, sortVO);
 }

@@ -188,7 +188,7 @@ class TransformSubIssue extends Component {
                       <div style={{ display: 'inline-flex', width: 'calc(100% - 30px)', flex: 1 }}>
                         <div>
                           <TypeTag
-                            data={issue.issueTypeDTO}
+                            data={issue.issueTypeVO}
                           />
                         </div>
                         <a style={{

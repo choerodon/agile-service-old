@@ -25,7 +25,7 @@ const { confirm } = Modal;
   handleDeleteIssue = (issueId) => {
     const { store, onDeleteIssue } = this.props;
     const issue = store.getIssue;
-    const { issueNum, subIssueDTOList = [] } = issue;
+    const { issueNum, subIssueVOList = [] } = issue;
     confirm({
       width: 560,
       title: `删除问题${issueNum}`,
@@ -36,7 +36,7 @@ const { confirm } = Modal;
             <p style={{ marginBottom: 10 }}>这个问题将会被彻底删除。包括所有附件和评论。</p>
             <p style={{ marginBottom: 10 }}>如果您完成了这个问题，通常是已解决或者已关闭，而不是删除。</p>
             {
-              subIssueDTOList.length ? <p style={{ color: '#d50000' }}>{`注意：问题的${subIssueDTOList.length}子任务将被删除。`}</p> : null
+              subIssueVOList.length ? <p style={{ color: '#d50000' }}>{`注意：问题的${subIssueVOList.length}子任务将被删除。`}</p> : null
             }
           </div>
         ),
@@ -91,7 +91,7 @@ const { confirm } = Modal;
     const issue = store.getIssue;
     const {
       parentIssueId, relateIssueId, typeCode, parentIssueNum, relateIssueNum, issueNum,
-      issueId, createdBy, subIssueDTOList = [],
+      issueId, createdBy, subIssueVOList = [],
     } = issue;
 
     const getMenu = () => (
@@ -125,7 +125,7 @@ const { confirm } = Modal;
           {'复制问题'}
         </Menu.Item>
         {
-          ['sub_task', 'feature'].indexOf(typeCode) === -1 && subIssueDTOList.length === 0 && (
+          ['sub_task', 'feature'].indexOf(typeCode) === -1 && subIssueVOList.length === 0 && (
             <Menu.Item key="4">
               {'转化为子任务'}
             </Menu.Item>
