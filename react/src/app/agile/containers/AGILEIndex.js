@@ -27,9 +27,6 @@ const REPORTBOARD = asyncRouter(() => import('./project/ReportBoard'));
 const MESSAGENOTIFICATION = asyncRouter(() => import('./project/MessageNotification'));
 
 const WORKCALENDARINDEX = asyncRouter(() => import('./organization/WorkCalendar'));
-const OBJECTSCHEMEINDEX = asyncRouter(() => import('./organization/ObjectScheme'));
-const PAGEINDEX = asyncRouter(() => import('./organization/Page'));
-
 
 class AGILEIndex extends React.Component {
   componentDidCatch(error, info) {
@@ -75,8 +72,6 @@ class AGILEIndex extends React.Component {
           <Route path={`${match.url}/messageNotification`} component={MESSAGENOTIFICATION} />
 
           <Route path={`${match.url}/workCalendar`} component={WORKCALENDARINDEX} />
-          <Route path={`${match.url}/objectScheme`} component={OBJECTSCHEMEINDEX} />
-          <Route path={`${match.url}/page`} component={PAGEINDEX} />
           
           <Route path="*" component={nomatch} />
         </Switch>
