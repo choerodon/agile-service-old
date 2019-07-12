@@ -191,7 +191,7 @@ class CreateBranch extends Component {
                         if (res && !res.failed) {
                           this.setState({
                             branchs: res.list,
-                            branchsSize: res.total,
+                            branchsSize: res.endRow,
                             // branchsShowMore: res.totalPages !== 1,
                             branchsObj: res,
                             branchLoading: false,
@@ -228,8 +228,8 @@ class CreateBranch extends Component {
                       </Option>
                     ))}
                     {
-                      branchsObj.totalElements > branchsObj.numberOfElements
-                      && branchsObj.numberOfElements > 0 ? (
+                      branchsObj.total > branchsObj.endRow
+                      && branchsObj.endRow > 0 ? (
                         <Option key="more">
                           <div
                             role="none"
@@ -248,8 +248,8 @@ class CreateBranch extends Component {
                                 .then((res) => {
                                   if (res && !res.failed) {
                                     this.setState({
-                                      branchs: res.content || [],
-                                      branchsSize: res.numberOfElements,
+                                      branchs: res.list || [],
+                                      branchsSize: res.endRow,
                                       // branchsShowMore: res.totalPages !== 1,
                                       branchsObj: res,
                                     });
@@ -259,7 +259,13 @@ class CreateBranch extends Component {
                                 });
                             }}
                           >
-                            查看更多
+                            <div
+                              style={{
+                                color: '#3f51b5',
+                              }}
+                            >
+                              {'查看更多'}
+                            </div>
                           </div>
                         </Option>
                         ) : null
