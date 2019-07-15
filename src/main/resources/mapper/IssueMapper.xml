@@ -3233,4 +3233,17 @@
         ORDER BY ai.epic_sequence DESC
     </select>
 
+    <select id="queryIssueByIssueNum" resultType="io.choerodon.agile.infra.dataobject.IssueNumDTO">
+        SELECT
+        ai.issue_id, ai.summary,
+        ai.project_id, ai.type_code,
+        ai.issue_type_id,
+        CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
+        FROM agile_issue ai
+        LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
+        WHERE ai.project_id = #{projectId}
+        AND ai.type_code in ('story', 'task', 'bug')
+        AND ai.apply_type = 'agile'
+        AND ai.issue_num = #{issueNum}
+    </select>
 </mapper>

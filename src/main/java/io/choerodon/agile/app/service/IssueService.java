@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
+import io.choerodon.agile.infra.dataobject.IssueNumDTO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import com.github.pagehelper.PageInfo;
@@ -313,4 +314,6 @@ public interface IssueService {
     PageInfo<FeatureCommonVO> queryFeatureList(Long programId, Long organizationId, PageRequest pageRequest, SearchVO searchVO);
 
     List<FeatureCommonVO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId);
+
+    IssueNumDTO queryIssueByIssueNum(Long projectId, String issueNum);
 }
