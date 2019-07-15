@@ -112,7 +112,6 @@
         ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
         feature_info.feature_name AS feature_name,
-        feature_info.feature_type AS feature_type,
         apv1.version_id AS version_id,
         apv1.name AS version_name
         FROM (select ai3.* from agile_issue ai3
@@ -359,7 +358,6 @@
         ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
         feature_info.feature_name AS feature_name,
-        feature_info.feature_type AS feature_type,
         apv1.version_id AS version_id,
         apv1.name AS version_name
         FROM
@@ -451,7 +449,6 @@
         ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
         feature_info.feature_name AS feature_name,
-        feature_info.feature_type AS feature_type,
         apv1.version_id AS version_id,
         apv1.name AS version_name
         FROM
