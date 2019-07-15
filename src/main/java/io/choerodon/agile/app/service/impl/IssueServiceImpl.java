@@ -2310,4 +2310,9 @@ public class IssueServiceImpl implements IssueService {
         }
         return featureCommonVOS;
     }
+
+    @Override
+    public IssueNumDTO queryIssueByIssueNum(Long projectId, String issueNum) {
+        return issueMapper.queryIssueByIssueNum(projectId, issueNum);
+    }
 }

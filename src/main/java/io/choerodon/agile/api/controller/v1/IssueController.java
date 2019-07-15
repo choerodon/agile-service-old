@@ -2,6 +2,8 @@ package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+
+import io.choerodon.agile.infra.dataobject.IssueNumDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.swagger.annotations.ApiOperation;
@@ -725,5 +727,17 @@ public class IssueController {
         return Optional.ofNullable(issueService.queryFeatureListByPiId(projectId, organizationId, piId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.issue.queryFeatureListByPiId"));
+    }
+
+    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
+    @ApiOperation("【测试专用】根据issueNum查询issue")
+    @PostMapping(value = "/query_by_issue_num")
+    public ResponseEntity<IssueNumDTO> queryIssueByIssueNum(@ApiParam(value = "项目id", required = true)
+                                                            @PathVariable(name = "project_id") Long projectId,
+                                                            @ApiParam(value = "issue编号", required = true)
+                                                            @RequestBody String issueNum) {
+        return Optional.ofNullable(issueService.queryIssueByIssueNum(projectId, issueNum))
+                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
+                .orElseThrow(() -> new CommonException("error.issue.queryIssueByIssueNum"));
     }
 }
