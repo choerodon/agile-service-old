@@ -133,8 +133,7 @@
             aio.summary as feature_name,
             af.feature_type as feature_type
             from agile_issue aio, agile_feature af
-            where aio.project_id = #{projectId}
-            and aio.type_code = 'feature'
+            where aio.type_code = 'feature'
             and aio.issue_id = af.issue_id
         ) feature_info ON ai.feature_id = feature_info.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
@@ -381,8 +380,7 @@
             ai3.summary as feature_name,
             af.feature_type as feature_type
             from agile_issue ai3, agile_feature af
-            where ai3.project_id = #{projectId}
-            and ai3.type_code = 'feature'
+            where ai3.type_code = 'feature'
             and ai3.issue_id = af.issue_id
         ) feature_info ON ai2.feature_id = feature_info.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
@@ -475,8 +473,7 @@
             ai3.summary as feature_name,
             af.feature_type as feature_type
           from agile_issue ai3, agile_feature af
-          where ai3.project_id = #{projectId}
-          and ai3.type_code = 'feature'
+          where ai3.type_code = 'feature'
           and ai3.issue_id = af.issue_id
         ) feature_info ON ai2.feature_id = feature_info.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
