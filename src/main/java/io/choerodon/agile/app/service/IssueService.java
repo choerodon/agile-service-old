@@ -254,11 +254,7 @@ public interface IssueService {
      */
     PageInfo<IssueComponentDetailDTO> listIssueWithoutSubDetail(Long projectId, SearchVO searchVO, PageRequest pageRequest);
 
-//    List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds);
-
     IssueVO issueParentIdUpdate(Long projectId, IssueUpdateParentIdVO issueUpdateParentIdVO);
-
-//    void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO);
 
     JSONObject countUnResolveByProjectId(Long projectId);
 

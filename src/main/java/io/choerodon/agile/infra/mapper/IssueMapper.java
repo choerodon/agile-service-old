@@ -316,36 +316,6 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      */
     List<IssueIdSprintIdVO> querySprintAllIssueIdsByCondition(@Param("projectId") Long projectId, @Param("userId") Long userId, @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("filterSql") String filterSql, @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
 
-//    List<StoryMapIssueDO> listIssuesByProjectIdSprint(@Param("projectId") Long projectId,
-//                                                      @Param("pageType") String pageType,
-//                                                      @Param("assigneeId") Long assigneeId,
-//                                                      @Param("onlyStory") Boolean onlyStory,
-//                                                      @Param("filterSql") String filterSql,
-//                                                      @Param("doneIds") List<Long> doneIds,
-//                                                      @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
-//
-//    List<StoryMapIssueDO> listIssuesByProjectIdVersion(@Param("projectId") Long projectId,
-//                                                       @Param("pageType") String pageType,
-//                                                       @Param("assigneeId") Long assigneeId,
-//                                                       @Param("onlyStory") Boolean onlyStory,
-//                                                       @Param("filterSql") String filterSql,
-//                                                       @Param("doneIds") List<Long> doneIds,
-//                                                       @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
-//
-//    List<StoryMapIssueDO> listIssuesByProjectIdNone(@Param("projectId") Long projectId,
-//                                                    @Param("pageType") String pageType,
-//                                                    @Param("assigneeId") Long assigneeId,
-//                                                    @Param("onlyStory") Boolean onlyStory,
-//                                                    @Param("filterSql") String filterSql,
-//                                                    @Param("doneIds") List<Long> doneIds,
-//                                                    @Param("assigneeFilterIds") List<Long> assigneeFilterIds);
-
-//    List<StoryMapEpicDO> queryStoryMapEpicList(@Param("projectId") Long projectId,
-//                                               @Param("showDoneEpic") Boolean showDoneEpic,
-//                                               @Param("assigneeId") Long assigneeId,
-//                                               @Param("onlyStory") Boolean onlyStory,
-//                                               @Param("filterSql") String filterSql);
-
     Integer countUnResolveByProjectId(Long projectId);
 
     Integer countIssueByProjectId(Long projectId);
@@ -396,15 +366,7 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      */
     List<IssueDetailDTO> queryByIssueIds(@Param("projectId") Long projectId, @Param("issueIds") List<Long> issueIds);
 
-    String selectMinRankByProjectId(@Param("projectId") Long projectId);
-
     String selectMaxRankByProjectId(@Param("projectId") Long projectId);
-
-    String selectMapRankByIssueId(@Param("projectId") Long projectId, @Param("outsetIssueId") Long outsetIssueId);
-
-    String selectLeftMaxMapRank(@Param("projectId") Long projectId, @Param("currentMapRank") String currentMapRank);
-
-    String selectRightMinMapRank(@Param("projectId") Long projectId, @Param("currentMapRank") String currentMapRank);
 
     List<Long> selectIssueIdsByProjectId(@Param("projectId") Long projectId);
 
@@ -438,14 +400,6 @@ public interface IssueMapper extends Mapper<IssueDTO> {
      * @return IssueProjectDTO
      */
     List<IssueProjectDTO> queryIssueTestGroupByProject();
-
-    List<IssueDTO> selectAllPriority();
-
-    List<IssueDTO> selectAllType();
-
-    void batchUpdatePriority(@Param("issueDTOList") List<IssueDTO> issueDTOList);
-
-    void batchUpdateIssueType(@Param("issueDTOForTypeList") List<IssueDTO> issueDTOForTypeList);
 
     List<Long> queryIssueIdsListWithSub(@Param("projectId") Long projectId,
                                         @Param("searchVO") SearchVO searchVO,
