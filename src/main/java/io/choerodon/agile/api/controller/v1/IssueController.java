@@ -602,40 +602,6 @@ public class IssueController {
                 .orElseThrow(() -> new CommonException("error.Issue.listIssueWithoutSubDetail"));
     }
 
-//    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-//    @ApiOperation("故事地图查询issues,type:'sprint, version, none', pageType:'storymap,backlog'")
-//    @GetMapping(value = "/storymap/issues")
-//    public ResponseEntity<List<StoryMapIssueDTO>> listIssuesByProjectId(@ApiParam(value = "项目id", required = true)
-//                                                                        @PathVariable(name = "project_id") Long projectId,
-//                                                                        @ApiParam(value = "type:sprint, version, none", required = true)
-//                                                                        @RequestParam String type,
-//                                                                        @ApiParam(value = "组织id", required = true)
-//                                                                        @RequestParam Long organizationId,
-//                                                                        @ApiParam(value = "故事页面or待办页面 pageType:storymap,backlog", required = true)
-//                                                                        @RequestParam String pageType,
-//                                                                        @ApiParam(value = "search item，my issues", required = false)
-//                                                                        @RequestParam(required = false) Long assigneeId,
-//                                                                        @ApiParam(value = "search item，only story", required = false)
-//                                                                        @RequestParam(required = false) Boolean onlyStory,
-//                                                                        @ApiParam(value = "quick filter", required = false)
-//                                                                        @RequestParam(required = false) List<Long> quickFilterIds,
-//                                                                        @ApiParam(value = "经办人搜索", required = false)
-//                                                                        @RequestParam(required = false) List<Long> assigneeFilterIds) {
-//        return Optional.ofNullable(issueService.listIssuesByProjectId(projectId, type, pageType, assigneeId, onlyStory, quickFilterIds, organizationId, assigneeFilterIds))
-//                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-//                .orElseThrow(() -> new CommonException("error.Issue.listIssuesByProjectId"));
-//    }
-
-//    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-//    @ApiOperation("故事地图移动卡片")
-//    @PostMapping(value = "/storymap/move")
-//    public ResponseEntity storymapMove(@ApiParam(value = "项目id", required = true)
-//                                       @PathVariable(name = "project_id") Long projectId,
-//                                       @ApiParam(value = "story map move vo", required = true)
-//                                       @RequestBody StoryMapMoveDTO storyMapMoveDTO) {
-//        issueService.storymapMove(projectId, storyMapMoveDTO);
-//        return new ResponseEntity(HttpStatus.CREATED);
-//    }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更改父任务")

@@ -96,14 +96,10 @@ public class IssueServiceImpl implements IssueService {
     private ReportAssembler reportAssembler;
     @Autowired
     private ProductVersionValidator productVersionValidator;
-//    @Autowired
-//    private IssueComponentRepository issueComponentRepository;
     @Autowired
     private IssueComponentService issueComponentService;
     @Autowired
     private ProductVersionService productVersionService;
-//    @Autowired
-//    private IssueLabelRepository issueLabelRepository;
     @Autowired
     private IssueLabelService issueLabelService;
     @Autowired
@@ -122,14 +118,10 @@ public class IssueServiceImpl implements IssueService {
     private IssueCommentService issueCommentService;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
-//    @Autowired
-//    private ProjectInfoRepository projectInfoRepository;
     @Autowired
     private UserService userService;
     @Autowired
     private LookupValueMapper lookupValueMapper;
-//    @Autowired
-//    private DataLogRepository dataLogRepository;
     @Autowired
     private DataLogService dataLogService;
     @Autowired
@@ -146,8 +138,6 @@ public class IssueServiceImpl implements IssueService {
     private IssueSprintRelService issueSprintRelService;
     @Autowired
     private SprintService sprintService;
-//    @Autowired
-//    private StoryMapIssueAssembler storyMapIssueAssembler;
     @Autowired
     private QuickFilterMapper quickFilterMapper;
     @Autowired
@@ -159,8 +149,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
-    private UserFeignClient userFeignClient;
-    @Autowired
     private IssueFeignClient issueFeignClient;
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
@@ -168,8 +156,6 @@ public class IssueServiceImpl implements IssueService {
     private InstanceFeignClient instanceFeignClient;
     @Autowired
     private FoundationFeignClient foundationFeignClient;
-    @Autowired
-    private PlatformTransactionManager transactionManager;
     @Autowired
     private StateMachineService stateMachineService;
     @Autowired
@@ -188,8 +174,6 @@ public class IssueServiceImpl implements IssueService {
     private BoardFeatureService boardFeatureService;
     @Autowired
     private StoryMapWidthMapper storyMapWidthMapper;
-    @Autowired
-    private StoryMapMapper storyMapMapper;
     @Autowired
     private RankMapper rankMapper;
     @Autowired
@@ -778,33 +762,6 @@ public class IssueServiceImpl implements IssueService {
         return epicDataList;
     }
 
-//    @Override
-//    public List<StoryMapEpicDTO> listStoryMapEpic(Long projectId, Long organizationId, Boolean showDoneEpic, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds) {
-//        String filterSql = null;
-//        if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
-//            filterSql = getQuickFilter(quickFilterIds);
-//        }
-//        List<StoryMapEpicDTO> storyMapEpicDTOList = ConvertHelper.convertList(issueMapper.queryStoryMapEpicList(projectId, showDoneEpic, assigneeId, onlyStory, filterSql), StoryMapEpicDTO.class);
-//        if (!storyMapEpicDTOList.isEmpty()) {
-//            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-//            Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-//            List<Long> epicIds = storyMapEpicDTOList.stream().map(StoryMapEpicDTO::getIssueId).collect(Collectors.toList());
-//            Map<Long, Integer> issueCountMap = issueMapper.queryIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
-//            Map<Long, Integer> doneIssueCountMap = issueMapper.queryDoneIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
-//            Map<Long, Integer> notEstimateIssueCountMap = issueMapper.queryNotEstimateIssueCountByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount));
-//            Map<Long, BigDecimal> totalEstimateMap = issueMapper.queryTotalEstimateByEpicIds(projectId, epicIds).stream().collect(Collectors.toMap(IssueCountDTO::getId, IssueCountDTO::getStoryPointCount));
-//            storyMapEpicDTOList.forEach(epicData -> {
-//                epicData.setStatusMapVO(statusMapDTOMap.get(epicData.getStatusId()));
-//                epicData.setIssueTypeVO(issueTypeDTOMap.get(epicData.getIssueTypeId()));
-//                epicData.setDoneIssueCount(doneIssueCountMap.get(epicData.getIssueId()));
-//                epicData.setIssueCount(issueCountMap.get(epicData.getIssueId()));
-//                epicData.setNotEstimate(notEstimateIssueCountMap.get(epicData.getIssueId()));
-//                epicData.setTotalEstimate(totalEstimateMap.get(epicData.getIssueId()));
-//            });
-//        }
-//        return storyMapEpicDTOList;
-//    }
-
     private void dataLogDeleteByIssueId(Long projectId, Long issueId) {
         DataLogDTO dataLogDTO = new DataLogDTO();
         dataLogDTO.setProjectId(projectId);
@@ -962,20 +919,6 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-//    @Override
-//    public void batchToVersionInStoryMap(Long projectId, Long versionId, StoryMapMoveDTO storyMapMoveDTO) {
-//        List<Long> issueIds = storyMapMoveDTO.getVersionIssueIds();
-//        if (versionId != null && !Objects.equals(versionId, 0L)) {
-//            productVersionValidator.judgeExistStoryMap(projectId, versionId);
-//            issueAccessDataService.batchRemoveVersion(projectId, issueIds);
-//            VersionIssueRelE versionIssueRelE = new VersionIssueRelE();
-//            versionIssueRelE.createBatchIssueToVersionE(projectId, versionId, issueIds);
-//            issueAccessDataService.batchIssueToVersion(versionIssueRelE);
-//        } else {
-//            issueAccessDataService.batchRemoveVersion(projectId, issueIds);
-//        }
-//    }
-
     @Override
     public List<IssueSearchVO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
         issueValidator.judgeExist(projectId, epicId);
@@ -994,13 +937,6 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-//    @Override
-//    public List<IssueSearchVO> batchIssueToEpicInStoryMap(Long projectId, Long epicId, StoryMapMoveDTO storyMapMoveDTO) {
-//        List<Long> issueIds = storyMapMoveDTO.getEpicIssueIds();
-//        issueValidator.judgeExist(projectId, epicId);
-//        issueAccessDataService.batchIssueToEpic(projectId, epicId, issueIds);
-//        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
-//    }
 
     private void dataLogRank(Long projectId, MoveIssueVO moveIssueVO, String rankStr, Long sprintId) {
         for (Long issueId : moveIssueVO.getIssueIds()) {
@@ -1082,157 +1018,6 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-//    private void dealBoundBeforeRank(Long projectId, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
-//        String minRank = issueMapper.selectMinRankByProjectId(projectId);
-//        if (minRank == null) {
-//            initMapRank(projectId);
-//            minRank = issueMapper.selectMinRankByProjectId(projectId);
-//        }
-//        Collections.reverse(storyMapMoveDTO.getIssueIds());
-//        for (Long issueId : storyMapMoveDTO.getIssueIds()) {
-//            minRank = RankUtil.genPre(minRank);
-//            storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, minRank));
-//        }
-//    }
-//
-//    private void dealBoundAfterRank(Long projectId, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
-//        String maxRank = issueMapper.selectMaxRankByProjectId(projectId);
-//        if (maxRank == null) {
-//            initMapRank(projectId);
-//            maxRank = issueMapper.selectMaxRankByProjectId(projectId);
-//        }
-//        for (Long issueId : storyMapMoveDTO.getIssueIds()) {
-//            maxRank = RankUtil.genNext(maxRank);
-//            storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, maxRank));
-//        }
-//    }
-
-//    private void dealBoundRank(Long projectId, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
-//        if (storyMapMoveDTO.getBefore()) {
-//            dealBoundBeforeRank(projectId, storyMapMoveDTO, storyMapMoveIssueDOS);
-//        } else {
-//            dealBoundAfterRank(projectId, storyMapMoveDTO, storyMapMoveIssueDOS);
-//        }
-//    }
-
-//    private void dealMapRankLengthTooLarge(Long projectId, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
-//        String maxRank = issueMapper.selectMaxRankByProjectId(projectId);
-//        storyMapMoveIssueDOS.clear();
-//        for (Long issueId : storyMapMoveDTO.getIssueIds()) {
-//            maxRank = RankUtil.genNext(maxRank);
-//            storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, maxRank));
-//        }
-//    }
-
-//    private void dealInnerBeforeRank(Long projectId, String currentMapRank, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
-//        String leftMaxRank = issueMapper.selectLeftMaxMapRank(projectId, currentMapRank);
-//        List<Long> issueIds = storyMapMoveDTO.getIssueIds();
-//        Collections.reverse(issueIds);
-//        if (leftMaxRank == null) {
-//            for (Long issueId : issueIds) {
-//                currentMapRank = RankUtil.genPre(currentMapRank);
-//                storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, currentMapRank));
-//            }
-//        } else {
-//            for (Long issueId : issueIds) {
-//                leftMaxRank = RankUtil.between(leftMaxRank, currentMapRank);
-//                if (leftMaxRank.length() >= 700) {
-//                    dealMapRankLengthTooLarge(projectId, storyMapMoveDTO, storyMapMoveIssueDOS);
-//                    return;
-//                }
-//                storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, leftMaxRank));
-//            }
-//        }
-//    }
-
-//    private void dealInnerAfterRank(Long projectId, String currentMapRank, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
-//        String rightMinRank = issueMapper.selectRightMinMapRank(projectId, currentMapRank);
-//        if (rightMinRank == null) {
-//            for (Long issueId : storyMapMoveDTO.getIssueIds()) {
-//                currentMapRank = RankUtil.genNext(currentMapRank);
-//                storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, currentMapRank));
-//            }
-//        } else {
-//            for (Long issueId : storyMapMoveDTO.getIssueIds()) {
-//                currentMapRank = RankUtil.between(currentMapRank, rightMinRank);
-//                if (currentMapRank.length() >= 700) {
-//                    dealMapRankLengthTooLarge(projectId, storyMapMoveDTO, storyMapMoveIssueDOS);
-//                    return;
-//                }
-//                storyMapMoveIssueDOS.add(new StoryMapMoveIssueDO(issueId, currentMapRank));
-//            }
-//        }
-//    }
-
-//    private void dealInnerRank(Long projectId, StoryMapMoveDTO storyMapMoveDTO, List<StoryMapMoveIssueDO> storyMapMoveIssueDOS) {
-//        String currentMapRank = issueMapper.selectMapRankByIssueId(projectId, storyMapMoveDTO.getOutsetIssueId());
-//        if (currentMapRank == null) {
-//            initMapRank(projectId);
-//            currentMapRank = issueMapper.selectMapRankByIssueId(projectId, storyMapMoveDTO.getOutsetIssueId());
-//        }
-//        if (storyMapMoveDTO.getBefore()) {
-//            dealInnerBeforeRank(projectId, currentMapRank, storyMapMoveDTO, storyMapMoveIssueDOS);
-//        } else {
-//            dealInnerAfterRank(projectId, currentMapRank, storyMapMoveDTO, storyMapMoveIssueDOS);
-//        }
-//    }
-
-//    private void dealRank(Long projectId, StoryMapMoveDTO storyMapMoveDTO) {
-//        List<StoryMapMoveIssueDO> storyMapMoveIssueDOS = new ArrayList<>();
-//        if (storyMapMoveDTO.getOutsetIssueId() == null || Objects.equals(storyMapMoveDTO.getOutsetIssueId(), 0L)) {
-//            dealBoundRank(projectId, storyMapMoveDTO, storyMapMoveIssueDOS);
-//        } else {
-//            dealInnerRank(projectId, storyMapMoveDTO, storyMapMoveIssueDOS);
-//        }
-//        issueAccessDataService.batchUpdateMapIssueRank(projectId, storyMapMoveIssueDOS);
-//    }
-
-//    @Override
-//    public List<IssueSearchVO> batchIssueToSprintInStoryMap(Long projectId, Long sprintId, StoryMapMoveDTO storyMapMoveDTO) {
-//        sprintValidator.judgeExist(projectId, sprintId);
-//        CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
-//        //处理评级日志
-//        if (storyMapMoveDTO.getRankIndex() != null && !storyMapMoveDTO.getRankIndex()) {
-//            dataLogRankInStoryMap(projectId, storyMapMoveDTO, RANK_LOWER, sprintId);
-//        } else if (storyMapMoveDTO.getRankIndex() != null && storyMapMoveDTO.getRankIndex()) {
-//            dataLogRankInStoryMap(projectId, storyMapMoveDTO, RANK_HIGHER, sprintId);
-//        }
-//        List<Long> moveIssueIds = storyMapMoveDTO.getSprintIssueIds();
-//        //处理子任务和子缺陷
-//        List<Long> subTaskIds = issueMapper.querySubIssueIds(projectId, moveIssueIds);
-//        List<Long> subBugIds = issueMapper.querySubBugIds(projectId, moveIssueIds);
-//        if (subTaskIds != null && !subTaskIds.isEmpty()) {
-//            moveIssueIds.addAll(subTaskIds);
-//        }
-//        if (subBugIds != null && !subBugIds.isEmpty()) {
-//            moveIssueIds.addAll(subBugIds);
-//        }
-//        BatchRemoveSprintDTO batchRemoveSprintE = new BatchRemoveSprintDTO(projectId, sprintId, moveIssueIds);
-//        issueAccessDataService.removeIssueFromSprintByIssueIds(batchRemoveSprintE);
-//        if (sprintId != null && !Objects.equals(sprintId, 0L)) {
-//            issueAccessDataService.issueToDestinationByIds(projectId, sprintId, moveIssueIds, new Date(), customUserDetails.getUserId());
-//        }
-//        List<IssueSearchDTO> issueSearchDTOList = issueMapper.queryIssueByIssueIds(projectId, storyMapMoveDTO.getSprintIssueIds());
-//        List<Long> assigneeIds = issueSearchDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDTO::getAssigneeId).distinct().collect(Collectors.toList());
-//        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
-//        return issueSearchAssembler.doListToDTO(issueSearchDTOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
-//    }
-
-//    private void dataLogRankInStoryMap(Long projectId, StoryMapMoveDTO storyMapMoveDTO, String rankStr, Long sprintId) {
-//        for (Long issueId : storyMapMoveDTO.getIssueIds()) {
-//            SprintNameVO activeSprintName = sprintNameAssembler.toTarget(issueMapper.queryActiveSprintNameByIssueId(issueId), SprintNameVO.class);
-//            Boolean condition = (sprintId == 0 && activeSprintName == null) || (activeSprintName != null
-//                    && sprintId.equals(activeSprintName.getSprintId()));
-//            if (condition) {
-//                DataLogE dataLogE = new DataLogE();
-//                dataLogE.setField(FIELD_RANK);
-//                dataLogE.setProjectId(projectId);
-//                dataLogE.setIssueId(issueId);
-//                dataLogE.setNewString(rankStr);
-//                dataLogRepository.create(dataLogE);
-//            }
-//        }
-//    }
 
     private void beforeRank(Long projectId, Long sprintId, MoveIssueVO moveIssueVO, List<MoveIssueDTO> moveIssueDTOS) {
         moveIssueVO.setIssueIds(issueMapper.queryIssueIdOrderByRankDesc(projectId, moveIssueVO.getIssueIds()));
@@ -2326,71 +2111,6 @@ public class IssueServiceImpl implements IssueService {
         }
     }
 
-//    @Override
-//    public List<StoryMapIssueDTO> listIssuesByProjectId(Long projectId, String type, String pageType, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds) {
-//        List<StoryMapIssueDTO> storyMapIssueDTOList = null;
-//        String filterSql = null;
-//        if (quickFilterIds != null && !quickFilterIds.isEmpty()) {
-//            filterSql = getQuickFilter(quickFilterIds);
-//        }
-//        //保存用户选择的泳道
-//        handleSaveUserSetting(projectId, type, pageType);
-//        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-//        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-//        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-//        List<Long> doneIds = new ArrayList<>();
-//        getDoneIds(statusMapDTOMap, doneIds);
-//        switch (type) {
-//            case STORYMAP_TYPE_SPRINT:
-//                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdSprint(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds, assigneeFilterIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
-//                break;
-//            case STORYMAP_TYPE_VERSION:
-//                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdVersion(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds, assigneeFilterIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
-//                break;
-//            case STORYMAP_TYPE_NONE:
-//                storyMapIssueDTOList = storyMapIssueAssembler.storyMapIssueDOToDTO(issueMapper.listIssuesByProjectIdNone(projectId, pageType, assigneeId, onlyStory, filterSql, doneIds, assigneeFilterIds), priorityMap, statusMapDTOMap, issueTypeDTOMap);
-//                break;
-//            default:
-//                break;
-//        }
-//        return storyMapIssueDTOList == null ? new ArrayList<>() : storyMapIssueDTOList;
-//    }
-
-    private void handleSaveUserSetting(Long projectId, String type, String pageType) {
-        if (USERMAP.equals(pageType)) {
-            UserSettingDTO userSettingDTO = new UserSettingDTO();
-            userSettingDTO.setProjectId(projectId);
-            userSettingDTO.setUserId(DetailsHelper.getUserDetails().getUserId());
-            userSettingDTO.setTypeCode(STORYMAP);
-            UserSettingDTO query = userSettingMapper.selectOne(userSettingDTO);
-            if (query == null) {
-                userSettingDTO.setStorymapSwimlaneCode(STORYMAP_TYPE_NONE);
-                userSettingService.create(userSettingDTO);
-            } else if (!query.getStorymapSwimlaneCode().equals(type)) {
-                query.setStorymapSwimlaneCode(type);
-                userSettingService.update(query);
-            }
-        }
-    }
-
-
-//    @Override
-//    public void storymapMove(Long projectId, StoryMapMoveDTO storyMapMoveDTO) {
-//        Long sprintId = storyMapMoveDTO.getSprintId();
-//        Long versionId = storyMapMoveDTO.getVersionId();
-//        Long epicId = storyMapMoveDTO.getEpicId();
-//        IssueValidator.checkStoryMapMove(storyMapMoveDTO);
-//        dealRank(projectId, storyMapMoveDTO);
-//        if (epicId != null) {
-//            batchIssueToEpicInStoryMap(projectId, epicId, storyMapMoveDTO);
-//        }
-//        if (sprintId != null) {
-//            batchIssueToSprintInStoryMap(projectId, sprintId, storyMapMoveDTO);
-//        }
-//        if (versionId != null) {
-//            batchToVersionInStoryMap(projectId, versionId, storyMapMoveDTO);
-//        }
-//    }
 
     @Override
     public IssueVO issueParentIdUpdate(Long projectId, IssueUpdateParentIdVO issueUpdateParentIdVO) {
