@@ -55,6 +55,12 @@ public class IssueSearchVO {
     @ApiModelProperty(value = "史诗名称")
     private String epicName;
 
+    @ApiModelProperty(value = "特性名称")
+    private String featureName;
+
+    @ApiModelProperty(value = "特性类型")
+    private String featureType;
+
     @ApiModelProperty(value = "优先级code")
     private String priorityCode;
 
@@ -338,5 +344,21 @@ public class IssueSearchVO {
 
     public void setAssigneeRealName(String assigneeRealName) {
         this.assigneeRealName = assigneeRealName;
+    }
+
+    public void setFeatureType(String featureType) {
+        this.featureType = featureType;
+    }
+
+    public String getFeatureType() {
+        return featureType;
+    }
+
+    public void setFeatureName(String featureName) {
+        this.featureName = featureName;
+    }
+
+    public String getFeatureName() {
+        return featureName;
     }
 }
