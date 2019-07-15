@@ -5,19 +5,18 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.ExcelService;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.domain.agile.entity.FileOperationHistoryE;
-import io.choerodon.agile.infra.repository.FileOperationHistoryRepository;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.FileFeignClient;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.math.BigDecimal;
@@ -69,8 +69,8 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private StateMachineService stateMachineService;
 
-    @Autowired
-    private FileOperationHistoryRepository fileOperationHistoryRepository;
+//    @Autowired
+//    private FileOperationHistoryRepository fileOperationHistoryRepository;
 
     @Autowired
     private IssueFeignClient issueFeignClient;
@@ -99,39 +99,45 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private SprintMapper sprintMapper;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     @Override
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
-        List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
-        List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
-        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.selectByProjectId(projectId);
-        List<SprintDO> sprintDOList = sprintMapper.selectNotDoneByProjectId(projectId);
+        List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+        List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
+        List<ProductVersionCommonDTO> productVersionCommonDTOList = productVersionMapper.listByProjectId(projectId);
+        List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
+        List<SprintDTO> sprintDTOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> priorityList = new ArrayList<>();
-        for (PriorityDTO priorityDTO : priorityDTOList) {
-            if (priorityDTO.getEnable()){
-                priorityList.add(priorityDTO.getName());
+        for (PriorityVO priorityVO : priorityVOList) {
+            if (priorityVO.getEnable()){
+                priorityList.add(priorityVO.getName());
             }
         }
         List<String> issueTypeList = new ArrayList<>();
-        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode()) && !FEATURE.equals(issueTypeDTO.getTypeCode())) {
-                issueTypeList.add(issueTypeDTO.getName());
+        for (IssueTypeVO issueTypeVO : issueTypeVOList) {
+            if (!SUB_TASK.equals(issueTypeVO.getTypeCode()) && !FEATURE.equals(issueTypeVO.getTypeCode())) {
+                issueTypeList.add(issueTypeVO.getName());
             }
         }
         List<String> versionList = new ArrayList<>();
-        for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
-            if (VERSION_PLANNING.equals(productVersionCommonDO.getStatusCode())) {
-                versionList.add(productVersionCommonDO.getName());
+        for (ProductVersionCommonDTO productVersionCommonDTO : productVersionCommonDTOList) {
+            if (VERSION_PLANNING.equals(productVersionCommonDTO.getStatusCode())) {
+                versionList.add(productVersionCommonDTO.getName());
             }
         }
         List<String> componentList = new ArrayList<>();
-        for (IssueComponentDO issueComponentDO : issueComponentDOList) {
-            componentList.add(issueComponentDO.getName());
+        for (IssueComponentDTO issueComponentDTO : issueComponentDTOList) {
+            componentList.add(issueComponentDTO.getName());
         }
         List<String> sprintList = new ArrayList<>();
-        for (SprintDO sprintDO : sprintDOList) {
-            sprintList.add(sprintDO.getSprintName());
+        for (SprintDTO sprintDTO : sprintDTOList) {
+            sprintList.add(sprintDTO.getSprintName());
         }
         Workbook wb = new XSSFWorkbook();
         // create guide sheet
@@ -166,7 +172,7 @@ public class ExcelServiceImpl implements ExcelService {
         }
     }
 
-    private Boolean setIssueCreateInfo(IssueCreateDTO issueCreateDTO, Long projectId, Row row, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, Map<String, Long> versionMap, Long userId, Map<String, Long> componentMap, Map<String, Long> sprintMap) {
+    private Boolean setIssueCreateInfo(IssueCreateVO issueCreateVO, Long projectId, Row row, Map<String, IssueTypeVO> issueTypeMap, Map<String, Long> priorityMap, Map<String, Long> versionMap, Long userId, Map<String, Long> componentMap, Map<String, Long> sprintMap) {
         String summary = row.getCell(0).toString();
         if (summary == null) {
             throw new CommonException("error.summary.null");
@@ -207,82 +213,86 @@ public class ExcelServiceImpl implements ExcelService {
         if(!(row.getCell(9)==null || row.getCell(9).toString().equals("") || row.getCell(9).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
             sprintName = row.getCell(9).toString();
         }
-        List<VersionIssueRelDTO> versionIssueRelDTOList = null;
+        List<VersionIssueRelVO> versionIssueRelVOList = null;
         if (!(versionName == null || "".equals(versionName))) {
-            versionIssueRelDTOList = new ArrayList<>();
-            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO();
-            versionIssueRelDTO.setVersionId(versionMap.get(versionName));
-            versionIssueRelDTO.setRelationType(RELATION_TYPE_FIX);
-            versionIssueRelDTOList.add(versionIssueRelDTO);
+            versionIssueRelVOList = new ArrayList<>();
+            VersionIssueRelVO versionIssueRelVO = new VersionIssueRelVO();
+            versionIssueRelVO.setVersionId(versionMap.get(versionName));
+            versionIssueRelVO.setRelationType(RELATION_TYPE_FIX);
+            versionIssueRelVOList.add(versionIssueRelVO);
         }
         String typeCode = issueTypeMap.get(typeName).getTypeCode();
-        issueCreateDTO.setProjectId(projectId);
-        issueCreateDTO.setSummary(summary);
+        issueCreateVO.setProjectId(projectId);
+        issueCreateVO.setSummary(summary);
         if (description != null) {
-            issueCreateDTO.setDescription("[{\"insert\":\"" + StringUtil.replaceChar(description) + "\\n\"}]");
+            issueCreateVO.setDescription("[{\"insert\":\"" + StringUtil.replaceChar(description) + "\\n\"}]");
         }
-        issueCreateDTO.setPriorityCode("priority" + priorityMap.get(priorityName));
-        issueCreateDTO.setPriorityId(priorityMap.get(priorityName));
-        issueCreateDTO.setIssueTypeId(issueTypeMap.get(typeName).getId());
-        issueCreateDTO.setTypeCode(typeCode);
+        issueCreateVO.setPriorityCode("priority" + priorityMap.get(priorityName));
+        issueCreateVO.setPriorityId(priorityMap.get(priorityName));
+        issueCreateVO.setIssueTypeId(issueTypeMap.get(typeName).getId());
+        issueCreateVO.setTypeCode(typeCode);
         // 当问题类型为故事，设置故事点
         if (STORY.equals(typeCode)) {
-            issueCreateDTO.setStoryPoints(storyPoint);
+            issueCreateVO.setStoryPoints(storyPoint);
         }
         // 当问题类型为史诗，默认史诗名称与概要相同
         if (ISSUE_EPIC.equals(typeCode)) {
-            issueCreateDTO.setEpicName(summary);
-            issueCreateDTO.setEpicName(epicName);
+            issueCreateVO.setEpicName(summary);
+            issueCreateVO.setEpicName(epicName);
         }
-        List<ComponentIssueRelDTO> componentIssueRelDTOList = null;
+        List<ComponentIssueRelVO> componentIssueRelVOList = null;
         if (!(componentName == null || "".equals(componentName))) {
-            componentIssueRelDTOList = new ArrayList<>();
-            ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
-            componentIssueRelDTO.setComponentId(componentMap.get(componentName));
-            componentIssueRelDTOList.add(componentIssueRelDTO);
+            componentIssueRelVOList = new ArrayList<>();
+            ComponentIssueRelVO componentIssueRelVO = new ComponentIssueRelVO();
+            componentIssueRelVO.setComponentId(componentMap.get(componentName));
+            componentIssueRelVOList.add(componentIssueRelVO);
         }
         if (sprintName != null) {
-            issueCreateDTO.setSprintId(sprintMap.get(sprintName));
+            issueCreateVO.setSprintId(sprintMap.get(sprintName));
         }
-        issueCreateDTO.setComponentIssueRelDTOList(componentIssueRelDTOList);
-        issueCreateDTO.setRemainingTime(remainTime);
-        issueCreateDTO.setVersionIssueRelDTOList(versionIssueRelDTOList);
-        issueCreateDTO.setReporterId(userId);
+        issueCreateVO.setComponentIssueRelVOList(componentIssueRelVOList);
+        issueCreateVO.setRemainingTime(remainTime);
+        issueCreateVO.setVersionIssueRelVOList(versionIssueRelVOList);
+        issueCreateVO.setReporterId(userId);
         return true;
     }
 
-    private void updateFinalRecode(FileOperationHistoryE fileOperationHistoryE, Long successcount, Long failCount, String status) {
-        FileOperationHistoryE update = new FileOperationHistoryE();
-        update.setId(fileOperationHistoryE.getId());
+    private void updateFinalRecode(FileOperationHistoryDTO fileOperationHistoryDTO, Long successcount, Long failCount, String status) {
+        FileOperationHistoryDTO update = new FileOperationHistoryDTO();
+        update.setId(fileOperationHistoryDTO.getId());
         update.setSuccessCount(successcount);
         update.setFailCount(failCount);
         update.setStatus(status);
-        update.setFileUrl(fileOperationHistoryE.getFileUrl());
-        update.setObjectVersionNumber(fileOperationHistoryE.getObjectVersionNumber());
-        FileOperationHistoryE result = fileOperationHistoryRepository.updateBySeletive(update);
+        update.setFileUrl(fileOperationHistoryDTO.getFileUrl());
+        update.setObjectVersionNumber(fileOperationHistoryDTO.getObjectVersionNumber());
+//        FileOperationHistoryE result = fileOperationHistoryRepository.updateBySeletive(update);
+        if (fileOperationHistoryMapper.updateByPrimaryKeySelective(update) != 1) {
+            throw new CommonException("error.FileOperationHistoryDTO.update");
+        }
+        FileOperationHistoryDTO result = fileOperationHistoryMapper.selectByPrimaryKey(update.getId());
         sendProcess(result, result.getUserId(), 1.0);
     }
 
-    private void setIssueTypeAndPriorityMap(Long organizationId, Long projectId, Map<String, IssueTypeDTO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
-        List<PriorityDTO> priorityDTOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-        List<IssueTypeDTO> issueTypeDTOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
-        for (PriorityDTO priorityDTO : priorityDTOList) {
-            if (priorityDTO.getEnable()) {
-                priorityMap.put(priorityDTO.getName(), priorityDTO.getId());
-                priorityList.add(priorityDTO.getName());
+    private void setIssueTypeAndPriorityMap(Long organizationId, Long projectId, Map<String, IssueTypeVO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
+        List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+        List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
+        for (PriorityVO priorityVO : priorityVOList) {
+            if (priorityVO.getEnable()) {
+                priorityMap.put(priorityVO.getName(), priorityVO.getId());
+                priorityList.add(priorityVO.getName());
             }
         }
-        for (IssueTypeDTO issueTypeDTO : issueTypeDTOList) {
-            if (!SUB_TASK.equals(issueTypeDTO.getTypeCode()) && !FEATURE.equals(issueTypeDTO.getTypeCode())) {
-                issueTypeMap.put(issueTypeDTO.getName(), issueTypeDTO);
-                issueTypeList.add(issueTypeDTO.getName());
+        for (IssueTypeVO issueTypeVO : issueTypeVOList) {
+            if (!SUB_TASK.equals(issueTypeVO.getTypeCode()) && !FEATURE.equals(issueTypeVO.getTypeCode())) {
+                issueTypeMap.put(issueTypeVO.getName(), issueTypeVO);
+                issueTypeList.add(issueTypeVO.getName());
             }
         }
     }
 
-    private void sendProcess(FileOperationHistoryE fileOperationHistoryE, Long userId, Double process) {
-        fileOperationHistoryE.setProcess(process);
-        notifyFeignClient.postWebSocket(WEBSOCKET_IMPORT_CODE, userId.toString(), JSON.toJSONString(fileOperationHistoryE));
+    private void sendProcess(FileOperationHistoryDTO fileOperationHistoryDTO, Long userId, Double process) {
+        fileOperationHistoryDTO.setProcess(process);
+        notifyFeignClient.postWebSocket(WEBSOCKET_IMPORT_CODE, userId.toString(), JSON.toJSONString(fileOperationHistoryDTO));
     }
 
     private String uploadErrorExcel(Workbook errorWorkbook) {
@@ -295,14 +305,14 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     private Boolean checkEpicNameExist(Long projectId, String epicName) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setProjectId(projectId);
-        issueDO.setEpicName(epicName);
-        List<IssueDO> issueDOList = issueMapper.select(issueDO);
-        return issueDOList == null || issueDOList.isEmpty();
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setProjectId(projectId);
+        issueDTO.setEpicName(epicName);
+        List<IssueDTO> issueDTOList = issueMapper.select(issueDTO);
+        return issueDTOList == null || issueDTOList.isEmpty();
     }
 
-    private Map<Integer, String> checkRule(Long projectId, Row row, List<String> issueTypeList, List<String> priorityList, List<String> versionList, Map<String, IssueTypeDTO> issueTypeMap, List<String> componentList, List<String> sprintList) {
+    private Map<Integer, String> checkRule(Long projectId, Row row, List<String> issueTypeList, List<String> priorityList, List<String> versionList, Map<String, IssueTypeVO> issueTypeMap, List<String> componentList, List<String> sprintList) {
         Map<Integer, String> errorMessage = new HashMap<>();
         // check summary
         if (row.getCell(0)==null || row.getCell(0).toString().equals("") || row.getCell(0).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
@@ -397,7 +407,7 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     private Boolean checkCanceled(Long projectId, Long fileOperationHistoryId, List<Long> importedIssueIds) {
-        FileOperationHistoryDO checkCanceledDO = fileOperationHistoryMapper.selectByPrimaryKey(fileOperationHistoryId);
+        FileOperationHistoryDTO checkCanceledDO = fileOperationHistoryMapper.selectByPrimaryKey(fileOperationHistoryId);
         if (UPLOAD_FILE.equals(checkCanceledDO.getAction()) && CANCELED.equals(checkCanceledDO.getStatus())) {
             if (!importedIssueIds.isEmpty()) {
                 LOGGER.info(importedIssueIds.toString());
@@ -433,13 +443,22 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook) {
         String status = DOING;
-        FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
-        sendProcess(fileOperationHistoryE, userId, 0.0);
+//        FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
+        FileOperationHistoryDTO fileOperationHistoryDTO = new FileOperationHistoryDTO(projectId, userId, UPLOAD_FILE, 0L, 0L, status);
+        if (fileOperationHistoryMapper.insert(fileOperationHistoryDTO) != 1) {
+            throw new CommonException("error.FileOperationHistoryDTO.insert");
+        }
+        FileOperationHistoryDTO res = fileOperationHistoryMapper.selectByPrimaryKey(fileOperationHistoryDTO.getId());
+        sendProcess(res, userId, 0.0);
         if (workbook.getActiveSheetIndex() < 1
                 || workbook.getSheetAt(1) == null
                 || workbook.getSheetAt(1).getSheetName() == null
                 || !IMPORT_TEMPLATE_NAME.equals(workbook.getSheetAt(1).getSheetName())) {
-            FileOperationHistoryE errorImport = fileOperationHistoryRepository.updateBySeletive(new FileOperationHistoryE(projectId, fileOperationHistoryE.getId(), UPLOAD_FILE, "template_error", fileOperationHistoryE.getObjectVersionNumber()));
+//            FileOperationHistoryE errorImport = fileOperationHistoryRepository.updateBySeletive(new FileOperationHistoryE(projectId, fileOperationHistoryE.getId(), UPLOAD_FILE, "template_error", fileOperationHistoryE.getObjectVersionNumber()));
+            if (fileOperationHistoryMapper.updateByPrimaryKeySelective(new FileOperationHistoryDTO(projectId, res.getId(), UPLOAD_FILE, "template_error", res.getObjectVersionNumber())) != 1) {
+                throw new CommonException("error.FileOperationHistoryDTO.update");
+            }
+            FileOperationHistoryDTO errorImport = fileOperationHistoryMapper.selectByPrimaryKey(res.getId());
             sendProcess(errorImport, userId, 0.0);
             throw new CommonException("error.sheet.import");
         }
@@ -447,7 +466,7 @@ public class ExcelServiceImpl implements ExcelService {
         // 获取所有非空行
         Integer allRowCount = getRealRowCount(sheet);
         // 查询组织下的优先级与问题类型
-        Map<String, IssueTypeDTO> issueTypeMap = new HashMap<>();
+        Map<String, IssueTypeVO> issueTypeMap = new HashMap<>();
         Map<String, Long> priorityMap = new HashMap<>();
         List<String> issueTypeList = new ArrayList<>();
         List<String> priorityList = new ArrayList<>();
@@ -460,29 +479,29 @@ public class ExcelServiceImpl implements ExcelService {
         Map<String, Long> versionMap = new HashMap<>();
         Map<String, Long> componentMap = new HashMap<>();
         Map<String, Long> sprintMap = new HashMap<>();
-        List<ProductVersionCommonDO> productVersionCommonDOList = productVersionMapper.listByProjectId(projectId);
-        List<IssueComponentDO> issueComponentDOList = issueComponentMapper.selectByProjectId(projectId);
-        List<SprintDO> sprintDOList = sprintMapper.selectNotDoneByProjectId(projectId);
+        List<ProductVersionCommonDTO> productVersionCommonDTOList = productVersionMapper.listByProjectId(projectId);
+        List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
+        List<SprintDTO> sprintDTOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> versionList = new ArrayList<>();
-        for (ProductVersionCommonDO productVersionCommonDO : productVersionCommonDOList) {
-            if (VERSION_PLANNING.equals(productVersionCommonDO.getStatusCode())) {
-                versionMap.put(productVersionCommonDO.getName(), productVersionCommonDO.getVersionId());
-                versionList.add(productVersionCommonDO.getName());
+        for (ProductVersionCommonDTO productVersionCommonDTO : productVersionCommonDTOList) {
+            if (VERSION_PLANNING.equals(productVersionCommonDTO.getStatusCode())) {
+                versionMap.put(productVersionCommonDTO.getName(), productVersionCommonDTO.getVersionId());
+                versionList.add(productVersionCommonDTO.getName());
             }
         }
         List<String> componentList = new ArrayList<>();
-        for (IssueComponentDO issueComponentDO : issueComponentDOList) {
-            componentList.add(issueComponentDO.getName());
-            componentMap.put(issueComponentDO.getName(), issueComponentDO.getComponentId());
+        for (IssueComponentDTO issueComponentDTO : issueComponentDTOList) {
+            componentList.add(issueComponentDTO.getName());
+            componentMap.put(issueComponentDTO.getName(), issueComponentDTO.getComponentId());
         }
         List<String> sprintList = new ArrayList<>();
-        for (SprintDO sprintDO : sprintDOList) {
-            sprintList.add(sprintDO.getSprintName());
-            sprintMap.put(sprintDO.getSprintName(), sprintDO.getSprintId());
+        for (SprintDTO sprintDTO : sprintDTOList) {
+            sprintList.add(sprintDTO.getSprintName());
+            sprintMap.put(sprintDTO.getSprintName(), sprintDTO.getSprintId());
         }
         List<Long> importedIssueIds = new ArrayList<>();
         for (int r = 1; r <= allRowCount; r++) {
-            if (checkCanceled(projectId, fileOperationHistoryE.getId(), importedIssueIds)) {
+            if (checkCanceled(projectId, res.getId(), importedIssueIds)) {
                 return;
             }
             Row row = sheet.getRow(r);
@@ -525,17 +544,17 @@ public class ExcelServiceImpl implements ExcelService {
                     errorMapList.put(r, cList);
                 }
                 errorRows.add(row.getRowNum());
-                fileOperationHistoryE.setFailCount(failCount);
+                res.setFailCount(failCount);
                 processNum++;
-                sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
+                sendProcess(res, userId, processNum * 1.0 / allRowCount);
                 continue;
             }
-            IssueCreateDTO issueCreateDTO = new IssueCreateDTO();
+            IssueCreateVO issueCreateVO = new IssueCreateVO();
 
-            Boolean ok = setIssueCreateInfo(issueCreateDTO, projectId, row, issueTypeMap, priorityMap, versionMap, userId, componentMap, sprintMap);
-            IssueDTO result = null;
+            Boolean ok = setIssueCreateInfo(issueCreateVO, projectId, row, issueTypeMap, priorityMap, versionMap, userId, componentMap, sprintMap);
+            IssueVO result = null;
             if (ok) {
-                result = stateMachineService.createIssue(issueCreateDTO, APPLY_TYPE_AGILE);
+                result = stateMachineService.createIssue(issueCreateVO, APPLY_TYPE_AGILE);
             }
             if (result == null) {
                 failCount++;
@@ -545,38 +564,41 @@ public class ExcelServiceImpl implements ExcelService {
                 successcount++;
             }
             processNum++;
-            fileOperationHistoryE.setFailCount(failCount);
-            fileOperationHistoryE.setSuccessCount(successcount);
-            sendProcess(fileOperationHistoryE, userId, processNum * 1.0 / allRowCount);
+            res.setFailCount(failCount);
+            res.setSuccessCount(successcount);
+            sendProcess(res, userId, processNum * 1.0 / allRowCount);
         }
         if (!errorRows.isEmpty()) {
             LOGGER.info("导入数据有误");
             Workbook result = ExcelUtil.generateExcelAwesome(workbook, errorRows, errorMapList, FIELDS_NAME, priorityList, issueTypeList, versionList, IMPORT_TEMPLATE_NAME, componentList, sprintList);
             String errorWorkBookUrl = uploadErrorExcel(result);
-            fileOperationHistoryE.setFileUrl(errorWorkBookUrl);
+            res.setFileUrl(errorWorkBookUrl);
             status = FAILED;
         } else {
             status = SUCCESS;
         }
-        updateFinalRecode(fileOperationHistoryE, successcount, failCount, status);
+        updateFinalRecode(res, successcount, failCount, status);
     }
 
 
     @Override
     public void cancelImport(Long projectId, Long id, Long objectVersionNumber) {
-        FileOperationHistoryE fileOperationHistoryE = new FileOperationHistoryE();
-        fileOperationHistoryE.setId(id);
-        fileOperationHistoryE.setStatus(CANCELED);
-        fileOperationHistoryE.setObjectVersionNumber(objectVersionNumber);
-        fileOperationHistoryRepository.updateBySeletive(fileOperationHistoryE);
+        FileOperationHistoryDTO fileOperationHistoryDTO = new FileOperationHistoryDTO();
+        fileOperationHistoryDTO.setId(id);
+        fileOperationHistoryDTO.setStatus(CANCELED);
+        fileOperationHistoryDTO.setObjectVersionNumber(objectVersionNumber);
+//        fileOperationHistoryRepository.updateBySeletive(fileOperationHistoryE);
+        if (fileOperationHistoryMapper.updateByPrimaryKeySelective(fileOperationHistoryDTO) != 1) {
+            throw new CommonException("error.FileOperationHistoryDTO.update");
+        }
     }
 
 
     @Override
-    public FileOperationHistoryDTO queryLatestRecode(Long projectId) {
+    public FileOperationHistoryVO queryLatestRecode(Long projectId) {
         Long userId = DetailsHelper.getUserDetails().getUserId();
-        FileOperationHistoryDO result = fileOperationHistoryMapper.queryLatestRecode(projectId, userId);
-        return result == null ? new FileOperationHistoryDTO() : ConvertHelper.convert(result, FileOperationHistoryDTO.class);
+        FileOperationHistoryDTO result = fileOperationHistoryMapper.queryLatestRecode(projectId, userId);
+        return result == null ? new FileOperationHistoryVO() : modelMapper.map(result, FileOperationHistoryVO.class);
     }
 
 

@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.feign.fallback;
 
-import io.choerodon.agile.api.vo.WorkSpaceDTO;
-import io.choerodon.agile.infra.dataobject.WorkSpaceDO;
+import io.choerodon.agile.api.vo.WorkSpaceVO;
+import io.choerodon.agile.infra.dataobject.WorkSpaceDTO;
 import io.choerodon.agile.infra.feign.KnowledgebaseClient;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +13,12 @@ import java.util.List;
 public class KnowledgebaseClientFallback implements KnowledgebaseClient {
 
     @Override
-    public ResponseEntity<List<WorkSpaceDO>> queryAllSpaceByProject() {
+    public ResponseEntity<List<WorkSpaceDTO>> queryAllSpaceByProject() {
         throw new CommonException("error.workspace.get");
     }
 
     @Override
-    public ResponseEntity<List<WorkSpaceDTO>> querySpaceByIds(Long projectId, List<Long> spaceIds) {
+    public ResponseEntity<List<WorkSpaceVO>> querySpaceByIds(Long projectId, List<Long> spaceIds) {
         throw new CommonException("error.spaceList.get");
     }
 }

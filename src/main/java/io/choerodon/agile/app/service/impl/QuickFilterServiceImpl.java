@@ -1,21 +1,22 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.QuickFilterDTO;
-import io.choerodon.agile.api.vo.QuickFilterSearchDTO;
-import io.choerodon.agile.api.vo.QuickFilterSequenceDTO;
-import io.choerodon.agile.api.vo.QuickFilterValueDTO;
+import io.choerodon.agile.api.vo.QuickFilterSequenceVO;
+import io.choerodon.agile.api.vo.QuickFilterVO;
+import io.choerodon.agile.api.vo.QuickFilterSearchVO;
+import io.choerodon.agile.api.vo.QuickFilterValueVO;
 import io.choerodon.agile.app.service.QuickFilterService;
-import io.choerodon.agile.domain.agile.entity.QuickFilterE;
-import io.choerodon.agile.infra.repository.QuickFilterRepository;
-import io.choerodon.agile.infra.dataobject.QuickFilterDO;
+import io.choerodon.agile.infra.dataobject.QuickFilterDTO;
 import io.choerodon.agile.infra.mapper.QuickFilterFieldMapper;
 import io.choerodon.agile.infra.mapper.QuickFilterMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +31,8 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     private static final String NOT_IN = "not in";
     private static final String IS_NOT = "is not";
 
-    @Autowired
-    private QuickFilterRepository quickFilterRepository;
+//    @Autowired
+//    private QuickFilterRepository quickFilterRepository;
 
     @Autowired
     private QuickFilterMapper quickFilterMapper;
@@ -40,6 +41,13 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     private QuickFilterFieldMapper quickFilterFieldMapper;
 
     private static final String NOT_FOUND = "error.QuickFilter.notFound";
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
 
     private void dealCaseComponent(String field, String value, String operation, StringBuilder sqlQuery) {
         if ("null".equals(value)) {
@@ -57,7 +65,7 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         }
     }
 
-    private void dealFixVersion(QuickFilterValueDTO quickFilterValueDTO, String field, String value, String operation, StringBuilder sqlQuery) {
+    private void dealFixVersion(QuickFilterValueVO quickFilterValueVO, String field, String value, String operation, StringBuilder sqlQuery) {
         if ("null".equals(value)) {
             if ("is".equals(operation)) {
                 sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where relation_type = 'fix' ) ");
@@ -68,12 +76,12 @@ public class QuickFilterServiceImpl implements QuickFilterService {
             if (NOT_IN.equals(operation)) {
                 sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where version_id in " + value + " and relation_type = 'fix' ) ");
             } else {
-                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'fix' ) ");
+                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueVO.getOperation() + " " + value + " and relation_type = 'fix' ) ");
             }
         }
     }
 
-    private void dealInfluenceVersion(QuickFilterValueDTO quickFilterValueDTO, String field, String value, String operation, StringBuilder sqlQuery) {
+    private void dealInfluenceVersion(QuickFilterValueVO quickFilterValueVO, String field, String value, String operation, StringBuilder sqlQuery) {
         if ("null".equals(value)) {
             if ("is".equals(operation)) {
                 sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where relation_type = 'influence' ) ");
@@ -84,16 +92,16 @@ public class QuickFilterServiceImpl implements QuickFilterService {
             if (NOT_IN.equals(operation)) {
                 sqlQuery.append(" issue_id not in ( select issue_id from agile_version_issue_rel where version_id in " + value + " and relation_type = 'influence' ) ");
             } else {
-                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " and relation_type = 'influence' ) ");
+                sqlQuery.append(" issue_id in ( select issue_id from agile_version_issue_rel where " + field + " " + quickFilterValueVO.getOperation() + " " + value + " and relation_type = 'influence' ) ");
             }
         }
     }
 
-    private void dealCaseVersion(QuickFilterValueDTO quickFilterValueDTO, String field, String value, String operation, StringBuilder sqlQuery) {
-        if ("fix_version".equals(quickFilterValueDTO.getFieldCode())) {
-            dealFixVersion(quickFilterValueDTO, field, value, operation, sqlQuery);
-        } else if ("influence_version".equals(quickFilterValueDTO.getFieldCode())) {
-            dealInfluenceVersion(quickFilterValueDTO, field, value, operation, sqlQuery);
+    private void dealCaseVersion(QuickFilterValueVO quickFilterValueVO, String field, String value, String operation, StringBuilder sqlQuery) {
+        if ("fix_version".equals(quickFilterValueVO.getFieldCode())) {
+            dealFixVersion(quickFilterValueVO, field, value, operation, sqlQuery);
+        } else if ("influence_version".equals(quickFilterValueVO.getFieldCode())) {
+            dealInfluenceVersion(quickFilterValueVO, field, value, operation, sqlQuery);
         }
     }
 
@@ -129,19 +137,19 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         }
     }
 
-    private String getSqlQuery(List<QuickFilterValueDTO> quickFilterValueDTOList, List<String> relationOperations, Boolean childIncluded) {
+    private String getSqlQuery(List<QuickFilterValueVO> quickFilterValueVOList, List<String> relationOperations, Boolean childIncluded) {
         StringBuilder sqlQuery = new StringBuilder();
         int idx = 0;
-        for (QuickFilterValueDTO quickFilterValueDTO : quickFilterValueDTOList) {
-            String field = quickFilterFieldMapper.selectByPrimaryKey(quickFilterValueDTO.getFieldCode()).getField();
-            String value = "'null'".equals(quickFilterValueDTO.getValue()) ? "null" : quickFilterValueDTO.getValue();
-            String operation = quickFilterValueDTO.getOperation();
+        for (QuickFilterValueVO quickFilterValueVO : quickFilterValueVOList) {
+            String field = quickFilterFieldMapper.selectByPrimaryKey(quickFilterValueVO.getFieldCode()).getField();
+            String value = "'null'".equals(quickFilterValueVO.getValue()) ? "null" : quickFilterValueVO.getValue();
+            String operation = quickFilterValueVO.getOperation();
             switch (field) {
                 case "component_id":
                     dealCaseComponent(field, value, operation, sqlQuery);
                     break;
                 case "version_id":
-                    dealCaseVersion(quickFilterValueDTO, field, value, operation, sqlQuery);
+                    dealCaseVersion(quickFilterValueVO, field, value, operation, sqlQuery);
                     break;
                 case "label_id":
                     dealCaseLabel(field, value, operation, sqlQuery);
@@ -150,13 +158,13 @@ public class QuickFilterServiceImpl implements QuickFilterService {
                     dealCaseSprint(field, value, operation, sqlQuery);
                     break;
                 case "creation_date":
-                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueDTO.getOperation() + " " + "unix_timestamp('" + value + "') ");
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueVO.getOperation() + " " + "unix_timestamp('" + value + "') ");
                     break;
                 case "last_update_date":
-                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueDTO.getOperation() + " " + "unix_timestamp('" + value + "') ");
+                    sqlQuery.append(" unix_timestamp(" + field + ")" + " " + quickFilterValueVO.getOperation() + " " + "unix_timestamp('" + value + "') ");
                     break;
                 default:
-                    sqlQuery.append(" " + field + " " + quickFilterValueDTO.getOperation() + " " + value + " ");
+                    sqlQuery.append(" " + field + " " + quickFilterValueVO.getOperation() + " " + value + " ");
                     break;
             }
             int length = relationOperations.size();
@@ -172,128 +180,149 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     }
 
     @Override
-    public QuickFilterDTO create(Long projectId, QuickFilterDTO quickFilterDTO) {
-        if (!projectId.equals(quickFilterDTO.getProjectId())) {
+    public QuickFilterVO create(Long projectId, QuickFilterVO quickFilterVO) {
+        if (!projectId.equals(quickFilterVO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
         }
-        if (checkName(projectId, quickFilterDTO.getName())) {
+        if (checkName(projectId, quickFilterVO.getName())) {
             throw new CommonException("error.quickFilterName.exist");
         }
-        String sqlQuery = getSqlQuery(quickFilterDTO.getQuickFilterValueDTOList(), quickFilterDTO.getRelationOperations(), quickFilterDTO.getChildIncluded());
-        QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterDTO, QuickFilterE.class);
-        quickFilterE.setSqlQuery(sqlQuery);
+        String sqlQuery = getSqlQuery(quickFilterVO.getQuickFilterValueVOList(), quickFilterVO.getRelationOperations(), quickFilterVO.getChildIncluded());
+        QuickFilterDTO quickFilterDTO = modelMapper.map(quickFilterVO, QuickFilterDTO.class);
+        quickFilterDTO.setSqlQuery(sqlQuery);
         //设置编号
         Integer sequence = quickFilterMapper.queryMaxSequenceByProject(projectId);
-        quickFilterE.setSequence(sequence == null ? 0 : sequence + 1);
-        return ConvertHelper.convert(quickFilterRepository.create(quickFilterE), QuickFilterDTO.class);
+        quickFilterDTO.setSequence(sequence == null ? 0 : sequence + 1);
+//        return ConvertHelper.convert(quickFilterRepository.create(quickFilterE), QuickFilterVO.class);
+        if (quickFilterMapper.insert(quickFilterDTO) != 1) {
+            throw new CommonException("error.quickFilter.insert");
+        }
+        return modelMapper.map(quickFilterMapper.selectByPrimaryKey(quickFilterDTO.getFilterId()), QuickFilterVO.class);
     }
 
     private Boolean checkNameUpdate(Long projectId, Long filterId, String quickFilterName) {
-        QuickFilterDO quickFilterDO = quickFilterMapper.selectByPrimaryKey(filterId);
-        if (quickFilterName.equals(quickFilterDO.getName())) {
+        QuickFilterDTO quickFilterDTO = quickFilterMapper.selectByPrimaryKey(filterId);
+        if (quickFilterName.equals(quickFilterDTO.getName())) {
             return false;
         }
-        QuickFilterDO check = new QuickFilterDO();
+        QuickFilterDTO check = new QuickFilterDTO();
         check.setProjectId(projectId);
         check.setName(quickFilterName);
-        List<QuickFilterDO> quickFilterDOList = quickFilterMapper.select(check);
-        return quickFilterDOList != null && !quickFilterDOList.isEmpty();
+        List<QuickFilterDTO> quickFilterDTOList = quickFilterMapper.select(check);
+        return quickFilterDTOList != null && !quickFilterDTOList.isEmpty();
     }
 
     @Override
-    public QuickFilterDTO update(Long projectId, Long filterId, QuickFilterDTO quickFilterDTO) {
-        if (!projectId.equals(quickFilterDTO.getProjectId())) {
+    public QuickFilterVO update(Long projectId, Long filterId, QuickFilterVO quickFilterVO) {
+        if (!projectId.equals(quickFilterVO.getProjectId())) {
             throw new CommonException("error.projectId.notEqual");
         }
-        if (quickFilterDTO.getName() != null && checkNameUpdate(projectId, filterId, quickFilterDTO.getName())) {
+        if (quickFilterVO.getName() != null && checkNameUpdate(projectId, filterId, quickFilterVO.getName())) {
             throw new CommonException("error.quickFilterName.exist");
         }
-        String sqlQuery = getSqlQuery(quickFilterDTO.getQuickFilterValueDTOList(), quickFilterDTO.getRelationOperations(), quickFilterDTO.getChildIncluded());
-        quickFilterDTO.setFilterId(filterId);
-        QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterDTO, QuickFilterE.class);
-        quickFilterE.setSqlQuery(sqlQuery);
-        return ConvertHelper.convert(quickFilterRepository.update(quickFilterE), QuickFilterDTO.class);
+        String sqlQuery = getSqlQuery(quickFilterVO.getQuickFilterValueVOList(), quickFilterVO.getRelationOperations(), quickFilterVO.getChildIncluded());
+        quickFilterVO.setFilterId(filterId);
+        QuickFilterDTO quickFilterDTO = modelMapper.map(quickFilterVO, QuickFilterDTO.class);
+        quickFilterDTO.setSqlQuery(sqlQuery);
+        return updateBySelective(quickFilterDTO);
     }
 
     @Override
     public void deleteById(Long projectId, Long filterId) {
-        quickFilterRepository.deleteById(filterId);
-    }
-
-    @Override
-    public QuickFilterDTO queryById(Long projectId, Long filterId) {
-        QuickFilterDO quickFilterDO = quickFilterMapper.selectByPrimaryKey(filterId);
-        if (quickFilterDO == null) {
+//        quickFilterRepository.deleteById(filterId);
+        QuickFilterDTO quickFilterDTO = quickFilterMapper.selectByPrimaryKey(filterId);
+        if (quickFilterDTO == null) {
             throw new CommonException("error.quickFilter.get");
         }
-        return ConvertHelper.convert(quickFilterDO, QuickFilterDTO.class);
+        if (quickFilterMapper.deleteByPrimaryKey(filterId) != 1) {
+            throw new CommonException("error.quickFilter.delete");
+        }
     }
 
     @Override
-    public List<QuickFilterDTO> listByProjectId(Long projectId, QuickFilterSearchDTO quickFilterSearchDTO) {
-        List<QuickFilterDO> quickFilterDOList = quickFilterMapper.queryFiltersByProjectId(projectId, quickFilterSearchDTO.getFilterName(), quickFilterSearchDTO.getContents());
-        if (quickFilterDOList != null && !quickFilterDOList.isEmpty()) {
-            return ConvertHelper.convertList(quickFilterDOList, QuickFilterDTO.class);
+    public QuickFilterVO queryById(Long projectId, Long filterId) {
+        QuickFilterDTO quickFilterDTO = quickFilterMapper.selectByPrimaryKey(filterId);
+        if (quickFilterDTO == null) {
+            throw new CommonException("error.quickFilter.get");
+        }
+        return modelMapper.map(quickFilterDTO, QuickFilterVO.class);
+    }
+
+    @Override
+    public List<QuickFilterVO> listByProjectId(Long projectId, QuickFilterSearchVO quickFilterSearchVO) {
+        List<QuickFilterDTO> quickFilterDTOList = quickFilterMapper.queryFiltersByProjectId(projectId, quickFilterSearchVO.getFilterName(), quickFilterSearchVO.getContents());
+        if (quickFilterDTOList != null && !quickFilterDTOList.isEmpty()) {
+            return modelMapper.map(quickFilterDTOList, new TypeToken<List<QuickFilterVO>>(){}.getType());
         } else {
             return new ArrayList<>();
         }
     }
 
     @Override
-    public QuickFilterDTO dragFilter(Long projectId, QuickFilterSequenceDTO quickFilterSequenceDTO) {
-        if (quickFilterSequenceDTO.getAfterSequence() == null && quickFilterSequenceDTO.getBeforeSequence() == null) {
+    public QuickFilterVO dragFilter(Long projectId, QuickFilterSequenceVO quickFilterSequenceVO) {
+        if (quickFilterSequenceVO.getAfterSequence() == null && quickFilterSequenceVO.getBeforeSequence() == null) {
             throw new CommonException("error.dragFilter.noSequence");
         }
-        QuickFilterE quickFilterE = ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()), QuickFilterE.class);
-        if (quickFilterE == null) {
+        QuickFilterDTO quickFilterDTO = modelMapper.map(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceVO.getFilterId()), QuickFilterDTO.class);
+        if (quickFilterDTO == null) {
             throw new CommonException(NOT_FOUND);
         } else {
-            if (quickFilterSequenceDTO.getAfterSequence() == null) {
-                Integer maxSequence = quickFilterMapper.queryMaxAfterSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId);
-                quickFilterSequenceDTO.setAfterSequence(maxSequence);
-            } else if (quickFilterSequenceDTO.getBeforeSequence() == null) {
-                Integer minSequence = quickFilterMapper.queryMinBeforeSequence(quickFilterSequenceDTO.getAfterSequence(), projectId);
-                quickFilterSequenceDTO.setBeforeSequence(minSequence);
+            if (quickFilterSequenceVO.getAfterSequence() == null) {
+                Integer maxSequence = quickFilterMapper.queryMaxAfterSequence(quickFilterSequenceVO.getBeforeSequence(), projectId);
+                quickFilterSequenceVO.setAfterSequence(maxSequence);
+            } else if (quickFilterSequenceVO.getBeforeSequence() == null) {
+                Integer minSequence = quickFilterMapper.queryMinBeforeSequence(quickFilterSequenceVO.getAfterSequence(), projectId);
+                quickFilterSequenceVO.setBeforeSequence(minSequence);
             }
-            handleSequence(quickFilterSequenceDTO, projectId, quickFilterE);
+            handleSequence(quickFilterSequenceVO, projectId, quickFilterDTO);
         }
-        return ConvertHelper.convert(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceDTO.getFilterId()), QuickFilterDTO.class);
+        return modelMapper.map(quickFilterMapper.selectByPrimaryKey(quickFilterSequenceVO.getFilterId()), QuickFilterVO.class);
 
     }
 
-    private void handleSequence(QuickFilterSequenceDTO quickFilterSequenceDTO, Long projectId, QuickFilterE quickFilterE) {
-        if (quickFilterSequenceDTO.getBeforeSequence() == null) {
-            quickFilterE.setSequence(quickFilterSequenceDTO.getAfterSequence() + 1);
-            quickFilterRepository.update(quickFilterE);
-        } else if (quickFilterSequenceDTO.getAfterSequence() == null) {
-            if (quickFilterE.getSequence() > quickFilterSequenceDTO.getBeforeSequence()) {
-                Integer add = quickFilterE.getSequence() - quickFilterSequenceDTO.getBeforeSequence();
+    private void handleSequence(QuickFilterSequenceVO quickFilterSequenceVO, Long projectId, QuickFilterDTO quickFilterDTO) {
+        if (quickFilterSequenceVO.getBeforeSequence() == null) {
+            quickFilterDTO.setSequence(quickFilterSequenceVO.getAfterSequence() + 1);
+//            quickFilterRepository.update(quickFilterE);
+            updateBySelective(quickFilterDTO);
+        } else if (quickFilterSequenceVO.getAfterSequence() == null) {
+            if (quickFilterDTO.getSequence() > quickFilterSequenceVO.getBeforeSequence()) {
+                Integer add = quickFilterDTO.getSequence() - quickFilterSequenceVO.getBeforeSequence();
                 if (add > 0) {
-                    quickFilterE.setSequence(quickFilterSequenceDTO.getBeforeSequence() - 1);
-                    quickFilterRepository.update(quickFilterE);
+                    quickFilterDTO.setSequence(quickFilterSequenceVO.getBeforeSequence() - 1);
+//                    quickFilterRepository.update(quickFilterE);
+                    updateBySelective(quickFilterDTO);
                 } else {
-                    quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId,
-                            quickFilterE.getSequence() - quickFilterSequenceDTO.getBeforeSequence() + 1, quickFilterE.getFilterId());
+                    quickFilterMapper.batchUpdateSequence(quickFilterSequenceVO.getBeforeSequence(), projectId,
+                            quickFilterDTO.getSequence() - quickFilterSequenceVO.getBeforeSequence() + 1, quickFilterDTO.getFilterId());
                 }
             }
         } else {
-            Integer sequence = quickFilterSequenceDTO.getAfterSequence() + 1;
-            quickFilterE.setSequence(sequence);
-            quickFilterRepository.update(quickFilterE);
-            Integer update = sequence - quickFilterSequenceDTO.getBeforeSequence();
+            Integer sequence = quickFilterSequenceVO.getAfterSequence() + 1;
+            quickFilterDTO.setSequence(sequence);
+//            quickFilterRepository.update(quickFilterE);
+            updateBySelective(quickFilterDTO);
+            Integer update = sequence - quickFilterSequenceVO.getBeforeSequence();
             if (update >= 0) {
-                quickFilterRepository.batchUpdateSequence(quickFilterSequenceDTO.getBeforeSequence(), projectId, update + 1, quickFilterE.getFilterId());
+                quickFilterMapper.batchUpdateSequence(quickFilterSequenceVO.getBeforeSequence(), projectId, update + 1, quickFilterDTO.getFilterId());
             }
         }
     }
 
     @Override
     public Boolean checkName(Long projectId, String quickFilterName) {
-        QuickFilterDO quickFilterDO = new QuickFilterDO();
-        quickFilterDO.setProjectId(projectId);
-        quickFilterDO.setName(quickFilterName);
-        List<QuickFilterDO> quickFilterDOList = quickFilterMapper.select(quickFilterDO);
-        return quickFilterDOList != null && !quickFilterDOList.isEmpty();
+        QuickFilterDTO quickFilterDTO = new QuickFilterDTO();
+        quickFilterDTO.setProjectId(projectId);
+        quickFilterDTO.setName(quickFilterName);
+        List<QuickFilterDTO> quickFilterDTOList = quickFilterMapper.select(quickFilterDTO);
+        return quickFilterDTOList != null && !quickFilterDTOList.isEmpty();
+    }
+
+    public QuickFilterVO updateBySelective(QuickFilterDTO quickFilterDTO) {
+        if (quickFilterMapper.updateByPrimaryKeySelective(quickFilterDTO) != 1) {
+            throw new CommonException("error.quickFilter.update");
+        }
+        return modelMapper.map(quickFilterMapper.selectByPrimaryKey(quickFilterDTO.getFilterId()), QuickFilterVO.class);
     }
 
 }

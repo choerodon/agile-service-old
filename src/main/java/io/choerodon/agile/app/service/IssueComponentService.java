@@ -1,10 +1,11 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.ComponentForListDTO;
-import io.choerodon.agile.api.vo.IssueComponentDTO;
-import io.choerodon.agile.api.vo.IssueDTO;
-import io.choerodon.agile.api.vo.SearchDTO;
+import io.choerodon.agile.api.vo.ComponentForListVO;
+import io.choerodon.agile.api.vo.IssueComponentVO;
+import io.choerodon.agile.api.vo.IssueVO;
+import io.choerodon.agile.api.vo.SearchVO;
 import com.github.pagehelper.PageInfo;
+import io.choerodon.agile.infra.dataobject.IssueComponentDTO;
 import io.choerodon.base.domain.PageRequest;
 
 import java.util.List;
@@ -16,19 +17,25 @@ import java.util.List;
 
 public interface IssueComponentService {
 
-    IssueComponentDTO create(Long projectId, IssueComponentDTO issueComponentDTO);
+    IssueComponentVO create(Long projectId, IssueComponentVO issueComponentVO);
 
-    IssueComponentDTO update(Long projectId, Long id, IssueComponentDTO issueComponentDTO);
+    IssueComponentVO update(Long projectId, Long id, IssueComponentVO issueComponentVO);
 
     void delete(Long projectId, Long id, Long relateComponentId);
 
-    IssueComponentDTO queryComponentsById(Long projectId, Long id);
+    IssueComponentVO queryComponentsById(Long projectId, Long id);
 
-    PageInfo<ComponentForListDTO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchDTO searchDTO, PageRequest pageRequest);
+    PageInfo<ComponentForListVO> queryComponentByProjectId(Long projectId, Long componentId, Boolean noIssueTest, SearchVO searchVO, PageRequest pageRequest);
 
-    List<IssueDTO> queryIssuesByComponentId(Long projectId, Long componentId);
+    List<IssueVO> queryIssuesByComponentId(Long projectId, Long componentId);
 
-    List<ComponentForListDTO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest);
+    List<ComponentForListVO> listByProjectIdForTest(Long projectId, Long componentId, Boolean noIssueTest);
 
     Boolean checkComponentName(Long projectId, String componentName);
+
+    IssueComponentDTO createBase(IssueComponentDTO issueComponentDTO);
+
+    IssueComponentDTO updateBase(IssueComponentDTO issueComponentDTO);
+
+    void deleteBase(Long id);
 }

@@ -1,11 +1,11 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.ColumnSortDTO;
-import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO;
+import io.choerodon.agile.api.vo.ColumnSortVO;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.vo.BoardColumnDTO;
+import io.choerodon.agile.api.vo.BoardColumnVO;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.core.iam.InitRoleCode;
 import io.swagger.annotations.ApiOperation;
@@ -31,15 +31,15 @@ public class BoardColumnController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建BoardColumn")
     @PostMapping
-    public ResponseEntity<BoardColumnDTO> createBoardColumn(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardColumnVO> createBoardColumn(@ApiParam(value = "项目id", required = true)
                                                             @PathVariable(name = "project_id") Long projectId,
-                                                            @ApiParam(value = "category code", required = true)
+                                                           @ApiParam(value = "category code", required = true)
                                                             @RequestParam String categoryCode,
-                                                            @ApiParam(value = "apply type", required = true)
+                                                           @ApiParam(value = "apply type", required = true)
                                                             @RequestParam String applyType,
-                                                            @ApiParam(value = "board column对象", required = true)
-                                                            @RequestBody BoardColumnDTO boardColumnDTO) {
-        return Optional.ofNullable(boardColumnService.create(projectId, categoryCode, applyType, boardColumnDTO))
+                                                           @ApiParam(value = "board column对象", required = true)
+                                                            @RequestBody BoardColumnVO boardColumnVO) {
+        return Optional.ofNullable(boardColumnService.create(projectId, categoryCode, applyType, boardColumnVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.BoardColumn.create"));
     }
@@ -47,15 +47,15 @@ public class BoardColumnController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新BoardColumn")
     @PutMapping(value = "/{columnId}")
-    public ResponseEntity<BoardColumnDTO> updateBoardColumn(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardColumnVO> updateBoardColumn(@ApiParam(value = "项目id", required = true)
                                                             @PathVariable(name = "project_id") Long projectId,
-                                                            @ApiParam(value = "column id", required = true)
+                                                           @ApiParam(value = "column id", required = true)
                                                             @PathVariable Long columnId,
-                                                            @ApiParam(value = "board id", required = true)
+                                                           @ApiParam(value = "board id", required = true)
                                                             @RequestParam Long boardId,
-                                                            @ApiParam(value = "board column对象", required = true)
-                                                            @RequestBody BoardColumnDTO boardColumnDTO) {
-        return Optional.ofNullable(boardColumnService.update(projectId, columnId, boardId, boardColumnDTO))
+                                                           @ApiParam(value = "board column对象", required = true)
+                                                            @RequestBody BoardColumnVO boardColumnVO) {
+        return Optional.ofNullable(boardColumnService.update(projectId, columnId, boardId, boardColumnVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.BoardColumn.update"));
     }
@@ -66,8 +66,8 @@ public class BoardColumnController {
     public ResponseEntity columnSort(@ApiParam(value = "项目id", required = true)
                                      @PathVariable(name = "project_id") Long projectId,
                                      @ApiParam(value = "ColumnSort DTO", required = true)
-                                     @RequestBody ColumnSortDTO columnSortDTO) {
-        boardColumnService.columnSort(projectId, columnSortDTO);
+                                     @RequestBody ColumnSortVO columnSortVO) {
+        boardColumnService.columnSort(projectId, columnSortVO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -77,8 +77,8 @@ public class BoardColumnController {
     public ResponseEntity columnSortByProgram(@ApiParam(value = "项目id", required = true)
                                               @PathVariable(name = "project_id") Long projectId,
                                               @ApiParam(value = "ColumnSort DTO", required = true)
-                                              @RequestBody ColumnSortDTO columnSortDTO) {
-        boardColumnService.columnSortByProgram(projectId, columnSortDTO);
+                                              @RequestBody ColumnSortVO columnSortVO) {
+        boardColumnService.columnSortByProgram(projectId, columnSortVO);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -107,9 +107,9 @@ public class BoardColumnController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询BoardColumn")
     @GetMapping(value = "/{columnId}")
-    public ResponseEntity<BoardColumnDTO> queryBoardColumnById(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardColumnVO> queryBoardColumnById(@ApiParam(value = "项目id", required = true)
                                                                @PathVariable(name = "project_id") Long projectId,
-                                                               @ApiParam(value = "column id", required = true)
+                                                              @ApiParam(value = "column id", required = true)
                                                                @PathVariable Long columnId) {
         return Optional.ofNullable(boardColumnService.queryBoardColumnById(projectId, columnId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -119,13 +119,13 @@ public class BoardColumnController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id更新最大最小值")
     @PostMapping(value = "/{columnId}/column_contraint")
-    public ResponseEntity<BoardColumnDTO> updateColumnContraint(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardColumnVO> updateColumnContraint(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
-                                                                @ApiParam(value = "column id", required = true)
+                                                               @ApiParam(value = "column id", required = true)
                                                                 @PathVariable Long columnId,
-                                                                @ApiParam(value = "ColumnWithMaxMinNumDTO", required = true)
-                                                                @RequestBody ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO) {
-        return Optional.ofNullable(boardColumnService.updateColumnContraint(projectId, columnId, columnWithMaxMinNumDTO))
+                                                               @ApiParam(value = "ColumnWithMaxMinNumVO", required = true)
+                                                                @RequestBody ColumnWithMaxMinNumVO columnWithMaxMinNumVO) {
+        return Optional.ofNullable(boardColumnService.updateColumnContraint(projectId, columnId, columnWithMaxMinNumVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.MaxAndMinNum.update"));
     }

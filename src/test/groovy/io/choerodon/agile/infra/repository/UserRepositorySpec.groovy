@@ -2,9 +2,9 @@ package io.choerodon.agile.infra.repository
 //package io.choerodon.agile.domain.agile.repository
 //
 //import io.choerodon.agile.AgileTestConfiguration
-//import io.choerodon.agile.api.vo.ProjectDTO
-//import io.choerodon.agile.infra.dataobject.UserDO
-//import io.choerodon.agile.infra.dataobject.UserMessageDO
+//import io.choerodon.agile.api.vo.ProjectVO
+//import io.choerodon.agile.infra.dataobject.UserDTO
+//import io.choerodon.agile.infra.dataobject.UserMessageDTO
 //import io.choerodon.agile.infra.feign.UserFeignClient
 //import io.choerodon.agile.infra.repository.impl.UserRepositoryImpl
 //import org.springframework.beans.factory.annotation.Autowired
@@ -28,21 +28,21 @@ package io.choerodon.agile.infra.repository
 //class UserRepositorySpec extends Specification {
 //
 //    @Autowired
-//    UserRepository userRepository
+//    UserService userService
 //
 //    def 'queryUserNameByOption'() {
 //        given: 'mockFeign'
 //        def userFeignClient = Mock(UserFeignClient)
-//        userRepository = new UserRepositoryImpl(userFeignClient)
+//        userService = new UserRepositoryImpl(userFeignClient)
 //
 //        and: '给定返回参数'
-//        UserDO mock = new UserDO()
+//        UserDTO mock = new UserDTO()
 //        mock.loginName = '测试'
 //        mock.realName = 'XX'
-//        ResponseEntity<UserDO> responseEntity = new ResponseEntity<>(mock, HttpStatus.OK)
+//        ResponseEntity<UserDTO> responseEntity = new ResponseEntity<>(mock, HttpStatus.OK)
 //
 //        when: '根据参数查询用户信息'
-//        UserDO userDO = userRepository.queryUserNameByOption(userId, withId)
+//        UserDTO userDO = userService.queryUserNameByOption(userId, withId)
 //
 //        then: '判断mock交互并且设置返回值'
 //        if (userId != 0) {
@@ -63,23 +63,23 @@ package io.choerodon.agile.infra.repository
 //    def 'queryUsersMap'() {
 //        given: 'mockFeign'
 //        def userFeignClient = Mock(UserFeignClient)
-//        userRepository = new UserRepositoryImpl(userFeignClient)
+//        userService = new UserRepositoryImpl(userFeignClient)
 //
 //        and: '给定返回参数'
-//        List<UserDO> mock = new ArrayList<>()
-//        UserDO userDO = new UserDO()
+//        List<UserDTO> mock = new ArrayList<>()
+//        UserDTO userDO = new UserDTO()
 //        userDO.loginName = '测试'
 //        userDO.realName = 'XX'
 //        userDO.id = 1
 //        mock.add(userDO)
-//        ResponseEntity<List<UserDO>> responseEntity = new ResponseEntity<>(mock, HttpStatus.OK)
+//        ResponseEntity<List<UserDTO>> responseEntity = new ResponseEntity<>(mock, HttpStatus.OK)
 //
 //        and: '方法参数'
 //        List<Long> assigneeIdList = new ArrayList<>()
 //        assigneeIdList.add(1L)
 //
 //        when: '根据用户id列表查询用户信息'
-//        Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(assigneeIdList, withLoginName)
+//        Map<Long, UserMessageDTO> userMessageDOMap = userService.queryUsersMap(assigneeIdList, withLoginName)
 //
 //        then: '判断mock交互并且设置返回值'
 //        1 * userFeignClient.listUsersByIds(*_) >> responseEntity
@@ -95,19 +95,19 @@ package io.choerodon.agile.infra.repository
 //    def 'queryProject'() {
 //        given: 'mockFeign'
 //        def userFeignClient = Mock(UserFeignClient)
-//        userRepository = new UserRepositoryImpl(userFeignClient)
+//        userService = new UserRepositoryImpl(userFeignClient)
 //
 //        and: '给定返回参数'
-//        ProjectDTO mock = new ProjectDTO()
+//        ProjectVO mock = new ProjectVO()
 //        mock.id = 1
-//        ResponseEntity<ProjectDTO> responseEntity = new ResponseEntity<>(mock, HttpStatus.OK)
+//        ResponseEntity<ProjectVO> responseEntity = new ResponseEntity<>(mock, HttpStatus.OK)
 //
 //        and: '方法参数'
 //        List<Long> assigneeIdList = new ArrayList<>()
 //        assigneeIdList.add(1L)
 //
 //        when: '根据用户id列表查询用户信息'
-//        ProjectDTO projectDTO = userRepository.queryProject(1)
+//        ProjectVO projectDTO = userService.queryProject(1)
 //
 //        then: '判断mock交互并且设置返回值'
 //        1 * userFeignClient.queryProject(_) >> responseEntity

@@ -2,14 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.IssueCommentMapper">
 
-    <resultMap type="io.choerodon.agile.infra.dataobject.IssueCommentDO" id="issueCommentDetail">
+    <resultMap type="io.choerodon.agile.infra.dataobject.IssueCommentDTO" id="issueCommentDetail">
         <id column="comment_id" property="commentId"/>
         <id column="user_id" property="userId"/>
         <id column="issue_id" property="issueId"/>
         <id column="project_id" property="projectId"/>
         <id column="object_version_number" property="objectVersionNumber"/>
-        <collection property="issueAttachmentDOList" column="commentId"
-                    ofType="io.choerodon.agile.infra.dataobject.IssueCommentDO"
+        <collection property="issueAttachmentDTOList" column="commentId"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueCommentDTO"
                     select="queryIssueAttachmentByCommentId"/>
     </resultMap>
 
@@ -19,7 +19,7 @@
         WHERE issue_id = #{issueId} AND project_id = #{projectId}
     </select>
 
-    <select id="queryIssueAttachmentByCommentId" resultType="io.choerodon.agile.infra.dataobject.IssueAttachmentDO">
+    <select id="queryIssueAttachmentByCommentId" resultType="io.choerodon.agile.infra.dataobject.IssueAttachmentDTO">
         SELECT *
         FROM agile_issue_attachment
         WHERE comment_id = #{commentId}

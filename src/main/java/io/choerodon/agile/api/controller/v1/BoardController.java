@@ -42,13 +42,13 @@ public class BoardController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新scrum board")
     @PutMapping(value = "/{boardId}")
-    public ResponseEntity<BoardDTO> updateScrumBoard(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardVO> updateScrumBoard(@ApiParam(value = "项目id", required = true)
                                                      @PathVariable(name = "project_id") Long projectId,
-                                                     @ApiParam(value = "agile board id", required = true)
+                                                    @ApiParam(value = "agile board id", required = true)
                                                      @PathVariable Long boardId,
-                                                     @ApiParam(value = "ScrumBoard对象", required = true)
-                                                     @RequestBody BoardDTO boardDTO) {
-        return Optional.ofNullable(boardService.update(projectId, boardId, boardDTO))
+                                                    @ApiParam(value = "ScrumBoard对象", required = true)
+                                                     @RequestBody BoardVO boardVO) {
+        return Optional.ofNullable(boardService.update(projectId, boardId, boardVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.board.update"));
     }
@@ -67,9 +67,9 @@ public class BoardController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据id查询scrum board")
     @GetMapping(value = "/{boardId}")
-    public ResponseEntity<BoardDTO> queryScrumBoardById(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<BoardVO> queryScrumBoardById(@ApiParam(value = "项目id", required = true)
                                                         @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "agile board id", required = true)
+                                                       @ApiParam(value = "agile board id", required = true)
                                                         @PathVariable Long boardId) {
         return Optional.ofNullable(boardService.queryScrumBoardById(projectId, boardId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -79,15 +79,15 @@ public class BoardController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("移动issue")
     @PostMapping(value = "/issue/{issueId}/move")
-    public ResponseEntity<IssueMoveDTO> move(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueMoveVO> move(@ApiParam(value = "项目id", required = true)
                                              @PathVariable(name = "project_id") Long projectId,
-                                             @ApiParam(value = "issue id", required = true)
+                                            @ApiParam(value = "issue id", required = true)
                                              @PathVariable Long issueId,
-                                             @ApiParam(value = "转换id", required = true)
+                                            @ApiParam(value = "转换id", required = true)
                                              @RequestParam Long transformId,
-                                             @ApiParam(value = "issue move object", required = true)
-                                             @RequestBody IssueMoveDTO issueMoveDTO) {
-        return Optional.ofNullable(boardService.move(projectId, issueId, transformId, issueMoveDTO, false))
+                                            @ApiParam(value = "issue move object", required = true)
+                                             @RequestBody IssueMoveVO issueMoveVO) {
+        return Optional.ofNullable(boardService.move(projectId, issueId, transformId, issueMoveVO, false))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.issue.update"));
     }
@@ -95,15 +95,15 @@ public class BoardController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("移动feature")
     @PostMapping(value = "/feature/{issueId}/move")
-    public ResponseEntity<FeatureMoveDTO> moveByProgram(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<FeatureMoveVO> moveByProgram(@ApiParam(value = "项目id", required = true)
                                                       @PathVariable(name = "project_id") Long projectId,
-                                                        @ApiParam(value = "issue id", required = true)
+                                                       @ApiParam(value = "issue id", required = true)
                                                       @PathVariable Long issueId,
-                                                        @ApiParam(value = "转换id", required = true)
+                                                       @ApiParam(value = "转换id", required = true)
                                                       @RequestParam Long transformId,
-                                                        @ApiParam(value = "feature move object", required = true)
-                                                      @RequestBody FeatureMoveDTO featureMoveDTO) {
-        return Optional.ofNullable(boardService.moveByProgram(projectId, issueId, transformId, featureMoveDTO))
+                                                       @ApiParam(value = "feature move object", required = true)
+                                                      @RequestBody FeatureMoveVO featureMoveVO) {
+        return Optional.ofNullable(boardService.moveByProgram(projectId, issueId, transformId, featureMoveVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.feature.move"));
     }
@@ -111,7 +111,7 @@ public class BoardController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据projectId查询项目下的board")
     @GetMapping
-    public ResponseEntity<List<BoardDTO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<BoardVO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(boardService.queryByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -121,9 +121,9 @@ public class BoardController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据projectId查询项目下的用户的board设置")
     @GetMapping(value = "/user_setting/{boardId}")
-    public ResponseEntity<UserSettingDTO> queryUserSettingBoard(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<UserSettingVO> queryUserSettingBoard(@ApiParam(value = "项目id", required = true)
                                                                 @PathVariable(name = "project_id") Long projectId,
-                                                                @ApiParam(value = "agile board id", required = true)
+                                                               @ApiParam(value = "agile board id", required = true)
                                                                 @PathVariable Long boardId) {
         return Optional.ofNullable(boardService.queryUserSettingBoard(projectId, boardId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -133,11 +133,11 @@ public class BoardController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("更新用户泳道设置")
     @PostMapping(value = "/user_setting/{boardId}")
-    public ResponseEntity<UserSettingDTO> updateUserSettingBoard(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<UserSettingVO> updateUserSettingBoard(@ApiParam(value = "项目id", required = true)
                                                                  @PathVariable(name = "project_id") Long projectId,
-                                                                 @ApiParam(value = "agile board id", required = true)
+                                                                @ApiParam(value = "agile board id", required = true)
                                                                  @PathVariable Long boardId,
-                                                                 @ApiParam(value = "swimlaneBasedCode", required = true)
+                                                                @ApiParam(value = "swimlaneBasedCode", required = true)
                                                                  @RequestParam String swimlaneBasedCode) {
         return Optional.ofNullable(boardService.updateUserSettingBoard(projectId, boardId, swimlaneBasedCode))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -189,8 +189,8 @@ public class BoardController {
                                                               @ApiParam(value = "组织id", required = true)
                                                               @PathVariable(name = "organization_id") Long organizationId,
                                                               @ApiParam(name = "search DTO", required = false)
-                                                              @RequestBody SearchDTO searchDTO) {
-        return Optional.ofNullable(boardService.queryByOptionsInProgram(projectId, boardId, organizationId, searchDTO))
+                                                              @RequestBody SearchVO searchVO) {
+        return Optional.ofNullable(boardService.queryByOptionsInProgram(projectId, boardId, organizationId, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.programBoard.get"));
     }

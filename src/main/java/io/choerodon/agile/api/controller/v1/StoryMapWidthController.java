@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.StoryMapWidthDTO;
+import io.choerodon.agile.api.vo.StoryMapWidthVO;
 import io.choerodon.agile.app.service.StoryMapWidthService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -29,11 +29,11 @@ public class StoryMapWidthController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("创建故事地图列宽度")
     @PostMapping
-    public ResponseEntity<StoryMapWidthDTO> create(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<StoryMapWidthVO> create(@ApiParam(value = "项目id", required = true)
                                                           @PathVariable(name = "project_id") Long projectId,
-                                                          @ApiParam(value = "故事地图宽度DTO", required = true)
-                                                          @RequestBody StoryMapWidthDTO storyMapWidthDTO) {
-        return Optional.ofNullable(storyMapWidthService.create(projectId, storyMapWidthDTO))
+                                                  @ApiParam(value = "故事地图宽度DTO", required = true)
+                                                          @RequestBody StoryMapWidthVO storyMapWidthVO) {
+        return Optional.ofNullable(storyMapWidthService.create(projectId, storyMapWidthVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.storyMapWidth.create"));
     }
@@ -41,11 +41,11 @@ public class StoryMapWidthController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER, InitRoleCode.PROJECT_MEMBER})
     @ApiOperation("更新故事地图列宽度")
     @PutMapping
-    public ResponseEntity<StoryMapWidthDTO> update(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<StoryMapWidthVO> update(@ApiParam(value = "项目id", required = true)
                                                    @PathVariable(name = "project_id") Long projectId,
-                                                   @ApiParam(value = "故事地图宽度DTO", required = true)
-                                                   @RequestBody StoryMapWidthDTO storyMapWidthDTO) {
-        return Optional.ofNullable(storyMapWidthService.update(projectId, storyMapWidthDTO))
+                                                  @ApiParam(value = "故事地图宽度DTO", required = true)
+                                                   @RequestBody StoryMapWidthVO storyMapWidthVO) {
+        return Optional.ofNullable(storyMapWidthService.update(projectId, storyMapWidthVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.storyMapWidth.update"));
     }

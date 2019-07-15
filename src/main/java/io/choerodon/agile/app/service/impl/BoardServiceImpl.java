@@ -5,31 +5,32 @@ import com.alibaba.fastjson.JSONObject;
 
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.BoardValidator;
-import io.choerodon.agile.app.service.BoardColumnService;
-import io.choerodon.agile.app.service.BoardService;
-import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.domain.agile.entity.*;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.api.vo.event.StatusPayload;
+import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.common.utils.SendMsgUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.agile.infra.repository.*;
 import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.dto.InputDTO;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 import static java.util.Comparator.naturalOrder;
@@ -57,8 +58,8 @@ public class BoardServiceImpl implements BoardService {
     private static final String RANK = "rank";
     private static final String UPDATE_STATUS_MOVE = "updateStatusMove";
 
-    @Autowired
-    private BoardRepository boardRepository;
+//    @Autowired
+//    private BoardRepository boardRepository;
 
     @Autowired
     private BoardMapper boardMapper;
@@ -75,14 +76,14 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private IssueMapper issueMapper;
 
-    @Autowired
-    private ColumnStatusRelRepository columnStatusRelRepository;
+//    @Autowired
+//    private ColumnStatusRelRepository columnStatusRelRepository;
+//
+//    @Autowired
+//    private BoardColumnRepository boardColumnRepository;
 
     @Autowired
-    private BoardColumnRepository boardColumnRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private QuickFilterMapper quickFilterMapper;
@@ -91,7 +92,7 @@ public class BoardServiceImpl implements BoardService {
     private UserSettingMapper userSettingMapper;
 
     @Autowired
-    private UserSettingRepository userSettingRepository;
+    private UserSettingService userSettingService;
 
     @Autowired
     private DateUtil dateUtil;
@@ -111,14 +112,14 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private SprintMapper sprintMapper;
 
-    @Autowired
-    private IssueRepository issueRepository;
+//    @Autowired
+//    private IssueRepository issueRepository;
 
     @Autowired
     private PiMapper piMapper;
 
     @Autowired
-    private PiFeatureRepository piFeatureRepository;
+    private PiFeatureService piFeatureService;
 
     @Autowired
     private PiFeatureMapper piFeatureMapper;
@@ -129,81 +130,111 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private SendMsgUtil sendMsgUtil;
 
+    @Autowired
+    private ColumnStatusRelMapper columnStatusRelMapper;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     @Override
     public void create(Long projectId, String boardName) {
         if (checkName(projectId, boardName)) {
             throw new CommonException("error.boardName.exist");
         }
-        BoardE boardResult = createBoard(projectId, boardName);
+        BoardDTO boardResult = createBoard(projectId, boardName);
         boardColumnService.createColumnWithRelateStatus(boardResult);
     }
 
     private Boolean checkNameUpdate(Long projectId, Long boardId, String boardName) {
-        BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
-        if (boardName.equals(boardDO.getName())) {
+        BoardDTO boardDTO = boardMapper.selectByPrimaryKey(boardId);
+        if (boardName.equals(boardDTO.getName())) {
             return false;
         }
-        BoardDO check = new BoardDO();
+        BoardDTO check = new BoardDTO();
         check.setProjectId(projectId);
         check.setName(boardName);
-        List<BoardDO> boardDOList = boardMapper.select(check);
-        return boardDOList != null && !boardDOList.isEmpty();
+        List<BoardDTO> boardDTOList = boardMapper.select(check);
+        return boardDTOList != null && !boardDTOList.isEmpty();
     }
 
     @Override
-    public BoardDTO update(Long projectId, Long boardId, BoardDTO boardDTO) {
-        if (boardDTO.getName() != null && checkNameUpdate(projectId, boardId, boardDTO.getName())) {
+    public BoardVO update(Long projectId, Long boardId, BoardVO boardVO) {
+        if (boardVO.getName() != null && checkNameUpdate(projectId, boardId, boardVO.getName())) {
             throw new CommonException("error.boardName.exist");
         }
-        BoardValidator.checkUpdateBoard(projectId, boardDTO);
-        boardDTO.setBoardId(boardId);
-        BoardE boardE = ConvertHelper.convert(boardDTO, BoardE.class);
-        return ConvertHelper.convert(boardRepository.update(boardE), BoardDTO.class);
+        BoardValidator.checkUpdateBoard(projectId, boardVO);
+        boardVO.setBoardId(boardId);
+//        BoardE boardE = ConvertHelper.convert(boardVO, BoardE.class);
+        if (boardMapper.updateByPrimaryKeySelective(modelMapper.map(boardVO, BoardDTO.class)) != 1) {
+            throw new CommonException("error.board.update");
+        }
+        return modelMapper.map(boardMapper.selectByPrimaryKey(boardVO.getBoardId()), BoardVO.class);
     }
 
     @Override
     public void delete(Long projectId, Long boardId) {
-        BoardColumnDO boardColumnDO = new BoardColumnDO();
-        boardColumnDO.setBoardId(boardId);
-        List<BoardColumnDO> boardColumnDOList = boardColumnMapper.select(boardColumnDO);
-        for (BoardColumnDO column : boardColumnDOList) {
-            ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-            columnStatusRelE.setColumnId(column.getColumnId());
-            columnStatusRelE.setProjectId(projectId);
-            columnStatusRelRepository.delete(columnStatusRelE);
-            boardColumnRepository.delete(column.getColumnId());
+        BoardColumnDTO boardColumnDTO = new BoardColumnDTO();
+        boardColumnDTO.setBoardId(boardId);
+        List<BoardColumnDTO> boardColumnDTOList = boardColumnMapper.select(boardColumnDTO);
+        for (BoardColumnDTO column : boardColumnDTOList) {
+            ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+            columnStatusRelDTO.setColumnId(column.getColumnId());
+            columnStatusRelDTO.setProjectId(projectId);
+//            columnStatusRelRepository.delete(columnStatusRelE);
+            if (columnStatusRelMapper.select(columnStatusRelDTO).isEmpty()) {
+                return;
+            }
+            if (columnStatusRelMapper.delete(columnStatusRelDTO) == 0) {
+                throw new CommonException("error.ColumnStatus.delete");
+            }
+            redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + columnStatusRelDTO.getProjectId() + ':' + "*"});
+//            boardColumnRepository.delete(column.getColumnId());
+            if (boardColumnMapper.deleteByPrimaryKey(column.getColumnId()) != 1) {
+                throw new CommonException("error.BoardColumn.delete");
+            }
         }
-        boardRepository.delete(boardId);
+//        boardRepository.delete(boardId);
+        if (boardMapper.deleteByPrimaryKey(boardId) != 1) {
+            throw new CommonException("error.board.delete");
+        }
         //删除默认看板UserSetting
-        UserSettingDO userSettingDO = new UserSettingDO();
-        userSettingDO.setProjectId(projectId);
-        userSettingDO.setTypeCode(BOARD);
-        userSettingDO.setBoardId(boardId);
-        userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
-        userSettingMapper.delete(userSettingDO);
+        UserSettingDTO userSettingDTO = new UserSettingDTO();
+        userSettingDTO.setProjectId(projectId);
+        userSettingDTO.setTypeCode(BOARD);
+        userSettingDTO.setBoardId(boardId);
+        userSettingDTO.setUserId(DetailsHelper.getUserDetails().getUserId());
+        userSettingMapper.delete(userSettingDTO);
         //更新第一个为默认
-        List<BoardDTO> boardDTOS = queryByProjectId(projectId);
-        if (!boardDTOS.isEmpty()) {
-            Long defaultBoardId = boardDTOS.get(0).getBoardId();
+        List<BoardVO> boardVOS = queryByProjectId(projectId);
+        if (!boardVOS.isEmpty()) {
+            Long defaultBoardId = boardVOS.get(0).getBoardId();
             handleUserSetting(defaultBoardId, projectId);
         }
     }
 
     @Override
-    public BoardDTO queryScrumBoardById(Long projectId, Long boardId) {
-        BoardDO boardDO = new BoardDO();
-        boardDO.setProjectId(projectId);
-        boardDO.setBoardId(boardId);
-        return ConvertHelper.convert(boardMapper.selectOne(boardDO), BoardDTO.class);
+    public BoardVO queryScrumBoardById(Long projectId, Long boardId) {
+        BoardDTO boardDTO = new BoardDTO();
+        boardDTO.setProjectId(projectId);
+        boardDTO.setBoardId(boardId);
+        return modelMapper.map(boardMapper.selectOne(boardDTO), BoardVO.class);
     }
 
-    public JSONObject putColumnData(List<ColumnAndIssueDO> columns) {
+    public JSONObject putColumnData(List<ColumnAndIssueDTO> columns) {
         JSONObject columnsData = new JSONObject();
         columnsData.put("columns", columns);
         return columnsData;
     }
 
-    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Map<Long, PriorityDTO> priorityMap, Map<Long, IssueTypeDTO> issueTypeDTOMap, Map<Long, List<Long>> parentWithSubs) {
+    private void addIssueInfos(IssueForBoardDO issue, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Map<Long, PriorityVO> priorityMap, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, List<Long>> parentWithSubs) {
         if (issue.getParentIssueId() != null && issue.getParentIssueId() != 0 && !parentIds.contains(issue.getParentIssueId())) {
             parentIds.add(issue.getParentIssueId());
         } else if (issue.getRelateIssueId() != null && issue.getRelateIssueId() != 0 && !parentIds.contains(issue.getRelateIssueId())) {
@@ -234,8 +265,8 @@ public class BoardServiceImpl implements BoardService {
             subBugIds.add(issue.getIssueId());
             parentWithSubs.put(issue.getRelateIssueId(), subBugIds);
         }
-        issue.setPriorityDTO(priorityMap.get(issue.getPriorityId()));
-        issue.setIssueTypeDTO(issueTypeDTOMap.get(issue.getIssueTypeId()));
+        issue.setPriorityVO(priorityMap.get(issue.getPriorityId()));
+        issue.setIssueTypeVO(issueTypeDTOMap.get(issue.getIssueTypeId()));
         if (issue.getStayDate() != null) {
             issue.setStayDay(DateUtil.differentDaysByMillisecond(issue.getStayDate(), new Date()));
         } else {
@@ -243,18 +274,18 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private void getDatas(List<SubStatus> subStatuses, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId, Map<Long, List<Long>> parentWithSubs, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        Map<Long, PriorityDTO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        subStatuses.forEach(subStatus -> subStatus.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap, issueTypeDTOMap, parentWithSubs)));
+    private void getDatas(List<SubStatusDTO> subStatusDTOS, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId, Map<Long, List<Long>> parentWithSubs, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        subStatusDTOS.forEach(subStatusDTO -> subStatusDTO.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap, issueTypeDTOMap, parentWithSubs)));
     }
 
-    public void putDatasAndSort(List<ColumnAndIssueDO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId, Map<Long, List<Long>> parentWithSubss, Map<Long, StatusMapDTO> statusMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+    public void putDatasAndSort(List<ColumnAndIssueDTO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId, Map<Long, List<Long>> parentWithSubss, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<Long> issueIds = new ArrayList<>();
-        for (ColumnAndIssueDO column : columns) {
-            List<SubStatus> subStatuses = column.getSubStatuses();
-            fillStatusData(subStatuses, statusMap);
-            getDatas(subStatuses, parentIds, assigneeIds, issueIds, epicIds, organizationId, parentWithSubss, issueTypeDTOMap);
-            Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
+        for (ColumnAndIssueDTO column : columns) {
+            List<SubStatusDTO> subStatusDTOS = column.getSubStatusDTOS();
+            fillStatusData(subStatusDTOS, statusMap);
+            getDatas(subStatusDTOS, parentIds, assigneeIds, issueIds, epicIds, organizationId, parentWithSubss, issueTypeDTOMap);
+            Collections.sort(subStatusDTOS, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
         //选择故事泳道选择仅我的任务后，子任务经办人为自己，父任务经办人不为自己的情况
         if (condition) {
@@ -264,16 +295,16 @@ public class BoardServiceImpl implements BoardService {
         Collections.sort(assigneeIds);
     }
 
-    private void fillStatusData(List<SubStatus> subStatuses, Map<Long, StatusMapDTO> statusMap) {
-        for (SubStatus subStatus : subStatuses) {
-            StatusMapDTO status = statusMap.get(subStatus.getStatusId());
-            subStatus.setCategoryCode(status.getType());
-            subStatus.setName(status.getName());
-            Collections.sort(subStatus.getIssues(), Comparator.comparing(IssueForBoardDO::getIssueId));
+    private void fillStatusData(List<SubStatusDTO> subStatusDTOS, Map<Long, StatusMapVO> statusMap) {
+        for (SubStatusDTO subStatusDTO : subStatusDTOS) {
+            StatusMapVO status = statusMap.get(subStatusDTO.getStatusId());
+            subStatusDTO.setCategoryCode(status.getType());
+            subStatusDTO.setName(status.getName());
+            Collections.sort(subStatusDTO.getIssues(), Comparator.comparing(IssueForBoardDO::getIssueId));
         }
     }
 
-    private void handleParentIdsWithSubIssues(List<Long> parentIds, List<Long> issueIds, List<ColumnAndIssueDO> columns, Long boardId) {
+    private void handleParentIdsWithSubIssues(List<Long> parentIds, List<Long> issueIds, List<ColumnAndIssueDTO> columns, Long boardId) {
         if (parentIds != null && !parentIds.isEmpty()) {
             List<Long> subNoParentIds = new ArrayList<>();
             parentIds.forEach(id -> {
@@ -282,46 +313,46 @@ public class BoardServiceImpl implements BoardService {
                 }
             });
             if (!subNoParentIds.isEmpty()) {
-                List<ColumnAndIssueDO> subNoParentColumns = boardColumnMapper.queryColumnsByIssueIds(subNoParentIds, boardId);
-                subNoParentColumns.forEach(columnAndIssueDO -> handleSameColumn(columns, columnAndIssueDO));
+                List<ColumnAndIssueDTO> subNoParentColumns = boardColumnMapper.queryColumnsByIssueIds(subNoParentIds, boardId);
+                subNoParentColumns.forEach(columnAndIssueDTO -> handleSameColumn(columns, columnAndIssueDTO));
             }
         }
     }
 
-    private void handleSameColumn(List<ColumnAndIssueDO> columns, ColumnAndIssueDO columnAndIssueDO) {
-        Optional<ColumnAndIssueDO> sameColumn = columns.stream().filter(columnAndIssue -> columnAndIssue.getColumnId().equals(columnAndIssueDO.getColumnId()))
+    private void handleSameColumn(List<ColumnAndIssueDTO> columns, ColumnAndIssueDTO columnAndIssueDTO) {
+        Optional<ColumnAndIssueDTO> sameColumn = columns.stream().filter(columnAndIssue -> columnAndIssue.getColumnId().equals(columnAndIssueDTO.getColumnId()))
                 .findFirst();
         if (sameColumn.isPresent()) {
-            sameColumn.get().getSubStatuses().forEach(subStatus -> columnAndIssueDO.getSubStatuses().forEach(s -> {
-                if (subStatus.getId().equals(s.getId())) {
-                    subStatus.getIssues().addAll(s.getIssues());
+            sameColumn.get().getSubStatusDTOS().forEach(subStatusDTO -> columnAndIssueDTO.getSubStatusDTOS().forEach(s -> {
+                if (subStatusDTO.getId().equals(s.getId())) {
+                    subStatusDTO.getIssues().addAll(s.getIssues());
                 }
             }));
         } else {
-            columns.add(columnAndIssueDO);
+            columns.add(columnAndIssueDTO);
         }
     }
 
 
-    private SprintDO getActiveSprint(Long projectId) {
+    private SprintDTO getActiveSprint(Long projectId) {
         return sprintService.getActiveSprint(projectId);
     }
 
-    private BoardSprintDTO putCurrentSprint(SprintDO activeSprint, Long organizationId) {
+    private BoardSprintVO putCurrentSprint(SprintDTO activeSprint, Long organizationId) {
         if (activeSprint != null) {
-            BoardSprintDTO boardSprintDTO = new BoardSprintDTO();
-            boardSprintDTO.setSprintId(activeSprint.getSprintId());
-            boardSprintDTO.setSprintName(activeSprint.getSprintName());
+            BoardSprintVO boardSprintVO = new BoardSprintVO();
+            boardSprintVO.setSprintId(activeSprint.getSprintId());
+            boardSprintVO.setSprintName(activeSprint.getSprintName());
             if (activeSprint.getEndDate() != null) {
                 Date startDate = new Date();
                 if (activeSprint.getStartDate().after(startDate)) {
                     startDate = activeSprint.getStartDate();
                 }
-                boardSprintDTO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(startDate, activeSprint.getEndDate(),
+                boardSprintVO.setDayRemain(dateUtil.getDaysBetweenDifferentDate(startDate, activeSprint.getEndDate(),
                         workCalendarRefMapper.queryHolidayBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()),
                         workCalendarRefMapper.queryWorkBySprintIdAndProjectId(activeSprint.getSprintId(), activeSprint.getProjectId()), organizationId));
             }
-            return boardSprintDTO;
+            return boardSprintVO;
         }
         return null;
     }
@@ -352,22 +383,22 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private List<ParentIssueDO> getParentIssues(Long projectId, List<Long> parentIds, Map<Long, StatusMapDTO> statusMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
+    private List<ParentIssueDTO> getParentIssues(Long projectId, List<Long> parentIds, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         if (parentIds == null || parentIds.isEmpty()) {
             return new ArrayList<>();
         }
-        List<ParentIssueDO> parentIssueDOList = boardColumnMapper.queryParentIssuesByIds(projectId, parentIds);
-        for (ParentIssueDO parentIssueDO : parentIssueDOList) {
-            parentIssueDO.setStatusMapDTO(statusMap.get(parentIssueDO.getStatusId()));
-            parentIssueDO.setIssueTypeDTO(issueTypeDTOMap.get(parentIssueDO.getIssueTypeId()));
+        List<ParentIssueDTO> parentIssueDTOList = boardColumnMapper.queryParentIssuesByIds(projectId, parentIds);
+        for (ParentIssueDTO parentIssueDTO : parentIssueDTOList) {
+            parentIssueDTO.setStatusMapVO(statusMap.get(parentIssueDTO.getStatusId()));
+            parentIssueDTO.setIssueTypeVO(issueTypeDTOMap.get(parentIssueDTO.getIssueTypeId()));
         }
-        return parentIssueDOList;
+        return parentIssueDTOList;
     }
 
-    private List<ColumnIssueNumDO> getAllColumnNum(Long projectId, Long boardId, Long activeSprintId) {
-        BoardDO boardDO = boardMapper.selectByPrimaryKey(boardId);
-        if (!CONTRAINT_NONE.equals(boardDO.getColumnConstraint())) {
-            return boardColumnMapper.getAllColumnNum(projectId, boardId, activeSprintId, boardDO.getColumnConstraint());
+    private List<ColumnIssueNumDTO> getAllColumnNum(Long projectId, Long boardId, Long activeSprintId) {
+        BoardDTO boardDTO = boardMapper.selectByPrimaryKey(boardId);
+        if (!CONTRAINT_NONE.equals(boardDTO.getColumnConstraint())) {
+            return boardColumnMapper.getAllColumnNum(projectId, boardId, activeSprintId, boardDTO.getColumnConstraint());
         } else {
             return new ArrayList<>();
         }
@@ -376,7 +407,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds, Long organizationId, List<Long> assigneeFilterIds) {
         JSONObject jsonObject = new JSONObject(true);
-        SprintDO activeSprint = getActiveSprint(projectId);
+        SprintDTO activeSprint = getActiveSprint(projectId);
         Long activeSprintId = null;
         if (activeSprint != null) {
             activeSprintId = activeSprint.getSprintId();
@@ -388,11 +419,11 @@ public class BoardServiceImpl implements BoardService {
         List<Long> assigneeIds = new ArrayList<>();
         List<Long> parentIds = new ArrayList<>();
         List<Long> epicIds = new ArrayList<>();
-        List<ColumnAndIssueDO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql, assigneeFilterIds);
+        List<ColumnAndIssueDTO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql, assigneeFilterIds);
         Boolean condition = assigneeId != null && onlyStory;
         Map<Long, List<Long>> parentWithSubs = new HashMap<>();
-        Map<Long, StatusMapDTO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition, organizationId, parentWithSubs, statusMap, issueTypeDTOMap);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("parentIssues", getParentIssues(projectId, parentIds, statusMap, issueTypeDTOMap));
@@ -401,21 +432,21 @@ public class BoardServiceImpl implements BoardService {
         jsonObject.put("parentCompleted", sortAndJudgeCompleted(projectId, parentIds));
         jsonObject.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);
         jsonObject.put("allColumnNum", getAllColumnNum(projectId, boardId, activeSprintId));
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
         Comparator<IssueForBoardDO> comparator = Comparator.comparing(IssueForBoardDO::getRank, nullsFirst(naturalOrder()));
-        columns.forEach(columnAndIssueDO -> columnAndIssueDO.getSubStatuses().forEach(subStatus -> {
-                    subStatus.getIssues().forEach(issueForBoardDO -> {
-                        UserMessageDO userMessageDO = usersMap.get(issueForBoardDO.getAssigneeId());
-                        String assigneeName = userMessageDO != null ? userMessageDO.getName() : null;
-                        String assigneeLoginName = userMessageDO != null ? userMessageDO.getLoginName() : null;
-                        String assigneeRealName = userMessageDO != null ? userMessageDO.getRealName() : null;
-                        String imageUrl = userMessageDO != null ? userMessageDO.getImageUrl() : null;
+        columns.forEach(columnAndIssueDTO -> columnAndIssueDTO.getSubStatusDTOS().forEach(subStatusDTO -> {
+                    subStatusDTO.getIssues().forEach(issueForBoardDO -> {
+                        UserMessageDTO userMessageDTO = usersMap.get(issueForBoardDO.getAssigneeId());
+                        String assigneeName = userMessageDTO != null ? userMessageDTO.getName() : null;
+                        String assigneeLoginName = userMessageDTO != null ? userMessageDTO.getLoginName() : null;
+                        String assigneeRealName = userMessageDTO != null ? userMessageDTO.getRealName() : null;
+                        String imageUrl = userMessageDTO != null ? userMessageDTO.getImageUrl() : null;
                         issueForBoardDO.setAssigneeName(assigneeName);
                         issueForBoardDO.setAssigneeLoginName(assigneeLoginName);
                         issueForBoardDO.setAssigneeRealName(assigneeRealName);
                         issueForBoardDO.setImageUrl(imageUrl);
                     });
-                    subStatus.getIssues().sort(comparator);
+                    subStatusDTO.getIssues().sort(comparator);
                 }
         ));
         jsonObject.put("columnsData", putColumnData(columns));
@@ -427,105 +458,129 @@ public class BoardServiceImpl implements BoardService {
 
     private void handleUserSetting(Long boardId, Long projectId) {
         Long userId = DetailsHelper.getUserDetails().getUserId();
-        UserSettingDO userSettingDO = new UserSettingDO();
-        userSettingDO.setProjectId(projectId);
-        userSettingDO.setTypeCode(BOARD);
-        userSettingDO.setBoardId(boardId);
-        userSettingDO.setUserId(DetailsHelper.getUserDetails().getUserId());
-        UserSettingDO query = userSettingMapper.selectOne(userSettingDO);
+        UserSettingDTO userSettingDTO = new UserSettingDTO();
+        userSettingDTO.setProjectId(projectId);
+        userSettingDTO.setTypeCode(BOARD);
+        userSettingDTO.setBoardId(boardId);
+        userSettingDTO.setUserId(DetailsHelper.getUserDetails().getUserId());
+        UserSettingDTO query = userSettingMapper.selectOne(userSettingDTO);
         if (query == null) {
-            userSettingDO.setDefaultBoard(true);
-            userSettingDO.setSwimlaneBasedCode("swimlane_none");
-            userSettingRepository.create(ConvertHelper.convert(userSettingDO, UserSettingE.class));
-            userSettingRepository.updateOtherBoardNoDefault(boardId, projectId, userId);
+            userSettingDTO.setDefaultBoard(true);
+            userSettingDTO.setSwimlaneBasedCode("swimlane_none");
+//            userSettingService.create(ConvertHelper.convert(userSettingDTO, UserSettingE.class));
+            int insert = userSettingMapper.insert(userSettingDTO);
+            if (insert != 1) {
+                throw new CommonException("error.userSetting.create");
+            }
+//            userSettingService.updateOtherBoardNoDefault(boardId, projectId, userId);
+            userSettingMapper.updateOtherBoardNoDefault(boardId,projectId,userId);
         } else if (!query.getDefaultBoard()) {
             query.setDefaultBoard(true);
-            userSettingRepository.update(ConvertHelper.convert(query, UserSettingE.class));
-            userSettingRepository.updateOtherBoardNoDefault(boardId, projectId, userId);
+//            userSettingService.update(ConvertHelper.convert(query, UserSettingE.class));
+            if (userSettingMapper.selectByPrimaryKey(query) == null) {
+                throw new CommonException("error.userSetting.notFound");
+            }
+            int update = userSettingMapper.updateByPrimaryKey(query);
+            if (update != 1) {
+                throw new CommonException("error.userSetting.update");
+            }
+//            userSettingService.updateOtherBoardNoDefault(boardId, projectId, userId);
+            userSettingMapper.updateOtherBoardNoDefault(boardId,projectId,userId);
         }
     }
 
-    private BoardE createBoard(Long projectId, String boardName) {
-        BoardE boardE = new BoardE();
-        boardE.setProjectId(projectId);
-        boardE.setColumnConstraint(CONTRAINT_NONE);
-        boardE.setDayInColumn(false);
-        boardE.setEstimationStatistic(STORY_POINTS);
-        boardE.setName(boardName);
-        boardE.setSwimlaneBasedCode(PARENT_CHILD);
-        return boardRepository.create(boardE);
+    private BoardDTO createBoard(Long projectId, String boardName) {
+        BoardDTO boardDTO = new BoardDTO();
+        boardDTO.setProjectId(projectId);
+        boardDTO.setColumnConstraint(CONTRAINT_NONE);
+        boardDTO.setDayInColumn(false);
+        boardDTO.setEstimationStatistic(STORY_POINTS);
+        boardDTO.setName(boardName);
+        boardDTO.setSwimlaneBasedCode(PARENT_CHILD);
+//        return boardRepository.create(boardE);
+        if (boardMapper.insert(boardDTO) != 1) {
+            throw new CommonException("error.board.insert");
+        }
+        return boardMapper.selectByPrimaryKey(boardDTO.getBoardId());
     }
 
     @Override
     public void initBoard(Long projectId, String boardName, List<StatusPayload> statusPayloads) {
-        BoardE boardResult = createBoard(projectId, boardName);
+        BoardDTO boardResult = createBoard(projectId, boardName);
         boardColumnService.initBoardColumns(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
     @Override
-    public IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO, Boolean isDemo) {
-        IssueE issueE = ConvertHelper.convert(issueMoveDTO, IssueE.class);
+    public IssueMoveVO move(Long projectId, Long issueId, Long transformId, IssueMoveVO issueMoveVO, Boolean isDemo) {
         //执行状态机转换
         if (isDemo) {
-            stateMachineService.executeTransformForDemo(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(),
-                    SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveDTO))));
+            stateMachineService.executeTransformForDemo(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
+                    SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveVO))));
         } else {
-            stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveDTO.getObjectVersionNumber(),
-                    SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveDTO))));
+            stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
+                    SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveVO))));
         }
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
-        IssueMoveDTO result = ConvertHelper.convert(issueDO, IssueMoveDTO.class);
-        sendMsgUtil.sendMsgByIssueMoveComplete(projectId, issueE, issueDO);
+        IssueDTO issueDTO = issueMapper.selectByPrimaryKey(issueId);
+        IssueMoveVO result = modelMapper.map(issueDTO, IssueMoveVO.class);
+        sendMsgUtil.sendMsgByIssueMoveComplete(projectId, issueMoveVO, issueDTO);
         return result;
     }
 
     @Override
-    public FeatureMoveDTO moveByProgram(Long projectId, Long issueId, Long transformId, FeatureMoveDTO featureMoveDTO) {
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(issueId);
-        stateMachineService.executeTransform(projectId, issueId, transformId, featureMoveDTO.getObjectVersionNumber(),
-                SchemeApplyType.PROGRAM, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleFeatureMoveRank(projectId, issueDO))));
-        issueDO = issueMapper.selectByPrimaryKey(issueId);
+    public FeatureMoveVO moveByProgram(Long projectId, Long issueId, Long transformId, FeatureMoveVO featureMoveVO) {
+        IssueDTO issueDTO = issueMapper.selectByPrimaryKey(issueId);
+        stateMachineService.executeTransform(projectId, issueId, transformId, featureMoveVO.getObjectVersionNumber(),
+                SchemeApplyType.PROGRAM, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleFeatureMoveRank(projectId, issueDTO))));
+        issueDTO = issueMapper.selectByPrimaryKey(issueId);
         // deal pi of feature
-        if (featureMoveDTO.getPiChange() != null && featureMoveDTO.getPiChange()) {
-            Long piId = featureMoveDTO.getPiId();
+        if (featureMoveVO.getPiChange() != null && featureMoveVO.getPiChange()) {
+            Long piId = featureMoveVO.getPiId();
             if (piId != null && piId != 0) {
                 if (piFeatureMapper.selectExistByOptions(projectId, issueId)) {
                     piFeatureMapper.deletePfRelationByOptions(projectId, issueId);
                 }
                 if (!piFeatureMapper.selectGivenExistByOptions(projectId, issueId, piId)) {
-                    piFeatureRepository.create(new PiFeatureE(issueId, piId, projectId));
+                   insertPiFeature(new PiFeatureDTO(issueId, piId, projectId));
                 }
             }
         }
-        return ConvertHelper.convert(issueDO, FeatureMoveDTO.class);
+        return modelMapper.map(issueDTO, FeatureMoveVO.class);
     }
 
-    private JSONObject handleFeatureMoveRank(Long projectId, IssueDO issueDO) {
+    @DataLog(type = "pi")
+    public PiFeatureDTO insertPiFeature(PiFeatureDTO piFeatureDTO) {
+        if (piFeatureMapper.insert(piFeatureDTO) != 1) {
+            throw new CommonException("error.piFeatureDTO.insert");
+        }
+        return piFeatureDTO;
+    }
+
+    private JSONObject handleFeatureMoveRank(Long projectId, IssueDTO issueDTO) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(RANK, issueDO.getRank());
+        jsonObject.put(RANK, issueDTO.getRank());
         jsonObject.put(PROJECT_ID, projectId);
         return jsonObject;
     }
 
-    private JSONObject handleIssueMoveRank(Long projectId, IssueMoveDTO issueMoveDTO) {
+    private JSONObject handleIssueMoveRank(Long projectId, IssueMoveVO issueMoveVO) {
         JSONObject jsonObject = new JSONObject();
-        if (issueMoveDTO.getRank()) {
+        if (issueMoveVO.getRank()) {
             String rank;
-            if (issueMoveDTO.getBefore()) {
-                if (issueMoveDTO.getOutsetIssueId() == null || Objects.equals(issueMoveDTO.getOutsetIssueId(), 0L)) {
-                    String minRank = sprintMapper.queryMinRank(projectId, issueMoveDTO.getSprintId());
+            if (issueMoveVO.getBefore()) {
+                if (issueMoveVO.getOutsetIssueId() == null || Objects.equals(issueMoveVO.getOutsetIssueId(), 0L)) {
+                    String minRank = sprintMapper.queryMinRank(projectId, issueMoveVO.getSprintId());
                     if (minRank == null) {
                         rank = RankUtil.mid();
                     } else {
                         rank = RankUtil.genPre(minRank);
                     }
                 } else {
-                    String rightRank = issueMapper.queryRank(projectId, issueMoveDTO.getOutsetIssueId());
+                    String rightRank = issueMapper.queryRank(projectId, issueMoveVO.getOutsetIssueId());
                     if (rightRank == null) {
                         //处理子任务没有rank的旧数据
-                        rightRank = handleSubIssueNotRank(projectId, issueMoveDTO.getOutsetIssueId(), issueMoveDTO.getSprintId());
+                        rightRank = handleSubIssueNotRank(projectId, issueMoveVO.getOutsetIssueId(), issueMoveVO.getSprintId());
                     }
-                    String leftRank = issueMapper.queryLeftRank(projectId, issueMoveDTO.getSprintId(), rightRank);
+                    String leftRank = issueMapper.queryLeftRank(projectId, issueMoveVO.getSprintId(), rightRank);
                     if (leftRank == null) {
                         rank = RankUtil.genPre(rightRank);
                     } else {
@@ -533,11 +588,11 @@ public class BoardServiceImpl implements BoardService {
                     }
                 }
             } else {
-                String leftRank = issueMapper.queryRank(projectId, issueMoveDTO.getOutsetIssueId());
+                String leftRank = issueMapper.queryRank(projectId, issueMoveVO.getOutsetIssueId());
                 if (leftRank == null) {
-                    leftRank = handleSubIssueNotRank(projectId, issueMoveDTO.getOutsetIssueId(), issueMoveDTO.getSprintId());
+                    leftRank = handleSubIssueNotRank(projectId, issueMoveVO.getOutsetIssueId(), issueMoveVO.getSprintId());
                 }
-                String rightRank = issueMapper.queryRightRank(projectId, issueMoveDTO.getSprintId(), leftRank);
+                String rightRank = issueMapper.queryRightRank(projectId, issueMoveVO.getSprintId(), leftRank);
                 if (rightRank == null) {
                     rank = RankUtil.genNext(leftRank);
                 } else {
@@ -553,96 +608,101 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private String handleSubIssueNotRank(Long projectId, Long outsetIssueId, Long sprintId) {
-        IssueDO issueDO = issueMapper.selectByPrimaryKey(outsetIssueId);
-        issueDO.setRank(sprintMapper.queryMaxRank(projectId, sprintId));
-        issueMapper.updateByPrimaryKeySelective(issueDO);
-        return issueDO.getRank();
+        IssueDTO issueDTO = issueMapper.selectByPrimaryKey(outsetIssueId);
+        issueDTO.setRank(sprintMapper.queryMaxRank(projectId, sprintId));
+        issueMapper.updateByPrimaryKeySelective(issueDTO);
+        return issueDTO.getRank();
     }
 
     @Override
-    public List<BoardDTO> queryByProjectId(Long projectId) {
+    public List<BoardVO> queryByProjectId(Long projectId) {
         Long userId = DetailsHelper.getUserDetails().getUserId();
-        return ConvertHelper.convertList(boardMapper.queryByProjectIdWithUser(userId, projectId), BoardDTO.class);
+        return modelMapper.map(boardMapper.queryByProjectIdWithUser(userId, projectId), new TypeToken<List<BoardVO>>(){}.getType());
     }
 
     @Override
-    public UserSettingDTO queryUserSettingBoard(Long projectId, Long boardId) {
-        UserSettingDO userSettingDO = queryUserSettingBoardByBoardId(projectId, boardId, DetailsHelper.getUserDetails().getUserId());
-        if (userSettingDO == null) {
-            UserSettingE userSettingE = new UserSettingE();
-            userSettingE.setProjectId(projectId);
-            userSettingE.setBoardId(boardId);
-            userSettingE.setTypeCode(BOARD);
-            userSettingE.setUserId(DetailsHelper.getUserDetails().getUserId());
-            userSettingE.setSwimlaneBasedCode("swimlane_none");
-            userSettingE.setDefaultBoard(false);
-            return ConvertHelper.convert(userSettingRepository.create(userSettingE), UserSettingDTO.class);
+    public UserSettingVO queryUserSettingBoard(Long projectId, Long boardId) {
+        UserSettingDTO userSettingDTO = queryUserSettingBoardByBoardId(projectId, boardId, DetailsHelper.getUserDetails().getUserId());
+        if (userSettingDTO == null) {
+            UserSettingDTO userSetting = new UserSettingDTO();
+            userSetting.setProjectId(projectId);
+            userSetting.setBoardId(boardId);
+            userSetting.setTypeCode(BOARD);
+            userSetting.setUserId(DetailsHelper.getUserDetails().getUserId());
+            userSetting.setSwimlaneBasedCode("swimlane_none");
+            userSetting.setDefaultBoard(false);
+//            return ConvertHelper.convert(userSettingService.create(userSettingE), UserSettingVO.class);
+            int insert = userSettingMapper.insert(userSettingDTO);
+            if (insert != 1) {
+                throw new CommonException("error.userSetting.create");
+            }
+            return modelMapper.map(userSettingMapper.selectByPrimaryKey(userSettingDTO.getSettingId()), UserSettingVO.class);
         } else {
-            return ConvertHelper.convert(userSettingDO, UserSettingDTO.class);
+            return modelMapper.map(userSettingDTO, UserSettingVO.class);
         }
     }
 
     @Override
-    public UserSettingDTO updateUserSettingBoard(Long projectId, Long boardId, String swimlaneBasedCode) {
+    public UserSettingVO updateUserSettingBoard(Long projectId, Long boardId, String swimlaneBasedCode) {
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         Long userId = customUserDetails.getUserId();
-        UserSettingE userSettingE = ConvertHelper.convert(queryUserSettingBoardByBoardId(projectId, boardId, userId), UserSettingE.class);
-        if (userSettingE == null) {
-            userSettingE = new UserSettingE();
-            userSettingE.setDefaultBoard(false);
-            userSettingE.setTypeCode(BOARD);
-            userSettingE.setProjectId(projectId);
-            userSettingE.setBoardId(boardId);
-            userSettingE.setUserId(userId);
-            userSettingE.setSwimlaneBasedCode(swimlaneBasedCode);
-            userSettingE = userSettingRepository.create(userSettingE);
+        UserSettingDTO userSettingDTO = modelMapper.map(queryUserSettingBoardByBoardId(projectId, boardId, userId), UserSettingDTO.class);
+        if (userSettingDTO == null) {
+            userSettingDTO = new UserSettingDTO();
+            userSettingDTO.setDefaultBoard(false);
+            userSettingDTO.setTypeCode(BOARD);
+            userSettingDTO.setProjectId(projectId);
+            userSettingDTO.setBoardId(boardId);
+            userSettingDTO.setUserId(userId);
+            userSettingDTO.setSwimlaneBasedCode(swimlaneBasedCode);
+            userSettingDTO = userSettingService.create(userSettingDTO);
         } else {
-            userSettingE.setSwimlaneBasedCode(swimlaneBasedCode);
-            userSettingE = userSettingRepository.update(userSettingE);
+            userSettingDTO.setSwimlaneBasedCode(swimlaneBasedCode);
+            userSettingDTO = userSettingService.update(userSettingDTO);
         }
-        return ConvertHelper.convert(userSettingE, UserSettingDTO.class);
+        return modelMapper.map(userSettingDTO, UserSettingVO.class);
     }
 
-    private UserSettingDO queryUserSettingBoardByBoardId(Long projectId, Long boardId, Long userId) {
-        UserSettingDO userSettingDO = new UserSettingDO();
-        userSettingDO.setProjectId(projectId);
-        userSettingDO.setBoardId(boardId);
-        userSettingDO.setTypeCode(BOARD);
-        userSettingDO.setUserId(userId);
-        return userSettingMapper.selectOne(userSettingDO);
+    private UserSettingDTO queryUserSettingBoardByBoardId(Long projectId, Long boardId, Long userId) {
+        UserSettingDTO userSettingDTO = new UserSettingDTO();
+        userSettingDTO.setProjectId(projectId);
+        userSettingDTO.setBoardId(boardId);
+        userSettingDTO.setTypeCode(BOARD);
+        userSettingDTO.setUserId(userId);
+        return userSettingMapper.selectOne(userSettingDTO);
     }
 
     @Override
     public Boolean checkName(Long projectId, String boardName) {
-        BoardDO boardDO = new BoardDO();
-        boardDO.setProjectId(projectId);
-        boardDO.setName(boardName);
-        List<BoardDO> boardDOList = boardMapper.select(boardDO);
-        return boardDOList != null && !boardDOList.isEmpty();
+        BoardDTO boardDTO = new BoardDTO();
+        boardDTO.setProjectId(projectId);
+        boardDTO.setName(boardName);
+        List<BoardDTO> boardDTOList = boardMapper.select(boardDTO);
+        return boardDTOList != null && !boardDTOList.isEmpty();
     }
 
     @Override
     public void initBoardByProgram(Long projectId, String boardName, List<StatusPayload> statusPayloads) {
-        BoardE boardResult = createBoard(projectId, boardName);
+        BoardDTO boardResult = createBoard(projectId, boardName);
         boardColumnService.initBoardColumnsByProgram(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
-    private void setColumnDeatil(List<ColumnAndIssueDO> columns, Map<Long, StatusMapDTO> statusMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        for (ColumnAndIssueDO column : columns) {
-            List<SubStatus> subStatuses = column.getSubStatuses();
-            fillStatusData(subStatuses, statusMap);
-            for (SubStatus subStatus : subStatuses) {
-                List<IssueForBoardDO> issueForBoardDOS = subStatus.getIssues();
+    private void setColumnDeatil(List<ColumnAndIssueDTO> columns, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+        for (ColumnAndIssueDTO column : columns) {
+            List<SubStatusDTO> subStatusDTOS = column.getSubStatusDTOS();
+            fillStatusData(subStatusDTOS, statusMap);
+            for (SubStatusDTO subStatusDTO : subStatusDTOS) {
+                List<IssueForBoardDO> issueForBoardDOS = subStatusDTO.getIssues();
                 for (IssueForBoardDO issueForBoardDO : issueForBoardDOS) {
-                    issueForBoardDO.setIssueTypeDTO(issueTypeDTOMap.get(issueForBoardDO.getIssueTypeId()));
+                    issueForBoardDO.setIssueTypeVO(issueTypeDTOMap.get(issueForBoardDO.getIssueTypeId()));
                 }
             }
-            Collections.sort(subStatuses, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
+            Collections.sort(subStatusDTOS, (o1, o2) -> o2.getIssues().size() - o1.getIssues().size());
         }
     }
 
     @Override
-    public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId, SearchDTO searchDTO) {
+    public JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId, SearchVO searchVO) {
         JSONObject result = new JSONObject(true);
         ArtDTO activeArtDTO = artMapper.selectActiveArt(projectId);
         PiDTO piDTO = null;
@@ -654,10 +714,10 @@ public class BoardServiceImpl implements BoardService {
             activePiId = piDTO.getId();
         }
         List<Long> epicIds = new ArrayList<>();
-        List<ColumnAndIssueDO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId, searchDTO);
-        columns.forEach(columnAndIssueDO -> {
-            columnAndIssueDO.getSubStatuses().forEach(subStatus -> {
-                subStatus.getIssues().forEach(issueForBoardDO -> {
+        List<ColumnAndIssueDTO> columns = boardColumnMapper.selectBoardByProgram(projectId, boardId, activePiId, searchVO);
+        columns.forEach(columnAndIssueDTO -> {
+            columnAndIssueDTO.getSubStatusDTOS().forEach(subStatusDTO -> {
+                subStatusDTO.getIssues().forEach(issueForBoardDO -> {
                     if (issueForBoardDO.getEpicId() != null && !epicIds.contains(issueForBoardDO.getEpicId())) {
                         epicIds.add(issueForBoardDO.getEpicId());
                     }
@@ -665,11 +725,11 @@ public class BoardServiceImpl implements BoardService {
             });
         });
         // get status map from organization
-        Map<Long, StatusMapDTO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-        Map<Long, IssueTypeDTO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         // reset status info
         setColumnDeatil(columns, statusMap, issueTypeDTOMap);
-        columns.sort(Comparator.comparing(ColumnAndIssueDO::getSequence));
+        columns.sort(Comparator.comparing(ColumnAndIssueDTO::getSequence));
         result.put("columnsData", columns);
         result.put("activePi", piDTO);
         result.put("epicInfo", !epicIds.isEmpty() ? boardColumnMapper.selectEpicBatchByIds(epicIds) : null);

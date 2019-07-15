@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.LookupTypeWithValuesDTO;
+import io.choerodon.agile.api.vo.LookupTypeWithValuesVO;
 import io.choerodon.agile.app.service.LookupValueService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -31,9 +31,9 @@ public class LookupValueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据type code查询其下的value值")
     @GetMapping(value = "/{typeCode}")
-    public ResponseEntity<LookupTypeWithValuesDTO> queryLookupValueByCode(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<LookupTypeWithValuesVO> queryLookupValueByCode(@ApiParam(value = "项目id", required = true)
                                                                           @PathVariable(name = "project_id") Long projectId,
-                                                                          @ApiParam(value = "type code", required = true)
+                                                                         @ApiParam(value = "type code", required = true)
                                                                           @PathVariable String typeCode) {
         return Optional.ofNullable(lookupValueService.queryLookupValueByCode(projectId, typeCode))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -43,7 +43,7 @@ public class LookupValueController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询列约束下的value值")
     @GetMapping(value = "/constraint/list")
-    public ResponseEntity<LookupTypeWithValuesDTO> queryConstraintLookupValue(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<LookupTypeWithValuesVO> queryConstraintLookupValue(@ApiParam(value = "项目id", required = true)
                                                                               @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(lookupValueService.queryConstraintLookupValue(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

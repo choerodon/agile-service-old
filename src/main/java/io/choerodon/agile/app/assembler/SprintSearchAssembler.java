@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.dataobject.SprintSearchDO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.dataobject.SprintSearchDTO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,22 +20,22 @@ public class SprintSearchAssembler extends AbstractAssembler {
     @Autowired
     private IssueSearchAssembler issueSearchAssembler;
 
-    public SprintSearchDTO doToDTO(SprintSearchDO sprintSearchDO, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        if (sprintSearchDO == null) {
+    public SprintSearchVO doToDTO(SprintSearchDTO sprintSearchDTO, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+        if (sprintSearchDTO == null) {
             return null;
         }
-        SprintSearchDTO sprintSearchDTO = new SprintSearchDTO();
-        BeanUtils.copyProperties(sprintSearchDO, sprintSearchDTO);
+        SprintSearchVO sprintSearchVO = new SprintSearchVO();
+        BeanUtils.copyProperties(sprintSearchDTO, sprintSearchVO);
         if (usersMap != null) {
-            sprintSearchDTO.setAssigneeIssues(issueSearchAssembler.doListToAssigneeIssueDTO(sprintSearchDO.getAssigneeIssueDOList(), usersMap));
-            sprintSearchDTO.setIssueSearchDTOList(issueSearchAssembler.doListToDTO(sprintSearchDO.getIssueSearchDOList(), usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
+            sprintSearchVO.setAssigneeIssues(issueSearchAssembler.doListToAssigneeIssueDTO(sprintSearchDTO.getAssigneeIssueDTOList(), usersMap));
+            sprintSearchVO.setIssueSearchVOList(issueSearchAssembler.doListToDTO(sprintSearchDTO.getIssueSearchDTOList(), usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
         }
-        return sprintSearchDTO;
+        return sprintSearchVO;
     }
 
-    public List<SprintSearchDTO> doListToDTO(List<SprintSearchDO> sprintSearchDOS, Map<Long, UserMessageDO> usersMap, Map<Long, PriorityDTO> priorityMap, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        List<SprintSearchDTO> sprintSearchList = new ArrayList<>(sprintSearchDOS.size());
-        sprintSearchDOS.forEach(sprintSearchDO -> sprintSearchList.add(doToDTO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap)));
+    public List<SprintSearchVO> doListToDTO(List<SprintSearchDTO> sprintSearchDTOS, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+        List<SprintSearchVO> sprintSearchList = new ArrayList<>(sprintSearchDTOS.size());
+        sprintSearchDTOS.forEach(sprintSearchDO -> sprintSearchList.add(doToDTO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap)));
         return sprintSearchList;
     }
 

@@ -2,15 +2,12 @@ package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.PiObjectiveVO;
-import io.choerodon.agile.api.vo.ProjectRelationshipDTO;
+import io.choerodon.agile.api.vo.ProjectRelationshipVO;
 import io.choerodon.agile.app.service.PiObjectiveService;
-import io.choerodon.agile.domain.agile.entity.PiObjectiveE;
 import io.choerodon.agile.infra.feign.UserFeignClient;
-import io.choerodon.agile.infra.repository.PiObjectiveRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.PiObjectiveDTO;
 import io.choerodon.agile.infra.mapper.PiObjectiveMapper;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -31,8 +28,8 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class PiObjectiveServiceImpl implements PiObjectiveService {
 
-    @Autowired
-    private PiObjectiveRepository piObjectiveRepository;
+//    @Autowired
+//    private PiObjectiveRepository piObjectiveRepository;
 
     @Autowired
     private PiObjectiveMapper piObjectiveMapper;
@@ -87,11 +84,11 @@ public class PiObjectiveServiceImpl implements PiObjectiveService {
     public JSONObject queryPiObjectiveList(Long programId, Long piId) {
         JSONObject result = new JSONObject();
         // get team
-        List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         List<Long> teamWithProgramIds = new ArrayList<>();
         teamWithProgramIds.add(programId);
-        if (projectRelationshipDTOList != null && !projectRelationshipDTOList.isEmpty()) {
-            teamWithProgramIds.addAll(projectRelationshipDTOList.stream().map(ProjectRelationshipDTO::getProjectId).collect(Collectors.toList()));
+        if (projectRelationshipVOList != null && !projectRelationshipVOList.isEmpty()) {
+            teamWithProgramIds.addAll(projectRelationshipVOList.stream().map(ProjectRelationshipVO::getProjectId).collect(Collectors.toList()));
         }
         List<PiObjectiveDTO> piObjectiveDTOList = piObjectiveMapper.selectPiObjectiveList(programId, piId, teamWithProgramIds);
         List<PiObjectiveDTO> programPiObjectives = new ArrayList<>();

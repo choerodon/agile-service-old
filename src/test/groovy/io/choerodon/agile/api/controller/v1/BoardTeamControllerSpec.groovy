@@ -1,14 +1,14 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.BoardTeamDTO
-import io.choerodon.agile.api.vo.BoardTeamUpdateDTO
-import io.choerodon.agile.api.vo.ProgramBoardFilterDTO
-import io.choerodon.agile.api.vo.ProgramBoardInfoDTO
+import io.choerodon.agile.api.vo.BoardTeamVO
+import io.choerodon.agile.api.vo.BoardTeamUpdateVO
+import io.choerodon.agile.api.vo.ProgramBoardFilterVO
+import io.choerodon.agile.api.vo.ProgramBoardInfoVO
 import io.choerodon.agile.app.service.BoardFeatureService
 import io.choerodon.agile.infra.dataobject.ArtDTO
 import io.choerodon.agile.infra.dataobject.PiDTO
-import io.choerodon.agile.infra.dataobject.SprintDO
+import io.choerodon.agile.infra.dataobject.SprintDTO
 import io.choerodon.agile.infra.mapper.ArtMapper
 import io.choerodon.agile.infra.mapper.PiMapper
 import io.choerodon.agile.infra.mapper.SprintMapper
@@ -52,7 +52,7 @@ class BoardTeamControllerSpec extends Specification {
     @Shared
     Long sprintId
     @Shared
-    ProgramBoardInfoDTO infoDTO
+    ProgramBoardInfoVO infoDTO
 
     def url = '/v1/projects/{project_id}/board_team'
 
@@ -71,7 +71,7 @@ class BoardTeamControllerSpec extends Specification {
         pi.artId = art.id
         pi.statusCode = "doing"
         piMapper.insert(pi)
-        SprintDO sprint = new SprintDO()
+        SprintDTO sprint = new SprintDTO()
         sprint.statusCode = "sprint_planning"
         sprint.projectId = programId
         sprint.piId = pi.id
@@ -85,7 +85,7 @@ class BoardTeamControllerSpec extends Specification {
     def setup() {
         println "执行初始化"
         initProgram()
-        ProgramBoardFilterDTO filter = new ProgramBoardFilterDTO()
+        ProgramBoardFilterVO filter = new ProgramBoardFilterVO()
         filter.onlyDependFeature = false
         filter.onlyOtherTeamDependFeature = false
         infoDTO = boardFeatureService.queryBoardInfo(programId, filter)
@@ -99,14 +99,14 @@ class BoardTeamControllerSpec extends Specification {
 
     def "update"() {
         given: '准备'
-        BoardTeamUpdateDTO update = new BoardTeamUpdateDTO()
+        BoardTeamUpdateVO update = new BoardTeamUpdateVO()
         update.before = true
         update.outsetId = 1L
         update.objectVersionNumber = 1L
 
         when: '移动公告板团队'
-        HttpEntity<BoardTeamUpdateDTO> httpEntity = new HttpEntity<>(update)
-        def entity = restTemplate.exchange(url + "/{boardTeamId}", HttpMethod.PUT, httpEntity, BoardTeamDTO.class, programId, 2L)
+        HttpEntity<BoardTeamUpdateVO> httpEntity = new HttpEntity<>(update)
+        def entity = restTemplate.exchange(url + "/{boardTeamId}", HttpMethod.PUT, httpEntity, BoardTeamVO.class, programId, 2L)
 
         then: '状态码为200，调用成功'
         def actRequest = false

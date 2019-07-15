@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.IssueLabelDTO
-import io.choerodon.agile.infra.dataobject.LabelIssueRelDO
+import io.choerodon.agile.api.vo.IssueLabelVO
+import io.choerodon.agile.infra.dataobject.LabelIssueRelDTO
 import io.choerodon.agile.infra.mapper.IssueMapper
 import io.choerodon.agile.infra.mapper.LabelIssueRelMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -51,10 +51,10 @@ class IssueLabelControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueLabelDTO> result = entity.body
+        List<IssueLabelVO> result = entity.body
 
         if (result.size() == 0) {
-            LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO()
+            LabelIssueRelDTO labelIssueRelDO = new LabelIssueRelDTO()
             labelIssueRelDO.projectId = projectIds
             if (labelIssueRelMapper.selectOne(labelIssueRelDO) != null) {
                 realCount = 1

@@ -10,13 +10,13 @@ import io.choerodon.agile.api.vo.*;
  */
 public interface IterativeWorktableService {
 
-    List<PriorityDistributeDTO> queryPriorityDistribute(Long projectId, Long sprintId, Long organizationId);
+    List<PriorityDistributeVO> queryPriorityDistribute(Long projectId, Long sprintId, Long organizationId);
 
-    List<StatusCategoryDTO> queryStatusCategoryDistribute(Long projectId, Long sprintId, Long organizationId);
+    List<StatusCategoryVO> queryStatusCategoryDistribute(Long projectId, Long sprintId, Long organizationId);
 
-    SprintInfoDTO querySprintInfo(Long projectId, Long sprintId, Long organizationId);
+    SprintInfoVO querySprintInfo(Long projectId, Long sprintId, Long organizationId);
 
-    List<AssigneeDistributeDTO> queryAssigneeDistribute(Long projectId, Long sprintId);
+    List<AssigneeDistributeVO> queryAssigneeDistribute(Long projectId, Long sprintId);
 
-    List<IssueTypeDistributeDTO> queryIssueTypeDistribute(Long projectId, Long sprintId, Long organizationId);
+    List<IssueTypeDistributeVO> queryIssueTypeDistribute(Long projectId, Long sprintId, Long organizationId);
 }

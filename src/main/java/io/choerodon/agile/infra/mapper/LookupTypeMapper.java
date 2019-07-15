@@ -10,6 +10,6 @@ import io.choerodon.agile.infra.dataobject.*;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 10:13:37
  */
-public interface LookupTypeMapper extends Mapper<LookupTypeDO> {
+public interface LookupTypeMapper extends Mapper<LookupTypeDTO> {
 
 }

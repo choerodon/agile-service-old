@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.feign.fallback;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.dataobject.UserDO;
+import io.choerodon.agile.infra.dataobject.UserDTO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.http.ResponseEntity;
@@ -22,52 +22,52 @@ public class UserFeignClientFallback implements UserFeignClient {
     private static final String BATCH_QUERY_ERROR = "error.UserFeign.queryList";
 
     @Override
-    public ResponseEntity<UserDO> query(Long organizationId, Long id) {
+    public ResponseEntity<UserDTO> query(Long organizationId, Long id) {
         throw new CommonException(QUERY_ERROR);
     }
 
     @Override
-    public ResponseEntity<List<UserDO>> listUsersByIds(Long[] ids, Boolean onlyEnabled) {
+    public ResponseEntity<List<UserDTO>> listUsersByIds(Long[] ids, Boolean onlyEnabled) {
         throw new CommonException(BATCH_QUERY_ERROR);
     }
 
     @Override
-    public ResponseEntity<ProjectDTO> queryProject(Long id) {
+    public ResponseEntity<ProjectVO> queryProject(Long id) {
         throw new CommonException(QUERY_ERROR);
     }
 
     @Override
-    public ResponseEntity<PageInfo<UserDTO>> list(Long id, String param) {
+    public ResponseEntity<PageInfo<UserVO>> list(Long id, String param) {
         throw new CommonException(QUERY_ERROR);
     }
 
     @Override
-    public ResponseEntity<List<RoleDTO>> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
+    public ResponseEntity<List<RoleVO>> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO) {
         throw new CommonException(QUERY_ERROR);
     }
 
     @Override
-    public ResponseEntity<PageInfo<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchDTO roleAssignmentSearchDTO) {
+    public ResponseEntity<PageInfo<UserVO>> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO) {
         throw new CommonException("error.users.get");
     }
 
     @Override
-    public ResponseEntity<OrganizationDTO> query(Long id) {
+    public ResponseEntity<OrganizationVO> query(Long id) {
         throw new CommonException("error.organization.get");
     }
 
     @Override
-    public ResponseEntity<List<ProjectRelationshipDTO>> getProjUnderGroup(Long orgId, Long id, Boolean onlySelectEnable) {
+    public ResponseEntity<List<ProjectRelationshipVO>> getProjUnderGroup(Long orgId, Long id, Boolean onlySelectEnable) {
         throw new CommonException("error.projUnderGroup.get");
     }
 
     @Override
-    public ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(Long organizationId, Long projectId) {
+    public ResponseEntity<ProjectVO> getGroupInfoByEnableProject(Long organizationId, Long projectId) {
         throw new CommonException("error.groupInfo.get");
     }
 
     @Override
-    public ResponseEntity<PageInfo<UserWithRoleDTO>> pagingQueryUsersWithProjectLevelRoles(int page, int size, Long sourceId, @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO, boolean doPage) {
+    public ResponseEntity<PageInfo<UserWithRoleVO>> pagingQueryUsersWithProjectLevelRoles(int page, int size, Long sourceId, @Valid RoleAssignmentSearchVO roleAssignmentSearchVO, boolean doPage) {
         throw new CommonException("error.usersWithRoles.get");
     }
 }

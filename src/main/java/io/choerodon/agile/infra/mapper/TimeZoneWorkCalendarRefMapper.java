@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDO;
+import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDTO;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018/10/15
  */
-public interface TimeZoneWorkCalendarRefMapper extends Mapper<TimeZoneWorkCalendarRefDO> {
+public interface TimeZoneWorkCalendarRefMapper extends Mapper<TimeZoneWorkCalendarRefDTO> {
 
     /**
      * 按年份获取今年和下一年的时区工作日期
@@ -18,8 +18,8 @@ public interface TimeZoneWorkCalendarRefMapper extends Mapper<TimeZoneWorkCalend
      * @param organizationId organizationId
      * @param timeZoneId     timeZoneId
      * @param year           year
-     * @return TimeZoneWorkCalendarRefDO
+     * @return TimeZoneWorkCalendarRefDTO
      */
-    List<TimeZoneWorkCalendarRefDO> queryWithNextYearByYear(@Param("organizationId") Long organizationId,
-                                                            @Param("timeZoneId") Long timeZoneId, @Param("year") Integer year);
+    List<TimeZoneWorkCalendarRefDTO> queryWithNextYearByYear(@Param("organizationId") Long organizationId,
+                                                             @Param("timeZoneId") Long timeZoneId, @Param("year") Integer year);
 }

@@ -1,16 +1,19 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.vo.FeatureCommonDTO;
-import io.choerodon.agile.api.vo.IssueTypeDTO;
+import io.choerodon.agile.api.vo.FeatureCommonVO;
+import io.choerodon.agile.api.vo.IssueTypeVO;
 import io.choerodon.agile.api.vo.PiNameVO;
-import io.choerodon.agile.api.vo.StatusMapDTO;
-import io.choerodon.agile.infra.repository.UserRepository;
-import io.choerodon.agile.infra.dataobject.FeatureCommonDO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
-import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.infra.dataobject.FeatureCommonDTO;
+import io.choerodon.agile.app.service.UserService;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,25 +28,32 @@ import java.util.stream.Collectors;
 public class FeatureCommonAssembler {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
-    public List<FeatureCommonDTO> featureCommonDOToDTO(List<FeatureCommonDO> featureCommonDOList, Map<Long, StatusMapDTO> statusMapDTOMap, Map<Long, IssueTypeDTO> issueTypeDTOMap) {
-        List<FeatureCommonDTO> result = new ArrayList<>();
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
+    public List<FeatureCommonVO> featureCommonDOToDTO(List<FeatureCommonDTO> featureCommonDTOList, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+        List<FeatureCommonVO> result = new ArrayList<>();
         List<Long> reporterIds = new ArrayList<>();
-        reporterIds.addAll(featureCommonDOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(FeatureCommonDO::getReporterId).collect(Collectors.toSet()));
-        Map<Long, UserMessageDO> userMessageDOMap = userRepository.queryUsersMap(
+        reporterIds.addAll(featureCommonDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(FeatureCommonDTO::getReporterId).collect(Collectors.toSet()));
+        Map<Long, UserMessageDTO> userMessageDOMap = userService.queryUsersMap(
                 reporterIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), true);
-        featureCommonDOList.forEach(featureCommonDO -> {
-            FeatureCommonDTO featureCommonDTO = ConvertHelper.convert(featureCommonDO, FeatureCommonDTO.class);
-            featureCommonDTO.setPiNameVOList(ConvertHelper.convertList(featureCommonDO.getPiNameDTOList(), PiNameVO.class));
-            featureCommonDTO.setStatusMapDTO(statusMapDTOMap.get(featureCommonDO.getStatusId()));
-            featureCommonDTO.setIssueTypeDTO(issueTypeDTOMap.get(featureCommonDO.getIssueTypeId()));
-            UserMessageDO userMessageDO = userMessageDOMap.get(featureCommonDO.getReporterId());
-            if (userMessageDO != null) {
-                featureCommonDTO.setReporterName(userMessageDO.getName());
-                featureCommonDTO.setReporterImageUrl(userMessageDO.getImageUrl());
+        featureCommonDTOList.forEach(featureCommonDO -> {
+            FeatureCommonVO featureCommonVO = modelMapper.map(featureCommonDO, FeatureCommonVO.class);
+            featureCommonVO.setPiNameVOList(modelMapper.map(featureCommonDO.getPiNameDTOList(), new TypeToken<List<PiNameVO>>(){}.getType()));
+            featureCommonVO.setStatusMapVO(statusMapDTOMap.get(featureCommonDO.getStatusId()));
+            featureCommonVO.setIssueTypeVO(issueTypeDTOMap.get(featureCommonDO.getIssueTypeId()));
+            UserMessageDTO userMessageDTO = userMessageDOMap.get(featureCommonDO.getReporterId());
+            if (userMessageDTO != null) {
+                featureCommonVO.setReporterName(userMessageDTO.getName());
+                featureCommonVO.setReporterImageUrl(userMessageDTO.getImageUrl());
             }
-            result.add(featureCommonDTO);
+            result.add(featureCommonVO);
         });
         return result;
     }

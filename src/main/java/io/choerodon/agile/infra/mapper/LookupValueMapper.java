@@ -10,9 +10,9 @@ import io.choerodon.agile.infra.dataobject.*;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 09:40:27
  */
-public interface LookupValueMapper extends Mapper<LookupValueDO> {
+public interface LookupValueMapper extends Mapper<LookupValueDTO> {
 
-    LookupTypeWithValuesDO queryLookupValueByCode(String typeCode);
+    LookupTypeWithValuesDTO queryLookupValueByCode(String typeCode);
 
     String selectNameByValueCode(String valueCode);
 }

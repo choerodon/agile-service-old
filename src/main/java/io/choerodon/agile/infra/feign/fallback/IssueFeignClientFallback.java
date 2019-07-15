@@ -18,22 +18,22 @@ import java.util.Map;
 public class IssueFeignClientFallback implements IssueFeignClient {
 
     @Override
-    public ResponseEntity<PriorityDTO> queryById(Long organizationId, Long id) {
+    public ResponseEntity<PriorityVO> queryById(Long organizationId, Long id) {
         throw new CommonException("error.priority.get");
     }
 
     @Override
-    public ResponseEntity<Map<Long, PriorityDTO>> queryByOrganizationId(Long organizationId) {
+    public ResponseEntity<Map<Long, PriorityVO>> queryByOrganizationId(Long organizationId) {
         throw new CommonException("error.priorityList.get");
     }
 
     @Override
-    public ResponseEntity<Map<Long, IssueTypeDTO>> listIssueTypeMap(Long organizationId) {
+    public ResponseEntity<Map<Long, IssueTypeVO>> listIssueTypeMap(Long organizationId) {
         throw new CommonException("error.issueTypeMap.get");
     }
 
     @Override
-    public ResponseEntity<IssueTypeDTO> queryIssueTypeById(Long organizationId, Long issueTypeId) {
+    public ResponseEntity<IssueTypeVO> queryIssueTypeById(Long organizationId, Long issueTypeId) {
         throw new CommonException("error.issueType.get");
     }
 
@@ -43,22 +43,22 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<List<IssueTypeDTO>> queryIssueTypesByProjectId(Long projectId, String applyType) {
+    public ResponseEntity<List<IssueTypeVO>> queryIssueTypesByProjectId(Long projectId, String applyType) {
         throw new CommonException("error.queryIssueTypesByProjectId.get");
     }
 
     @Override
-    public ResponseEntity<StatusInfoDTO> createStatusForAgile(Long projectId, String applyType, StatusInfoDTO statusInfoDTO) {
+    public ResponseEntity<StatusInfoVO> createStatusForAgile(Long projectId, String applyType, StatusInfoVO statusInfoVO) {
         throw new CommonException("error.status.create");
     }
 
     @Override
-    public ResponseEntity<List<StatusMapDTO>> queryStatusByProjectId(Long projectId, String applyType) {
+    public ResponseEntity<List<StatusMapVO>> queryStatusByProjectId(Long projectId, String applyType) {
         throw new CommonException("error.status.queryStatusByProjectId");
     }
 
     @Override
-    public ResponseEntity<List<IssueTypeWithStateMachineIdDTO>> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
+    public ResponseEntity<List<IssueTypeWithStateMachineIdVO>> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
         throw new CommonException("error.status.queryIssueTypesWithStateMachineIdByProjectId");
     }
 
@@ -73,22 +73,22 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     }
 
     @Override
-    public ResponseEntity<PriorityDTO> queryDefaultByOrganizationId(Long organizationId) {
+    public ResponseEntity<PriorityVO> queryDefaultByOrganizationId(Long organizationId) {
         throw new CommonException("error.defaultPriority.get");
     }
 
     @Override
-    public ResponseEntity<List<TransformDTO>> queryTransformsByProjectId(Long projectId, Long currentStatusId, Long issueId, Long issueTypeId, String applyType) {
+    public ResponseEntity<List<TransformVO>> queryTransformsByProjectId(Long projectId, Long currentStatusId, Long issueId, Long issueTypeId, String applyType) {
         throw new CommonException("error.transform.get");
     }
 
     @Override
-    public ResponseEntity<List<PriorityDTO>> queryByOrganizationIdList(Long organizationId) {
+    public ResponseEntity<List<PriorityVO>> queryByOrganizationIdList(Long organizationId) {
         throw new CommonException("error.priorityList.get");
     }
 
     @Override
-    public ResponseEntity<List<IssueTypeDTO>> queryByOrgId(Long organizationId) {
+    public ResponseEntity<List<IssueTypeVO>> queryByOrgId(Long organizationId) {
         throw new CommonException("error.issueTypeList.get");
     }
 }

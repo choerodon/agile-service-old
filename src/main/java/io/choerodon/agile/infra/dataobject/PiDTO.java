@@ -33,6 +33,13 @@ public class PiDTO extends BaseDTO {
         this.actualEndDate = actualEndDate;
     }
 
+    public PiDTO(Long programId, Long id, String statusCode, Long objectVersionNumber) {
+        this.programId = programId;
+        this.id = id;
+        this.statusCode = statusCode;
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

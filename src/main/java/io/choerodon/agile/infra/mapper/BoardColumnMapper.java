@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO;
-import io.choerodon.agile.api.vo.SearchDTO;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO;
+import io.choerodon.agile.api.vo.SearchVO;
 import io.choerodon.agile.api.vo.event.RemoveStatusWithProject;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.mybatis.common.Mapper;
@@ -13,7 +13,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
  */
-public interface BoardColumnMapper extends Mapper<BoardColumnDO> {
+public interface BoardColumnMapper extends Mapper<BoardColumnDTO> {
 
     List selectColumnsByBoardId(@Param("projectId") Long projectId,
                                 @Param("boardId") Long boardId,
@@ -39,17 +39,17 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDO> {
 
     List queryColumnStatusRelByProjectId(@Param("projectId") Long projectId);
 
-//    BoardColumnCheckDO selectColumnByColumnId(@Param("projectId") Long projectId,
+//    BoardColumnCheckDTO selectColumnByColumnId(@Param("projectId") Long projectId,
 //                                              @Param("columnId") Long columnId,
 //                                              @Param("activeSprintId") Long activeSprintId);
 
-//    BoardColumnCheckDO selectColumnByColumnIdWithoutSub(@Param("projectId") Long projectId,
+//    BoardColumnCheckDTO selectColumnByColumnIdWithoutSub(@Param("projectId") Long projectId,
 //                                                        @Param("columnId") Long columnId,
 //                                                        @Param("activeSprintId") Long activeSprintId);
 
-    void updateMaxAndMinNum(@Param("columnInfo") ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO);
+    void updateMaxAndMinNum(@Param("columnInfo") ColumnWithMaxMinNumVO columnWithMaxMinNumVO);
 
-    List<BoardColumnDO> selectByBoardIdOrderBySequence(@Param("boardId") Long boardId);
+    List<BoardColumnDTO> selectByBoardIdOrderBySequence(@Param("boardId") Long boardId);
 
     void updateSequenceWhenDelete(@Param("boardId") Long boardId, @Param("sequence") Integer sequence);
 
@@ -57,20 +57,20 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDO> {
      * 根据列id获取列对象
      *
      * @param columnIds columnIds
-     * @return ColumnDO
+     * @return ColumnDTO
      */
-    List<ColumnDO> queryColumnByColumnIds(@Param("columnIds") List<Long> columnIds);
+    List<ColumnDTO> queryColumnByColumnIds(@Param("columnIds") List<Long> columnIds);
 
     /**
      * 根据issueIds集合获取ColumnAndIssueDO
      *
      * @param issueIds issueIds
      * @param boardId  boardId
-     * @return ColumnAndIssueDO
+     * @return ColumnAndIssueDTO
      */
-    List<ColumnAndIssueDO> queryColumnsByIssueIds(@Param("issueIds") List<Long> issueIds, @Param("boardId") Long boardId);
+    List<ColumnAndIssueDTO> queryColumnsByIssueIds(@Param("issueIds") List<Long> issueIds, @Param("boardId") Long boardId);
 
-    List<EpicIdWithNameDO> selectEpicBatchByIds(@Param("epicIds") List<Long> epicIds);
+    List<EpicIdWithNameDTO> selectEpicBatchByIds(@Param("epicIds") List<Long> epicIds);
 
     /**
      * 根据看板id和projectId查询列idList
@@ -90,17 +90,17 @@ public interface BoardColumnMapper extends Mapper<BoardColumnDO> {
 
     List<Long> sortAndJudgeCompleted(@Param("projectId") Long projectId, @Param("parentIds") List<Long> parentIds);
 
-    List<ParentIssueDO> queryParentIssuesByIds(@Param("projectId") Long projectId, @Param("parentIds") List<Long> parentIds);
+    List<ParentIssueDTO> queryParentIssuesByIds(@Param("projectId") Long projectId, @Param("parentIds") List<Long> parentIds);
 
-    List<ColumnIssueNumDO> getAllColumnNum(@Param("projectId") Long projectId,
-                                           @Param("boardId") Long boardId,
-                                           @Param("activeSprintId") Long activeSprintId,
-                                           @Param("columnConstraint") String columnConstraint);
+    List<ColumnIssueNumDTO> getAllColumnNum(@Param("projectId") Long projectId,
+                                            @Param("boardId") Long boardId,
+                                            @Param("activeSprintId") Long activeSprintId,
+                                            @Param("columnConstraint") String columnConstraint);
 
-    List<ColumnAndIssueDO> selectBoardByProgram(@Param("projectId") Long projectId,
-                                                @Param("boardId") Long boardId,
-                                                @Param("activePiId") Long activePiId,
-                                                @Param("searchDTO")SearchDTO searchDTO);
+    List<ColumnAndIssueDTO> selectBoardByProgram(@Param("projectId") Long projectId,
+                                                 @Param("boardId") Long boardId,
+                                                 @Param("activePiId") Long activePiId,
+                                                 @Param("searchVO")SearchVO searchVO);
 
-    List<BoardColumnStatusRelDO> queryRelByColumnIds(@Param("columnIds") List<Long> columnIds);
+    List<BoardColumnStatusRelDTO> queryRelByColumnIds(@Param("columnIds") List<Long> columnIds);
 }

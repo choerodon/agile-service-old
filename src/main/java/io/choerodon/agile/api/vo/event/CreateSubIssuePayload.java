@@ -1,45 +1,45 @@
 package io.choerodon.agile.api.vo.event;
 
-import io.choerodon.agile.api.vo.IssueSubCreateDTO;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
+import io.choerodon.agile.api.vo.IssueSubCreateVO;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
+import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 
 /**
  * @author shinan.chen
  * @date 2018/11/7
  */
 public class CreateSubIssuePayload {
-    IssueSubCreateDTO issueSubCreateDTO;
-    IssueE issueE;
-    ProjectInfoE projectInfoE;
+    IssueSubCreateVO issueSubCreateVO;
+    IssueConvertDTO issueConvertDTO;
+    ProjectInfoDTO projectInfoDTO;
 
-    public CreateSubIssuePayload(IssueSubCreateDTO issueSubCreateDTO, IssueE issueE, ProjectInfoE projectInfoE) {
-        this.issueSubCreateDTO = issueSubCreateDTO;
-        this.issueE = issueE;
-        this.projectInfoE = projectInfoE;
+    public CreateSubIssuePayload(IssueSubCreateVO issueSubCreateVO, IssueConvertDTO issueConvertDTO, ProjectInfoDTO projectInfoDTO) {
+        this.issueSubCreateVO = issueSubCreateVO;
+        this.issueConvertDTO = issueConvertDTO;
+        this.projectInfoDTO = projectInfoDTO;
     }
 
-    public IssueSubCreateDTO getIssueSubCreateDTO() {
-        return issueSubCreateDTO;
+    public IssueSubCreateVO getIssueSubCreateVO() {
+        return issueSubCreateVO;
     }
 
-    public void setIssueSubCreateDTO(IssueSubCreateDTO issueSubCreateDTO) {
-        this.issueSubCreateDTO = issueSubCreateDTO;
+    public void setIssueSubCreateVO(IssueSubCreateVO issueSubCreateVO) {
+        this.issueSubCreateVO = issueSubCreateVO;
     }
 
-    public IssueE getIssueE() {
-        return issueE;
+    public IssueConvertDTO getIssueConvertDTO() {
+        return issueConvertDTO;
     }
 
-    public void setIssueE(IssueE issueE) {
-        this.issueE = issueE;
+    public void setIssueConvertDTO(IssueConvertDTO issueConvertDTO) {
+        this.issueConvertDTO = issueConvertDTO;
     }
 
-    public ProjectInfoE getProjectInfoE() {
-        return projectInfoE;
+    public void setProjectInfoDTO(ProjectInfoDTO projectInfoDTO) {
+        this.projectInfoDTO = projectInfoDTO;
     }
 
-    public void setProjectInfoE(ProjectInfoE projectInfoE) {
-        this.projectInfoE = projectInfoE;
+    public ProjectInfoDTO getProjectInfoDTO() {
+        return projectInfoDTO;
     }
 }

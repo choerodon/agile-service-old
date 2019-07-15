@@ -54,17 +54,17 @@ public class IssueComponentDetailDTO {
 
     private String description;
 
-    private IssueTypeDTO issueTypeDTO;
+    private IssueTypeVO issueTypeVO;
 
-    private StatusMapDTO statusMapDTO;
+    private StatusMapVO statusMapVO;
 
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
-    private List<VersionIssueRelDTO> versionIssueRelDTOList;
+    private List<VersionIssueRelVO> versionIssueRelVOList;
 
-    private List<LabelIssueRelDTO> labelIssueRelDTOList;
+    private List<LabelIssueRelVO> labelIssueRelVOList;
 
-    private List<ComponentIssueRelDTO> componentIssueRelDTOList;
+    private List<ComponentIssueRelVO> componentIssueRelVOList;
 
     public String getAssigneeName() {
         return assigneeName;
@@ -196,52 +196,52 @@ public class IssueComponentDetailDTO {
         this.epicColor = epicColor;
     }
 
-    public List<VersionIssueRelDTO> getVersionIssueRelDTOList() {
-        return versionIssueRelDTOList;
+    public List<VersionIssueRelVO> getVersionIssueRelVOList() {
+        return versionIssueRelVOList;
     }
 
-    public void setVersionIssueRelDTOList(List<VersionIssueRelDTO> versionIssueRelDTOList) {
-        this.versionIssueRelDTOList = versionIssueRelDTOList;
+    public void setVersionIssueRelVOList(List<VersionIssueRelVO> versionIssueRelVOList) {
+        this.versionIssueRelVOList = versionIssueRelVOList;
     }
 
-    public List<LabelIssueRelDTO> getLabelIssueRelDTOList() {
-        return labelIssueRelDTOList;
+    public List<LabelIssueRelVO> getLabelIssueRelVOList() {
+        return labelIssueRelVOList;
     }
 
-    public void setLabelIssueRelDTOList(List<LabelIssueRelDTO> labelIssueRelDTOList) {
-        this.labelIssueRelDTOList = labelIssueRelDTOList;
+    public void setLabelIssueRelVOList(List<LabelIssueRelVO> labelIssueRelVOList) {
+        this.labelIssueRelVOList = labelIssueRelVOList;
     }
 
-    public List<ComponentIssueRelDTO> getComponentIssueRelDTOList() {
-        return componentIssueRelDTOList;
+    public List<ComponentIssueRelVO> getComponentIssueRelVOList() {
+        return componentIssueRelVOList;
     }
 
-    public void setComponentIssueRelDTOList(List<ComponentIssueRelDTO> componentIssueRelDTOList) {
-        this.componentIssueRelDTOList = componentIssueRelDTOList;
+    public void setComponentIssueRelVOList(List<ComponentIssueRelVO> componentIssueRelVOList) {
+        this.componentIssueRelVOList = componentIssueRelVOList;
     }
 
-    public IssueTypeDTO getIssueTypeDTO() {
-        return issueTypeDTO;
+    public IssueTypeVO getIssueTypeVO() {
+        return issueTypeVO;
     }
 
-    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
-        this.issueTypeDTO = issueTypeDTO;
+    public void setIssueTypeVO(IssueTypeVO issueTypeVO) {
+        this.issueTypeVO = issueTypeVO;
     }
 
-    public StatusMapDTO getStatusMapDTO() {
-        return statusMapDTO;
+    public StatusMapVO getStatusMapVO() {
+        return statusMapVO;
     }
 
-    public void setStatusMapDTO(StatusMapDTO statusMapDTO) {
-        this.statusMapDTO = statusMapDTO;
+    public void setStatusMapVO(StatusMapVO statusMapVO) {
+        this.statusMapVO = statusMapVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
     public void setDescription(String description) {

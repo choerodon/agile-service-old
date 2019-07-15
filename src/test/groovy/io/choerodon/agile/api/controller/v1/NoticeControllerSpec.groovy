@@ -2,11 +2,14 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.MessageDTO
-import io.choerodon.agile.infra.dataobject.MessageDO
+import io.choerodon.agile.api.vo.MessageVO
+import io.choerodon.agile.infra.dataobject.MessageDTO
 import io.choerodon.agile.infra.mapper.NoticeDetailMapper
 import io.choerodon.agile.infra.mapper.NoticeMapper
 import io.choerodon.core.convertor.ConvertHelper
+import org.modelmapper.ModelMapper
+import org.modelmapper.TypeToken
+import org.modelmapper.convention.MatchingStrategies
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -18,6 +21,8 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Stepwise
+
+import javax.annotation.PostConstruct
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/10/12.
@@ -41,27 +46,34 @@ class NoticeControllerSpec extends Specification {
 
 //    @Autowired
 //    @Qualifier("mockUserRepository")
-//    private UserRepository userRepository
+//    private UserService userService
 
     @Shared
     def projectId = 1L
 
+    private ModelMapper modelMapper = new ModelMapper()
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT)
+    }
+
 //    def setup() {
-//        userRepository.listRolesWithUserCountOnProjectLevel(*_) >> new ArrayList<RoleDTO>()
-//        userRepository.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> new PageInfo<UserDTO>()
+//        userService.listRolesWithUserCountOnProjectLevel(*_) >> new ArrayList<RoleVO>()
+//        userService.pagingQueryUsersByRoleIdOnProjectLevel(*_) >> new PageInfo<UserVO>()
 //    }
 
     def 'updateNotice'() {
         given:
         String users = "1,2,3"
-        List<MessageDO> originList = noticeMapper.selectAll()
-        for (MessageDO messageDO : originList) {
+        List<MessageDTO> originList = noticeMapper.selectAll()
+        for (MessageDTO messageDO : originList) {
             messageDO.setEnable(false)
             messageDO.setUser(users)
         }
 
         when:
-        HttpEntity<List<MessageDTO>> messages = new HttpEntity<>(ConvertHelper.convertList(originList, MessageDTO.class))
+        HttpEntity<List<MessageVO>> messages = new HttpEntity<>(modelMapper.map(originList, new TypeToken<List<MessageVO>>(){}.getType()))
         def entity = restTemplate.exchange("/v1/projects/{project_id}/notice",
                 HttpMethod.PUT,
                 messages,
@@ -74,12 +86,12 @@ class NoticeControllerSpec extends Specification {
 
     def 'updateNotice unSuccess'() {
         given:
-        List<MessageDO> originList = noticeMapper.selectAll()
+        List<MessageDTO> originList = noticeMapper.selectAll()
         originList.get(0).setEnable(false)
         originList.get(0).setObjectVersionNumber(originList.get(0).getObjectVersionNumber() + 1)
 
         when:
-        HttpEntity<List<MessageDTO>> messages = new HttpEntity<>(ConvertHelper.convertList(originList, MessageDTO.class))
+        HttpEntity<List<MessageVO>> messages = new HttpEntity<>(modelMapper.map(originList, new TypeToken<List<MessageVO>>(){}.getType()))
         def entity = restTemplate.exchange("/v1/projects/{project_id}/notice",
                 HttpMethod.PUT,
                 messages,
@@ -101,7 +113,7 @@ class NoticeControllerSpec extends Specification {
                 projectId)
         then:
         entity.statusCode.is2xxSuccessful()
-        for (MessageDTO messageDTO : entity.body) {
+        for (MessageVO messageDTO : entity.body) {
             messageDTO.enable == false
             messageDTO.user == "1,2,3"
         }

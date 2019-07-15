@@ -3,12 +3,7 @@ package io.choerodon.agile.app.eventhandler;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.event.*;
 import io.choerodon.agile.app.service.*;
-import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
-import io.choerodon.agile.infra.repository.BoardColumnRepository;
-import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.IssueStatusRepository;
-import io.choerodon.agile.infra.repository.TimeZoneWorkCalendarRepository;
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
+import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
@@ -36,18 +31,25 @@ public class AgileEventHandler {
     private IssueLinkTypeService issueLinkTypeService;
     @Autowired
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
+//    @Autowired
+//    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
     @Autowired
-    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
+    private TimeZoneWorkCalendarService timeZoneWorkCalendarService;
     @Autowired
     private IssueStatusService issueStatusService;
+//    @Autowired
+//    private BoardColumnRepository boardColumnRepository;
     @Autowired
-    private BoardColumnRepository boardColumnRepository;
+    private BoardColumnService boardColumnService;
+//    @Autowired
+//    private IssueStatusRepository issueStatusRepository;
+//    @Autowired
+//    private IssueRepository issueRepository;
     @Autowired
-    private IssueStatusRepository issueStatusRepository;
-    @Autowired
-    private IssueRepository issueRepository;
+    private IssueAccessDataService issueAccessDataService;
     @Autowired
     private IssueFeignClient issueFeignClient;
+
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AgileEventHandler.class);
 
@@ -125,18 +127,18 @@ public class AgileEventHandler {
     private void handleOrganizationInitTimeZoneSagaTask(String data) {
         OrganizationCreateEventPayload organizationCreateEventPayload = JSONObject.parseObject(data, OrganizationCreateEventPayload.class);
         Long organizationId = organizationCreateEventPayload.getId();
-        TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO();
-        timeZoneWorkCalendarDO.setOrganizationId(organizationId);
-        TimeZoneWorkCalendarDO query = timeZoneWorkCalendarMapper.selectOne(timeZoneWorkCalendarDO);
+        TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO = new TimeZoneWorkCalendarDTO();
+        timeZoneWorkCalendarDTO.setOrganizationId(organizationId);
+        TimeZoneWorkCalendarDTO query = timeZoneWorkCalendarMapper.selectOne(timeZoneWorkCalendarDTO);
         if (query == null) {
-            TimeZoneWorkCalendarE timeZoneWorkCalendarE = new TimeZoneWorkCalendarE();
-            timeZoneWorkCalendarE.setAreaCode("Asia");
-            timeZoneWorkCalendarE.setTimeZoneCode("Asia/Shanghai");
-            timeZoneWorkCalendarE.setSaturdayWork(false);
-            timeZoneWorkCalendarE.setSundayWork(false);
-            timeZoneWorkCalendarE.setUseHoliday(true);
-            timeZoneWorkCalendarE.setOrganizationId(organizationId);
-            timeZoneWorkCalendarRepository.create(timeZoneWorkCalendarE);
+            TimeZoneWorkCalendarDTO timeZoneWorkCalendar = new TimeZoneWorkCalendarDTO();
+            timeZoneWorkCalendar.setAreaCode("Asia");
+            timeZoneWorkCalendar.setTimeZoneCode("Asia/Shanghai");
+            timeZoneWorkCalendar.setSaturdayWork(false);
+            timeZoneWorkCalendar.setSundayWork(false);
+            timeZoneWorkCalendar.setUseHoliday(true);
+            timeZoneWorkCalendar.setOrganizationId(organizationId);
+            timeZoneWorkCalendarService.create(timeZoneWorkCalendar);
         }
         LOGGER.info("接受组织创建消息{}", data);
     }
@@ -152,11 +154,11 @@ public class AgileEventHandler {
         List<AddStatusWithProject> addStatusWithProjects = deployStateMachinePayload.getAddStatusWithProjects();
         //删除项目下的状态及与列的关联
         if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
+            boardColumnService.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
         }
         //增加项目下的状态
         if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
-            issueStatusRepository.batchCreateStatusByProjectIds(addStatusWithProjects, deployStateMachinePayload.getUserId());
+            issueStatusService.batchCreateStatusByProjectIds(addStatusWithProjects, deployStateMachinePayload.getUserId());
         }
     }
 
@@ -173,7 +175,7 @@ public class AgileEventHandler {
         List<AddStatusWithProject> addStatusWithProjects = deployUpdateIssue.getAddStatusWithProjects();
         //增加项目下的状态
         if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
-            issueStatusRepository.batchCreateStatusByProjectIds(addStatusWithProjects, deployUpdateIssue.getUserId());
+            issueStatusService.batchCreateStatusByProjectIds(addStatusWithProjects, deployUpdateIssue.getUserId());
         }
         //批量更新项目对应的issue状态
         projectConfigs.forEach(projectConfig -> {
@@ -185,13 +187,13 @@ public class AgileEventHandler {
                 statusChangeItems.forEach(statusChangeItem -> {
                     Long oldStatusId = statusChangeItem.getOldStatus().getId();
                     Long newStatusId = statusChangeItem.getNewStatus().getId();
-                    issueRepository.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, deployUpdateIssue.getUserId());
+                    issueAccessDataService.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, deployUpdateIssue.getUserId());
                 });
             });
         });
         //删除项目下的状态及与列的关联
         if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
-            boardColumnRepository.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
+            boardColumnService.batchDeleteColumnAndStatusRel(deployUpdateIssue.getRemoveStatusWithProjects());
         }
         issueFeignClient.updateDeployProgress(deployUpdateIssue.getOrganizationId(), deployUpdateIssue.getSchemeId(), 100);
         return message;

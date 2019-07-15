@@ -1,8 +1,8 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.infra.dataobject.ComponentForListDO;
+import io.choerodon.agile.infra.dataobject.ComponentForListDTO;
 import io.choerodon.mybatis.common.Mapper;
-import io.choerodon.agile.infra.dataobject.IssueComponentDO;
+import io.choerodon.agile.infra.dataobject.IssueComponentDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.Map;
  * Created by HuangFuqiang@choerodon.io on 2018/5/14.
  * Email: fuqianghuang01@gmail.com
  */
-public interface IssueComponentMapper extends Mapper<IssueComponentDO> {
+public interface IssueComponentMapper extends Mapper<IssueComponentDTO> {
 
     /**
      * 重名校验
@@ -45,12 +45,12 @@ public interface IssueComponentMapper extends Mapper<IssueComponentDO> {
      * @param advancedSearchArgs advancedSearchArgs
      * @return Long
      */
-    List<ComponentForListDO> queryComponentByOption(@Param("projectId") Long projectId, @Param("noIssueTest") Boolean noIssueTest,
-                                                    @Param("componentId") Long componentId, @Param("searchArgs") Map<String, Object> searchArgs,
-                                                    @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("contents") List<String> contents);
+    List<ComponentForListDTO> queryComponentByOption(@Param("projectId") Long projectId, @Param("noIssueTest") Boolean noIssueTest,
+                                                     @Param("componentId") Long componentId, @Param("searchArgs") Map<String, Object> searchArgs,
+                                                     @Param("advancedSearchArgs") Map<String, Object> advancedSearchArgs, @Param("contents") List<String> contents);
 
-    List<ComponentForListDO> queryComponentWithIssueNum(@Param("projectId") Long projectId, @Param("componentId") Long componentId,
-                                                        @Param("noIssueTest") Boolean noIssueTest);
+    List<ComponentForListDTO> queryComponentWithIssueNum(@Param("projectId") Long projectId, @Param("componentId") Long componentId,
+                                                         @Param("noIssueTest") Boolean noIssueTest);
 
-    List<IssueComponentDO> selectByProjectId(@Param("projectId") Long projectId);
+    List<IssueComponentDTO> selectByProjectId(@Param("projectId") Long projectId);
 }

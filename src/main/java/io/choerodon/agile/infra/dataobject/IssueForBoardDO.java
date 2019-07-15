@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.agile.api.vo.IssueTypeDTO;
-import io.choerodon.agile.api.vo.PriorityDTO;
+import io.choerodon.agile.api.vo.IssueTypeVO;
+import io.choerodon.agile.api.vo.PriorityVO;
 
 import java.util.Date;
 
@@ -43,11 +43,11 @@ public class IssueForBoardDO {
 
     private Integer stayDay;
 
-    private PriorityDTO priorityDTO;
+    private PriorityVO priorityVO;
 
     private Long issueTypeId;
 
-    private IssueTypeDTO issueTypeDTO;
+    private IssueTypeVO issueTypeVO;
 
     private String featureType;
 
@@ -151,20 +151,20 @@ public class IssueForBoardDO {
         return priorityId;
     }
 
-    public void setPriorityDTO(PriorityDTO priorityDTO) {
-        this.priorityDTO = priorityDTO;
+    public void setPriorityVO(PriorityVO priorityVO) {
+        this.priorityVO = priorityVO;
     }
 
-    public PriorityDTO getPriorityDTO() {
-        return priorityDTO;
+    public PriorityVO getPriorityVO() {
+        return priorityVO;
     }
 
-    public void setIssueTypeDTO(IssueTypeDTO issueTypeDTO) {
-        this.issueTypeDTO = issueTypeDTO;
+    public void setIssueTypeVO(IssueTypeVO issueTypeVO) {
+        this.issueTypeVO = issueTypeVO;
     }
 
-    public IssueTypeDTO getIssueTypeDTO() {
-        return issueTypeDTO;
+    public IssueTypeVO getIssueTypeVO() {
+        return issueTypeVO;
     }
 
     public void setIssueTypeId(Long issueTypeId) {

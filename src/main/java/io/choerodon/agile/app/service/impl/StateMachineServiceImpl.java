@@ -5,13 +5,11 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.IssueAssembler;
+import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.RankService;
 import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.domain.agile.entity.FeatureE;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.entity.PiFeatureE;
-import io.choerodon.agile.domain.agile.entity.ProjectInfoE;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.api.vo.event.CreateIssuePayload;
 import io.choerodon.agile.api.vo.event.CreateSubIssuePayload;
 import io.choerodon.agile.api.vo.event.ProjectConfig;
@@ -20,19 +18,14 @@ import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.dataobject.IssueDO;
-import io.choerodon.agile.infra.dataobject.ProjectInfoDO;
-import io.choerodon.agile.infra.dataobject.RankDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.agile.infra.mapper.RankMapper;
-import io.choerodon.agile.infra.repository.FeatureRepository;
-import io.choerodon.agile.infra.repository.IssueRepository;
-import io.choerodon.agile.infra.repository.PiFeatureRepository;
-import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.agile.app.service.FeatureService;
+import io.choerodon.agile.app.service.PiFeatureService;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.annotation.Condition;
@@ -44,6 +37,8 @@ import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.dto.StateMachineConfigDTO;
 import io.choerodon.statemachine.feign.InstanceFeignClient;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +47,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -86,8 +82,10 @@ public class StateMachineServiceImpl implements StateMachineService {
     private InstanceFeignClient instanceFeignClient;
     @Autowired
     private IssueFeignClient issueFeignClient;
+//    @Autowired
+//    private IssueRepository issueRepository;
     @Autowired
-    private IssueRepository issueRepository;
+    private IssueAccessDataService issueAccessDataService;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
@@ -95,9 +93,9 @@ public class StateMachineServiceImpl implements StateMachineService {
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
     @Autowired
-    private FeatureRepository featureRepository;
+    private FeatureService featureService;
     @Autowired
-    private PiFeatureRepository piFeatureRepository;
+    private PiFeatureService piFeatureService;
     @Autowired
     private UserFeignClient userFeignClient;
     @Autowired
@@ -107,40 +105,47 @@ public class StateMachineServiceImpl implements StateMachineService {
     @Autowired
     private IssueValidator issueValidator;
 
-    private void insertRank(Long projectId, Long issueId, String type, RankDTO rankDTO) {
-        List<RankDO> rankDOList = new ArrayList<>();
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
+    private void insertRank(Long projectId, Long issueId, String type, RankVO rankVO) {
+        List<RankDTO> rankDTOList = new ArrayList<>();
         String rank = null;
-        if (rankDTO == null) {
+        if (rankVO == null) {
             String minRank = rankMapper.selectMinRank(projectId, type);
             rank = (minRank == null ? RankUtil.mid() : RankUtil.genPre(minRank));
         } else {
-            RankDO referenceRank = rankService.getReferenceRank(projectId, rankDTO.getType(), rankDTO.getReferenceIssueId());
-            if (rankDTO.getBefore()) {
-                String leftRank = rankMapper.selectLeftRank(projectId, rankDTO.getType(), referenceRank.getRank());
+            RankDTO referenceRank = rankService.getReferenceRank(projectId, rankVO.getType(), rankVO.getReferenceIssueId());
+            if (rankVO.getBefore()) {
+                String leftRank = rankMapper.selectLeftRank(projectId, rankVO.getType(), referenceRank.getRank());
                 rank = (leftRank == null ? RankUtil.genPre(referenceRank.getRank()) : RankUtil.between(leftRank, referenceRank.getRank()));
             } else {
-                String rightRank = rankMapper.selectRightRank(projectId, rankDTO.getType(), referenceRank.getRank());
+                String rightRank = rankMapper.selectRightRank(projectId, rankVO.getType(), referenceRank.getRank());
                 rank = (rightRank == null ? RankUtil.genNext(referenceRank.getRank()) : RankUtil.between(referenceRank.getRank(), rightRank));
             }
         }
-        RankDO rankDO = new RankDO();
-        rankDO.setIssueId(issueId);
-        rankDO.setRank(rank);
-        rankDOList.add(rankDO);
-        rankMapper.batchInsertRank(projectId, type, rankDOList);
+        RankDTO rankDTO = new RankDTO();
+        rankDTO.setIssueId(issueId);
+        rankDTO.setRank(rank);
+        rankDTOList.add(rankDTO);
+        rankMapper.batchInsertRank(projectId, type, rankDTOList);
     }
 
-    private void initRank(IssueCreateDTO issueCreateDTO, Long issueId, String type) {
-        if (issueCreateDTO.getProgramId() != null) {
-            List<ProjectRelationshipDTO> projectRelationshipDTOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(issueCreateDTO.getProgramId()), issueCreateDTO.getProgramId(), true).getBody();
-            if (projectRelationshipDTOList == null || projectRelationshipDTOList.isEmpty()) {
+    private void initRank(IssueCreateVO issueCreateVO, Long issueId, String type) {
+        if (issueCreateVO.getProgramId() != null) {
+            List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(issueCreateVO.getProgramId()), issueCreateVO.getProgramId(), true).getBody();
+            if (projectRelationshipVOList == null || projectRelationshipVOList.isEmpty()) {
                 return;
             }
-            for (ProjectRelationshipDTO projectRelationshipDTO : projectRelationshipDTOList) {
-                insertRank(projectRelationshipDTO.getProjectId(), issueId, type, issueCreateDTO.getRankDTO());
+            for (ProjectRelationshipVO projectRelationshipVO : projectRelationshipVOList) {
+                insertRank(projectRelationshipVO.getProjectId(), issueId, type, issueCreateVO.getRankVO());
             }
-        } else if (issueCreateDTO.getProjectId() != null) {
-            insertRank(issueCreateDTO.getProjectId(), issueId, type, issueCreateDTO.getRankDTO());
+        } else if (issueCreateVO.getProjectId() != null) {
+            insertRank(issueCreateVO.getProjectId(), issueId, type, issueCreateVO.getRankVO());
         }
     }
 
@@ -148,18 +153,18 @@ public class StateMachineServiceImpl implements StateMachineService {
     /**
      * 创建issue，用于敏捷和测试
      *
-     * @param issueCreateDTO
+     * @param issueCreateVO
      * @param applyType
      * @return
      */
     @Override
-    public IssueDTO createIssue(IssueCreateDTO issueCreateDTO, String applyType) {
-        issueValidator.checkIssueCreate(issueCreateDTO, applyType);
-        IssueE issueE = issueAssembler.toTarget(issueCreateDTO, IssueE.class);
-        Long projectId = issueE.getProjectId();
+    public IssueVO createIssue(IssueCreateVO issueCreateVO, String applyType) {
+        issueValidator.checkIssueCreate(issueCreateVO, applyType);
+        IssueConvertDTO issueConvertDTO = issueAssembler.toTarget(issueCreateVO, IssueConvertDTO.class);
+        Long projectId = issueConvertDTO.getProjectId();
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issueE.getIssueTypeId()).getBody();
+        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issueConvertDTO.getIssueTypeId()).getBody();
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
@@ -169,57 +174,57 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
         //获取项目信息
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(projectId);
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
-        if (projectInfoE == null) {
+        ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
+        projectInfoDTO.setProjectId(projectId);
+        ProjectInfoDTO projectInfo = modelMapper.map(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoDTO.class);
+        if (projectInfo == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }
         //创建issue
-        issueE.setApplyType(applyType);
-        issueService.handleInitIssue(issueE, initStatusId, projectInfoE);
-        Long issueId = issueRepository.create(issueE).getIssueId();
+        issueConvertDTO.setApplyType(applyType);
+        issueService.handleInitIssue(issueConvertDTO, initStatusId, projectInfo);
+        Long issueId = issueAccessDataService.create(issueConvertDTO).getIssueId();
         // 创建史诗，初始化排序
-        if ("issue_epic".equals(issueCreateDTO.getTypeCode())) {
-            initRank(issueCreateDTO, issueId, "epic");
+        if ("issue_epic".equals(issueCreateVO.getTypeCode())) {
+            initRank(issueCreateVO, issueId, "epic");
         }
 
         // if issueType is feature, create extends table
-        if (ISSUE_FEATURE.equals(issueCreateDTO.getTypeCode())) {
-            FeatureDTO featureDTO = issueCreateDTO.getFeatureDTO();
-            featureDTO.setIssueId(issueId);
-            featureDTO.setProjectId(issueCreateDTO.getProjectId());
-            if (issueCreateDTO.getProgramId() != null) {
-                featureDTO.setProgramId(issueCreateDTO.getProgramId());
+        if (ISSUE_FEATURE.equals(issueCreateVO.getTypeCode())) {
+            FeatureVO featureVO = issueCreateVO.getFeatureVO();
+            featureVO.setIssueId(issueId);
+            featureVO.setProjectId(issueCreateVO.getProjectId());
+            if (issueCreateVO.getProgramId() != null) {
+                featureVO.setProgramId(issueCreateVO.getProgramId());
             }
-            featureRepository.create(ConvertHelper.convert(featureDTO, FeatureE.class));
-            if (issueCreateDTO.getPiId() != null && issueCreateDTO.getPiId() != 0L) {
-                piFeatureRepository.create(new PiFeatureE(issueId, issueCreateDTO.getPiId(), projectId));
+            featureService.create(modelMapper.map(featureVO, FeatureDTO.class));
+            if (issueCreateVO.getPiId() != null && issueCreateVO.getPiId() != 0L) {
+                piFeatureService.create(new PiFeatureDTO(issueId, issueCreateVO.getPiId(), projectId));
             }
-            initRank(issueCreateDTO, issueId, "feature");
+            initRank(issueCreateVO, issueId, "feature");
         }
 
-        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateDTO, issueE, projectInfoE);
+        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateVO, issueConvertDTO, projectInfo);
         InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createIssuePayload));
         //通过状态机客户端创建实例, 反射验证/条件/后置动作
         stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
-        issueService.afterCreateIssue(issueId, issueE, issueCreateDTO, projectInfoE);
-        return issueService.queryIssueCreate(issueCreateDTO.getProjectId(), issueId);
+        issueService.afterCreateIssue(issueId, issueConvertDTO, issueCreateVO, projectInfo);
+        return issueService.queryIssueCreate(issueCreateVO.getProjectId(), issueId);
     }
 
     /**
      * 创建subIssue，用于敏捷
      *
-     * @param issueSubCreateDTO
+     * @param issueSubCreateVO
      * @return
      */
     @Override
-    public IssueSubDTO createSubIssue(IssueSubCreateDTO issueSubCreateDTO) {
-        IssueE subIssueE = issueAssembler.toTarget(issueSubCreateDTO, IssueE.class);
-        Long projectId = subIssueE.getProjectId();
+    public IssueSubVO createSubIssue(IssueSubCreateVO issueSubCreateVO) {
+        IssueConvertDTO subIssueConvertDTO = issueAssembler.toTarget(issueSubCreateVO, IssueConvertDTO.class);
+        Long projectId = subIssueConvertDTO.getProjectId();
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, SchemeApplyType.AGILE, subIssueE.getIssueTypeId()).getBody();
+        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, SchemeApplyType.AGILE, subIssueConvertDTO.getIssueTypeId()).getBody();
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
@@ -229,24 +234,24 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
         //获取项目信息
-        ProjectInfoDO projectInfoDO = new ProjectInfoDO();
-        projectInfoDO.setProjectId(subIssueE.getProjectId());
-        ProjectInfoE projectInfoE = ConvertHelper.convert(projectInfoMapper.selectOne(projectInfoDO), ProjectInfoE.class);
-        if (projectInfoE == null) {
+        ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
+        projectInfoDTO.setProjectId(subIssueConvertDTO.getProjectId());
+        ProjectInfoDTO projectInfo = modelMapper.map(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoDTO.class);
+        if (projectInfo == null) {
             throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
         }
         //创建issue
-        subIssueE.setApplyType(SchemeApplyType.AGILE);
+        subIssueConvertDTO.setApplyType(SchemeApplyType.AGILE);
         //初始化subIssue
-        issueService.handleInitSubIssue(subIssueE, initStatusId, projectInfoE);
-        Long issueId = issueRepository.create(subIssueE).getIssueId();
+        issueService.handleInitSubIssue(subIssueConvertDTO, initStatusId, projectInfo);
+        Long issueId = issueAccessDataService.create(subIssueConvertDTO).getIssueId();
 
-        CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateDTO, subIssueE, projectInfoE);
+        CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateVO, subIssueConvertDTO, projectInfo);
         InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createSubIssuePayload));
         //通过状态机客户端创建实例, 反射验证/条件/后置动作
         stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
-        issueService.afterCreateSubIssue(issueId, subIssueE, issueSubCreateDTO, projectInfoE);
-        return issueService.queryIssueSubByCreate(subIssueE.getProjectId(), issueId);
+        issueService.afterCreateSubIssue(issueId, subIssueConvertDTO, issueSubCreateVO, projectInfo);
+        return issueService.queryIssueSubByCreate(subIssueConvertDTO.getProjectId(), issueId);
     }
 
     /**
@@ -259,7 +264,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException("error.applyType.illegal");
         }
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        IssueDO issue = issueMapper.selectByPrimaryKey(issueId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(issueId);
         if (issue == null) {
             throw new CommonException(ERROR_ISSUE_NOT_FOUND);
         }
@@ -294,7 +299,7 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException("error.applyType.illegal");
         }
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        IssueDO issue = issueMapper.selectByPrimaryKey(issueId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(issueId);
         if (issue == null) {
             throw new CommonException(ERROR_ISSUE_NOT_FOUND);
         }
@@ -339,8 +344,8 @@ public class StateMachineServiceImpl implements StateMachineService {
             issueTypeIds.forEach(issueTypeId -> result.put(issueTypeId, 0L));
             //计算出所有有影响的issue数量，根据issueTypeId分类
             projectConfigs.forEach(projectConfig -> {
-                List<IssueDO> issueDOs = issueMapper.queryByIssueTypeIdsAndApplyType(projectConfig.getProjectId(), projectConfig.getApplyType(), issueTypeIds);
-                Map<Long, Long> issueCounts = issueDOs.stream().collect(Collectors.groupingBy(IssueDO::getIssueTypeId, Collectors.counting()));
+                List<IssueDTO> issueDTOS = issueMapper.queryByIssueTypeIdsAndApplyType(projectConfig.getProjectId(), projectConfig.getApplyType(), issueTypeIds);
+                Map<Long, Long> issueCounts = issueDTOS.stream().collect(Collectors.groupingBy(IssueDTO::getIssueTypeId, Collectors.counting()));
                 for (Map.Entry<Long, Long> entry : issueCounts.entrySet()) {
                     Long issueTypeId = entry.getKey();
                     Long count = entry.getValue();
@@ -354,7 +359,7 @@ public class StateMachineServiceImpl implements StateMachineService {
 
     @Condition(code = "just_reporter", name = "仅允许报告人", description = "只有该报告人才能执行转换")
     public Boolean justReporter(Long instanceId, StateMachineConfigDTO configDTO) {
-        IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(instanceId);
         Long currentUserId = DetailsHelper.getUserDetails().getUserId();
         return issue != null && issue.getReporterId() != null && issue.getReporterId().equals(currentUserId);
     }
@@ -389,7 +394,7 @@ public class StateMachineServiceImpl implements StateMachineService {
 
     @UpdateStatus(code = UPDATE_STATUS)
     public void updateStatus(Long instanceId, Long targetStatusId, String input) {
-        IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(instanceId);
         if (issue == null) {
             throw new CommonException("error.updateStatus.instanceId.notFound");
         }
@@ -397,34 +402,34 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException("error.updateStatus.targetStateId.null");
         }
         if (!issue.getStatusId().equals(targetStatusId)) {
-            IssueUpdateDTO issueUpdateDTO = issueAssembler.toTarget(issue, IssueUpdateDTO.class);
-            issueUpdateDTO.setStatusId(targetStatusId);
-            issueService.handleUpdateIssue(issueUpdateDTO, Collections.singletonList(STATUS_ID), issue.getProjectId());
+            IssueUpdateVO issueUpdateVO = issueAssembler.toTarget(issue, IssueUpdateVO.class);
+            issueUpdateVO.setStatusId(targetStatusId);
+            issueService.handleUpdateIssue(issueUpdateVO, Collections.singletonList(STATUS_ID), issue.getProjectId());
             logger.info("状态更新成功");
         }
     }
 
     @UpdateStatus(code = UPDATE_STATUS_MOVE)
     public void updateStatusMove(Long instanceId, Long targetStatusId, String input) {
-        IssueDO issue = issueMapper.selectByPrimaryKey(instanceId);
+        IssueDTO issue = issueMapper.selectByPrimaryKey(instanceId);
         if (issue == null) {
             throw new CommonException("error.updateStatus.instanceId.notFound");
         }
         if (targetStatusId == null) {
             throw new CommonException("error.updateStatus.targetStateId.null");
         }
-        IssueUpdateDTO issueUpdateDTO = issueAssembler.toTarget(issue, IssueUpdateDTO.class);
+        IssueUpdateVO issueUpdateVO = issueAssembler.toTarget(issue, IssueUpdateVO.class);
         if (input != null && !Objects.equals(input, "null")) {
             JSONObject jsonObject = JSON.parseObject(input, JSONObject.class);
-            issueUpdateDTO.setRank(jsonObject.getString(RANK));
+            issueUpdateVO.setRank(jsonObject.getString(RANK));
         }
         if (!issue.getStatusId().equals(targetStatusId)) {
-            issueUpdateDTO.setStatusId(targetStatusId);
-            issueUpdateDTO.setStayDate(new Date());
-            issueService.handleUpdateIssue(issueUpdateDTO, Arrays.asList(STATUS_ID, RANK, STAY_DATE), issue.getProjectId());
+            issueUpdateVO.setStatusId(targetStatusId);
+            issueUpdateVO.setStayDate(new Date());
+            issueService.handleUpdateIssue(issueUpdateVO, Arrays.asList(STATUS_ID, RANK, STAY_DATE), issue.getProjectId());
             logger.info("状态更新成功");
         } else {
-            issueService.handleUpdateIssue(issueUpdateDTO, Collections.singletonList(RANK), issue.getProjectId());
+            issueService.handleUpdateIssue(issueUpdateVO, Collections.singletonList(RANK), issue.getProjectId());
         }
     }
 

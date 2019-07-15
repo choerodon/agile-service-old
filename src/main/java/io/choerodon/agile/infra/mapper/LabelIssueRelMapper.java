@@ -10,6 +10,6 @@ import io.choerodon.agile.infra.dataobject.*;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:31:22
  */
-public interface LabelIssueRelMapper extends Mapper<LabelIssueRelDO> {
+public interface LabelIssueRelMapper extends Mapper<LabelIssueRelDTO> {
 
 }

@@ -1,11 +1,11 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.IssueStatusDTO
-import io.choerodon.agile.api.vo.StatusInfoDTO
-import io.choerodon.agile.api.vo.StatusMoveDTO
-import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO
-import io.choerodon.agile.infra.dataobject.IssueStatusDO
+import io.choerodon.agile.api.vo.IssueStatusVO
+import io.choerodon.agile.api.vo.StatusInfoVO
+import io.choerodon.agile.api.vo.StatusMoveVO
+import io.choerodon.agile.infra.dataobject.ColumnStatusRelDTO
+import io.choerodon.agile.infra.dataobject.IssueStatusDTO
 import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
@@ -66,26 +66,26 @@ class IssueStatusControllerSpec extends Specification {
     Long boardId = 1L
 
     def setup() {
-        StatusInfoDTO statusInfoDTO = new StatusInfoDTO()
+        StatusInfoVO statusInfoDTO = new StatusInfoVO()
         statusInfoDTO.setId(10001L)
         statusInfoDTO.setName(statusName)
-        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.anyString(), Matchers.any(StatusInfoDTO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
+        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.anyString(), Matchers.any(StatusInfoVO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
     }
 
     def 'createStatus'() {
         given:
-        IssueStatusDTO issueStatusDTO = new IssueStatusDTO()
+        IssueStatusVO issueStatusDTO = new IssueStatusVO()
         issueStatusDTO.projectId = projectId
         issueStatusDTO.name = statusName
         issueStatusDTO.categoryCode = categoryCode
         issueStatusDTO.enable = true
 
         when:
-        HttpEntity<IssueStatusDTO> issueStatusDTOHttpEntity = new HttpEntity<>(issueStatusDTO)
+        HttpEntity<IssueStatusVO> issueStatusDTOHttpEntity = new HttpEntity<>(issueStatusDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status?applyType=agile",
                 HttpMethod.POST,
                 issueStatusDTOHttpEntity,
-                IssueStatusDTO.class,
+                IssueStatusVO.class,
                 projectId)
 
         then:
@@ -113,72 +113,72 @@ class IssueStatusControllerSpec extends Specification {
 
     def 'moveStatusToColumn'() {
         given:
-        IssueStatusDO issueStatusDO = new IssueStatusDO()
+        IssueStatusDTO issueStatusDO = new IssueStatusDTO()
         issueStatusDO.setName(statusName)
         issueStatusDO.projectId = projectId
         statusId = issueStatusMapper.selectOne(issueStatusDO).id
-        StatusMoveDTO statusMoveDTO = new StatusMoveDTO()
+        StatusMoveVO statusMoveDTO = new StatusMoveVO()
         statusMoveDTO.columnId = 1L
         statusMoveDTO.originColumnId = 0L
         statusMoveDTO.position = 1
         statusMoveDTO.statusObjectVersionNumber = 1L
 
         and:
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO()
+        ColumnStatusRelDTO columnStatusRelDO = new ColumnStatusRelDTO()
         columnStatusRelDO.projectId = projectId
         columnStatusRelDO.columnId = 1L
         columnStatusRelDO.statusId = statusId
         columnStatusRelDO.position = 1
 
         when:
-        HttpEntity<StatusMoveDTO> statusMoveDTOHttpEntity = new HttpEntity<>(statusMoveDTO)
+        HttpEntity<StatusMoveVO> statusMoveDTOHttpEntity = new HttpEntity<>(statusMoveDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/{id}/move_to_column",
                 HttpMethod.POST,
                 statusMoveDTOHttpEntity,
-                IssueStatusDTO.class,
+                IssueStatusVO.class,
                 projectId,
                 statusId
         )
 
         then:
         entity.statusCode.is2xxSuccessful()
-        ColumnStatusRelDO result = columnStatusRelMapper.selectOne(columnStatusRelDO)
+        ColumnStatusRelDTO result = columnStatusRelMapper.selectOne(columnStatusRelDO)
         result != null
 
     }
 
     def 'moveStatusToUnCorrespond'() {
         given:
-        StatusMoveDTO statusMoveDTO = new StatusMoveDTO()
+        StatusMoveVO statusMoveDTO = new StatusMoveVO()
         statusMoveDTO.columnId = 1L
 
         and:
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO()
+        ColumnStatusRelDTO columnStatusRelDO = new ColumnStatusRelDTO()
         columnStatusRelDO.projectId = projectId
         columnStatusRelDO.columnId = 1L
         columnStatusRelDO.statusId = statusId
         columnStatusRelDO.position = 1
 
         when:
-        HttpEntity<StatusMoveDTO> statusMoveDTOHttpEntity = new HttpEntity<>(statusMoveDTO)
+        HttpEntity<StatusMoveVO> statusMoveDTOHttpEntity = new HttpEntity<>(statusMoveDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/{id}/move_to_uncorrespond",
                 HttpMethod.POST,
                 statusMoveDTOHttpEntity,
-                IssueStatusDTO.class,
+                IssueStatusVO.class,
                 projectId,
                 statusId
         )
 
         then:
         entity.statusCode.is2xxSuccessful()
-        ColumnStatusRelDO result = columnStatusRelMapper.selectOne(columnStatusRelDO)
+        ColumnStatusRelDTO result = columnStatusRelMapper.selectOne(columnStatusRelDO)
         result == null
 
     }
 
     def 'updateStatus'() {
         given:
-        IssueStatusDTO issueStatusDTO = new IssueStatusDTO()
+        IssueStatusVO issueStatusDTO = new IssueStatusVO()
         issueStatusDTO.projectId = projectId
         issueStatusDTO.id = statusId
         issueStatusDTO.completed = true
@@ -186,11 +186,11 @@ class IssueStatusControllerSpec extends Specification {
         issueStatusDTO.setStatusId(issueStatusMapper.selectByPrimaryKey(statusId).getStatusId())
 
         when:
-        HttpEntity<IssueStatusDTO> issueStatusDTOHttpEntity = new HttpEntity<>(issueStatusDTO)
+        HttpEntity<IssueStatusVO> issueStatusDTOHttpEntity = new HttpEntity<>(issueStatusDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/{id}",
                 HttpMethod.PUT,
                 issueStatusDTOHttpEntity,
-                IssueStatusDTO.class,
+                IssueStatusVO.class,
                 projectId,
                 statusId)
 
@@ -214,23 +214,23 @@ class IssueStatusControllerSpec extends Specification {
 
     def 'createStatusByStateMachine'() {
         given: '准备数据'
-        IssueStatusDTO issueStatusDTO = new IssueStatusDTO()
+        IssueStatusVO issueStatusDTO = new IssueStatusVO()
         issueStatusDTO.statusId = statusId
         issueStatusDTO.projectId = projectId
         issueStatusDTO.objectVersionNumber = 2L
         issueStatusDTO.name = "other"
-        HttpEntity<IssueStatusDTO> issueStatusDTOHttpEntity = new HttpEntity<>(issueStatusDTO)
+        HttpEntity<IssueStatusVO> issueStatusDTOHttpEntity = new HttpEntity<>(issueStatusDTO)
         when: '状态机服务回写状态信息'
         def entity = restTemplate.exchange("/v1/projects/{project_id}/issue_status/back_update",
                 HttpMethod.POST,
                 issueStatusDTOHttpEntity,
-                IssueStatusDTO.class,
+                IssueStatusVO.class,
                 projectId)
 
         then:
         entity.statusCode.is2xxSuccessful()
         and:
-        IssueStatusDTO result = entity.body
+        IssueStatusVO result = entity.body
 
         expect:
         result.statusId == statusId

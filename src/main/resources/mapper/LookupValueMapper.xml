@@ -2,12 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.LookupValueMapper">
 
-	<resultMap id="lookupTypeWithValuesMap" type="io.choerodon.agile.infra.dataobject.LookupTypeWithValuesDO">
+	<resultMap id="lookupTypeWithValuesMap" type="io.choerodon.agile.infra.dataobject.LookupTypeWithValuesDTO">
 		<id property="typeCode" column="alt_type_code"/>
 		<id property="name" column="alt_name"/>
 		<id property="description" column="alt_description"/>
 		<id property="objectVersionNumber" column="alt_object_version_number"/>
-		<collection property="lookupValues" autoMapping="true" columnPrefix="alv_" ofType="io.choerodon.agile.infra.dataobject.LookupValueDO"/>
+		<collection property="lookupValues" autoMapping="true" columnPrefix="alv_" ofType="io.choerodon.agile.infra.dataobject.LookupValueDTO"/>
 	</resultMap>
 
 	<select id="queryLookupValueByCode" resultMap="lookupTypeWithValuesMap">

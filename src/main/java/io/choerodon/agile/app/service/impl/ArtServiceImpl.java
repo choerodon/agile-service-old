@@ -5,8 +5,6 @@ import io.choerodon.agile.api.validator.ArtValidator;
 import io.choerodon.agile.app.assembler.ArtAssembler;
 import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.app.service.PiService;
-import io.choerodon.agile.domain.agile.entity.PiE;
-import io.choerodon.agile.infra.repository.PiRepository;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
@@ -67,8 +65,8 @@ public class ArtServiceImpl implements ArtService {
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
 
-    @Autowired
-    private PiRepository piRepository;
+//    @Autowired
+//    private PiRepository piRepository;
 
     private final ModelMapper modelMapper = new ModelMapper();
 
@@ -122,16 +120,16 @@ public class ArtServiceImpl implements ArtService {
         }
         List<PiDTO> piDTOList = piMapper.selectUnDonePiDOList(programId, artVO.getId());
         if (piDTOList != null) {
-            piDTOList.forEach(piDO -> {
+            piDTOList.forEach(pi -> {
                 // deal uncomplete feature to target pi
-                piService.dealUnCompleteFeature(programId, piDO.getId(), 0L);
+                piService.dealUnCompleteFeature(programId, pi.getId(), 0L);
                 // deal projects' sprints complete
-                piService.completeProjectsSprints(programId, piDO.getId(), onlySelectEnable);
+                piService.completeProjectsSprints(programId, pi.getId(), onlySelectEnable);
                 // update pi status: done
-                PiE update = new PiE(programId, piDO.getId(), PI_DONE, piDO.getObjectVersionNumber());
+                PiDTO update = new PiDTO(programId, pi.getId(), PI_DONE, pi.getObjectVersionNumber());
                 update.setActualStartDate(new Date());
                 update.setActualEndDate(new Date());
-                piRepository.updateBySelective(update);
+                piService.updateBySelectiveBase(update);
             });
         }
         return artMapper.selectByPrimaryKey(artVO.getId());
@@ -187,9 +185,9 @@ public class ArtServiceImpl implements ArtService {
     }
 
     @Override
-    public void createOtherPi(Long programId, PiCreateDTO piCreateDTO) {
-        Long artId = piCreateDTO.getArtId();
-        Date startDate = piCreateDTO.getStartDate();
+    public void createOtherPi(Long programId, PiCreateVO piCreateVO) {
+        Long artId = piCreateVO.getArtId();
+        Date startDate = piCreateVO.getStartDate();
         // auto create pi with piNumber
         ArtDTO artDTO = artMapper.selectByPrimaryKey(artId);
         piService.createPi(programId, artDTO, startDate);

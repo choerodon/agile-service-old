@@ -1,16 +1,17 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.vo.WikiRelationDTO;
-import io.choerodon.agile.api.vo.WorkSpaceDTO;
+import io.choerodon.agile.api.vo.WikiRelationVO;
+import io.choerodon.agile.api.vo.WorkSpaceVO;
 import io.choerodon.agile.app.service.WikiRelationService;
-import io.choerodon.agile.domain.agile.entity.WikiRelationE;
-import io.choerodon.agile.infra.dataobject.WorkSpaceDO;
+import io.choerodon.agile.infra.dataobject.WikiRelationDTO;
+import io.choerodon.agile.infra.dataobject.WorkSpaceDTO;
 import io.choerodon.agile.infra.feign.KnowledgebaseClient;
-import io.choerodon.agile.infra.repository.WikiRelationRepository;
-import io.choerodon.agile.infra.dataobject.WikiRelationDO;
 import io.choerodon.agile.infra.mapper.WikiRelationMapper;
-import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.exception.CommonException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +37,8 @@ public class WikiRelationServiceImpl implements WikiRelationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WikiRelationServiceImpl.class);
 
-    @Autowired
-    private WikiRelationRepository wikiRelationRepository;
+//    @Autowired
+//    private WikiRelationRepository wikiRelationRepository;
 
     @Autowired
     private WikiRelationMapper wikiRelationMapper;
@@ -44,21 +46,31 @@ public class WikiRelationServiceImpl implements WikiRelationService {
     @Autowired
     private KnowledgebaseClient knowledgebaseClient;
 
-    private Boolean checkRepeat(WikiRelationE wikiRelationE) {
-        WikiRelationDO wikiRelationDO = new WikiRelationDO();
-        wikiRelationDO.setProjectId(wikiRelationE.getProjectId());
-        wikiRelationDO.setIssueId(wikiRelationE.getIssueId());
-        wikiRelationDO.setSpaceId(wikiRelationE.getSpaceId());
-        WikiRelationDO res = wikiRelationMapper.selectOne(wikiRelationDO);
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
+    private Boolean checkRepeat(WikiRelationDTO wikiRelationDTO) {
+        WikiRelationDTO wikiRelation = new WikiRelationDTO();
+        wikiRelation.setProjectId(wikiRelationDTO.getProjectId());
+        wikiRelation.setIssueId(wikiRelationDTO.getIssueId());
+        wikiRelation.setSpaceId(wikiRelationDTO.getSpaceId());
+        WikiRelationDTO res = wikiRelationMapper.selectOne(wikiRelation);
         return res != null;
     }
 
     @Override
-    public void create(Long projectId, List<WikiRelationDTO> wikiRelationDTOList) {
-        List<WikiRelationE> wikiRelationEList = ConvertHelper.convertList(wikiRelationDTOList, WikiRelationE.class);
-        for (WikiRelationE wikiRelationE : wikiRelationEList) {
-            if (!checkRepeat(wikiRelationE)) {
-                wikiRelationRepository.create(wikiRelationE);
+    public void create(Long projectId, List<WikiRelationVO> wikiRelationVOList) {
+        List<WikiRelationDTO> wikiRelationDTOList = modelMapper.map(wikiRelationVOList, new TypeToken<WikiRelationDTO>(){}.getType());
+        for (WikiRelationDTO wikiRelationDTO : wikiRelationDTOList) {
+            if (!checkRepeat(wikiRelationDTO)) {
+//                wikiRelationRepository.create(wikiRelationE);
+                if (wikiRelationMapper.insert(wikiRelationDTO) != 1) {
+                    throw new CommonException("error.wikiRelationDTO.insert");
+                }
             }
         }
     }
@@ -66,18 +78,18 @@ public class WikiRelationServiceImpl implements WikiRelationService {
     @Override
     public JSONObject queryByIssueId(Long projectId, Long issueId) {
         JSONObject jsonObject = new JSONObject();
-        WikiRelationDO wikiRelationDO = new WikiRelationDO();
-        wikiRelationDO.setIssueId(issueId);
-        List<WikiRelationDO> wikiRelationDOList = wikiRelationMapper.select(wikiRelationDO);
-        List<WikiRelationDTO> result = new ArrayList<>();
-        if (wikiRelationDOList != null && !wikiRelationDOList.isEmpty()) {
-            List<Long> spaceIds = wikiRelationDOList.stream().map(WikiRelationDO::getSpaceId).collect(Collectors.toList());
-            Map<Long, WorkSpaceDTO> workSpaceMap = knowledgebaseClient.querySpaceByIds(projectId, spaceIds).getBody().stream().collect(Collectors.toMap(WorkSpaceDTO::getId, Function.identity()));
-            for (WikiRelationDO wikiRelation : wikiRelationDOList) {
-                WikiRelationDTO wikiRelationDTO = new WikiRelationDTO();
-                BeanUtils.copyProperties(wikiRelation, wikiRelationDTO);
-                wikiRelationDTO.setWorkSpaceDTO(workSpaceMap.get(wikiRelationDTO.getSpaceId()));
-                result.add(wikiRelationDTO);
+        WikiRelationDTO wikiRelationDTO = new WikiRelationDTO();
+        wikiRelationDTO.setIssueId(issueId);
+        List<WikiRelationDTO> wikiRelationDTOList = wikiRelationMapper.select(wikiRelationDTO);
+        List<WikiRelationVO> result = new ArrayList<>();
+        if (wikiRelationDTOList != null && !wikiRelationDTOList.isEmpty()) {
+            List<Long> spaceIds = wikiRelationDTOList.stream().map(WikiRelationDTO::getSpaceId).collect(Collectors.toList());
+            Map<Long, WorkSpaceVO> workSpaceMap = knowledgebaseClient.querySpaceByIds(projectId, spaceIds).getBody().stream().collect(Collectors.toMap(WorkSpaceVO::getId, Function.identity()));
+            for (WikiRelationDTO wikiRelation : wikiRelationDTOList) {
+                WikiRelationVO wikiRelationVO = new WikiRelationVO();
+                BeanUtils.copyProperties(wikiRelation, wikiRelationVO);
+                wikiRelationVO.setWorkSpaceVO(workSpaceMap.get(wikiRelationVO.getSpaceId()));
+                result.add(wikiRelationVO);
             }
         }
         jsonObject.put("knowledgeRelationList", result);
@@ -86,28 +98,31 @@ public class WikiRelationServiceImpl implements WikiRelationService {
 
     @Override
     public void deleteById(Long projectId, Long id) {
-        WikiRelationE wikiRelationE = new WikiRelationE();
-        wikiRelationE.setProjectId(projectId);
-        wikiRelationE.setId(id);
-        wikiRelationRepository.delete(wikiRelationE);
+        WikiRelationDTO wikiRelationDTO = new WikiRelationDTO();
+        wikiRelationDTO.setProjectId(projectId);
+        wikiRelationDTO.setId(id);
+//        wikiRelationRepository.delete(wikiRelationE);
+        if (wikiRelationMapper.delete(wikiRelationDTO) != 1) {
+            throw new CommonException("error.wikiRelationDTO.delete");
+        }
     }
 
     @Override
     public void moveWikiRelation() {
-        List<WikiRelationDO> wikiRelationDOList = wikiRelationMapper.selectAll();
-        if (wikiRelationDOList == null || wikiRelationDOList.isEmpty()) {
+        List<WikiRelationDTO> wikiRelationDTOList = wikiRelationMapper.selectAll();
+        if (wikiRelationDTOList == null || wikiRelationDTOList.isEmpty()) {
             return;
         }
-        ResponseEntity<List<WorkSpaceDO>> responseEntity = knowledgebaseClient.queryAllSpaceByProject();
+        ResponseEntity<List<WorkSpaceDTO>> responseEntity = knowledgebaseClient.queryAllSpaceByProject();
         if (responseEntity == null) {
             return;
         }
-        List<WorkSpaceDO> workSpaceDOList = responseEntity.getBody();
-        if (workSpaceDOList != null && !workSpaceDOList.isEmpty()) {
-            for (WikiRelationDO wikiRelationDO : wikiRelationDOList) {
-                for (WorkSpaceDO workSpaceDO : workSpaceDOList) {
-                    if (workSpaceDO.getProjectId() != null && wikiRelationDO.getProjectId() != null  && wikiRelationDO.getProjectId().equals(workSpaceDO.getProjectId()) && wikiRelationDO.getWikiName() != null && workSpaceDO.getName() != null && wikiRelationDO.getWikiName().equals(workSpaceDO.getName())) {
-                        wikiRelationMapper.updateByOptions(wikiRelationDO.getId(), workSpaceDO.getId());
+        List<WorkSpaceDTO> workSpaceDTOList = responseEntity.getBody();
+        if (workSpaceDTOList != null && !workSpaceDTOList.isEmpty()) {
+            for (WikiRelationDTO wikiRelationDTO : wikiRelationDTOList) {
+                for (WorkSpaceDTO workSpaceDTO : workSpaceDTOList) {
+                    if (workSpaceDTO.getProjectId() != null && wikiRelationDTO.getProjectId() != null  && wikiRelationDTO.getProjectId().equals(workSpaceDTO.getProjectId()) && wikiRelationDTO.getWikiName() != null && workSpaceDTO.getName() != null && wikiRelationDTO.getWikiName().equals(workSpaceDTO.getName())) {
+                        wikiRelationMapper.updateByOptions(wikiRelationDTO.getId(), workSpaceDTO.getId());
                         break;
                     }
                 }

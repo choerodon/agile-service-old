@@ -1,11 +1,11 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.DataLogCreateDTO
-import io.choerodon.agile.api.vo.DataLogDTO
-import io.choerodon.agile.infra.repository.UserRepository
-import io.choerodon.agile.infra.dataobject.UserMessageDO
+import io.choerodon.agile.api.vo.DataLogCreateVO
+import io.choerodon.agile.api.vo.DataLogVO
+import io.choerodon.agile.infra.dataobject.UserMessageDTO
 import io.choerodon.agile.infra.mapper.DataLogMapper
+import io.choerodon.agile.app.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
@@ -32,7 +32,7 @@ class DataLogControllerSpec extends Specification {
     TestRestTemplate restTemplate
 
     @Autowired
-    UserRepository userRepository
+    UserService userRepository
 
     @Autowired
     private DataLogMapper dataLogMapper
@@ -49,18 +49,18 @@ class DataLogControllerSpec extends Specification {
 
     def 'createDataLog'() {
         given:
-        DataLogCreateDTO createDTO = new DataLogCreateDTO()
+        DataLogCreateVO createDTO = new DataLogCreateVO()
         createDTO.field = field
         createDTO.newValue = 1L
         createDTO.newString = "待处理"
         createDTO.issueId = issueId
 
         when:
-        HttpEntity<DataLogCreateDTO> dataLogDTOHttpEntity = new HttpEntity<>(createDTO)
+        HttpEntity<DataLogCreateVO> dataLogDTOHttpEntity = new HttpEntity<>(createDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/data_log",
                 HttpMethod.POST,
                 dataLogDTOHttpEntity,
-                DataLogDTO.class,
+                DataLogVO.class,
                 projectId)
 
         then:
@@ -71,8 +71,8 @@ class DataLogControllerSpec extends Specification {
 
     def 'listByIssueId'() {
         given:
-        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-        UserMessageDO userMessageDO = new UserMessageDO("admin", "http://admin.png", "admin@gmail.com")
+        Map<Long, UserMessageDTO> userMessageDOMap = new HashMap<>()
+        UserMessageDTO userMessageDO = new UserMessageDTO("admin", "http://admin.png", "admin@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         userRepository.queryUsersMap(*_) >> userMessageDOMap
 

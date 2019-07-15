@@ -2,12 +2,12 @@ package io.choerodon.agile.api.controller.v1
 
 import com.alibaba.fastjson.JSONObject
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.BoardColumnDTO
-import io.choerodon.agile.api.vo.ColumnSortDTO
-import io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO
+import io.choerodon.agile.api.vo.BoardColumnVO
+import io.choerodon.agile.api.vo.ColumnSortVO
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO
 import io.choerodon.agile.app.service.BoardColumnService
-import io.choerodon.agile.infra.dataobject.BoardColumnDO
-import io.choerodon.agile.infra.dataobject.IssueStatusDO
+import io.choerodon.agile.infra.dataobject.BoardColumnDTO
+import io.choerodon.agile.infra.dataobject.IssueStatusDTO
 import io.choerodon.agile.infra.mapper.BoardColumnMapper
 import io.choerodon.agile.infra.mapper.BoardMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
@@ -67,7 +67,7 @@ class BoardColumnControllerSpec extends Specification {
 
     def 'createBoardColumn'() {
         given:
-        BoardColumnDTO boardColumnDTO = new BoardColumnDTO();
+        BoardColumnVO boardColumnDTO = new BoardColumnVO();
         boardColumnDTO.projectId = projectId
         boardColumnDTO.boardId = boardId
         boardColumnDTO.categoryCode = categoryCode
@@ -77,11 +77,11 @@ class BoardColumnControllerSpec extends Specification {
         boardColumnDTO.maxNum = 1
 
         when:
-        HttpEntity<BoardColumnDTO> boardColumnDTOHttpEntity = new HttpEntity<>(boardColumnDTO)
+        HttpEntity<BoardColumnVO> boardColumnDTOHttpEntity = new HttpEntity<>(boardColumnDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column?categoryCode={categoryCode}&applyType=agile",
                 HttpMethod.POST,
                 boardColumnDTOHttpEntity,
-                BoardColumnDTO.class,
+                BoardColumnVO.class,
                 projectId,
                 categoryCode)
 
@@ -92,10 +92,10 @@ class BoardColumnControllerSpec extends Specification {
 
     def 'updateBoardColumn'() {
         given: '更新列名称'
-        BoardColumnDO columnDO = new BoardColumnDO()
+        BoardColumnDTO columnDO = new BoardColumnDTO()
         columnDO.name = boardColumnName
         columnId2 = boardColumnMapper.selectOne(columnDO).columnId
-        BoardColumnDTO boardColumnDTO = new BoardColumnDTO()
+        BoardColumnVO boardColumnDTO = new BoardColumnVO()
         boardColumnDTO.projectId = projectId
         boardColumnDTO.name = boardColumnName2
         boardColumnDTO.objectVersionNumber = 1L
@@ -103,11 +103,11 @@ class BoardColumnControllerSpec extends Specification {
         boardColumnDTO.boardId = boardId
 
         when:
-        HttpEntity<BoardColumnDTO> boardColumnDTOHttpEntity = new HttpEntity<>(boardColumnDTO)
+        HttpEntity<BoardColumnVO> boardColumnDTOHttpEntity = new HttpEntity<>(boardColumnDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/{columnId}?boardId={boardId}",
                 HttpMethod.PUT,
                 boardColumnDTOHttpEntity,
-                BoardColumnDTO.class,
+                BoardColumnVO.class,
                 projectId,
                 columnId2,
                 boardId)
@@ -119,13 +119,13 @@ class BoardColumnControllerSpec extends Specification {
 
     def 'updateBoardColumn unSuccess'() {
         given:
-        BoardColumnDO columnDO = boardColumnMapper.selectByPrimaryKey(columnId2)
+        BoardColumnDTO columnDO = boardColumnMapper.selectByPrimaryKey(columnId2)
         columnDO.objectVersionNumber = 0L
-        BoardColumnDTO boardColumnDTO = new BoardColumnDTO()
+        BoardColumnVO boardColumnDTO = new BoardColumnVO()
         BeanUtils.copyProperties(columnDO, boardColumnDTO)
 
         when:
-        HttpEntity<BoardColumnDTO> boardColumnDTOHttpEntity = new HttpEntity<>(boardColumnDTO)
+        HttpEntity<BoardColumnVO> boardColumnDTOHttpEntity = new HttpEntity<>(boardColumnDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/{columnId}?boardId={boardId}",
                 HttpMethod.PUT,
                 boardColumnDTOHttpEntity,
@@ -143,7 +143,7 @@ class BoardColumnControllerSpec extends Specification {
 
     def 'columnSort'() {
         given:
-        ColumnSortDTO columnSortDTO = new ColumnSortDTO()
+        ColumnSortVO columnSortDTO = new ColumnSortVO()
         columnSortDTO.boardId = boardId
         columnSortDTO.projectId = projectId
         columnSortDTO.columnId = columnId2
@@ -151,7 +151,7 @@ class BoardColumnControllerSpec extends Specification {
         columnSortDTO.objectVersionNumber = 2L
 
         when:
-        HttpEntity<ColumnSortDTO> columnSortDTOHttpEntity = new HttpEntity<>(columnSortDTO)
+        HttpEntity<ColumnSortVO> columnSortDTOHttpEntity = new HttpEntity<>(columnSortDTO)
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/column_sort",
                 HttpMethod.POST,
                 columnSortDTOHttpEntity,
@@ -168,7 +168,7 @@ class BoardColumnControllerSpec extends Specification {
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/{columnId}",
                 HttpMethod.GET,
                 new HttpEntity<Object>(),
-                BoardColumnDTO.class,
+                BoardColumnVO.class,
                 projectId,
                 columnId2)
         then:
@@ -178,7 +178,7 @@ class BoardColumnControllerSpec extends Specification {
 
     def 'updateColumnContraint'() {
         given:
-        ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO = new ColumnWithMaxMinNumDTO()
+        ColumnWithMaxMinNumVO columnWithMaxMinNumDTO = new ColumnWithMaxMinNumVO()
         columnWithMaxMinNumDTO.projectId = projectId
         columnWithMaxMinNumDTO.columnId = columnId2
         columnWithMaxMinNumDTO.objectVersionNumber = 3L
@@ -187,11 +187,11 @@ class BoardColumnControllerSpec extends Specification {
         columnWithMaxMinNumDTO.minNum = 2
 
         when:
-        HttpEntity<ColumnWithMaxMinNumDTO> columnWithMaxMinNumDTOHttpEntity = new HttpEntity<>(columnWithMaxMinNumDTO);
+        HttpEntity<ColumnWithMaxMinNumVO> columnWithMaxMinNumDTOHttpEntity = new HttpEntity<>(columnWithMaxMinNumDTO);
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/{columnId}/column_contraint",
                 HttpMethod.POST,
                 columnWithMaxMinNumDTOHttpEntity,
-                BoardColumnDTO.class,
+                BoardColumnVO.class,
                 projectId,
                 columnId2)
         then:
@@ -202,7 +202,7 @@ class BoardColumnControllerSpec extends Specification {
 
     def 'updateColumnContraint unSuccess'() {
         given:
-        ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO = new ColumnWithMaxMinNumDTO()
+        ColumnWithMaxMinNumVO columnWithMaxMinNumDTO = new ColumnWithMaxMinNumVO()
         columnWithMaxMinNumDTO.projectId = projectId
         columnWithMaxMinNumDTO.columnId = columnId2
         columnWithMaxMinNumDTO.objectVersionNumber = 4L
@@ -211,7 +211,7 @@ class BoardColumnControllerSpec extends Specification {
         columnWithMaxMinNumDTO.minNum = 3
 
         when:
-        HttpEntity<ColumnWithMaxMinNumDTO> columnWithMaxMinNumDTOHttpEntity = new HttpEntity<>(columnWithMaxMinNumDTO);
+        HttpEntity<ColumnWithMaxMinNumVO> columnWithMaxMinNumDTOHttpEntity = new HttpEntity<>(columnWithMaxMinNumDTO);
         def entity = restTemplate.exchange("/v1/projects/{project_id}/board_column/{columnId}/column_contraint",
                 HttpMethod.POST,
                 columnWithMaxMinNumDTOHttpEntity,
@@ -234,7 +234,7 @@ class BoardColumnControllerSpec extends Specification {
                 columnId2)
         then:
         entity.statusCode.is2xxSuccessful()
-        BoardColumnDO result = boardColumnMapper.selectByPrimaryKey(columnId2)
+        BoardColumnDTO result = boardColumnMapper.selectByPrimaryKey(columnId2)
         result == null
     }
 
@@ -254,7 +254,7 @@ class BoardColumnControllerSpec extends Specification {
 
     def 'deleteData'() {
         given:
-        IssueStatusDO issueStatusDO = new IssueStatusDO()
+        IssueStatusDTO issueStatusDO = new IssueStatusDTO()
         issueStatusDO.setProjectId(projectId)
         issueStatusDO.setName("column-create")
         issueStatusMapper.delete(issueStatusDO)

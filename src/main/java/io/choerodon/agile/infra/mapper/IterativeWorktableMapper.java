@@ -12,18 +12,18 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface IterativeWorktableMapper {
 
-    List<PriorityDistributeDO> queryPriorityDistribute(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+    List<PriorityDistributeDTO> queryPriorityDistribute(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<StatusCategoryDO> queryStatusCategoryDistribute(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+    List<StatusCategoryDTO> queryStatusCategoryDistribute(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<AssigneeIssueDO> queryAssigneeInfoBySprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
+    List<AssigneeIssueDTO> queryAssigneeInfoBySprintId(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
     Integer queryAssigneeAll(@Param("projectId") Long projectId, @Param("sprintId") Long sprintId);
 
-    List<AssigneeDistributeDO> queryAssigneeDistribute(@Param("projectId") Long projectId,
-                                                     @Param("sprintId") Long sprintId,
-                                                     @Param("total") Integer total);
+    List<AssigneeDistributeDTO> queryAssigneeDistribute(@Param("projectId") Long projectId,
+                                                        @Param("sprintId") Long sprintId,
+                                                        @Param("total") Integer total);
 
-    List<IssueTypeDistributeDO> queryIssueTypeDistribute(@Param("projectId") Long projectId,
-                                                         @Param("sprintId") Long sprintId);
+    List<IssueTypeDistributeDTO> queryIssueTypeDistribute(@Param("projectId") Long projectId,
+                                                          @Param("sprintId") Long sprintId);
 }

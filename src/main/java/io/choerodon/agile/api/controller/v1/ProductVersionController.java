@@ -57,11 +57,11 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("创建version")
     @PostMapping
-    public ResponseEntity<ProductVersionDetailDTO> createVersion(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProductVersionDetailVO> createVersion(@ApiParam(value = "项目id", required = true)
                                                                  @PathVariable(name = "project_id") Long projectId,
-                                                                 @ApiParam(value = "releasePlan信息", required = true)
-                                                                 @RequestBody @Valid ProductVersionCreateDTO versionCreateDTO) {
-        return Optional.ofNullable(productVersionService.createVersion(projectId, versionCreateDTO))
+                                                                @ApiParam(value = "releasePlan信息", required = true)
+                                                                 @RequestBody @Valid ProductVersionCreateVO versionCreateVO) {
+        return Optional.ofNullable(productVersionService.createVersion(projectId, versionCreateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(CREATE_ERROR));
     }
@@ -69,13 +69,13 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation("更新version")
     @PutMapping(value = "/update/{versionId}")
-    public ResponseEntity<ProductVersionDetailDTO> updateVersion(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProductVersionDetailVO> updateVersion(@ApiParam(value = "项目id", required = true)
                                                                  @PathVariable(name = "project_id") Long projectId,
-                                                                 @ApiParam(value = "versionId", required = true)
+                                                                @ApiParam(value = "versionId", required = true)
                                                                  @PathVariable Long versionId,
-                                                                 @ApiParam(value = "version信息", required = true)
+                                                                @ApiParam(value = "version信息", required = true)
                                                                  @RequestBody JSONObject versionUpdateDTO) {
-        ProductVersionUpdateDTO productVersionUpdate = new ProductVersionUpdateDTO();
+        ProductVersionUpdateVO productVersionUpdate = new ProductVersionUpdateVO();
         List<String> fieldList = verifyUpdateUtil.verifyUpdateData(versionUpdateDTO, productVersionUpdate);
         return Optional.ofNullable(productVersionService.updateVersion(projectId, versionId, productVersionUpdate, fieldList))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
@@ -100,14 +100,14 @@ public class ProductVersionController {
     @CustomPageRequest
     @ApiOperation(value = "根据项目id查找version")
     @PostMapping(value = "/versions")
-    public ResponseEntity<PageInfo<ProductVersionPageDTO>> listByOptions(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<PageInfo<ProductVersionPageVO>> listByOptions(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId,
-                                                                     @ApiParam(value = "查询参数")
-                                                                     @RequestBody(required = false) SearchDTO searchDTO,
-                                                                     @ApiParam(value = "分页信息", required = true)
+                                                                        @ApiParam(value = "查询参数")
+                                                                     @RequestBody(required = false) SearchVO searchVO,
+                                                                        @ApiParam(value = "分页信息", required = true)
                                                                      @SortDefault(value = "sequence", direction = Sort.Direction.DESC)
                                                                      @ApiIgnore PageRequest pageRequest) {
-        return Optional.ofNullable(productVersionService.queryByProjectId(projectId, pageRequest, searchDTO))
+        return Optional.ofNullable(productVersionService.queryByProjectId(projectId, pageRequest, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ERROR));
     }
@@ -127,7 +127,7 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "backlog页面查询所有版本")
     @GetMapping
-    public ResponseEntity<List<ProductVersionDataDTO>> queryVersionByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<ProductVersionDataVO>> queryVersionByProjectId(@ApiParam(value = "项目id", required = true)
                                                                                @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(productVersionService.queryVersionByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -137,9 +137,9 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "版本详情及issue统计信息")
     @GetMapping(value = "/{versionId}")
-    public ResponseEntity<ProductVersionStatisticsDTO> queryVersionStatisticsByVersionId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProductVersionStatisticsVO> queryVersionStatisticsByVersionId(@ApiParam(value = "项目id", required = true)
                                                                                          @PathVariable(name = "project_id") Long projectId,
-                                                                                         @ApiParam(value = "versionId", required = true)
+                                                                                        @ApiParam(value = "versionId", required = true)
                                                                                          @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.queryVersionStatisticsByVersionId(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -149,9 +149,9 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "版本详情")
     @GetMapping(value = "/{versionId}/detail")
-    public ResponseEntity<ProductVersionDetailDTO> queryVersionByVersionId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProductVersionDetailVO> queryVersionByVersionId(@ApiParam(value = "项目id", required = true)
                                                                            @PathVariable(name = "project_id") Long projectId,
-                                                                           @ApiParam(value = "versionId", required = true)
+                                                                          @ApiParam(value = "versionId", required = true)
                                                                            @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.queryVersionByVersionId(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -161,16 +161,16 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "获取版本下指定状态的issue")
     @PostMapping(value = "/{versionId}/issues")
-    public ResponseEntity<List<IssueListDTO>> queryByVersionIdAndStatusCode(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<IssueListVO>> queryByVersionIdAndStatusCode(@ApiParam(value = "项目id", required = true)
                                                                             @PathVariable(name = "project_id") Long projectId,
-                                                                            @ApiParam(value = "versionId", required = true)
+                                                                           @ApiParam(value = "versionId", required = true)
                                                                             @PathVariable Long versionId,
-                                                                            @ApiParam(value = "组织id", required = true)
+                                                                           @ApiParam(value = "组织id", required = true)
                                                                             @RequestParam Long organizationId,
-                                                                            @RequestBody SearchDTO searchDTO,
-                                                                            @ApiParam(value = "issue状态码")
+                                                                           @RequestBody SearchVO searchVO,
+                                                                           @ApiParam(value = "issue状态码")
                                                                             @RequestParam(required = false) String statusCode) {
-        return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, organizationId, searchDTO))
+        return Optional.ofNullable(productVersionService.queryIssueByVersionIdAndStatusCode(projectId, versionId, statusCode, organizationId, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(QUERY_ISSUE_ERROR));
     }
@@ -178,9 +178,9 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "查询规划中版本名及要发布版本未完成issue统计")
     @GetMapping(value = "/{versionId}/plan_names")
-    public ResponseEntity<VersionMessageDTO> queryReleaseMessageByVersionId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<VersionMessageVO> queryReleaseMessageByVersionId(@ApiParam(value = "项目id", required = true)
                                                                             @PathVariable(name = "project_id") Long projectId,
-                                                                            @ApiParam(value = "versionId", required = true)
+                                                                           @ApiParam(value = "versionId", required = true)
                                                                             @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.queryReleaseMessageByVersionId(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -190,10 +190,10 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation(value = "发布版本")
     @PostMapping(value = "/release")
-    public ResponseEntity<ProductVersionDetailDTO> releaseVersion(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProductVersionDetailVO> releaseVersion(@ApiParam(value = "项目id", required = true)
                                                                   @PathVariable(name = "project_id") Long projectId,
-                                                                  @ApiParam(value = "发布版本信息", required = true)
-                                                                  @RequestBody @Valid ProductVersionReleaseDTO productVersionRelease) {
+                                                                 @ApiParam(value = "发布版本信息", required = true)
+                                                                  @RequestBody @Valid ProductVersionReleaseVO productVersionRelease) {
         return Optional.ofNullable(productVersionService.releaseVersion(projectId, productVersionRelease))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(RELEASE_ERROR));
@@ -202,9 +202,9 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation(value = "撤销发布版本")
     @PostMapping(value = "/{versionId}/revoke_release")
-    public ResponseEntity<ProductVersionDetailDTO> revokeReleaseVersion(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProductVersionDetailVO> revokeReleaseVersion(@ApiParam(value = "项目id", required = true)
                                                                         @PathVariable(name = "project_id") Long projectId,
-                                                                        @ApiParam(value = "版本id", required = true)
+                                                                       @ApiParam(value = "版本id", required = true)
                                                                         @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.revokeReleaseVersion(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -214,9 +214,9 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation(value = "归档版本")
     @PostMapping(value = "/{versionId}/archived")
-    public ResponseEntity<ProductVersionDetailDTO> archivedVersion(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProductVersionDetailVO> archivedVersion(@ApiParam(value = "项目id", required = true)
                                                                    @PathVariable(name = "project_id") Long projectId,
-                                                                   @ApiParam(value = "版本id", required = true)
+                                                                  @ApiParam(value = "版本id", required = true)
                                                                    @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.archivedVersion(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -227,9 +227,9 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = InitRoleCode.PROJECT_OWNER)
     @ApiOperation(value = "撤销归档版本")
     @PostMapping(value = "/{versionId}/revoke_archived")
-    public ResponseEntity<ProductVersionDetailDTO> revokeArchivedVersion(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProductVersionDetailVO> revokeArchivedVersion(@ApiParam(value = "项目id", required = true)
                                                                          @PathVariable(name = "project_id") Long projectId,
-                                                                         @ApiParam(value = "版本id", required = true)
+                                                                        @ApiParam(value = "版本id", required = true)
                                                                          @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.revokeArchivedVersion(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -239,9 +239,9 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "查询所有版本名及要删除版本issue统计")
     @GetMapping(value = "/{versionId}/names")
-    public ResponseEntity<VersionMessageDTO> queryDeleteMessageByVersionId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<VersionMessageVO> queryDeleteMessageByVersionId(@ApiParam(value = "项目id", required = true)
                                                                            @PathVariable(name = "project_id") Long projectId,
-                                                                           @ApiParam(value = "versionId", required = true)
+                                                                          @ApiParam(value = "versionId", required = true)
                                                                            @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.queryDeleteMessageByVersionId(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -251,9 +251,9 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "根据状态查询版本名")
     @PostMapping(value = "/names")
-    public ResponseEntity<List<ProductVersionNameDTO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<ProductVersionNameVO>> queryNameByOptions(@ApiParam(value = "项目id", required = true)
                                                                           @PathVariable(name = "project_id") Long projectId,
-                                                                          @ApiParam(value = "状态列表", required = false)
+                                                                         @ApiParam(value = "状态列表", required = false)
                                                                           @RequestBody(required = false) List<String> statusCodes) {
         return Optional.ofNullable(productVersionService.queryNameByOptions(projectId, statusCodes))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -263,7 +263,7 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "根据项目id查找version列表")
     @GetMapping(value = "/versions")
-    public ResponseEntity<List<ProductVersionDTO>> listByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<ProductVersionVO>> listByProjectId(@ApiParam(value = "项目id", required = true)
                                                                    @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(productVersionService.listByProjectId(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -276,8 +276,8 @@ public class ProductVersionController {
     public ResponseEntity<Boolean> mergeVersion(@ApiParam(value = "项目id", required = true)
                                                 @PathVariable(name = "project_id") Long projectId,
                                                 @ApiParam(value = "合并版本信息", required = true)
-                                                @RequestBody @Valid ProductVersionMergeDTO productVersionMergeDTO) {
-        return Optional.ofNullable(productVersionService.mergeVersion(projectId, productVersionMergeDTO))
+                                                @RequestBody @Valid ProductVersionMergeVO productVersionMergeVO) {
+        return Optional.ofNullable(productVersionService.mergeVersion(projectId, productVersionMergeVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException(REVOKE_ARCHIVED_ERROR));
     }
@@ -295,11 +295,11 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "拖动版本位置")
     @PutMapping(value = "/drag")
-    public ResponseEntity<ProductVersionPageDTO> dragVersion(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProductVersionPageVO> dragVersion(@ApiParam(value = "项目id", required = true)
                                                              @PathVariable(name = "project_id") Long projectId,
-                                                             @ApiParam(value = "排序对象", required = true)
-                                                             @RequestBody VersionSequenceDTO versionSequenceDTO) {
-        return Optional.ofNullable(productVersionService.dragVersion(projectId, versionSequenceDTO))
+                                                            @ApiParam(value = "排序对象", required = true)
+                                                             @RequestBody VersionSequenceVO versionSequenceVO) {
+        return Optional.ofNullable(productVersionService.dragVersion(projectId, versionSequenceVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException(DRAG_ERROR));
     }
@@ -307,13 +307,13 @@ public class ProductVersionController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "dashboard根据版本下类别统计数量数量")
     @GetMapping(value = "/{versionId}/issue_count")
-    public ResponseEntity<VersionIssueCountDTO> queryByCategoryCode(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<VersionIssueCountVO> queryByCategoryCode(@ApiParam(value = "项目id", required = true)
                                                                     @PathVariable(name = "project_id") Long projectId,
-                                                                    @ApiParam(value = "version id", required = true)
+                                                                   @ApiParam(value = "version id", required = true)
                                                                     @PathVariable Long versionId) {
         return Optional.ofNullable(productVersionService.queryByCategoryCode(projectId, versionId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.VersionIssueCountDTO.get"));
+                .orElseThrow(() -> new CommonException("error.VersionIssueCountVO.get"));
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})

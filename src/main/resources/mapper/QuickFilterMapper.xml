@@ -45,7 +45,7 @@
         LIMIT 1;
     </select>
 
-    <select id="queryFiltersByProjectId" resultType="io.choerodon.agile.infra.dataobject.QuickFilterDO">
+    <select id="queryFiltersByProjectId" resultType="io.choerodon.agile.infra.dataobject.QuickFilterDTO">
         SELECT *
         FROM
         agile_quick_filter

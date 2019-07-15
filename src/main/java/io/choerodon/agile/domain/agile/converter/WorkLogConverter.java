@@ -1,59 +1,59 @@
-package io.choerodon.agile.domain.agile.converter;
-
-import io.choerodon.agile.api.vo.WorkLogDTO;
-import io.choerodon.agile.domain.agile.entity.WorkLogE;
-import io.choerodon.agile.infra.dataobject.WorkLogDO;
-import io.choerodon.core.convertor.ConvertorI;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
-
-/**
- * Created by HuangFuqiang@choerodon.io on 2018/5/18.
- * Email: fuqianghuang01@gmail.com
- */
-@Component
-public class WorkLogConverter implements ConvertorI<WorkLogE, WorkLogDO, WorkLogDTO> {
-
-    @Override
-    public WorkLogE dtoToEntity(WorkLogDTO workLogDTO) {
-        WorkLogE workLogE = new WorkLogE();
-        BeanUtils.copyProperties(workLogDTO, workLogE);
-        return workLogE;
-    }
-
-    @Override
-    public WorkLogDTO entityToDto(WorkLogE workLogE) {
-        WorkLogDTO workLogDTO = new WorkLogDTO();
-        BeanUtils.copyProperties(workLogE, workLogDTO);
-        return workLogDTO;
-    }
-
-    @Override
-    public WorkLogE doToEntity(WorkLogDO workLogDO) {
-        WorkLogE workLogE = new WorkLogE();
-        BeanUtils.copyProperties(workLogDO, workLogE);
-        return workLogE;
-    }
-
-    @Override
-    public WorkLogDO entityToDo(WorkLogE workLogE) {
-        WorkLogDO workLogDO = new WorkLogDO();
-        BeanUtils.copyProperties(workLogE, workLogDO);
-        return workLogDO;
-    }
-
-    @Override
-    public WorkLogDTO doToDto(WorkLogDO workLogDO) {
-        WorkLogDTO workLogDTO = new WorkLogDTO();
-        BeanUtils.copyProperties(workLogDO, workLogDTO);
-        workLogDTO.setUserId(workLogDO.getCreatedBy());
-        return workLogDTO;
-    }
-
-    @Override
-    public WorkLogDO dtoToDo(WorkLogDTO workLogDTO) {
-        WorkLogDO workLogDO = new WorkLogDO();
-        BeanUtils.copyProperties(workLogDTO, workLogDO);
-        return workLogDO;
-    }
-}
+//package io.choerodon.agile.domain.agile.converter;
+//
+//import io.choerodon.agile.api.vo.WorkLogVO;
+//import io.choerodon.agile.domain.agile.entity.WorkLogE;
+//import io.choerodon.agile.infra.dataobject.WorkLogDTO;
+//import io.choerodon.core.convertor.ConvertorI;
+//import org.springframework.beans.BeanUtils;
+//import org.springframework.stereotype.Component;
+//
+///**
+// * Created by HuangFuqiang@choerodon.io on 2018/5/18.
+// * Email: fuqianghuang01@gmail.com
+// */
+//@Component
+//public class WorkLogConverter implements ConvertorI<WorkLogE, WorkLogDTO, WorkLogVO> {
+//
+//    @Override
+//    public WorkLogE dtoToEntity(WorkLogVO workLogVO) {
+//        WorkLogE workLogE = new WorkLogE();
+//        BeanUtils.copyProperties(workLogVO, workLogE);
+//        return workLogE;
+//    }
+//
+//    @Override
+//    public WorkLogVO entityToDto(WorkLogE workLogE) {
+//        WorkLogVO workLogVO = new WorkLogVO();
+//        BeanUtils.copyProperties(workLogE, workLogVO);
+//        return workLogVO;
+//    }
+//
+//    @Override
+//    public WorkLogE doToEntity(WorkLogDTO workLogDTO) {
+//        WorkLogE workLogE = new WorkLogE();
+//        BeanUtils.copyProperties(workLogDTO, workLogE);
+//        return workLogE;
+//    }
+//
+//    @Override
+//    public WorkLogDTO entityToDo(WorkLogE workLogE) {
+//        WorkLogDTO workLogDTO = new WorkLogDTO();
+//        BeanUtils.copyProperties(workLogE, workLogDTO);
+//        return workLogDTO;
+//    }
+//
+//    @Override
+//    public WorkLogVO doToDto(WorkLogDTO workLogDTO) {
+//        WorkLogVO workLogVO = new WorkLogVO();
+//        BeanUtils.copyProperties(workLogDTO, workLogVO);
+//        workLogVO.setUserId(workLogDTO.getCreatedBy());
+//        return workLogVO;
+//    }
+//
+//    @Override
+//    public WorkLogDTO dtoToDo(WorkLogVO workLogVO) {
+//        WorkLogDTO workLogDTO = new WorkLogDTO();
+//        BeanUtils.copyProperties(workLogVO, workLogDTO);
+//        return workLogDTO;
+//    }
+//}

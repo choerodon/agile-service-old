@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.vo.BoardDTO;
+import io.choerodon.agile.api.vo.BoardVO;
 import io.choerodon.core.exception.CommonException;
 
 /**
@@ -14,11 +14,11 @@ public class BoardValidator {
 
     private BoardValidator() {}
 
-    public static void checkUpdateBoard(Long projectId, BoardDTO boardDTO) {
-        if (!projectId.equals(boardDTO.getProjectId())) {
+    public static void checkUpdateBoard(Long projectId, BoardVO boardVO) {
+        if (!projectId.equals(boardVO.getProjectId())) {
             throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
         }
-        if (boardDTO.getObjectVersionNumber() == null) {
+        if (boardVO.getObjectVersionNumber() == null) {
             throw new CommonException(ERROR_OBJECTVERSIONNUMBER_ISNULL);
         }
     }

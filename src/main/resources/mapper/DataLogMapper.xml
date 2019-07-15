@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.DataLogMapper">
 
-    <select id="selectByIssueId" resultType="io.choerodon.agile.infra.dataobject.DataLogDO">
+    <select id="selectByIssueId" resultType="io.choerodon.agile.infra.dataobject.DataLogDTO">
         SELECT
             adl.*
         FROM
@@ -15,7 +15,7 @@
             adl.created_by
     </select>
 
-    <select id="selectLastWorkLogById" resultType="io.choerodon.agile.infra.dataobject.DataLogDO">
+    <select id="selectLastWorkLogById" resultType="io.choerodon.agile.infra.dataobject.DataLogDTO">
         SELECT
             *
         FROM
@@ -34,15 +34,15 @@
         values
         <choose>
             <when test="completed !=null and completed">
-                <foreach collection="issueDOS" item="issueDO" index="index" separator=",">
-                    (#{projectId} , 'resolution' ,null ,null,#{statusMapDTO.id} ,
-                    #{statusMapDTO.name} ,#{issueDO.issueId},#{userId})
+                <foreach collection="issueDTOS" item="issueDTO" index="index" separator=",">
+                    (#{projectId} , 'resolution' ,null ,null,#{statusMapVO.id} ,
+                    #{statusMapVO.name} ,#{issueDTO.issueId},#{userId})
                 </foreach>
             </when>
             <otherwise>
-                <foreach collection="issueDOS" item="issueDO" index="index" separator=",">
-                    (#{projectId} , 'resolution' ,#{statusMapDTO.id} , #{statusMapDTO.name},
-                    null ,null ,#{issueDO.issueId},#{userId})
+                <foreach collection="issueDTOS" item="issueDTO" index="index" separator=",">
+                    (#{projectId} , 'resolution' ,#{statusMapVO.id} , #{statusMapVO.name},
+                    null ,null ,#{issueDTO.issueId},#{userId})
                 </foreach>
             </otherwise>
         </choose>
@@ -51,9 +51,9 @@
     <insert id="batchCreateChangeStatusLogByIssueDOS">
         INSERT INTO agile_data_log(project_id,field,old_value,old_string,new_value,new_string,issue_id,created_by)
         values
-        <foreach collection="issueDOS" item="issueDO" index="index" separator=",">
+        <foreach collection="issueDTOS" item="issueDTO" index="index" separator=",">
             (#{projectId} , 'status' ,#{oldStatus.id} ,#{oldStatus.name},#{newStatus.id} ,
-            #{newStatus.name} ,#{issueDO.issueId},#{userId})
+            #{newStatus.name} ,#{issueDTO.issueId},#{userId})
         </foreach>
     </insert>
 
@@ -61,8 +61,8 @@
         INSERT INTO agile_data_log(project_id,field,old_value,old_string,new_value,new_string,issue_id,created_by)
         values
         <foreach collection="issueIds" item="issueId" index="index" separator=",">
-            (#{projectId} , 'Fix Version' ,null ,null,#{productVersionDO.versionId} ,
-            #{productVersionDO.name} ,#{issueId},#{userId})
+            (#{projectId} , 'Fix Version' ,null ,null,#{productVersionDTO.versionId} ,
+            #{productVersionDTO.name} ,#{issueId},#{userId})
         </foreach>
     </insert>
 
@@ -75,9 +75,9 @@
     </delete>
 
     <update id="batchUpdateErrorDataLog">
-        <foreach collection="dataLogStatusChangeDOS" item="dataLogStatusChangeDO" open="" close="" separator=";">
-            update agile_data_log set new_value = #{dataLogStatusChangeDO.newValue} where log_id =
-            #{dataLogStatusChangeDO.logId}
+        <foreach collection="dataLogStatusChangeDTOS" item="dataLogStatusChangeDTO" open="" close="" separator=";">
+            update agile_data_log set new_value = #{dataLogStatusChangeDTO.newValue} where log_id =
+            #{dataLogStatusChangeDTO.logId}
         </foreach>
     </update>
 
@@ -116,9 +116,9 @@
     <insert id="batchCreateChangePriorityLogByIssueDOs">
         INSERT INTO agile_data_log(project_id,field,old_value,old_string,new_value,new_string,issue_id,created_by)
         values
-        <foreach collection="issueDOS" item="issueDO" index="index" separator=",">
-            (#{issueDO.projectId} , 'priority' ,null ,#{oldPriorityName},null ,
-            #{newPriorityName} ,#{issueDO.issueId},#{userId})
+        <foreach collection="issueDTOS" item="issueDTO" index="index" separator=",">
+            (#{issueDTO.projectId} , 'priority' ,null ,#{oldPriorityName},null ,
+            #{newPriorityName} ,#{issueDTO.issueId},#{userId})
         </foreach>
     </insert>
 </mapper>

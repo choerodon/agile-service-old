@@ -1,18 +1,19 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.BoardTeamDTO;
-import io.choerodon.agile.api.vo.BoardTeamUpdateDTO;
+import io.choerodon.agile.api.vo.BoardTeamVO;
+import io.choerodon.agile.api.vo.BoardTeamUpdateVO;
 import io.choerodon.agile.app.service.BoardTeamService;
 import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.dataobject.BoardTeamDO;
+import io.choerodon.agile.infra.dataobject.BoardTeamDTO;
 import io.choerodon.agile.infra.mapper.BoardTeamMapper;
-import io.choerodon.agile.infra.repository.BoardTeamRepository;
+import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 
 /**
  * @author shinan.chen
@@ -20,8 +21,14 @@ import javax.annotation.PostConstruct;
  */
 @Service
 public class BoardTeamServiceImpl implements BoardTeamService {
-    @Autowired
-    private BoardTeamRepository boardTeamRepository;
+
+    private static final String ERROR_BOARDTEAM_CREATE = "error.boardTeam.create";
+    private static final String ERROR_BOARDTEAM_UPDATE = "error.boardTeam.update";
+    private static final String ERROR_BOARDTEAM_NOTFOUND = "error.boardTeam.notFound";
+    private static final String ERROR_BOARDTEAM_ILLEGAL = "error.boardTeam.illegal";
+
+//    @Autowired
+//    private BoardTeamRepository boardTeamRepository;
     @Autowired
     private BoardTeamMapper boardTeamMapper;
 
@@ -33,8 +40,8 @@ public class BoardTeamServiceImpl implements BoardTeamService {
     }
 
     @Override
-    public BoardTeamDO create(Long programId, Long teamProjectId) {
-        BoardTeamDO team = new BoardTeamDO();
+    public BoardTeamDTO create(Long programId, Long teamProjectId) {
+        BoardTeamDTO team = new BoardTeamDTO();
         team.setTeamProjectId(teamProjectId);
         team.setProgramId(programId);
         String minRank = boardTeamMapper.queryMinRank(programId);
@@ -43,26 +50,50 @@ public class BoardTeamServiceImpl implements BoardTeamService {
         } else {
             team.setRank(RankUtil.genPre(minRank));
         }
-        return boardTeamRepository.create(team);
+        if (boardTeamMapper.insert(team) != 1) {
+            throw new CommonException(ERROR_BOARDTEAM_CREATE);
+        }
+        return boardTeamMapper.selectByPrimaryKey(team.getId());
     }
 
     @Override
-    public BoardTeamDTO update(Long programId, Long boardTeamId, BoardTeamUpdateDTO updateDTO) {
-        BoardTeamDO boardTeamDO = modelMapper.map(updateDTO, BoardTeamDO.class);
-        boardTeamDO.setId(boardTeamId);
-        boardTeamDO.setProgramId(programId);
-        String outSetRank = boardTeamRepository.queryById(programId, updateDTO.getOutsetId()).getRank();
-        if (updateDTO.getBefore()) {
-            boardTeamDO.setRank(RankUtil.genNext(outSetRank));
+    public BoardTeamVO update(Long programId, Long boardTeamId, BoardTeamUpdateVO updateVO) {
+        BoardTeamDTO boardTeamDTO = modelMapper.map(updateVO, BoardTeamDTO.class);
+        boardTeamDTO.setId(boardTeamId);
+        boardTeamDTO.setProgramId(programId);
+        String outSetRank = queryById(programId, updateVO.getOutsetId()).getRank();
+        if (updateVO.getBefore()) {
+            boardTeamDTO.setRank(RankUtil.genNext(outSetRank));
         } else {
-            String rightRank = boardTeamMapper.queryRightRank(boardTeamDO, outSetRank);
+            String rightRank = boardTeamMapper.queryRightRank(boardTeamDTO, outSetRank);
             if (rightRank == null) {
-                boardTeamDO.setRank(RankUtil.genPre(outSetRank));
+                boardTeamDTO.setRank(RankUtil.genPre(outSetRank));
             } else {
-                boardTeamDO.setRank(RankUtil.between(outSetRank, rightRank));
+                boardTeamDTO.setRank(RankUtil.between(outSetRank, rightRank));
             }
         }
-        boardTeamRepository.update(boardTeamDO);
-        return modelMapper.map(boardTeamRepository.queryById(programId, boardTeamId), BoardTeamDTO.class);
+//        boardTeamRepository.update(boardTeamDTO);
+        if (boardTeamMapper.updateByPrimaryKeySelective(boardTeamDTO) != 1) {
+            throw new CommonException(ERROR_BOARDTEAM_UPDATE);
+        }
+        return modelMapper.map(queryById(programId, boardTeamId), BoardTeamVO.class);
+    }
+
+    public BoardTeamDTO queryById(Long programId, Long boardTeamId) {
+        BoardTeamDTO boardTeam = boardTeamMapper.selectByPrimaryKey(boardTeamId);
+        if (boardTeam == null) {
+            throw new CommonException(ERROR_BOARDTEAM_NOTFOUND);
+        }
+        if (!boardTeam.getProgramId().equals(programId)) {
+            throw new CommonException(ERROR_BOARDTEAM_ILLEGAL);
+        }
+        return boardTeam;
+    }
+
+    @Override
+    public List<BoardTeamDTO> queryByProgramId(Long programId) {
+        BoardTeamDTO select = new BoardTeamDTO();
+        select.setProgramId(programId);
+        return boardTeamMapper.select(select);
     }
 }

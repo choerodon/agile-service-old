@@ -1,7 +1,8 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.IssueLinkCreateDTO;
-import io.choerodon.agile.api.vo.IssueLinkDTO;
+import io.choerodon.agile.api.vo.IssueLinkCreateVO;
+import io.choerodon.agile.api.vo.IssueLinkVO;
+import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
 
 import java.util.List;
 
@@ -14,12 +15,12 @@ public interface IssueLinkService {
     /**
      * 创建issueLink
      *
-     * @param issueLinkCreateDTOList issueLinkCreateDTOList
+     * @param issueLinkCreateVOList issueLinkCreateVOList
      * @param issueId                issueId
      * @param projectId              projectId
-     * @return IssueLinkDTO
+     * @return IssueLinkVO
      */
-    List<IssueLinkDTO> createIssueLinkList(List<IssueLinkCreateDTO> issueLinkCreateDTOList, Long issueId, Long projectId);
+    List<IssueLinkVO> createIssueLinkList(List<IssueLinkCreateVO> issueLinkCreateVOList, Long issueId, Long projectId);
 
     /**
      * 根据issueLinkId删除issueLink
@@ -34,9 +35,16 @@ public interface IssueLinkService {
      * @param issueId   issueId
      * @param projectId projectId
      * @param noIssueTest noIssueTest
-     * @return IssueLinkDTO
+     * @return IssueLinkVO
      */
-    List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId,Boolean noIssueTest);
+    List<IssueLinkVO> listIssueLinkByIssueId(Long issueId, Long projectId, Boolean noIssueTest);
 
-    List<IssueLinkDTO> listIssueLinkByBatch(Long projectId, List<Long> issueIds);
+    List<IssueLinkVO> listIssueLinkByBatch(Long projectId, List<Long> issueIds);
+
+
+    List<IssueLinkDTO> create(IssueLinkDTO issueLinkDTO);
+
+    int deleteByIssueId(Long issueId);
+
+    int delete(Long issueLinkId);
 }

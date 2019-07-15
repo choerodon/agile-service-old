@@ -1,9 +1,9 @@
 package io.choerodon.agile.infra.common.utils;
 
 import com.google.common.collect.Ordering;
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDO;
-import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDO;
+import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO;
+import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDTO;
+import io.choerodon.agile.infra.dataobject.WorkCalendarHolidayRefDTO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper;
 import io.choerodon.core.exception.CommonException;
@@ -47,7 +47,7 @@ public class DateUtil {
      *
      * @return Ordering
      */
-    public static Ordering<WorkCalendarHolidayRefDO> stringDateCompare() {
+    public static Ordering<WorkCalendarHolidayRefDTO> stringDateCompare() {
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
         return Ordering.from((o1, o2) -> {
             int a;
@@ -81,29 +81,29 @@ public class DateUtil {
             if (dayOne.after(dayTwo)) {
                 return 0;
             }
-            TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
-            Integer i = getWorkDaysInterval(timeZoneWorkCalendarDO, dayOne, dayTwo, dates, year);
-            handleHolidays(dates, year, dayOne, dayTwo, timeZoneWorkCalendarDO);
-            handleTimeZoneWorkCalendarRefRemoveAndAdd(dates, timeZoneWorkCalendarDO, dayOne, dayTwo);
+            TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
+            Integer i = getWorkDaysInterval(timeZoneWorkCalendarDTO, dayOne, dayTwo, dates, year);
+            handleHolidays(dates, year, dayOne, dayTwo, timeZoneWorkCalendarDTO);
+            handleTimeZoneWorkCalendarRefRemoveAndAdd(dates, timeZoneWorkCalendarDTO, dayOne, dayTwo);
             handleExcludedDate(workday, dates);
             handleAddDate(holiday, dates, dayOne, dayTwo);
             return i - dates.size();
         }
     }
 
-    private Integer getWorkDaysInterval(TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Date startDate, Date endDate, Set<Date> dates, Set<Integer> year) {
+    private Integer getWorkDaysInterval(TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO, Date startDate, Date endDate, Set<Date> dates, Set<Integer> year) {
         Integer i = 0;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
-        if (timeZoneWorkCalendarDO != null) {
+        if (timeZoneWorkCalendarDTO != null) {
             while (calendar.getTime().getTime() <= endDate.getTime()) {
-                handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDO);
+                handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDTO);
                 year.add(calendar.get(Calendar.YEAR));
                 calendar.add(Calendar.DAY_OF_YEAR, 1);
                 i++;
             }
             if (calendar.getTime().getTime() > endDate.getTime() && isSameDay(calendar.getTime(), endDate)) {
-                handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDO);
+                handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDTO);
                 year.add(calendar.get(Calendar.YEAR));
                 i++;
             }
@@ -167,7 +167,7 @@ public class DateUtil {
     }
 
     private Set<Date> handleDifferentDayWorkDays(Date dayOne, Date dayTwo, Long organizationId) {
-        TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
+        TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
         Set<Integer> year = new HashSet<>();
         Set<Date> dates = new HashSet<>();
         if (dayOne.after(dayTwo)) {
@@ -177,19 +177,19 @@ public class DateUtil {
         }
         final Date startDate = dayOne;
         final Date endDate = dayTwo;
-        getDaysInterval(startDate, endDate, year, dates, timeZoneWorkCalendarDO);
-        handleHolidays(dates, year, startDate, endDate, timeZoneWorkCalendarDO);
-        handleTimeZoneWorkCalendarRefRemoveAndAdd(dates, timeZoneWorkCalendarDO, startDate, endDate);
+        getDaysInterval(startDate, endDate, year, dates, timeZoneWorkCalendarDTO);
+        handleHolidays(dates, year, startDate, endDate, timeZoneWorkCalendarDTO);
+        handleTimeZoneWorkCalendarRefRemoveAndAdd(dates, timeZoneWorkCalendarDTO, startDate, endDate);
         return dates;
     }
 
-    private void handleTimeZoneWorkCalendarRefRemoveAndAdd(Set<Date> dates, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Date startDate, Date endDate) {
-        if (timeZoneWorkCalendarDO != null && timeZoneWorkCalendarDO.getTimeZoneWorkCalendarRefDOS() != null
-                && !timeZoneWorkCalendarDO.getTimeZoneWorkCalendarRefDOS().isEmpty()) {
+    private void handleTimeZoneWorkCalendarRefRemoveAndAdd(Set<Date> dates, TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO, Date startDate, Date endDate) {
+        if (timeZoneWorkCalendarDTO != null && timeZoneWorkCalendarDTO.getTimeZoneWorkCalendarRefDTOS() != null
+                && !timeZoneWorkCalendarDTO.getTimeZoneWorkCalendarRefDTOS().isEmpty()) {
             Set<Date> remove = new HashSet<>(dates.size() << 1);
             Set<Date> add = new HashSet<>(dates.size() << 1);
             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
-            List<TimeZoneWorkCalendarRefDO> timeZoneDate = timeZoneWorkCalendarDO.getTimeZoneWorkCalendarRefDOS();
+            List<TimeZoneWorkCalendarRefDTO> timeZoneDate = timeZoneWorkCalendarDTO.getTimeZoneWorkCalendarRefDTOS();
             if (dates.isEmpty()) {
                 handleEmptyDates(dates, timeZoneDate, sdf, endDate, startDate);
             } else {
@@ -198,7 +198,7 @@ public class DateUtil {
         }
     }
 
-    private void handleEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDO> timeZoneDate, SimpleDateFormat sdf, Date endDate, Date startDate) {
+    private void handleEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDTO> timeZoneDate, SimpleDateFormat sdf, Date endDate, Date startDate) {
         dates.addAll(timeZoneDate.stream().filter(timeZoneWorkCalendarRefDO -> timeZoneWorkCalendarRefDO.getStatus() == 0)
                 .filter(timeZoneWorkCalendarRefDO -> {
                     boolean condition = false;
@@ -220,7 +220,7 @@ public class DateUtil {
                 }).collect(Collectors.toSet()));
     }
 
-    private void handleNoEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDO> timeZoneDate, Set<Date> remove, Set<Date> add, SimpleDateFormat sdf, Date endDate, Date startDate) {
+    private void handleNoEmptyDates(Set<Date> dates, List<TimeZoneWorkCalendarRefDTO> timeZoneDate, Set<Date> remove, Set<Date> add, SimpleDateFormat sdf, Date endDate, Date startDate) {
         dates.forEach(date -> timeZoneDate.forEach(timeZoneWorkCalendarRefDO -> {
             try {
                 Date holidayDate = sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay());
@@ -243,15 +243,15 @@ public class DateUtil {
     }
 
 
-    private void handleHolidays(Set<Date> dates, Set<Integer> year, Date startDate, Date endDate, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO) {
-        if (!dates.isEmpty() && timeZoneWorkCalendarDO != null) {
-            Set<WorkCalendarHolidayRefDO> holidays = new HashSet<>();
+    private void handleHolidays(Set<Date> dates, Set<Integer> year, Date startDate, Date endDate, TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO) {
+        if (!dates.isEmpty() && timeZoneWorkCalendarDTO != null) {
+            Set<WorkCalendarHolidayRefDTO> holidays = new HashSet<>();
             year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(y))));
-            if (timeZoneWorkCalendarDO.getUseHoliday() && !holidays.isEmpty()) {
+            if (timeZoneWorkCalendarDTO.getUseHoliday() && !holidays.isEmpty()) {
                 handleHolidaysRemoveAndAdd(dates, holidays, startDate, endDate);
             }
-        } else if (dates.isEmpty() && timeZoneWorkCalendarDO != null && timeZoneWorkCalendarDO.getUseHoliday()) {
-            Set<WorkCalendarHolidayRefDO> holidays = new HashSet<>();
+        } else if (dates.isEmpty() && timeZoneWorkCalendarDTO != null && timeZoneWorkCalendarDTO.getUseHoliday()) {
+            Set<WorkCalendarHolidayRefDTO> holidays = new HashSet<>();
             year.forEach(y -> holidays.addAll(new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(y))));
             if (!holidays.isEmpty()) {
                 SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
@@ -284,7 +284,7 @@ public class DateUtil {
         dates.addAll(datesSet);
     }
 
-    private void handleHolidaysRemoveAndAdd(Set<Date> dates, Set<WorkCalendarHolidayRefDO> holidays, Date startDate, Date endDate) {
+    private void handleHolidaysRemoveAndAdd(Set<Date> dates, Set<WorkCalendarHolidayRefDTO> holidays, Date startDate, Date endDate) {
         Set<Date> remove = new HashSet<>(dates.size() << 1);
         Set<Date> add = new HashSet<>(dates.size() << 1);
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
@@ -307,9 +307,9 @@ public class DateUtil {
     }
 
 
-    private void getDaysInterval(Date startDate, Date endDate, Set<Integer> year, Set<Date> dates, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO) {
-        if (timeZoneWorkCalendarDO != null) {
-            handleTimeZoneDaysInterval(endDate, startDate, timeZoneWorkCalendarDO, dates, year);
+    private void getDaysInterval(Date startDate, Date endDate, Set<Integer> year, Set<Date> dates, TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO) {
+        if (timeZoneWorkCalendarDTO != null) {
+            handleTimeZoneDaysInterval(endDate, startDate, timeZoneWorkCalendarDTO, dates, year);
         } else {
             handleDaysInterval(endDate, startDate, dates, year);
         }
@@ -331,13 +331,13 @@ public class DateUtil {
         }
     }
 
-    private void handleTimeZoneDaysInterval(Date endDate, Date startDate, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Set<Date> dates, Set<Integer> year) {
+    private void handleTimeZoneDaysInterval(Date endDate, Date startDate, TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO, Set<Date> dates, Set<Integer> year) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
         Calendar endCalendar = Calendar.getInstance();
         endCalendar.setTime(endDate);
         while (calendar.getTime().getTime() <= endDate.getTime() || isSameDay(calendar, endCalendar)) {
-            handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDO);
+            handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDTO);
             year.add(calendar.get(Calendar.YEAR));
             calendar.add(Calendar.DAY_OF_YEAR, 1);
         }
@@ -349,17 +349,17 @@ public class DateUtil {
 
 
     private Set<Date> handleSameDayWorkDays(Date date, Long organizationId) {
-        TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
+        TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO = timeZoneWorkCalendarMapper.queryTimeZoneDetailByOrganizationId(organizationId);
         Set<Date> dates = new HashSet<>(1);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         //处理周六周天设置
-        if (timeZoneWorkCalendarDO != null) {
-            handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDO);
+        if (timeZoneWorkCalendarDTO != null) {
+            handleSaturdayAndSunday(calendar, dates, timeZoneWorkCalendarDTO);
             //处理节假日设置
-            handleSameDayHoliday(calendar, timeZoneWorkCalendarDO, dates, date);
+            handleSameDayHoliday(calendar, timeZoneWorkCalendarDTO, dates, date);
             //处理自定义节假日
-            handleSameDayTimeZoneCalendarRef(timeZoneWorkCalendarDO, date, dates);
+            handleSameDayTimeZoneCalendarRef(timeZoneWorkCalendarDTO, date, dates);
         } else {
             if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
                 dates.add(calendar.getTime());
@@ -368,10 +368,10 @@ public class DateUtil {
         return dates;
     }
 
-    private void handleSameDayTimeZoneCalendarRef(TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Date date, Set<Date> dates) {
-        if (timeZoneWorkCalendarDO.getTimeZoneWorkCalendarRefDOS() != null && !timeZoneWorkCalendarDO.getTimeZoneWorkCalendarRefDOS().isEmpty()) {
+    private void handleSameDayTimeZoneCalendarRef(TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO, Date date, Set<Date> dates) {
+        if (timeZoneWorkCalendarDTO.getTimeZoneWorkCalendarRefDTOS() != null && !timeZoneWorkCalendarDTO.getTimeZoneWorkCalendarRefDTOS().isEmpty()) {
             SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
-            timeZoneWorkCalendarDO.getTimeZoneWorkCalendarRefDOS().forEach(timeZoneWorkCalendarRefDO -> {
+            timeZoneWorkCalendarDTO.getTimeZoneWorkCalendarRefDTOS().forEach(timeZoneWorkCalendarRefDO -> {
                 try {
                     if (isSameDay(date, sdf.parse(timeZoneWorkCalendarRefDO.getWorkDay()))) {
                         if (timeZoneWorkCalendarRefDO.getStatus() == 1) {
@@ -388,13 +388,13 @@ public class DateUtil {
     }
 
 
-    private void handleSameDayHoliday(Calendar calendar, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO, Set<Date> dates, Date date) {
-        if (timeZoneWorkCalendarDO.getUseHoliday()) {
-            Set<WorkCalendarHolidayRefDO> holidays = (new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(calendar.get(Calendar.YEAR))));
+    private void handleSameDayHoliday(Calendar calendar, TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO, Set<Date> dates, Date date) {
+        if (timeZoneWorkCalendarDTO.getUseHoliday()) {
+            Set<WorkCalendarHolidayRefDTO> holidays = (new HashSet<>(workCalendarHolidayRefMapper.queryWorkCalendarHolidayRelByYear(calendar.get(Calendar.YEAR))));
             if (!holidays.isEmpty()) {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.CHINA);
-                    for (WorkCalendarHolidayRefDO holiday : holidays) {
+                    for (WorkCalendarHolidayRefDTO holiday : holidays) {
                         handleSameDayAddAndRemove(sdf, date, holiday, dates);
                     }
                 } catch (ParseException e) {
@@ -404,7 +404,7 @@ public class DateUtil {
         }
     }
 
-    private void handleSameDayAddAndRemove(SimpleDateFormat sdf, Date date, WorkCalendarHolidayRefDO holiday, Set<Date> dates) throws ParseException {
+    private void handleSameDayAddAndRemove(SimpleDateFormat sdf, Date date, WorkCalendarHolidayRefDTO holiday, Set<Date> dates) throws ParseException {
         if (isSameDay(date, sdf.parse(holiday.getHoliday()))) {
             if (holiday.getStatus() == 0) {
                 dates.add(date);
@@ -414,9 +414,9 @@ public class DateUtil {
         }
     }
 
-    private void handleSaturdayAndSunday(Calendar calendar, Set<Date> dates, TimeZoneWorkCalendarDO timeZoneWorkCalendarDO) {
-        Boolean condition = (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY && !timeZoneWorkCalendarDO.getSaturdayWork())
-                || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY && !timeZoneWorkCalendarDO.getSundayWork());
+    private void handleSaturdayAndSunday(Calendar calendar, Set<Date> dates, TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO) {
+        Boolean condition = (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY && !timeZoneWorkCalendarDTO.getSaturdayWork())
+                || (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY && !timeZoneWorkCalendarDTO.getSundayWork());
         if (condition) {
             dates.add(calendar.getTime());
         }

@@ -22,7 +22,7 @@ public class ConvertUtil {
         throw new IllegalStateException("Utility class");
     }
 
-    private static final Map<Long, ProjectDTO> ORGANIZATION_MAP = new ConcurrentHashMap<>();
+    private static final Map<Long, ProjectVO> ORGANIZATION_MAP = new ConcurrentHashMap<>();
 
     /**
      * 根据projectId获取issue类型Map
@@ -30,9 +30,9 @@ public class ConvertUtil {
      * @param projectId projectId
      * @return IssueTypeMap
      */
-    public static Map<Long, IssueTypeDTO> getIssueTypeMap(Long projectId, String applyType) {
-        List<IssueTypeDTO> issueTypeDTOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesByProjectId(projectId, applyType).getBody();
-        return issueTypeDTOS.stream().collect(Collectors.toMap(IssueTypeDTO::getId, Function.identity()));
+    public static Map<Long, IssueTypeVO> getIssueTypeMap(Long projectId, String applyType) {
+        List<IssueTypeVO> issueTypeVOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesByProjectId(projectId, applyType).getBody();
+        return issueTypeVOS.stream().collect(Collectors.toMap(IssueTypeVO::getId, Function.identity()));
     }
 
     /**
@@ -41,7 +41,7 @@ public class ConvertUtil {
      * @param projectId projectId
      * @return StatusMap
      */
-    public static Map<Long, StatusMapDTO> getIssueStatusMap(Long projectId) {
+    public static Map<Long, StatusMapVO> getIssueStatusMap(Long projectId) {
         Long organizationId = getOrganizationId(projectId);
         return SpringBeanUtil.getBean(StateMachineFeignClient.class).queryAllStatusMap(organizationId).getBody();
     }
@@ -52,7 +52,7 @@ public class ConvertUtil {
      * @param projectId projectId
      * @return PriorityDTOMap
      */
-    public static Map<Long, PriorityDTO> getIssuePriorityMap(Long projectId) {
+    public static Map<Long, PriorityVO> getIssuePriorityMap(Long projectId) {
         Long organizationId = getOrganizationId(projectId);
         return SpringBeanUtil.getBean(IssueFeignClient.class).queryByOrganizationId(organizationId).getBody();
     }
@@ -69,28 +69,28 @@ public class ConvertUtil {
         return queryProject(projectId).getName();
     }
 
-    private static ProjectDTO queryProject(Long projectId) {
-        ProjectDTO projectDTO = ORGANIZATION_MAP.get(projectId);
-        if (projectDTO != null) {
-            return projectDTO;
+    private static ProjectVO queryProject(Long projectId) {
+        ProjectVO projectVO = ORGANIZATION_MAP.get(projectId);
+        if (projectVO != null) {
+            return projectVO;
         } else {
-            projectDTO = SpringBeanUtil.getBean(UserFeignClient.class).queryProject(projectId).getBody();
-            if (projectDTO != null) {
-                ORGANIZATION_MAP.put(projectId, projectDTO);
-                return projectDTO;
+            projectVO = SpringBeanUtil.getBean(UserFeignClient.class).queryProject(projectId).getBody();
+            if (projectVO != null) {
+                ORGANIZATION_MAP.put(projectId, projectVO);
+                return projectVO;
             } else {
                 throw new CommonException("error.queryProject.notFound");
             }
         }
     }
 
-    public static Map<Long, IssueTypeWithStateMachineIdDTO> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
-        List<IssueTypeWithStateMachineIdDTO> issueTypeWithStateMachineIdDTOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesWithStateMachineIdByProjectId(projectId, applyType)
+    public static Map<Long, IssueTypeWithStateMachineIdVO> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
+        List<IssueTypeWithStateMachineIdVO> issueTypeWithStateMachineIdVOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesWithStateMachineIdByProjectId(projectId, applyType)
                 .getBody();
-        Map<Long, Long> statusIdMap = SpringBeanUtil.getBean(StateMachineFeignClient.class).queryInitStatusIds(getOrganizationId(projectId), issueTypeWithStateMachineIdDTOS
-                .stream().map(IssueTypeWithStateMachineIdDTO::getStateMachineId).collect(Collectors.toList())).getBody();
-        issueTypeWithStateMachineIdDTOS.forEach(issueTypeWithStateMachineIdDTO -> issueTypeWithStateMachineIdDTO.setInitStatusId(statusIdMap.get(issueTypeWithStateMachineIdDTO.getStateMachineId())));
-        return issueTypeWithStateMachineIdDTOS.stream().collect(Collectors.toMap(IssueTypeWithStateMachineIdDTO::getId, Function.identity()));
+        Map<Long, Long> statusIdMap = SpringBeanUtil.getBean(StateMachineFeignClient.class).queryInitStatusIds(getOrganizationId(projectId), issueTypeWithStateMachineIdVOS
+                .stream().map(IssueTypeWithStateMachineIdVO::getStateMachineId).collect(Collectors.toList())).getBody();
+        issueTypeWithStateMachineIdVOS.forEach(issueTypeWithStateMachineIdDTO -> issueTypeWithStateMachineIdDTO.setInitStatusId(statusIdMap.get(issueTypeWithStateMachineIdDTO.getStateMachineId())));
+        return issueTypeWithStateMachineIdVOS.stream().collect(Collectors.toMap(IssueTypeWithStateMachineIdVO::getId, Function.identity()));
     }
 
 

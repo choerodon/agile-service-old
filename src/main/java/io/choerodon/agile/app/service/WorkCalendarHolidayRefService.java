@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 
-import io.choerodon.agile.api.vo.WorkCalendarHolidayRefDTO;
+import io.choerodon.agile.api.vo.WorkCalendarHolidayRefVO;
 
 import java.util.List;
 
@@ -22,15 +22,15 @@ public interface WorkCalendarHolidayRefService {
      * 根据年份查询工作日历
      *
      * @param year year
-     * @return WorkCalendarHolidayRefDTO
+     * @return WorkCalendarHolidayRefVO
      */
-    List<WorkCalendarHolidayRefDTO> queryWorkCalendarHolidayRelByYear(Integer year);
+    List<WorkCalendarHolidayRefVO> queryWorkCalendarHolidayRelByYear(Integer year);
 
     /**
      * 根据年份查询工作日历，包含当年、去年、明年
      *
      * @param year year
-     * @return WorkCalendarHolidayRefDTO
+     * @return WorkCalendarHolidayRefVO
      */
-    List<WorkCalendarHolidayRefDTO> queryByYearIncludeLastAndNext(Integer year);
+    List<WorkCalendarHolidayRefVO> queryByYearIncludeLastAndNext(Integer year);
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarRefMapper">
 
-    <select id="queryWithNextYearByYear" resultType="io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDO">
+    <select id="queryWithNextYearByYear" resultType="io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarRefDTO">
        select * from agile_time_zone_work_calendar_ref where organization_id = #{organizationId}
        and time_zone_id = #{timeZoneId} and (year = #{year} or year =(#{year}+1))
     </select>

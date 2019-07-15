@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.infra.dataobject.QuickFilterDO;
+import io.choerodon.agile.infra.dataobject.QuickFilterDTO;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -10,7 +10,7 @@ import java.util.List;
  * Created by HuangFuqiang@choerodon.io on 2018/6/13.
  * Email: fuqianghuang01@gmail.com
  */
-public interface QuickFilterMapper extends Mapper<QuickFilterDO> {
+public interface QuickFilterMapper extends Mapper<QuickFilterDTO> {
 
     List<String> selectSqlQueryByIds(@Param("quickFilterIds") List<Long> quickFilterIds);
 
@@ -57,7 +57,7 @@ public interface QuickFilterMapper extends Mapper<QuickFilterDO> {
      * @param projectId  projectId
      * @param filterName filterName
      * @param contents   contents
-     * @return QuickFilterDO
+     * @return QuickFilterDTO
      */
-    List<QuickFilterDO> queryFiltersByProjectId(@Param("projectId") Long projectId, @Param("filterName") String filterName, @Param("contents") List<String> contents);
+    List<QuickFilterDTO> queryFiltersByProjectId(@Param("projectId") Long projectId, @Param("filterName") String filterName, @Param("contents") List<String> contents);
 }

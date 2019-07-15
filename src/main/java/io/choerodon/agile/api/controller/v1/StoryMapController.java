@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.vo.SearchDTO;
-import io.choerodon.agile.api.vo.StoryMapDragDTO;
+import io.choerodon.agile.api.vo.SearchVO;
+import io.choerodon.agile.api.vo.StoryMapDragVO;
 import io.choerodon.agile.app.service.StoryMapService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -36,8 +36,8 @@ public class StoryMapController {
                                                     @ApiParam(value = "组织id", required = true)
                                                     @RequestParam Long organizationId,
                                                     @ApiParam(value = "search DTO", required = true)
-                                                    @RequestBody SearchDTO searchDTO) {
-        return Optional.ofNullable(storyMapService.queryStoryMap(projectId, organizationId, searchDTO))
+                                                    @RequestBody SearchVO searchVO) {
+        return Optional.ofNullable(storyMapService.queryStoryMap(projectId, organizationId, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.storyMap.get"));
     }
@@ -48,8 +48,8 @@ public class StoryMapController {
     public ResponseEntity<JSONObject> queryStoryMapDemand(@ApiParam(value = "项目id", required = true)
                                                           @PathVariable(name = "project_id") Long projectId,
                                                           @ApiParam(value = "search DTO", required = true)
-                                                          @RequestBody SearchDTO searchDTO) {
-        return Optional.ofNullable(storyMapService.queryStoryMapDemand(projectId, searchDTO))
+                                                          @RequestBody SearchVO searchVO) {
+        return Optional.ofNullable(storyMapService.queryStoryMapDemand(projectId, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.storyMapDemand.get"));
     }
@@ -60,8 +60,8 @@ public class StoryMapController {
     public ResponseEntity storyMapMove(@ApiParam(value = "项目id", required = true)
                                        @PathVariable(name = "project_id") Long projectId,
                                        @ApiParam(value = "story map drag DTO", required = true)
-                                       @RequestBody StoryMapDragDTO storyMapDragDTO) {
-        storyMapService.storyMapMove(projectId, storyMapDragDTO);
+                                       @RequestBody StoryMapDragVO storyMapDragVO) {
+        storyMapService.storyMapMove(projectId, storyMapDragVO);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 

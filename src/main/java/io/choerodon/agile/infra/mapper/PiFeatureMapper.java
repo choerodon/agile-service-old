@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.mapper;
 
-import io.choerodon.agile.infra.dataobject.PiFeatureDO;
+import io.choerodon.agile.infra.dataobject.PiFeatureDTO;
 import io.choerodon.mybatis.common.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
  * Created by HuangFuqiang@choerodon.io on 2019/3/26.
  * Email: fuqianghuang01@gmail.com
  */
-public interface PiFeatureMapper extends Mapper<PiFeatureDO> {
+public interface PiFeatureMapper extends Mapper<PiFeatureDTO> {
 
     Boolean selectExistByOptions(@Param("programId") Long programId, @Param("issueId") Long issueId);
 

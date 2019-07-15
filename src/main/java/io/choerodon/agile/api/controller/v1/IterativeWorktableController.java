@@ -31,11 +31,11 @@ public class IterativeWorktableController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询issue优先级分布情况")
     @GetMapping(value = "/priority")
-    public ResponseEntity<List<PriorityDistributeDTO>> queryPriorityDistribute(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<PriorityDistributeVO>> queryPriorityDistribute(@ApiParam(value = "项目id", required = true)
                                                                                @PathVariable(name = "project_id") Long projectId,
-                                                                               @ApiParam(value = "冲刺id", required = true)
+                                                                              @ApiParam(value = "冲刺id", required = true)
                                                                                @RequestParam Long sprintId,
-                                                                               @ApiParam(value = "组织id", required = true)
+                                                                              @ApiParam(value = "组织id", required = true)
                                                                                @RequestParam Long organizationId) {
         return Optional.ofNullable(iterativeWorktableService.queryPriorityDistribute(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -45,11 +45,11 @@ public class IterativeWorktableController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询issue的状态分布")
     @GetMapping(value = "/status")
-    public ResponseEntity<List<StatusCategoryDTO>> queryStatusCategoryDistribute(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<StatusCategoryVO>> queryStatusCategoryDistribute(@ApiParam(value = "项目id", required = true)
                                                                                  @PathVariable(name = "project_id") Long projectId,
-                                                                                 @ApiParam(value = "冲刺id", required = true)
+                                                                                @ApiParam(value = "冲刺id", required = true)
                                                                                  @RequestParam Long sprintId,
-                                                                                 @ApiParam(value = "组织id", required = true)
+                                                                                @ApiParam(value = "组织id", required = true)
                                                                                  @RequestParam Long organizationId) {
         return Optional.ofNullable(iterativeWorktableService.queryStatusCategoryDistribute(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -59,11 +59,11 @@ public class IterativeWorktableController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询冲刺的基本信息")
     @GetMapping(value = "/sprint/{organization_id}")
-    public ResponseEntity<SprintInfoDTO> querySprintInfo(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<SprintInfoVO> querySprintInfo(@ApiParam(value = "项目id", required = true)
                                                          @PathVariable(name = "project_id") Long projectId,
-                                                         @ApiParam(value = "冲刺id", required = true)
+                                                        @ApiParam(value = "冲刺id", required = true)
                                                          @RequestParam Long sprintId,
-                                                         @ApiParam(value = "组织id", required = true)
+                                                        @ApiParam(value = "组织id", required = true)
                                                          @PathVariable(name = "organization_id") Long organizationId) {
         return Optional.ofNullable(iterativeWorktableService.querySprintInfo(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -73,9 +73,9 @@ public class IterativeWorktableController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询经办人分布情况api")
     @GetMapping(value = "/assignee_id")
-    public ResponseEntity<List<AssigneeDistributeDTO>> queryAssigneeDistribute(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<AssigneeDistributeVO>> queryAssigneeDistribute(@ApiParam(value = "项目id", required = true)
                                                                                @PathVariable(name = "project_id") Long projectId,
-                                                                               @ApiParam(value = "冲刺id", required = true)
+                                                                              @ApiParam(value = "冲刺id", required = true)
                                                                                @RequestParam Long sprintId) {
         return Optional.ofNullable(iterativeWorktableService.queryAssigneeDistribute(projectId, sprintId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -85,11 +85,11 @@ public class IterativeWorktableController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("迭代冲刺台查询issue的问题类型分布情况api")
     @GetMapping(value = "/issue_type")
-    public ResponseEntity<List<IssueTypeDistributeDTO>> queryIssueTypeDistribute(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<IssueTypeDistributeVO>> queryIssueTypeDistribute(@ApiParam(value = "项目id", required = true)
                                                                                  @PathVariable(name = "project_id") Long projectId,
-                                                                                 @ApiParam(value = "冲刺id", required = true)
+                                                                                @ApiParam(value = "冲刺id", required = true)
                                                                                  @RequestParam Long sprintId,
-                                                                                 @ApiParam(value = "组织id", required = true)
+                                                                                @ApiParam(value = "组织id", required = true)
                                                                                  @RequestParam Long organizationId) {
         return Optional.ofNullable(iterativeWorktableService.queryIssueTypeDistribute(projectId, sprintId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

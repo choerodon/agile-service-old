@@ -33,7 +33,7 @@ public class PiWithFeatureVO {
     private Long objectVersionNumber;
 
     @ApiModelProperty(value = "pi下的feature列表")
-    private List<SubFeatureDTO> subFeatureDTOList;
+    private List<SubFeatureVO> subFeatureVOList;
 
     public Long getId() {
         return id;
@@ -91,12 +91,12 @@ public class PiWithFeatureVO {
         return objectVersionNumber;
     }
 
-    public void setSubFeatureDTOList(List<SubFeatureDTO> subFeatureDTOList) {
-        this.subFeatureDTOList = subFeatureDTOList;
+    public void setSubFeatureVOList(List<SubFeatureVO> subFeatureVOList) {
+        this.subFeatureVOList = subFeatureVOList;
     }
 
-    public List<SubFeatureDTO> getSubFeatureDTOList() {
-        return subFeatureDTOList;
+    public List<SubFeatureVO> getSubFeatureVOList() {
+        return subFeatureVOList;
     }
 }
 

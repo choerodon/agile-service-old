@@ -30,7 +30,7 @@
         </if>
     </select>
 
-    <select id="queryVersionByIds" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+    <select id="queryVersionByIds" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDTO">
         SELECT
         apv.version_id, apv.name,
         apv.description, apv.start_date,
@@ -67,7 +67,7 @@
         WHERE project_id = #{projectId} AND version_id = #{versionId}
     </select>
 
-    <select id="queryVersionByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDataDO">
+    <select id="queryVersionByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDataDTO">
         SELECT
             version_id,
             name,
@@ -84,7 +84,7 @@
         ORDER BY sequence DESC
     </select>
 
-    <select id="queryIssueCount" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryIssueCount" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT
         apv.version_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_product_version apv
@@ -115,7 +115,7 @@
         </foreach>
     </select>
 
-    <select id="queryNotEstimate" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryNotEstimate" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT
         apv.version_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_product_version apv
@@ -139,7 +139,7 @@
         </foreach>
     </select>
 
-    <select id="queryTotalEstimate" resultType="io.choerodon.agile.infra.dataobject.IssueCountDO">
+    <select id="queryTotalEstimate" resultType="io.choerodon.agile.infra.dataobject.IssueCountDTO">
         SELECT
         apv.version_id AS id, IFNULL(ic.issue_count, 0) AS issue_count
         FROM agile_product_version apv
@@ -164,7 +164,7 @@
     </select>
 
     <select id="queryVersionStatisticsByVersionId"
-            resultType="io.choerodon.agile.infra.dataobject.ProductVersionStatisticsDO">
+            resultType="io.choerodon.agile.infra.dataobject.ProductVersionStatisticsDTO">
         SELECT
             apv.version_id,
             apv.name,
@@ -180,7 +180,7 @@
         WHERE apv.project_id = #{projectId} AND apv.version_id = #{versionId}
     </select>
 
-    <resultMap id="versionDeatilMap" type="io.choerodon.agile.infra.dataobject.IssueDO">
+    <resultMap id="versionDeatilMap" type="io.choerodon.agile.infra.dataobject.IssueDTO">
         <id column="issue_id" property="issueId"/>
         <id column="issue_num" property="issueNum"/>
         <id column="type_code" property="typeCode"/>
@@ -191,7 +191,7 @@
         <id column="assignee_id" property="assigneeId"/>
         <id column="project_id" property="projectId"/>
         <id column="project_id" property="projectId"/>
-        <collection property="issueComponentBriefDOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.IssueComponentBriefDO">
+        <collection property="issueComponentBriefDTOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.IssueComponentBriefDTO">
             <id column="component_id" property="componentId"/>
             <id column="name" property="name"/>
         </collection>
@@ -226,36 +226,36 @@
                 #{filterStatusId}
             </foreach>
         </if>
-        <if test='searchDTO.searchArgs != null'>
-            <if test='searchDTO.searchArgs.summary != null and searchDTO.searchArgs.summary != "" '>
-                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.summary}) ,'%')
+        <if test='searchVO.searchArgs != null'>
+            <if test='searchVO.searchArgs.summary != null and searchVO.searchArgs.summary != "" '>
+                AND ai.summary LIKE CONCAT(CONCAT('%' ,#{searchVO.searchArgs.summary}) ,'%')
             </if>
         </if>
-        <if test='searchDTO.advancedSearchArgs != null'>
-            <if test='searchDTO.advancedSearchArgs.issueTypeId != null and searchDTO.advancedSearchArgs.issueTypeId.size > 0'>
+        <if test='searchVO.advancedSearchArgs != null'>
+            <if test='searchVO.advancedSearchArgs.issueTypeId != null and searchVO.advancedSearchArgs.issueTypeId.size > 0'>
                 AND ai.issue_type_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator=","
+                <foreach collection="searchVO.advancedSearchArgs.issueTypeId" item="issueTypeId" open="(" separator=","
                          close=")">
                     #{issueTypeId}
                 </foreach>
             </if>
-            <if test='searchDTO.advancedSearchArgs.assigneeIds != null and searchDTO.advancedSearchArgs.assigneeIds.size > 0'>
+            <if test='searchVO.advancedSearchArgs.assigneeIds != null and searchVO.advancedSearchArgs.assigneeIds.size > 0'>
                 AND ai.assignee_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.assigneeIds" item="assigneeId" open="(" separator=","
+                <foreach collection="searchVO.advancedSearchArgs.assigneeIds" item="assigneeId" open="(" separator=","
                          close=")">
                     #{assigneeId}
                 </foreach>
             </if>
-            <if test='searchDTO.advancedSearchArgs.priorityId != null and searchDTO.advancedSearchArgs.priorityId.size > 0'>
+            <if test='searchVO.advancedSearchArgs.priorityId != null and searchVO.advancedSearchArgs.priorityId.size > 0'>
                 AND ai.priority_id IN
-                <foreach collection="searchDTO.advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
+                <foreach collection="searchVO.advancedSearchArgs.priorityId" item="priorityId" open="(" separator=","
                          close=")">
                     #{priorityId}
                 </foreach>
             </if>
-            <if test='searchDTO.advancedSearchArgs.statusId != null and searchDTO.advancedSearchArgs.statusId.size > 0'>
+            <if test='searchVO.advancedSearchArgs.statusId != null and searchVO.advancedSearchArgs.statusId.size > 0'>
                 and ai.status_id in
-                <foreach collection="searchDTO.advancedSearchArgs.statusId" item="statusId" open="(" separator=","
+                <foreach collection="searchVO.advancedSearchArgs.statusId" item="statusId" open="(" separator=","
                          close=")">
                     #{statusId}
                 </foreach>
@@ -263,13 +263,13 @@
         </if>
         )search
         where 1=1
-        <if test='searchDTO.searchArgs != null'>
-            <if test='searchDTO.searchArgs.issueNum != null and searchDTO.searchArgs.issueNum != ""'>
-                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchDTO.searchArgs.issueNum}) ,'%')
+        <if test='searchVO.searchArgs != null'>
+            <if test='searchVO.searchArgs.issueNum != null and searchVO.searchArgs.issueNum != ""'>
+                AND search.issue_num LIKE CONCAT(CONCAT('%' ,#{searchVO.searchArgs.issueNum}) ,'%')
             </if>
         </if>
-        <if test='searchDTO.contents != null and searchDTO.contents.size != 0'>
-            <foreach collection="searchDTO.contents" item="content" index="index">
+        <if test='searchVO.contents != null and searchVO.contents.size != 0'>
+            <foreach collection="searchVO.contents" item="content" index="index">
                 AND (search.issue_num LIKE CONCAT(CONCAT('%', #{content}), '%') OR search.summary LIKE
                 CONCAT(CONCAT('%',
                 #{content}), '%'))
@@ -292,7 +292,7 @@
               AND ai.apply_type = 'agile'
     </select>
 
-    <select id="queryPlanVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
+    <select id="queryPlanVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDTO">
         SELECT
             version_id,
             name
@@ -312,7 +312,7 @@
         </foreach>
     </insert>
 
-    <select id="queryIncompleteIssues" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIncompleteIssues" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT
             ai.issue_id,
             avir.relation_type
@@ -322,7 +322,7 @@
               AND ais.is_completed != 1
     </select>
 
-    <select id="queryIssuesByRelationType" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIssuesByRelationType" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT
             ai.issue_id,
             avir.relation_type
@@ -331,7 +331,7 @@
               AND avir.issue_id = ai.issue_id
     </select>
 
-    <select id="queryIssueByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIssueByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT DISTINCT(ai.issue_id), avir.relation_type
         FROM agile_version_issue_rel avir, agile_issue ai
         WHERE ai.project_id = #{projectId} AND avir.issue_id = ai.issue_id
@@ -348,7 +348,7 @@
         )
     </select>
 
-    <select id="queryIssueForLogByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryIssueForLogByVersionIds" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
         FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
         WHERE avir.project_id = #{projectId}
@@ -359,7 +359,7 @@
         </foreach>
     </select>
 
-    <select id="queryInCompleteIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryInCompleteIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
         FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
         left join agile_issue ai on avir.issue_id = ai.issue_id left join agile_issue_status ais on ai.status_id = ais.status_id
@@ -368,7 +368,7 @@
         AND avir.version_id = #{versionId} and ais.is_completed != 1
     </select>
 
-    <select id="queryVersionIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDO">
+    <select id="queryVersionIssueByVersionId" resultType="io.choerodon.agile.infra.dataobject.VersionIssueDTO">
         SELECT avir.issue_id, avir.relation_type,apv.name,avir.version_id
         FROM agile_version_issue_rel avir left join agile_product_version apv on apv.version_id = avir.version_id
         WHERE avir.project_id = #{projectId}
@@ -434,7 +434,7 @@
         )
     </select>
 
-    <select id="queryVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
+    <select id="queryVersionNames" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDTO">
         SELECT
             version_id,
             name
@@ -443,7 +443,7 @@
               AND status_code != 'archived'
     </select>
 
-    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDO">
+    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.ProductVersionNameDTO">
         SELECT version_id, name, status_code,release_date, expect_release_date
         FROM agile_product_version
         WHERE project_id = #{projectId}
@@ -457,7 +457,7 @@
         ORDER BY sequence DESC
     </select>
 
-    <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionCommonDO">
+    <select id="listByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionCommonDTO">
         SELECT
             apv.*,
             alv.`name` AS status_name
@@ -468,7 +468,7 @@
             apv.project_id = #{projectId}
     </select>
 
-    <select id="selectVersionRelsByIssueId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+    <select id="selectVersionRelsByIssueId" resultType="io.choerodon.agile.infra.dataobject.ProductVersionDTO">
         SELECT
             avir.version_id AS version_id,
             avir.issue_id   AS issue_id,
@@ -490,7 +490,7 @@
     </select>
 
     <select id="queryVersionRelByIssueIdAndTypeArchivedExceptInfluence"
-            resultType="io.choerodon.agile.infra.dataobject.ProductVersionDO">
+            resultType="io.choerodon.agile.infra.dataobject.ProductVersionDTO">
         SELECT
         avir.version_id AS version_id,
         avir.issue_id AS issue_id,

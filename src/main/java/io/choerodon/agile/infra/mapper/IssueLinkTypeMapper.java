@@ -2,16 +2,16 @@ package io.choerodon.agile.infra.mapper;
 
 import java.util.List;
 
+import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import org.apache.ibatis.annotations.Param;
 
-import io.choerodon.agile.infra.dataobject.IssueLinkTypeDO;
 import io.choerodon.mybatis.common.Mapper;
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/6/14
  */
-public interface IssueLinkTypeMapper extends Mapper<IssueLinkTypeDO> {
+public interface IssueLinkTypeMapper extends Mapper<IssueLinkTypeDTO> {
 
     /**
      * 根据项目id查询issueLinkType
@@ -20,10 +20,10 @@ public interface IssueLinkTypeMapper extends Mapper<IssueLinkTypeDO> {
      * @param issueLinkTypeId 不包含的，为空则查全部
      * @param linkName        linkName
      * @param contents        contents
-     * @return IssueLinkTypeDO
+     * @return IssueLinkTypeDTO
      */
-    List<IssueLinkTypeDO> queryIssueLinkTypeByProjectId(@Param("projectId") Long projectId, @Param("issueLinkTypeId") Long issueLinkTypeId,
-                                                        @Param("linkName") String linkName, @Param("contents") List<String> contents);
+    List<IssueLinkTypeDTO> queryIssueLinkTypeByProjectId(@Param("projectId") Long projectId, @Param("issueLinkTypeId") Long issueLinkTypeId,
+                                                         @Param("linkName") String linkName, @Param("contents") List<String> contents);
 
     Integer queryIssueLinkTypeName(@Param("projectId") Long projectId,
                                    @Param("issueLinkTypeName") String issueLinkTypeName,

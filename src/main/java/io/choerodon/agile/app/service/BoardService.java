@@ -14,30 +14,30 @@ public interface BoardService {
 
     void create(Long projectId, String boardName);
 
-    BoardDTO update(Long projectId, Long boardId, BoardDTO boardDTO);
+    BoardVO update(Long projectId, Long boardId, BoardVO boardVO);
 
     void delete(Long projectId, Long boardId);
 
-    BoardDTO queryScrumBoardById(Long projectId, Long boardId);
+    BoardVO queryScrumBoardById(Long projectId, Long boardId);
 
     JSONObject queryAllData(Long projectId, Long boardId, Long assigneeId, Boolean onlyStory, List<Long> quickFilterIds,Long organizationId, List<Long> assigneeFilterIds);
 
     void initBoard(Long projectId, String boardName, List<StatusPayload> statusPayloads);
 
-    IssueMoveDTO move(Long projectId, Long issueId, Long transformId, IssueMoveDTO issueMoveDTO, Boolean isDemo);
+    IssueMoveVO move(Long projectId, Long issueId, Long transformId, IssueMoveVO issueMoveVO, Boolean isDemo);
 
-    FeatureMoveDTO moveByProgram(Long projectId, Long issueId, Long transformId, FeatureMoveDTO featureMoveDTO);
+    FeatureMoveVO moveByProgram(Long projectId, Long issueId, Long transformId, FeatureMoveVO featureMoveVO);
 
-    List<BoardDTO> queryByProjectId(Long projectId);
+    List<BoardVO> queryByProjectId(Long projectId);
 
     /**
      * 查询用户看板设置
      *
      * @param projectId projectId
      * @param boardId   boardId
-     * @return UserSettingDTO
+     * @return UserSettingVO
      */
-    UserSettingDTO queryUserSettingBoard(Long projectId, Long boardId);
+    UserSettingVO queryUserSettingBoard(Long projectId, Long boardId);
 
     /**
      * 更新用户swimLaneBasedCode设置
@@ -45,13 +45,13 @@ public interface BoardService {
      * @param projectId         projectId
      * @param boardId           boardId
      * @param swimlaneBasedCode swimlaneBasedCode
-     * @return UserSettingDTO
+     * @return UserSettingVO
      */
-    UserSettingDTO updateUserSettingBoard(Long projectId, Long boardId, String swimlaneBasedCode);
+    UserSettingVO updateUserSettingBoard(Long projectId, Long boardId, String swimlaneBasedCode);
 
     Boolean checkName(Long projectId, String boardName);
 
     void initBoardByProgram(Long projectId, String boardName, List<StatusPayload> statusPayloads);
 
-    JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId, SearchDTO searchDTO);
+    JSONObject queryByOptionsInProgram(Long projectId, Long boardId, Long organizationId, SearchVO searchVO);
 }

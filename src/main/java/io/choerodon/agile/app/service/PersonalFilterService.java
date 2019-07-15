@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.PersonalFilterDTO;
+import io.choerodon.agile.api.vo.PersonalFilterVO;
 
 import java.util.List;
 
@@ -10,15 +10,15 @@ import java.util.List;
  */
 public interface PersonalFilterService {
 
-    PersonalFilterDTO queryById(Long projectId, Long filterId);
+    PersonalFilterVO queryById(Long projectId, Long filterId);
 
-    PersonalFilterDTO create(Long projectId, PersonalFilterDTO personalFilterDTO);
+    PersonalFilterVO create(Long projectId, PersonalFilterVO personalFilterVO);
 
-    PersonalFilterDTO update(Long projectId, Long filterId, PersonalFilterDTO personalFilterDTO);
+    PersonalFilterVO update(Long projectId, Long filterId, PersonalFilterVO personalFilterVO);
 
     void deleteById(Long projectId, Long filterId);
 
-    List<PersonalFilterDTO> listByProjectId(Long projectId, Long userId, String searchStr);
+    List<PersonalFilterVO> listByProjectId(Long projectId, Long userId, String searchStr);
 
     Boolean checkName(Long projectId, Long userId, String name);
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.BoardMapper">
 
-    <select id="queryByProjectIdWithUser" resultType="io.choerodon.agile.infra.dataobject.BoardDO">
+    <select id="queryByProjectIdWithUser" resultType="io.choerodon.agile.infra.dataobject.BoardDTO">
         SELECT
             ab.*,
             IF(aus.is_default_board IS NULL, 0, 1) AS user_default,

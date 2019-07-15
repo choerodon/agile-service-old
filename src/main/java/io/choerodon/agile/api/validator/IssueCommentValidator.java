@@ -2,8 +2,8 @@ package io.choerodon.agile.api.validator;
 
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.vo.IssueCommentCreateDTO;
-import io.choerodon.agile.infra.dataobject.IssueCommentDO;
+import io.choerodon.agile.api.vo.IssueCommentCreateVO;
+import io.choerodon.agile.infra.dataobject.IssueCommentDTO;
 import io.choerodon.agile.infra.mapper.IssueCommentMapper;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.core.exception.CommonException;
@@ -24,11 +24,11 @@ public class IssueCommentValidator {
 
     private static final String COMMENT_ID = "commentId";
 
-    public void verifyCreateData(IssueCommentCreateDTO issueCommentCreateDTO) {
-        if (issueCommentCreateDTO.getIssueId() == null) {
+    public void verifyCreateData(IssueCommentCreateVO issueCommentCreateVO) {
+        if (issueCommentCreateVO.getIssueId() == null) {
             throw new CommonException("error.IssueCommentRule.issueId");
         } else {
-            if (issueMapper.selectByPrimaryKey(issueCommentCreateDTO.getIssueId()) == null) {
+            if (issueMapper.selectByPrimaryKey(issueCommentCreateVO.getIssueId()) == null) {
                 throw new CommonException("error.IssueCommentRule.issue");
             }
         }
@@ -38,10 +38,10 @@ public class IssueCommentValidator {
         if (issueCommentUpdate.get(COMMENT_ID) == null) {
             throw new CommonException("error.IssueCommentRule.commentId");
         }
-        IssueCommentDO issueCommentDO = new IssueCommentDO();
-        issueCommentDO.setCommentId(Long.parseLong(issueCommentUpdate.get(COMMENT_ID).toString()));
-        issueCommentDO.setProjectId(projectId);
-        if (issueCommentMapper.selectByPrimaryKey(issueCommentDO) == null) {
+        IssueCommentDTO issueCommentDTO = new IssueCommentDTO();
+        issueCommentDTO.setCommentId(Long.parseLong(issueCommentUpdate.get(COMMENT_ID).toString()));
+        issueCommentDTO.setProjectId(projectId);
+        if (issueCommentMapper.selectByPrimaryKey(issueCommentDTO) == null) {
             throw new CommonException("error.IssueCommentRule.issueComment");
         }
     }

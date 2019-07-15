@@ -2,15 +2,15 @@ package io.choerodon.agile.api.controller.v1
 
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.IssueCreateDTO
-import io.choerodon.agile.api.vo.IssueDTO
-import io.choerodon.agile.api.vo.ProjectDTO
+import io.choerodon.agile.api.vo.IssueCreateVO
+import io.choerodon.agile.api.vo.IssueVO
+import io.choerodon.agile.api.vo.ProjectVO
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
 import io.choerodon.agile.api.vo.event.ProjectConfig
 import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue
-import io.choerodon.agile.infra.repository.UserRepository
-import io.choerodon.agile.infra.dataobject.UserDO
+import io.choerodon.agile.infra.dataobject.UserDTO
 import io.choerodon.agile.infra.mapper.*
+import io.choerodon.agile.app.service.UserService
 import org.mockito.Matchers
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired
@@ -45,8 +45,8 @@ class StateMachineControllerSpec extends Specification {
     @Autowired
     IssueMapper issueMapper
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository
+    @Qualifier("userService")
+    private UserService userRepository
     @Shared
     def baseUrl = '/v1/organizations/{organization_id}/state_machine'
     @Shared
@@ -54,13 +54,13 @@ class StateMachineControllerSpec extends Specification {
 
     def setup() {
         given: '设置feign调用mockito'
-        ProjectDTO projectDTO = new ProjectDTO()
+        ProjectVO projectDTO = new ProjectVO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
         projectDTO.setId(1L)
         projectDTO.setOrganizationId(1L)
         Mockito.when(userRepository.queryProject(Matchers.anyLong())).thenReturn(projectDTO)
-        UserDO userDO = new UserDO()
+        UserDTO userDO = new UserDTO()
         userDO.setRealName("管理员")
         Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
     }
@@ -80,7 +80,7 @@ class StateMachineControllerSpec extends Specification {
         Long testOrganizationId = 1L
 
         and: '插入符合条件的issue'
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        IssueCreateVO issueCreateDTO = new IssueCreateVO()
         issueCreateDTO.projectId = 1L
         issueCreateDTO.sprintId = 1L
         issueCreateDTO.summary = 'issue'
@@ -89,7 +89,7 @@ class StateMachineControllerSpec extends Specification {
         issueCreateDTO.priorityId = 1L
         issueCreateDTO.issueTypeId = 1L
         issueCreateDTO.reporterId = 1L
-        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueVO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
         issueIds.add(issueDTO.issueId)
 
         when: '校验是否可以删除状态机的节点'
@@ -138,7 +138,7 @@ class StateMachineControllerSpec extends Specification {
         Long testOrganizationId = 1L
 
         and: '插入符合条件的issue'
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        IssueCreateVO issueCreateDTO = new IssueCreateVO()
         issueCreateDTO.projectId = 1L
         issueCreateDTO.sprintId = 1L
         issueCreateDTO.summary = 'issue'
@@ -147,7 +147,7 @@ class StateMachineControllerSpec extends Specification {
         issueCreateDTO.priorityId = 1L
         issueCreateDTO.issueTypeId = 1L
         issueCreateDTO.reporterId = 1L
-        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueVO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
         issueIds.add(issueDTO.issueId)
 
         when: '查询状态机方案变更后对issue的影响'

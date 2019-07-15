@@ -1,12 +1,10 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.dataobject.IssueAttachmentDTO;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.vo.IssueAttachmentDTO;
+import io.choerodon.agile.api.vo.IssueAttachmentVO;
 import io.choerodon.agile.app.service.IssueAttachmentService;
-import io.choerodon.agile.domain.agile.entity.IssueAttachmentE;
-import io.choerodon.agile.infra.repository.IssueAttachmentRepository;
-import io.choerodon.agile.infra.dataobject.IssueAttachmentDO;
 import io.choerodon.agile.infra.feign.FileFeignClient;
 import io.choerodon.agile.infra.mapper.IssueAttachmentMapper;
 import org.slf4j.Logger;
@@ -40,6 +38,8 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
 
     private static final String BACKETNAME = "agile-service";
 
+    private static final String INSERT_ERROR = "error.IssueAttachment.create";
+
     private final FileFeignClient fileFeignClient;
 
     @Autowired
@@ -47,8 +47,8 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         this.fileFeignClient = fileFeignClient;
     }
 
-    @Autowired
-    private IssueAttachmentRepository issueAttachmentRepository;
+//    @Autowired
+//    private IssueAttachmentRepository issueAttachmentRepository;
 
     @Autowired
     private IssueAttachmentMapper issueAttachmentMapper;
@@ -58,13 +58,35 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
 
     @Override
     public void dealIssue(Long projectId, Long issueId, String fileName, String url) {
-        IssueAttachmentE issueAttachmentE = new IssueAttachmentE();
-        issueAttachmentE.setProjectId(projectId);
-        issueAttachmentE.setIssueId(issueId);
-        issueAttachmentE.setFileName(fileName);
-        issueAttachmentE.setUrl(url);
-        issueAttachmentE.setCommentId(1L);
-        issueAttachmentRepository.create(issueAttachmentE);
+        IssueAttachmentDTO issueAttachmentDTO = new IssueAttachmentDTO();
+        issueAttachmentDTO.setProjectId(projectId);
+        issueAttachmentDTO.setIssueId(issueId);
+        issueAttachmentDTO.setFileName(fileName);
+        issueAttachmentDTO.setUrl(url);
+        issueAttachmentDTO.setCommentId(1L);
+//        issueAttachmentRepository.create(issueAttachmentE);
+        insertIssueAttachment(issueAttachmentDTO);
+    }
+
+    @DataLog(type = "createAttachment")
+    public IssueAttachmentDTO insertIssueAttachment(IssueAttachmentDTO issueAttachmentDTO) {
+//        IssueAttachmentDTO issueAttachmentDTO = ConvertHelper.convert(issueAttachmentE, IssueAttachmentDTO.class);
+        if (issueAttachmentMapper.insert(issueAttachmentDTO) != 1) {
+            throw new CommonException(INSERT_ERROR);
+        }
+        return issueAttachmentMapper.selectByPrimaryKey(issueAttachmentDTO.getAttachmentId());
+    }
+
+    @DataLog(type = "deleteAttachment")
+    public Boolean deleteById(Long attachmentId) {
+        IssueAttachmentDTO issueAttachmentDTO = issueAttachmentMapper.selectByPrimaryKey(attachmentId);
+        if (issueAttachmentDTO == null) {
+            throw new CommonException("error.attachment.get");
+        }
+        if (issueAttachmentMapper.delete(issueAttachmentDTO) != 1) {
+            throw new CommonException("error.attachment.delete");
+        }
+        return true;
     }
 
     private String dealUrl(String url) {
@@ -79,7 +101,7 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
     }
 
     @Override
-    public List<IssueAttachmentDTO> create(Long projectId, Long issueId, HttpServletRequest request) {
+    public List<IssueAttachmentVO> create(Long projectId, Long issueId, HttpServletRequest request) {
         List<MultipartFile> files = ((MultipartHttpServletRequest) request).getFiles("file");
         if (files != null && !files.isEmpty()) {
             for (MultipartFile multipartFile : files) {
@@ -91,16 +113,16 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
                 dealIssue(projectId, issueId, fileName, dealUrl(response.getBody()));
             }
         }
-        IssueAttachmentDO issueAttachmentDO = new IssueAttachmentDO();
-        issueAttachmentDO.setIssueId(issueId);
-        List<IssueAttachmentDO> issueAttachmentDOList = issueAttachmentMapper.select(issueAttachmentDO);
-        List<IssueAttachmentDTO> result = new ArrayList<>();
-        if (issueAttachmentDOList != null && !issueAttachmentDOList.isEmpty()) {
-            issueAttachmentDOList.forEach(attachment -> {
-                IssueAttachmentDTO issueAttachmentDTO = new IssueAttachmentDTO();
-                BeanUtils.copyProperties(attachment, issueAttachmentDTO);
-                issueAttachmentDTO.setUrl(attachmentUrl + attachment.getUrl());
-                result.add(issueAttachmentDTO);
+        IssueAttachmentDTO issueAttachmentDTO = new IssueAttachmentDTO();
+        issueAttachmentDTO.setIssueId(issueId);
+        List<IssueAttachmentDTO> issueAttachmentDTOList = issueAttachmentMapper.select(issueAttachmentDTO);
+        List<IssueAttachmentVO> result = new ArrayList<>();
+        if (issueAttachmentDTOList != null && !issueAttachmentDTOList.isEmpty()) {
+            issueAttachmentDTOList.forEach(attachment -> {
+                IssueAttachmentVO issueAttachmentVO = new IssueAttachmentVO();
+                BeanUtils.copyProperties(attachment, issueAttachmentVO);
+                issueAttachmentVO.setUrl(attachmentUrl + attachment.getUrl());
+                result.add(issueAttachmentVO);
             });
         }
         return result;
@@ -108,14 +130,15 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
 
     @Override
     public Boolean delete(Long projectId, Long issueAttachmentId) {
-        IssueAttachmentE issueAttachmentE = ConvertHelper.convert(issueAttachmentMapper.selectByPrimaryKey(issueAttachmentId), IssueAttachmentE.class);
-        if (issueAttachmentE == null) {
+        IssueAttachmentDTO issueAttachmentDTO = issueAttachmentMapper.selectByPrimaryKey(issueAttachmentId);
+        if (issueAttachmentDTO == null) {
             throw new CommonException("error.attachment.get");
         }
-        Boolean result = issueAttachmentRepository.deleteById(issueAttachmentE.getAttachmentId());
+//        Boolean result = issueAttachmentRepository.deleteById(issueAttachmentE.getAttachmentId());
+        Boolean result = deleteById(issueAttachmentDTO.getAttachmentId());
         String url = null;
         try {
-            url = URLDecoder.decode(issueAttachmentE.getUrl(), "UTF-8");
+            url = URLDecoder.decode(issueAttachmentDTO.getUrl(), "UTF-8");
             fileFeignClient.deleteFile(BACKETNAME, attachmentUrl + url);
         } catch (Exception e) {
             LOGGER.error("error.attachment.delete", e);
@@ -143,8 +166,8 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
 
     @Override
     public int deleteByIssueId(Long issueId) {
-        IssueAttachmentDO issueAttachmentDO = new IssueAttachmentDO();
-        issueAttachmentDO.setIssueId(issueId);
-        return issueAttachmentMapper.delete(issueAttachmentDO);
+        IssueAttachmentDTO issueAttachmentDTO = new IssueAttachmentDTO();
+        issueAttachmentDTO.setIssueId(issueId);
+        return issueAttachmentMapper.delete(issueAttachmentDTO);
     }
 }

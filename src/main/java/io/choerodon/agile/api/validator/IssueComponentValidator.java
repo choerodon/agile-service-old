@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.validator;
 
 
-import io.choerodon.agile.api.vo.IssueComponentDTO;
+import io.choerodon.agile.api.vo.IssueComponentVO;
 import io.choerodon.core.exception.CommonException;
 
 /**
@@ -15,11 +15,11 @@ public class IssueComponentValidator {
 
     private IssueComponentValidator() {}
 
-    public static void checkCreateComponent(Long projectId, IssueComponentDTO issueComponentDTO) {
-        if (!projectId.equals(issueComponentDTO.getProjectId())) {
+    public static void checkCreateComponent(Long projectId, IssueComponentVO issueComponentVO) {
+        if (!projectId.equals(issueComponentVO.getProjectId())) {
             throw new CommonException(ERROR_PROJECTID_NOTEQUAL);
         }
-        if (issueComponentDTO.getName() == null) {
+        if (issueComponentVO.getName() == null) {
             throw new CommonException(ERROR_COMPONENTNAME_ISNULL);
         }
     }

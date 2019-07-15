@@ -1,14 +1,14 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.vo.IssueLinkDTO;
-import io.choerodon.agile.api.vo.IssueTypeDTO;
-import io.choerodon.agile.api.vo.PriorityDTO;
-import io.choerodon.agile.api.vo.StatusMapDTO;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.api.vo.IssueLinkVO;
+import io.choerodon.agile.api.vo.IssueTypeVO;
+import io.choerodon.agile.api.vo.PriorityVO;
+import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.dataobject.IssueLinkDO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,37 +28,37 @@ import java.util.stream.Collectors;
 public class IssueLinkAssembler extends AbstractAssembler {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private IssueMapper issueMapper;
 
-    public List<IssueLinkDTO> issueLinkDoToDto(Long projectId, List<IssueLinkDO> issueLinkDOList) {
-        List<IssueLinkDTO> issueLinkDTOList = new ArrayList<>(issueLinkDOList.size());
-        if (!issueLinkDOList.isEmpty()) {
-            Map<Long, IssueTypeDTO> testIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
-            Map<Long, IssueTypeDTO> agileIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
-            Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-            Map<Long, PriorityDTO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
-            List<Long> assigneeIds = issueLinkDOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueLinkDO::getAssigneeId).distinct().collect(Collectors.toList());
-            Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(assigneeIds, true);
-            issueLinkDOList.forEach(issueLinkDO -> {
+    public List<IssueLinkVO> issueLinkDoToDto(Long projectId, List<IssueLinkDTO> issueLinkDTOList) {
+        List<IssueLinkVO> issueLinkVOList = new ArrayList<>(issueLinkDTOList.size());
+        if (!issueLinkDTOList.isEmpty()) {
+            Map<Long, IssueTypeVO> testIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
+            Map<Long, IssueTypeVO> agileIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
+            Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+            Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
+            List<Long> assigneeIds = issueLinkDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueLinkDTO::getAssigneeId).distinct().collect(Collectors.toList());
+            Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
+            issueLinkDTOList.forEach(issueLinkDO -> {
                 String assigneeName = usersMap.get(issueLinkDO.getAssigneeId()) != null ? usersMap.get(issueLinkDO.getAssigneeId()).getName() : null;
                 String imageUrl = assigneeName != null ? usersMap.get(issueLinkDO.getAssigneeId()).getImageUrl() : null;
-                IssueLinkDTO issueLinkDTO = new IssueLinkDTO();
-                BeanUtils.copyProperties(issueLinkDO, issueLinkDTO);
+                IssueLinkVO issueLinkVO = new IssueLinkVO();
+                BeanUtils.copyProperties(issueLinkDO, issueLinkVO);
                 if (issueLinkDO.getApplyType().equals(SchemeApplyType.TEST)) {
-                    issueLinkDTO.setIssueTypeDTO(testIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
+                    issueLinkVO.setIssueTypeVO(testIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
                 } else {
-                    issueLinkDTO.setIssueTypeDTO(agileIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
+                    issueLinkVO.setIssueTypeVO(agileIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
                 }
-                issueLinkDTO.setStatusMapDTO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
-                issueLinkDTO.setPriorityDTO(priorityDTOMap.get(issueLinkDO.getPriorityId()));
-                issueLinkDTO.setAssigneeName(assigneeName);
-                issueLinkDTO.setImageUrl(imageUrl);
-                issueLinkDTOList.add(issueLinkDTO);
+                issueLinkVO.setStatusMapVO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
+                issueLinkVO.setPriorityVO(priorityDTOMap.get(issueLinkDO.getPriorityId()));
+                issueLinkVO.setAssigneeName(assigneeName);
+                issueLinkVO.setImageUrl(imageUrl);
+                issueLinkVOList.add(issueLinkVO);
             });
         }
-        return issueLinkDTOList;
+        return issueLinkVOList;
     }
 }

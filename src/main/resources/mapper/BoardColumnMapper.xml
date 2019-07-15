@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.BoardColumnMapper">
 
-    <resultMap id="BoardColumnAndIssues" type="io.choerodon.agile.infra.dataobject.ColumnAndIssueDO">
+    <resultMap id="BoardColumnAndIssues" type="io.choerodon.agile.infra.dataobject.ColumnAndIssueDTO">
         <id property="columnId" column="abc_column_id"/>
         <id property="categoryCode" column="abc_category_code"/>
         <id property="boardId" column="abc_board_id"/>
@@ -12,7 +12,7 @@
         <id property="sequence" column="abc_sequence"/>
         <id property="color" column="abc_color"/>
         <id property="objectVersionNumber" column="abc_object_version_number"/>
-        <collection property="subStatuses" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.SubStatus">
+        <collection property="subStatusDTOS" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.SubStatusDTO">
             <id property="id" column="ais_id"/>
             <id property="completed" column="ais_completed"/>
             <id property="statusId" column="ais_status_id"/>
@@ -82,7 +82,7 @@
         ORDER BY abc.sequence
     </select>
 
-    <select id="queryParentIssuesByIds" resultType="io.choerodon.agile.infra.dataobject.ParentIssueDO">
+    <select id="queryParentIssuesByIds" resultType="io.choerodon.agile.infra.dataobject.ParentIssueDTO">
         select
         ai.issue_id,
         IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) AS issue_num,
@@ -183,7 +183,7 @@
         WHERE board_id = #{boardId}
     </update>
 
-    <select id="queryColumnStatusRelByProjectId" resultType="io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDO">
+    <select id="queryColumnStatusRelByProjectId" resultType="io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDTO">
         SELECT
             DISTINCT
             (abcsr.status_id)
@@ -193,7 +193,7 @@
             abcsr.project_id = #{projectId} and abcsr.status_id != 0
     </select>
 
-    <!--<select id="selectColumnByColumnId" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">-->
+    <!--<select id="selectColumnByColumnId" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDTOO">-->
         <!--SELECT-->
             <!--abc.name,-->
             <!--abc.min_num,-->
@@ -214,7 +214,7 @@
             <!--abc.column_id = #{columnId}-->
     <!--</select>-->
 
-    <!--<select id="selectColumnByColumnIdWithoutSub" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDO">-->
+    <!--<select id="selectColumnByColumnIdWithoutSub" resultType="io.choerodon.agile.infra.dataobject.BoardColumnCheckDTOO">-->
         <!--SELECT-->
             <!--abc.min_num,-->
             <!--abc.max_num,-->
@@ -234,7 +234,7 @@
             <!--abc.column_id = #{columnId}-->
     <!--</select>-->
 
-    <update id="updateMaxAndMinNum" parameterType="io.choerodon.agile.api.vo.ColumnWithMaxMinNumDTO">
+    <update id="updateMaxAndMinNum" parameterType="io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO">
         UPDATE agile_board_column
         SET max_num               = #{columnInfo.maxNum},
             min_num               = #{columnInfo.minNum},
@@ -245,7 +245,7 @@
             AND object_version_number = #{columnInfo.objectVersionNumber}
     </update>
 
-    <select id="selectByBoardIdOrderBySequence" resultType="io.choerodon.agile.infra.dataobject.BoardColumnDO">
+    <select id="selectByBoardIdOrderBySequence" resultType="io.choerodon.agile.infra.dataobject.BoardColumnDTO">
         SELECT *
         FROM
             agile_board_column
@@ -261,7 +261,7 @@
             board_id = #{boardId} AND sequence > #{sequence}
     </update>
 
-    <select id="queryColumnByColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnDO">
+    <select id="queryColumnByColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnDTO">
         SELECT abc.column_id ,abc.name,alv.name as color,abc.category_code
         from agile_board_column abc left join agile_lookup_value alv on
         alv.type_code = 'column_color'
@@ -273,7 +273,7 @@
         ORDER BY abc.sequence
     </select>
 
-    <select id="selectEpicBatchByIds" resultType="io.choerodon.agile.infra.dataobject.EpicIdWithNameDO">
+    <select id="selectEpicBatchByIds" resultType="io.choerodon.agile.infra.dataobject.EpicIdWithNameDTO">
         SELECT
         issue_id AS epic_id,
         epic_name AS epic_name
@@ -329,7 +329,7 @@
         order by ai.issue_id
     </select>
 
-    <select id="getAllColumnNum" resultType="io.choerodon.agile.infra.dataobject.ColumnIssueNumDO">
+    <select id="getAllColumnNum" resultType="io.choerodon.agile.infra.dataobject.ColumnIssueNumDTO">
         select
         abc.column_id,
         COUNT(ai.issue_id) AS issue_count
@@ -397,22 +397,22 @@
             WHERE ai1.type_code = 'feature'
                   AND ai1.issue_id = af.issue_id
                   AND ai1.program_id = #{projectId}
-            <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+            <if test="searchVO.advancedSearchArgs.featureTypeList != null and searchVO.advancedSearchArgs.featureTypeList.size > 0">
                   AND ai1.issue_id in (
                   select af.issue_id from agile_feature af where af.program_id = #{projectId} and af.feature_type in
-                  <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="("
+                  <foreach collection="searchVO.advancedSearchArgs.featureTypeList" item="featureType" open="("
                            separator=","
                            close=")">
                       #{featureType}
                   </foreach>
                   )
             </if>
-            <if test="searchDTO.advancedSearchArgs.completeList != null and searchDTO.advancedSearchArgs.completeList.size > 0">
+            <if test="searchVO.advancedSearchArgs.completeList != null and searchVO.advancedSearchArgs.completeList.size > 0">
                 AND ai1.status_id in (
                     select ais.status_id
                     from agile_issue_status ais
                     where ais.project_id = #{projectId} and ais.is_completed in (
-                    <foreach collection="searchDTO.advancedSearchArgs.completeList" item="complete" open="("
+                    <foreach collection="searchVO.advancedSearchArgs.completeList" item="complete" open="("
                              separator=","
                              close=")">
                             #{complete}
@@ -480,22 +480,22 @@
                 AND ai1.type_code = 'feature'
                 AND ai1.issue_id = af.issue_id
                 AND ai1.program_id = #{projectId}
-            <if test="searchDTO.advancedSearchArgs.featureTypeList != null and searchDTO.advancedSearchArgs.featureTypeList.size > 0">
+            <if test="searchVO.advancedSearchArgs.featureTypeList != null and searchVO.advancedSearchArgs.featureTypeList.size > 0">
                 AND ai1.issue_id in (
                 select af.issue_id from agile_feature af where af.program_id = #{projectId} and af.feature_type in
-                <foreach collection="searchDTO.advancedSearchArgs.featureTypeList" item="featureType" open="("
+                <foreach collection="searchVO.advancedSearchArgs.featureTypeList" item="featureType" open="("
                          separator=","
                          close=")">
                     #{featureType}
                 </foreach>
                 )
             </if>
-            <if test="searchDTO.advancedSearchArgs.completeList != null and searchDTO.advancedSearchArgs.completeList.size > 0">
+            <if test="searchVO.advancedSearchArgs.completeList != null and searchVO.advancedSearchArgs.completeList.size > 0">
                 AND ai1.status_id in (
                     select ais.status_id
                     from agile_issue_status ais
                     where ais.project_id = #{projectId} and ais.is_completed in (
-                    <foreach collection="searchDTO.advancedSearchArgs.completeList" item="complete" open="("
+                    <foreach collection="searchVO.advancedSearchArgs.completeList" item="complete" open="("
                              separator=","
                              close=")">
                         #{complete}
@@ -519,7 +519,7 @@
         )
     </select>
 
-    <select id="queryRelByColumnIds" resultType="io.choerodon.agile.infra.dataobject.BoardColumnStatusRelDO">
+    <select id="queryRelByColumnIds" resultType="io.choerodon.agile.infra.dataobject.BoardColumnStatusRelDTO">
         select * from agile_board_column_status_rel abcsr
         where abcsr.column_id IN
         <foreach collection="columnIds" item="columnId"

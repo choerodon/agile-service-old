@@ -2,30 +2,27 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.BoardColumnValidator;
+import io.choerodon.agile.api.vo.event.RemoveStatusWithProject;
 import io.choerodon.agile.app.service.BoardColumnService;
-import io.choerodon.agile.domain.agile.entity.BoardColumnE;
-import io.choerodon.agile.domain.agile.entity.BoardE;
-import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.domain.agile.entity.IssueStatusE;
+import io.choerodon.agile.app.service.ColumnStatusRelService;
+import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.agile.api.vo.event.StatusPayload;
-import io.choerodon.agile.infra.repository.BoardColumnRepository;
-import io.choerodon.agile.infra.repository.ColumnStatusRelRepository;
-import io.choerodon.agile.infra.repository.IssueStatusRepository;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.dataobject.BoardColumnDO;
-import io.choerodon.agile.infra.dataobject.ColumnStatusRelDO;
-import io.choerodon.agile.infra.dataobject.ColumnWithStatusRelDO;
-import io.choerodon.agile.infra.dataobject.IssueStatusDO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
-import io.choerodon.core.convertor.ConvertHelper;
+import io.choerodon.core.exception.CommonException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
@@ -55,14 +52,17 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     private static final String COLUMN_COLOR_PREPARE = "column_color_prepare";
     private static final String APPLY_TYPE_PROGRAM = "program";
 
-    @Autowired
-    private BoardColumnRepository boardColumnRepository;
+//    @Autowired
+//    private BoardColumnRepository boardColumnRepository;
+//
+//    @Autowired
+//    private ColumnStatusRelRepository columnStatusRelRepository;
 
     @Autowired
-    private ColumnStatusRelRepository columnStatusRelRepository;
+    private ColumnStatusRelService columnStatusRelService;
 
-    @Autowired
-    private IssueStatusRepository issueStatusRepository;
+//    @Autowired
+//    private IssueStatusRepository issueStatusRepository;
 
     @Autowired
     private BoardColumnMapper boardColumnMapper;
@@ -76,39 +76,56 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     @Autowired
     private IssueFeignClient issueFeignClient;
 
-    private void updateSequence(BoardColumnDTO boardColumnDTO) {
-        List<BoardColumnDO> boardColumnDOList = boardColumnMapper.selectByBoardIdOrderBySequence(boardColumnDTO.getBoardId());
-        BoardColumnDO lastColumn = boardColumnDOList.get(boardColumnDOList.size() - 1);
-        Integer lastSequence = lastColumn.getSequence();
-        lastColumn.setSequence(lastSequence + 1);
-        boardColumnRepository.update(ConvertHelper.convert(lastColumn, BoardColumnE.class));
-        boardColumnDTO.setSequence(lastSequence);
+    @Autowired
+    private RedisUtil redisUtil;
+
+    @Autowired
+    private IssueStatusService issueStatusService;
+
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
-    private void setColumnProperties(BoardColumnDTO boardColumnDTO, BoardColumnDO boardColumnDO, String categoryDO, String categoryDTO) {
-        boardColumnDO.setCategoryCode(categoryDO);
-        if (!boardColumnMapper.select(boardColumnDO).isEmpty()) {
-            boardColumnDTO.setCategoryCode(categoryDTO);
-            updateSequence(boardColumnDTO);
+    private void updateSequence(BoardColumnVO boardColumnVO) {
+        List<BoardColumnDTO> boardColumnDTOList = boardColumnMapper.selectByBoardIdOrderBySequence(boardColumnVO.getBoardId());
+        BoardColumnDTO lastColumn = boardColumnDTOList.get(boardColumnDTOList.size() - 1);
+        Integer lastSequence = lastColumn.getSequence();
+        lastColumn.setSequence(lastSequence + 1);
+//        boardColumnRepository.update(ConvertHelper.convert(lastColumn, BoardColumnE.class));
+        if (boardColumnMapper.updateByPrimaryKeySelective(lastColumn) != 1) {
+            throw new CommonException("error.BoardColumn.update");
+        }
+        boardColumnVO.setSequence(lastSequence);
+    }
+
+    private void setColumnProperties(BoardColumnVO boardColumnVO, BoardColumnDTO boardColumnDTO, String categoryDO, String categoryDTO) {
+        boardColumnDTO.setCategoryCode(categoryDO);
+        if (!boardColumnMapper.select(boardColumnDTO).isEmpty()) {
+            boardColumnVO.setCategoryCode(categoryDTO);
+            updateSequence(boardColumnVO);
         }
     }
 
-    private void createCheck(BoardColumnDTO boardColumnDTO) {
-        BoardColumnDO boardColumnDO = new BoardColumnDO();
-        boardColumnDO.setBoardId(boardColumnDTO.getBoardId());
-        switch (boardColumnDTO.getCategoryCode()) {
+    private void createCheck(BoardColumnVO boardColumnVO) {
+        BoardColumnDTO boardColumnDTO = new BoardColumnDTO();
+        boardColumnDTO.setBoardId(boardColumnVO.getBoardId());
+        switch (boardColumnVO.getCategoryCode()) {
             case DONE_CODE:
-                setColumnProperties(boardColumnDTO, boardColumnDO, DONE_CODE, DOING_CODE);
+                setColumnProperties(boardColumnVO, boardColumnDTO, DONE_CODE, DOING_CODE);
                 break;
             case TODO_CODE:
-                setColumnProperties(boardColumnDTO, boardColumnDO, TODO_CODE, DOING_CODE);
+                setColumnProperties(boardColumnVO, boardColumnDTO, TODO_CODE, DOING_CODE);
                 break;
             case DOING_CODE:
-                boardColumnDO.setCategoryCode(DONE_CODE);
-                if (boardColumnMapper.select(boardColumnDO).isEmpty()) {
-                    boardColumnDTO.setCategoryCode(DONE_CODE);
+                boardColumnDTO.setCategoryCode(DONE_CODE);
+                if (boardColumnMapper.select(boardColumnDTO).isEmpty()) {
+                    boardColumnVO.setCategoryCode(DONE_CODE);
                 } else {
-                    updateSequence(boardColumnDTO);
+                    updateSequence(boardColumnVO);
                 }
                 break;
             default:
@@ -116,134 +133,165 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         }
     }
 
-    private void setColumnColor(BoardColumnDTO boardColumnDTO, Boolean checkStatus) {
+    private void setColumnColor(BoardColumnVO boardColumnVO, Boolean checkStatus) {
         if (!checkStatus) {
-            switch (boardColumnDTO.getCategoryCode()) {
+            switch (boardColumnVO.getCategoryCode()) {
                 case PREPARE_CODE:
-                    boardColumnDTO.setColorCode(COLUMN_COLOR_PREPARE);
+                    boardColumnVO.setColorCode(COLUMN_COLOR_PREPARE);
                     break;
                 case TODO_CODE:
-                    boardColumnDTO.setColorCode(COLUMN_COLOR_TODO);
+                    boardColumnVO.setColorCode(COLUMN_COLOR_TODO);
                     break;
                 case DOING_CODE:
-                    boardColumnDTO.setColorCode(COLUMN_COLOR_DOING);
+                    boardColumnVO.setColorCode(COLUMN_COLOR_DOING);
                     break;
                 case DONE_CODE:
-                    boardColumnDTO.setColorCode(COLUMN_COLOR_DONE);
+                    boardColumnVO.setColorCode(COLUMN_COLOR_DONE);
                     break;
                 default:
                     break;
             }
         } else {
-            boardColumnDTO.setColorCode(COLUMN_COLOR_NO_STATUS);
+            boardColumnVO.setColorCode(COLUMN_COLOR_NO_STATUS);
         }
     }
 
     private Boolean checkColumnStatusExist(Long projectId, Long statusId) {
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        columnStatusRelDO.setProjectId(projectId);
-        columnStatusRelDO.setStatusId(statusId);
-        List<ColumnStatusRelDO> columnStatusRelDOS = columnStatusRelMapper.select(columnStatusRelDO);
-        return columnStatusRelDOS != null && !columnStatusRelDOS.isEmpty();
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setProjectId(projectId);
+        columnStatusRelDTO.setStatusId(statusId);
+        List<ColumnStatusRelDTO> columnStatusRelDTOS = columnStatusRelMapper.select(columnStatusRelDTO);
+        return columnStatusRelDTOS != null && !columnStatusRelDTOS.isEmpty();
     }
 
 
     @Override
-    public BoardColumnDTO create(Long projectId, String categoryCode, String applyType, BoardColumnDTO boardColumnDTO) {
-        BoardColumnValidator.checkCreateBoardColumnDTO(projectId, boardColumnDTO);
+    public BoardColumnVO create(Long projectId, String categoryCode, String applyType, BoardColumnVO boardColumnVO) {
+        BoardColumnValidator.checkCreateBoardColumnDTO(projectId, boardColumnVO);
         // 创建列
         if (!APPLY_TYPE_PROGRAM.equals(applyType)) {
-            createCheck(boardColumnDTO);
+            createCheck(boardColumnVO);
         }
-        StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
-        statusInfoDTO.setType(categoryCode);
-        statusInfoDTO.setName(boardColumnDTO.getName());
-        ResponseEntity<StatusInfoDTO> responseEntity = issueFeignClient.createStatusForAgile(projectId, applyType, statusInfoDTO);
+        StatusInfoVO statusInfoVO = new StatusInfoVO();
+        statusInfoVO.setType(categoryCode);
+        statusInfoVO.setName(boardColumnVO.getName());
+        ResponseEntity<StatusInfoVO> responseEntity = issueFeignClient.createStatusForAgile(projectId, applyType, statusInfoVO);
         if (responseEntity.getStatusCode().value() == 200 && responseEntity.getBody() != null && responseEntity.getBody().getId() != null) {
             Long statusId = responseEntity.getBody().getId();
             Boolean checkStatus = checkColumnStatusExist(projectId, statusId);
-            setColumnColor(boardColumnDTO, checkStatus);
-            BoardColumnE boardColumnE = boardColumnRepository.create(ConvertHelper.convert(boardColumnDTO, BoardColumnE.class));
+            setColumnColor(boardColumnVO, checkStatus);
+//            BoardColumnE boardColumnE = boardColumnRepository.create(ConvertHelper.convert(boardColumnVO, BoardColumnE.class));
+            BoardColumnDTO boardColumnDTO = createBase(modelMapper.map(boardColumnVO, BoardColumnDTO.class));
             // 创建默认状态
-            IssueStatusDO issueStatusDO = new IssueStatusDO();
-            issueStatusDO.setProjectId(projectId);
-            issueStatusDO.setStatusId(statusId);
-            IssueStatusDO res = issueStatusMapper.selectOne(issueStatusDO);
+            IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
+            issueStatusDTO.setProjectId(projectId);
+            issueStatusDTO.setStatusId(statusId);
+            IssueStatusDTO res = issueStatusMapper.selectOne(issueStatusDTO);
             if (res == null) {
-                IssueStatusE issueStatusE = new IssueStatusE();
-                issueStatusE.setCategoryCode(categoryCode);
-                issueStatusE.setEnable(false);
-                issueStatusE.setName(boardColumnDTO.getName());
-                issueStatusE.setProjectId(projectId);
-                issueStatusE.setStatusId(statusId);
-                if (boardColumnDTO.getCategoryCode().equals(DONE_CODE)) {
-                    issueStatusE.setCompleted(true);
+                IssueStatusDTO issueStatus = new IssueStatusDTO();
+                issueStatus.setCategoryCode(categoryCode);
+                issueStatus.setEnable(false);
+                issueStatus.setName(boardColumnVO.getName());
+                issueStatus.setProjectId(projectId);
+                issueStatus.setStatusId(statusId);
+                if (boardColumnVO.getCategoryCode().equals(DONE_CODE)) {
+                    issueStatus.setCompleted(true);
                 } else {
-                    issueStatusE.setCompleted(false);
+                    issueStatus.setCompleted(false);
                 }
-                issueStatusRepository.create(issueStatusE);
+                issueStatusService.insertIssueStatus(issueStatus);
             }
             // 创建列与状态关联关系
             if (!checkStatus) {
-                ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-                columnStatusRelE.setColumnId(boardColumnE.getColumnId());
-                columnStatusRelE.setStatusId(statusId);
-                columnStatusRelE.setPosition(0);
-                columnStatusRelE.setProjectId(projectId);
-                columnStatusRelRepository.create(columnStatusRelE);
+                ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+                columnStatusRelDTO.setColumnId(boardColumnDTO.getColumnId());
+                columnStatusRelDTO.setStatusId(statusId);
+                columnStatusRelDTO.setPosition(0);
+                columnStatusRelDTO.setProjectId(projectId);
+                columnStatusRelService.create(columnStatusRelDTO);
             }
-            return ConvertHelper.convert(boardColumnE, BoardColumnDTO.class);
+            return boardColumnVO;
         } else {
-            setColumnColor(boardColumnDTO, true);
-            return ConvertHelper.convert(boardColumnRepository.create(ConvertHelper.convert(boardColumnDTO, BoardColumnE.class)), BoardColumnDTO.class);
+            setColumnColor(boardColumnVO, true);
+            createBase(modelMapper.map(boardColumnVO, BoardColumnDTO.class));
+            return boardColumnVO;
         }
     }
 
     @Override
-    public BoardColumnDTO update(Long projectId, Long columnId, Long boardId, BoardColumnDTO boardColumnDTO) {
-        BoardColumnValidator.checkUpdateBoardColumnDTO(projectId, boardId, boardColumnDTO);
-        BoardColumnE boardColumnE = ConvertHelper.convert(boardColumnDTO, BoardColumnE.class);
-        return ConvertHelper.convert(boardColumnRepository.update(boardColumnE), BoardColumnDTO.class);
+    public BoardColumnVO update(Long projectId, Long columnId, Long boardId, BoardColumnVO boardColumnVO) {
+        BoardColumnValidator.checkUpdateBoardColumnDTO(projectId, boardId, boardColumnVO);
+//        BoardColumnE boardColumnE = ConvertHelper.convert(boardColumnVO, BoardColumnE.class);
+        BoardColumnDTO boardColumnDTO = modelMapper.map(boardColumnVO, BoardColumnDTO.class);
+        if (boardColumnMapper.updateByPrimaryKeySelective(boardColumnDTO) != 1) {
+            throw new CommonException("error.BoardColumn.update");
+        }
+        return modelMapper.map(boardColumnMapper.selectByPrimaryKey(boardColumnDTO.getColumnId()), BoardColumnVO.class);
     }
 
     @Override
     public void delete(Long projectId, Long columnId) {
-        BoardColumnDO boardColumnDO = boardColumnMapper.selectByPrimaryKey(columnId);
-        BoardColumnValidator.checkDeleteColumn(boardColumnDO);
+        BoardColumnDTO boardColumnDTO = boardColumnMapper.selectByPrimaryKey(columnId);
+        BoardColumnValidator.checkDeleteColumn(boardColumnDTO);
         // 删除列
-        boardColumnRepository.delete(columnId);
+//        boardColumnRepository.delete(columnId);
+        if (boardColumnMapper.deleteByPrimaryKey(columnId) != 1) {
+            throw new CommonException("error.BoardColumn.delete");
+        }
         // 取消列下的状态关联，状态归为未对应的状态
-        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-        columnStatusRelE.setColumnId(columnId);
-        columnStatusRelE.setProjectId(projectId);
-        columnStatusRelRepository.delete(columnStatusRelE);
+//        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
+//        columnStatusRelE.setColumnId(columnId);
+//        columnStatusRelE.setProjectId(projectId);
+//        columnStatusRelRepository.delete(columnStatusRelE);
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setColumnId(columnId);
+        columnStatusRelDTO.setProjectId(projectId);
+        columnStatusRelService.delete(columnStatusRelDTO);
         // 调整列sequence
-        boardColumnRepository.updateSequenceWhenDelete(projectId, boardColumnDO);
+        updateSequenceWhenDelete(projectId, boardColumnDTO);
+    }
+
+    public void updateSequenceWhenDelete(Long projectId, BoardColumnDTO boardColumnDTO) {
+        Long boardId = boardColumnDTO.getBoardId();
+        boardColumnMapper.updateSequenceWhenDelete(boardColumnDTO.getBoardId(), boardColumnDTO.getSequence());
+        BoardColumnDTO update = new BoardColumnDTO();
+        update.setProjectId(projectId);
+        update.setBoardId(boardId);
+        Integer size = boardColumnMapper.select(update).size();
+        boardColumnMapper.updateColumnCategory(boardId, size);
+        boardColumnMapper.updateColumnColor(boardId, size);
     }
 
     @Override
     public void deleteProgramBoardColumn(Long projectId, Long columnId) {
-        BoardColumnDO boardColumnDO = boardColumnMapper.selectByPrimaryKey(columnId);
-        BoardColumnValidator.checkDeleteColumn(boardColumnDO);
+        BoardColumnDTO boardColumnDTO = boardColumnMapper.selectByPrimaryKey(columnId);
+        BoardColumnValidator.checkDeleteColumn(boardColumnDTO);
         // 删除列
-        boardColumnRepository.delete(columnId);
+//        boardColumnRepository.delete(columnId);
+        if (boardColumnMapper.deleteByPrimaryKey(columnId) != 1) {
+            throw new CommonException("error.BoardColumn.delete");
+        }
         // 取消列下的状态关联，状态归为未对应的状态
-        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-        columnStatusRelE.setColumnId(columnId);
-        columnStatusRelE.setProjectId(projectId);
-        columnStatusRelRepository.delete(columnStatusRelE);
+//        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
+//        columnStatusRelE.setColumnId(columnId);
+//        columnStatusRelE.setProjectId(projectId);
+//        columnStatusRelRepository.delete(columnStatusRelE);
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setColumnId(columnId);
+        columnStatusRelDTO.setProjectId(projectId);
+        columnStatusRelService.delete(columnStatusRelDTO);
     }
 
     @Override
-    public BoardColumnDTO queryBoardColumnById(Long projectId, Long columnId) {
-        BoardColumnDO boardColumnDO = new BoardColumnDO();
-        boardColumnDO.setProjectId(projectId);
-        boardColumnDO.setColumnId(columnId);
-        return ConvertHelper.convert(boardColumnMapper.selectOne(boardColumnDO), BoardColumnDTO.class);
+    public BoardColumnVO queryBoardColumnById(Long projectId, Long columnId) {
+        BoardColumnDTO boardColumnDTO = new BoardColumnDTO();
+        boardColumnDTO.setProjectId(projectId);
+        boardColumnDTO.setColumnId(columnId);
+        return modelMapper.map(boardColumnMapper.selectOne(boardColumnDTO), BoardColumnVO.class);
     }
 
     private void initColumnWithStatus(Long projectId, Long boardId, String name, String categoryCode, Long statusId, Integer sequence) {
-        BoardColumnE column = new BoardColumnE();
+        BoardColumnDTO column = new BoardColumnDTO();
         column.setBoardId(boardId);
         column.setName(name);
         column.setProjectId(projectId);
@@ -266,36 +314,37 @@ public class BoardColumnServiceImpl implements BoardColumnService {
                 column.setColorCode(COLUMN_COLOR_NO_STATUS);
                 break;
         }
-        BoardColumnE columnE = boardColumnRepository.create(column);
-        IssueStatusDO issueStatusDO = new IssueStatusDO();
-        issueStatusDO.setProjectId(projectId);
-        issueStatusDO.setStatusId(statusId);
-        IssueStatusDO res = issueStatusMapper.selectOne(issueStatusDO);
+//        BoardColumnE columnE = boardColumnRepository.create(column);
+        BoardColumnDTO createdColumn = createBase(column);
+        IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
+        issueStatusDTO.setProjectId(projectId);
+        issueStatusDTO.setStatusId(statusId);
+        IssueStatusDTO res = issueStatusMapper.selectOne(issueStatusDTO);
         if (res == null) {
-            IssueStatusE issueStatusE = new IssueStatusE();
-            issueStatusE.setProjectId(projectId);
-            issueStatusE.setStatusId(statusId);
-            issueStatusE.setName(name);
-            issueStatusE.setEnable(false);
-            issueStatusE.setCategoryCode(categoryCode);
+            IssueStatusDTO issueStatus = new IssueStatusDTO();
+            issueStatus.setProjectId(projectId);
+            issueStatus.setStatusId(statusId);
+            issueStatus.setName(name);
+            issueStatus.setEnable(false);
+            issueStatus.setCategoryCode(categoryCode);
             if (categoryCode.equals(DONE_CODE)) {
-                issueStatusE.setCompleted(true);
+                issueStatus.setCompleted(true);
             } else {
-                issueStatusE.setCompleted(false);
+                issueStatus.setCompleted(false);
             }
-            issueStatusRepository.create(issueStatusE);
+            issueStatusService.insertIssueStatus(issueStatus);
         }
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        columnStatusRelDO.setColumnId(columnE.getColumnId());
-        columnStatusRelDO.setStatusId(statusId);
-        columnStatusRelDO.setProjectId(projectId);
-        if (columnStatusRelMapper.select(columnStatusRelDO).isEmpty()) {
-            ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-            columnStatusRelE.setColumnId(columnE.getColumnId());
-            columnStatusRelE.setPosition(POSITION);
-            columnStatusRelE.setStatusId(statusId);
-            columnStatusRelE.setProjectId(projectId);
-            columnStatusRelRepository.create(columnStatusRelE);
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setColumnId(createdColumn.getColumnId());
+        columnStatusRelDTO.setStatusId(statusId);
+        columnStatusRelDTO.setProjectId(projectId);
+        if (columnStatusRelMapper.select(columnStatusRelDTO).isEmpty()) {
+            ColumnStatusRelDTO columnStatusRel = new ColumnStatusRelDTO();
+            columnStatusRel.setColumnId(createdColumn.getColumnId());
+            columnStatusRel.setPosition(POSITION);
+            columnStatusRel.setStatusId(statusId);
+            columnStatusRel.setProjectId(projectId);
+            columnStatusRelService.create(columnStatusRel);
         }
     }
 
@@ -308,65 +357,108 @@ public class BoardColumnServiceImpl implements BoardColumnService {
     }
 
     @Override
-    public void columnSort(Long projectId, ColumnSortDTO columnSortDTO) {
-        BoardColumnValidator.checkColumnSort(projectId, columnSortDTO);
-        BoardColumnE boardColumnE = ConvertHelper.convert(columnSortDTO, BoardColumnE.class);
-        boardColumnRepository.columnSort(projectId, columnSortDTO.getBoardId(), boardColumnE);
+    public void columnSort(Long projectId, ColumnSortVO columnSortVO) {
+        BoardColumnValidator.checkColumnSort(projectId, columnSortVO);
+//        BoardColumnE boardColumnE = ConvertHelper.convert(columnSortVO, BoardColumnE.class);
+//        boardColumnRepository.columnSort(projectId, columnSortVO.getBoardId(), boardColumnE);
+        BoardColumnDTO originColumn = boardColumnMapper.selectByPrimaryKey(columnSortVO.getColumnId());
+        try {
+            if (originColumn.getSequence() > columnSortVO.getSequence()) {
+                boardColumnMapper.columnSort(columnSortVO.getBoardId(), columnSortVO.getSequence(), originColumn.getSequence());
+            } else if (originColumn.getSequence() < columnSortVO.getSequence()) {
+                boardColumnMapper.columnSortDesc(columnSortVO.getBoardId(), columnSortVO.getSequence(), originColumn.getSequence());
+            }
+//            update(boardColumnE);
+            if (boardColumnMapper.updateByPrimaryKeySelective(modelMapper.map(columnSortVO, BoardColumnDTO.class)) != 1) {
+                throw new CommonException("error.BoardColumn.update");
+            }
+            BoardColumnDTO boardColumnDTO = new BoardColumnDTO();
+            boardColumnDTO.setProjectId(projectId);
+            boardColumnDTO.setBoardId(columnSortVO.getBoardId());
+            Integer size = boardColumnMapper.select(boardColumnDTO).size();
+            boardColumnMapper.updateColumnCategory(columnSortVO.getBoardId(), size);
+            boardColumnMapper.updateColumnColor(columnSortVO.getBoardId(), size);
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
     }
 
     @Override
-    public void columnSortByProgram(Long projectId, ColumnSortDTO columnSortDTO) {
-        BoardColumnValidator.checkColumnSort(projectId, columnSortDTO);
-        BoardColumnE boardColumnE = ConvertHelper.convert(columnSortDTO, BoardColumnE.class);
-        boardColumnRepository.columnSortByProgram(projectId, columnSortDTO.getBoardId(), boardColumnE);
+    public void columnSortByProgram(Long projectId, ColumnSortVO columnSortVO) {
+        BoardColumnValidator.checkColumnSort(projectId, columnSortVO);
+        BoardColumnDTO boardColumnDTO = modelMapper.map(columnSortVO, BoardColumnDTO.class);
+        columnSortByProgram(columnSortVO.getBoardId(), boardColumnDTO);
     }
 
-    private void relate(Long projectId, Long boardId, String name, String categoryCode, Integer sequence, List<ColumnWithStatusRelDO> columnWithStatusRelDOList, String colorCode) {
-        BoardColumnE column = new BoardColumnE();
+    public void columnSortByProgram(Long boardId, BoardColumnDTO boardColumnDTO) {
+        BoardColumnDTO originColumn = boardColumnMapper.selectByPrimaryKey(boardColumnDTO.getColumnId());
+        try {
+            if (originColumn.getSequence() > boardColumnDTO.getSequence()) {
+                boardColumnMapper.columnSort(boardId, boardColumnDTO.getSequence(), originColumn.getSequence());
+            } else if (originColumn.getSequence() < boardColumnDTO.getSequence()) {
+                boardColumnMapper.columnSortDesc(boardId, boardColumnDTO.getSequence(), originColumn.getSequence());
+            }
+            if (boardColumnMapper.updateByPrimaryKeySelective(boardColumnDTO) != 1) {
+                throw new CommonException("error.BoardColumn.update");
+            }
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
+    }
+
+    private void relate(Long projectId, Long boardId, String name, String categoryCode, Integer sequence, List<ColumnWithStatusRelDTO> columnWithStatusRelDTOList, String colorCode) {
+        BoardColumnDTO column = new BoardColumnDTO();
         column.setBoardId(boardId);
         column.setName(name);
         column.setProjectId(projectId);
         column.setCategoryCode(categoryCode);
         column.setSequence(sequence);
         column.setColorCode(colorCode);
-        BoardColumnE columnE = boardColumnRepository.create(column);
+//        BoardColumnE columnE = boardColumnRepository.create(column);
+        BoardColumnDTO boardColumnDTO = createBase(column);
         Integer position = 0;
-        for (ColumnWithStatusRelDO columnWithStatusRelDO : columnWithStatusRelDOList) {
-            if (categoryCode.equals(columnWithStatusRelDO.getCategoryCode())) {
-                ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-                columnStatusRelDO.setColumnId(columnE.getColumnId());
-                columnStatusRelDO.setStatusId(columnWithStatusRelDO.getStatusId());
-                columnStatusRelDO.setProjectId(projectId);
-                if (columnStatusRelMapper.select(columnStatusRelDO).isEmpty()) {
-                    ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-                    columnStatusRelE.setColumnId(columnE.getColumnId());
-                    columnStatusRelE.setPosition(position++);
-                    columnStatusRelE.setStatusId(columnWithStatusRelDO.getStatusId());
-                    columnStatusRelE.setProjectId(projectId);
-                    columnStatusRelRepository.create(columnStatusRelE);
+        for (ColumnWithStatusRelDTO columnWithStatusRelDTO : columnWithStatusRelDTOList) {
+            if (categoryCode.equals(columnWithStatusRelDTO.getCategoryCode())) {
+                ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+                columnStatusRelDTO.setColumnId(boardColumnDTO.getColumnId());
+                columnStatusRelDTO.setStatusId(columnWithStatusRelDTO.getStatusId());
+                columnStatusRelDTO.setProjectId(projectId);
+                if (columnStatusRelMapper.select(columnStatusRelDTO).isEmpty()) {
+                    ColumnStatusRelDTO columnStatusRel = new ColumnStatusRelDTO();
+                    columnStatusRel.setColumnId(boardColumnDTO.getColumnId());
+                    columnStatusRel.setPosition(position++);
+                    columnStatusRel.setStatusId(columnWithStatusRelDTO.getStatusId());
+                    columnStatusRel.setProjectId(projectId);
+//                    columnStatusRelRepository.create(columnStatusRelE);
+                    columnStatusRelService.create(columnStatusRel);
                 }
             }
         }
     }
 
     @Override
-    public void createColumnWithRelateStatus(BoardE boardResult) {
-        List<ColumnWithStatusRelDO> columnWithStatusRelDOList = boardColumnMapper.queryColumnStatusRelByProjectId(boardResult.getProjectId());
+    public void createColumnWithRelateStatus(BoardDTO boardResult) {
+        List<ColumnWithStatusRelDTO> columnWithStatusRelDTOList = boardColumnMapper.queryColumnStatusRelByProjectId(boardResult.getProjectId());
         Long projectId = boardResult.getProjectId();
         Long boardId = boardResult.getBoardId();
-        Map<Long, StatusMapDTO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
-        for (ColumnWithStatusRelDO columnWithStatusRelDO : columnWithStatusRelDOList) {
-            columnWithStatusRelDO.setCategoryCode(statusMapDTOMap.get(columnWithStatusRelDO.getStatusId()).getType());
+        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        for (ColumnWithStatusRelDTO columnWithStatusRelDTO : columnWithStatusRelDTOList) {
+            columnWithStatusRelDTO.setCategoryCode(statusMapDTOMap.get(columnWithStatusRelDTO.getStatusId()).getType());
         }
-        relate(projectId, boardId, TODO, TODO_CODE, SEQUENCE_ONE, columnWithStatusRelDOList, COLUMN_COLOR_TODO);
-        relate(projectId, boardId, DOING, DOING_CODE, SEQUENCE_TWO, columnWithStatusRelDOList, COLUMN_COLOR_DOING);
-        relate(projectId, boardId, DONE, DONE_CODE, SEQUENCE_THREE, columnWithStatusRelDOList, COLUMN_COLOR_DONE);
+        relate(projectId, boardId, TODO, TODO_CODE, SEQUENCE_ONE, columnWithStatusRelDTOList, COLUMN_COLOR_TODO);
+        relate(projectId, boardId, DOING, DOING_CODE, SEQUENCE_TWO, columnWithStatusRelDTOList, COLUMN_COLOR_DOING);
+        relate(projectId, boardId, DONE, DONE_CODE, SEQUENCE_THREE, columnWithStatusRelDTOList, COLUMN_COLOR_DONE);
     }
 
     @Override
-    public BoardColumnDTO updateColumnContraint(Long projectId, Long columnId, ColumnWithMaxMinNumDTO columnWithMaxMinNumDTO) {
-        BoardColumnValidator.checkUpdateColumnContraint(projectId, columnId, columnWithMaxMinNumDTO);
-        return ConvertHelper.convert(boardColumnRepository.updateMaxAndMinNum(columnWithMaxMinNumDTO), BoardColumnDTO.class);
+    public BoardColumnVO updateColumnContraint(Long projectId, Long columnId, ColumnWithMaxMinNumVO columnWithMaxMinNumVO) {
+        BoardColumnValidator.checkUpdateColumnContraint(projectId, columnId, columnWithMaxMinNumVO);
+        try {
+            boardColumnMapper.updateMaxAndMinNum(columnWithMaxMinNumVO);
+        } catch (Exception e) {
+            throw new CommonException(e.getMessage());
+        }
+        return modelMapper.map(boardColumnMapper.selectByPrimaryKey(columnWithMaxMinNumVO.getColumnId()), BoardColumnVO.class);
     }
 
     @Override
@@ -375,6 +467,19 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         for (StatusPayload statusPayload : statusPayloads) {
             initColumnWithStatus(projectId, boardId, statusPayload.getStatusName(), statusPayload.getType(), statusPayload.getStatusId(), sequence++);
         }
+    }
+
+    @Override
+    public BoardColumnDTO createBase(BoardColumnDTO boardColumnDTO) {
+        if (boardColumnMapper.insert(boardColumnDTO) != 1) {
+            throw new CommonException("error.BoardColumn.insert");
+        }
+        return modelMapper.map(boardColumnMapper.selectByPrimaryKey(boardColumnDTO.getColumnId()), BoardColumnDTO.class);
+    }
+
+    @Override
+    public void batchDeleteColumnAndStatusRel(List<RemoveStatusWithProject> removeStatusWithProjects) {
+        boardColumnMapper.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
     }
 
 }

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.ColumnStatusRelMapper">
 
-    <select id="queryByIssueIdAndColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnStatusRelDO">
+    <select id="queryByIssueIdAndColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnStatusRelDTO">
         SELECT
         ai.status_id,
         ai.issue_id,

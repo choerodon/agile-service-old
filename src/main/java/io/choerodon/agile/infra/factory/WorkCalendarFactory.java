@@ -2,7 +2,6 @@ package io.choerodon.agile.infra.factory;
 
 import io.choerodon.agile.app.service.WorkCalendarService;
 import io.choerodon.agile.app.service.impl.JuheWorkCalendarServiceImpl;
-import io.choerodon.agile.infra.repository.WorkCalendarHolidayRefRepository;
 import io.choerodon.agile.infra.common.properties.WorkCalendarHolidayProperties;
 import io.choerodon.agile.infra.mapper.WorkCalendarHolidayRefMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,8 @@ public class WorkCalendarFactory {
     @Autowired
     private WorkCalendarHolidayRefMapper workCalendarHolidayRefMapper;
 
-    @Autowired
-    private WorkCalendarHolidayRefRepository workCalendarHolidayRefRepository;
+//    @Autowired
+//    private WorkCalendarHolidayRefRepository workCalendarHolidayRefRepository;
 
     private static final String JU_HE = "juhe";
 
@@ -31,7 +30,7 @@ public class WorkCalendarFactory {
             return null;
         }
         if (type.equals(JU_HE)) {
-            return new JuheWorkCalendarServiceImpl(workCalendarHolidayProperties, workCalendarHolidayRefMapper, workCalendarHolidayRefRepository);
+            return new JuheWorkCalendarServiceImpl(workCalendarHolidayProperties, workCalendarHolidayRefMapper);
         }
         return null;
     }

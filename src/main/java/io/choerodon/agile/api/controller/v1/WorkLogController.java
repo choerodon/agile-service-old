@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.WorkLogDTO;
+import io.choerodon.agile.api.vo.WorkLogVO;
 import io.choerodon.agile.app.service.WorkLogService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -30,11 +30,11 @@ public class WorkLogController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("创建work log")
     @PostMapping
-    public ResponseEntity<WorkLogDTO> createWorkLog(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<WorkLogVO> createWorkLog(@ApiParam(value = "项目id", required = true)
                                                     @PathVariable(name = "project_id") Long projectId,
-                                                    @ApiParam(value = "work log object", required = true)
-                                                    @RequestBody WorkLogDTO workLogDTO) {
-        return Optional.ofNullable(workLogService.create(projectId, workLogDTO))
+                                                   @ApiParam(value = "work log object", required = true)
+                                                    @RequestBody WorkLogVO workLogVO) {
+        return Optional.ofNullable(workLogService.createWorkLog(projectId, workLogVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.workLog.create"));
     }
@@ -42,13 +42,13 @@ public class WorkLogController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("修改work log")
     @PatchMapping(value = "/{logId}")
-    public ResponseEntity<WorkLogDTO> updateWorkLog(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<WorkLogVO> updateWorkLog(@ApiParam(value = "项目id", required = true)
                                                     @PathVariable(name = "project_id") Long projectId,
-                                                    @ApiParam(value = "log id", required = true)
+                                                   @ApiParam(value = "log id", required = true)
                                                     @PathVariable Long logId,
-                                                    @ApiParam(value = "work log object", required = true)
-                                                    @RequestBody WorkLogDTO workLogDTO) {
-        return Optional.ofNullable(workLogService.update(projectId, logId, workLogDTO))
+                                                   @ApiParam(value = "work log object", required = true)
+                                                    @RequestBody WorkLogVO workLogVO) {
+        return Optional.ofNullable(workLogService.updateWorkLog(projectId, logId, workLogVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.workLog.update"));
     }
@@ -60,7 +60,7 @@ public class WorkLogController {
                                         @PathVariable(name = "project_id") Long projectId,
                                         @ApiParam(value = "log id", required = true)
                                         @PathVariable Long logId) {
-        workLogService.delete(projectId, logId);
+        workLogService.deleteWorkLog(projectId, logId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -79,9 +79,9 @@ public class WorkLogController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("根据issue id查询work log列表")
     @GetMapping(value = "/issue/{issueId}")
-    public ResponseEntity<List<WorkLogDTO>> queryWorkLogListByIssueId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<WorkLogVO>> queryWorkLogListByIssueId(@ApiParam(value = "项目id", required = true)
                                                                       @PathVariable(name = "project_id") Long projectId,
-                                                                      @ApiParam(value = "issue id", required = true)
+                                                                     @ApiParam(value = "issue id", required = true)
                                                                       @PathVariable Long issueId) {
         return Optional.ofNullable(workLogService.queryWorkLogListByIssueId(projectId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

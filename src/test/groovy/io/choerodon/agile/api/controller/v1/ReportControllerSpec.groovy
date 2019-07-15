@@ -7,11 +7,11 @@ import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService
 import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.mapper.*
 import com.github.pagehelper.PageInfo
+import io.choerodon.agile.app.service.UserService
 import org.mockito.Matchers
 import org.mockito.Mock
 import org.mockito.Mockito
@@ -42,8 +42,8 @@ import static org.mockito.Matchers.anyString
 class ReportControllerSpec extends Specification {
 
     @Autowired
-    @Qualifier("userRepository")
-    private UserRepository userRepository
+    @Qualifier("userService")
+    private UserService userRepository
 
     @Autowired
     private TestRestTemplate restTemplate
@@ -111,11 +111,11 @@ class ReportControllerSpec extends Specification {
     def setup() {
         given: '设置feign调用mockito'
         // *_表示任何长度的参数（这里表示只要执行了queryUsersMap这个方法，就让它返回一个空的Map
-        Map<Long, UserMessageDO> userMessageDOMap = new HashMap<>()
-        UserMessageDO userMessageDO = new UserMessageDO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
+        Map<Long, UserMessageDTO> userMessageDOMap = new HashMap<>()
+        UserMessageDTO userMessageDO = new UserMessageDTO("管理员", "http://XXX.png", "dinghuang123@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
         userRepository.queryUsersMap(*_) >> userMessageDOMap
-        UserDO userDO = new UserDO()
+        UserDTO userDO = new UserDTO()
         userDO.setRealName("管理员")
         userRepository.queryUserNameByOption(*_) >> userDO
 
@@ -127,7 +127,7 @@ class ReportControllerSpec extends Specification {
         and:
         Mockito.when(userRepository.queryUsersMap(Matchers.anyListOf(Long.class), Matchers.anyBoolean())).thenReturn(userMessageDOMap)
         Mockito.when(userRepository.queryUserNameByOption(Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(userDO)
-        ProjectDTO projectDTO = new ProjectDTO()
+        ProjectVO projectDTO = new ProjectVO()
         projectDTO.setCode("AG")
         projectDTO.setName("AG")
         projectDTO.setId(1L)
@@ -137,11 +137,11 @@ class ReportControllerSpec extends Specification {
 
     def 'createSprintToStart'() {
         given: '创建一个冲刺'
-        SprintDetailDTO sprintDetailDTO = sprintService.createSprint(1)
+        SprintDetailVO sprintDetailDTO = sprintService.createSprint(1)
         sprintId = sprintDetailDTO.sprintId
 
         and: '将issue加入到冲刺中'
-        IssueCreateDTO issueCreateDTO = new IssueCreateDTO()
+        IssueCreateVO issueCreateDTO = new IssueCreateVO()
         issueCreateDTO.projectId = projectId
         issueCreateDTO.sprintId = sprintId
         issueCreateDTO.summary = '加入冲刺issue'
@@ -150,18 +150,18 @@ class ReportControllerSpec extends Specification {
         issueCreateDTO.priorityId = 1
         issueCreateDTO.issueTypeId = 1
         issueCreateDTO.reporterId = 1
-        IssueDTO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueVO issueDTO = stateMachineService.createIssue(issueCreateDTO, "agile")
         issueIds.add(issueDTO.issueId)
 
         and: '将issue设置为done状态'
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
+        IssueUpdateVO issueUpdateDTO = new IssueUpdateVO()
         issueUpdateDTO.statusId = 3
         issueUpdateDTO.issueId = issueIds[0]
         issueUpdateDTO.objectVersionNumber = issueDTO.objectVersionNumber
         issueService.updateIssue(projectId, issueUpdateDTO, ["statusId"])
 
         and: '创建不为done的issue'
-        IssueCreateDTO noDone = new IssueCreateDTO()
+        IssueCreateVO noDone = new IssueCreateVO()
         noDone.projectId = projectId
         noDone.sprintId = sprintId
         noDone.summary = '加入冲刺issue'
@@ -170,11 +170,11 @@ class ReportControllerSpec extends Specification {
         noDone.priorityId = 1
         noDone.issueTypeId = 1
         noDone.reporterId = 1
-        IssueDTO noDoneIssue = stateMachineService.createIssue(issueCreateDTO, "agile")
+        IssueVO noDoneIssue = stateMachineService.createIssue(issueCreateDTO, "agile")
         issueIds.add(noDoneIssue.issueId)
 
         and: '设置冲刺开启对象'
-        SprintUpdateDTO sprintUpdateDTO = new SprintUpdateDTO()
+        SprintUpdateVO sprintUpdateDTO = new SprintUpdateVO()
         sprintUpdateDTO.sprintId = sprintId
         sprintUpdateDTO.projectId = projectId
         sprintUpdateDTO.objectVersionNumber = sprintDetailDTO.objectVersionNumber
@@ -182,7 +182,7 @@ class ReportControllerSpec extends Specification {
         sprintUpdateDTO.endDate = endDate
 
         when: '将冲刺开启'
-        SprintDetailDTO startSprint = sprintService.startSprint(projectId, sprintUpdateDTO)
+        SprintDetailVO startSprint = sprintService.startSprint(projectId, sprintUpdateDTO)
 
         then: '验证冲刺是否开启成功'
         startSprint.statusCode == 'started'
@@ -197,7 +197,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<ReportIssueDTO> reportIssueDTOList = entity.body
+        List<ReportIssueVO> reportIssueDTOList = entity.body
 
         expect: '验证期望值'
         reportIssueDTOList.size() == expectSize
@@ -236,7 +236,7 @@ class ReportControllerSpec extends Specification {
 
     def 'queryCumulativeFlowDiagram'() {
         given: '查询参数'
-        CumulativeFlowFilterDTO cumulativeFlowFilterDTO = new CumulativeFlowFilterDTO()
+        CumulativeFlowFilterVO cumulativeFlowFilterDTO = new CumulativeFlowFilterVO()
         cumulativeFlowFilterDTO.startDate = startDate
         cumulativeFlowFilterDTO.endDate = endDate
         cumulativeFlowFilterDTO.boardId = 1
@@ -252,7 +252,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<CumulativeFlowDiagramDTO> result = entity.body
+        List<CumulativeFlowDiagramVO> result = entity.body
 
         expect: '验证期望值'
         result.size() == 3
@@ -268,7 +268,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<IssueListDTO> result = entity.body.content
+        List<IssueListVO> result = entity.body.content
 
         expect: '验证期望值'
         result.size() == expectSize
@@ -289,7 +289,7 @@ class ReportControllerSpec extends Specification {
 
     def 'queryBurnDownCoordinateByType'() {
         given: 'issue加入到版本和epic中'
-        IssueUpdateDTO issueUpdateDTO = new IssueUpdateDTO()
+        IssueUpdateVO issueUpdateDTO = new IssueUpdateVO()
         issueUpdateDTO.issueId = issueIds[0]
         issueUpdateDTO.setObjectVersionNumber(issueMapper.selectByPrimaryKey(issueIds[0]).getObjectVersionNumber())
         if (type == 'Epic') {
@@ -297,13 +297,13 @@ class ReportControllerSpec extends Specification {
             issueUpdateDTO.storyPoints = 1
             issueService.updateIssue(projectId, issueUpdateDTO, ["epicId", "storyPoints"])
         } else {
-            VersionIssueRelDTO versionIssueRelDTO = new VersionIssueRelDTO()
+            VersionIssueRelVO versionIssueRelDTO = new VersionIssueRelVO()
             versionIssueRelDTO.issueId = issueIds[0]
             versionIssueRelDTO.versionId = id
             versionIssueRelDTO.projectId = projectId
-            List<VersionIssueRelDTO> versionIssueRelDTOList = new ArrayList<>()
+            List<VersionIssueRelVO> versionIssueRelDTOList = new ArrayList<>()
             versionIssueRelDTOList.add(versionIssueRelDTO)
-            issueUpdateDTO.versionIssueRelDTOList = versionIssueRelDTOList
+            issueUpdateDTO.versionIssueRelVOList = versionIssueRelDTOList
             issueUpdateDTO.versionType = "fix"
             issueService.updateIssue(projectId, issueUpdateDTO, [])
         }
@@ -315,7 +315,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<BurnDownReportCoordinateDTO> burnDownReportCoordinateDTOList = entity.body
+        List<BurnDownReportCoordinateVO> burnDownReportCoordinateDTOList = entity.body
 
         expect: '验证期望值'
         burnDownReportCoordinateDTOList.size() == expectSize
@@ -330,13 +330,13 @@ class ReportControllerSpec extends Specification {
         given: 'mock issueMapper'
         def reportMapperMock = Mock(ReportMapper)
         reportService.setReportMapper(reportMapperMock)
-        List<VersionIssueChangeDO> versionIssueChangeDOList = new ArrayList<>()
-        VersionIssueChangeDO versionIssueChangeDO = new VersionIssueChangeDO()
+        List<VersionIssueChangeDTO> versionIssueChangeDOList = new ArrayList<>()
+        VersionIssueChangeDTO versionIssueChangeDO = new VersionIssueChangeDTO()
         versionIssueChangeDO.addIssueIds = [1]
         versionIssueChangeDO.removeIssueIds = [2]
         versionIssueChangeDOList.add(versionIssueChangeDO)
-        List<IssueChangeDO> issueChangeDOS = new ArrayList<>()
-        IssueChangeDO issueChangeDO = new IssueChangeDO()
+        List<IssueChangeDTO> issueChangeDOS = new ArrayList<>()
+        IssueChangeDTO issueChangeDO = new IssueChangeDTO()
         issueChangeDO.changeDate = new Date()
         issueChangeDO.issueId = 1
         issueChangeDO.issueNum = 'AG-1'
@@ -394,7 +394,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<VelocitySprintDTO> velocitySprintDTOList = entity.body
+        List<VelocitySprintVO> velocitySprintDTOList = entity.body
 
         expect: '验证期望值'
         velocitySprintDTOList.size() == expectSize
@@ -418,7 +418,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<PieChartDTO> pieChartDTOList = entity.body
+        List<PieChartVO> pieChartDTOList = entity.body
 
         expect: '验证期望值'
         pieChartDTOList.size() == expectSize
@@ -445,7 +445,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<GroupDataChartDO> groupDataChartDOList = entity.body
+        List<GroupDataChartDTO> groupDataChartDOList = entity.body
 
         expect: '验证期望值'
         groupDataChartDOList.size() == expectSize
@@ -465,7 +465,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<GroupDataChartListDO> groupDataChartListDOList = entity.body
+        List<GroupDataChartListDTO> groupDataChartListDOList = entity.body
 
         expect: '验证期望值'
         groupDataChartListDOList.size() == 2
@@ -479,7 +479,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<GroupDataChartDO> groupDataChartDOList = entity.body
+        List<GroupDataChartDTO> groupDataChartDOList = entity.body
 
         expect: '验证期望值'
         groupDataChartDOList.size() == expectSize
@@ -499,7 +499,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<GroupDataChartListDO> groupDataChartListDOList = entity.body
+        List<GroupDataChartListDTO> groupDataChartListDOList = entity.body
 
         expect: '验证期望值'
         groupDataChartListDOList.size() == 2
@@ -508,14 +508,14 @@ class ReportControllerSpec extends Specification {
 
     def 'queryBurnDownReportByType'() {
         when: 'Epic和版本燃耗图报告信息'
-        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_report_type/{id}?type={type}&&organizationId={organizationId}', BurnDownReportDTO, projectId, id, type, organizationId)
+        def entity = restTemplate.getForEntity('/v1/projects/{project_id}/reports/burn_down_report_type/{id}?type={type}&&organizationId={organizationId}', BurnDownReportVO, projectId, id, type, organizationId)
 
         then: '接口是否请求成功'
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<SprintBurnDownReportDTO> sprintBurnDownReportDTOList = entity.body.sprintBurnDownReportDTOS
-        List<IssueBurnDownReportDTO> incompleteIssues = entity.body.incompleteIssues
+        List<SprintBurnDownReportVO> sprintBurnDownReportDTOList = entity.body.sprintBurnDownReportVOS
+        List<IssueBurnDownReportVO> incompleteIssues = entity.body.incompleteIssues
 
         expect: '验证期望值'
         sprintBurnDownReportDTOList.size() == expectSizeOne
@@ -536,7 +536,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOList = entity.body
+        List<IssueTypeDistributionChartVO> issueTypeDistributionChartDTOList = entity.body
 
         expect: '验证期望值'
         issueTypeDistributionChartDTOList.size() == 3
@@ -551,7 +551,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOList = entity.body
+        List<IssueTypeDistributionChartVO> issueTypeDistributionChartDTOList = entity.body
 
         expect: '验证期望值'
         issueTypeDistributionChartDTOList.size() == 2
@@ -566,7 +566,7 @@ class ReportControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置返回值值'
-        List<IssuePriorityDistributionChartDTO> issuePriorityDistributionChartDTOList = entity.body
+        List<IssuePriorityDistributionChartVO> issuePriorityDistributionChartDTOList = entity.body
 
         expect: '验证期望值'
         issuePriorityDistributionChartDTOList.size() == 1
@@ -575,7 +575,7 @@ class ReportControllerSpec extends Specification {
 
     def 'deleteData'() {
         given: '删除数据DO'
-        SprintDO sprintDO = new SprintDO()
+        SprintDTO sprintDO = new SprintDTO()
         sprintDO.sprintId = sprintId
         sprintDO.projectId = projectId
 

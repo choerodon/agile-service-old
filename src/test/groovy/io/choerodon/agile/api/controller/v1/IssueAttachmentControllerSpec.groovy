@@ -1,9 +1,9 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.IssueAttachmentDTO
+import io.choerodon.agile.api.vo.IssueAttachmentVO
 import io.choerodon.agile.app.service.IssueAttachmentService
-import io.choerodon.agile.infra.dataobject.IssueAttachmentDO
+import io.choerodon.agile.infra.dataobject.IssueAttachmentDTO
 import io.choerodon.agile.infra.feign.FileFeignClient
 import io.choerodon.agile.infra.mapper.IssueAttachmentMapper
 import org.mockito.Mockito
@@ -86,7 +86,7 @@ class IssueAttachmentControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueAttachmentDTO> list = entity.body
+        List<IssueAttachmentVO> list = entity.body
 
         expect: '期望值'
         list.size() == 1
@@ -94,7 +94,7 @@ class IssueAttachmentControllerSpec extends Specification {
 
     def 'deleteAttachment'() {
         given: '删除附件'
-        List<IssueAttachmentDO> list = issueAttachmentMapper.selectAll()
+        List<IssueAttachmentDTO> list = issueAttachmentMapper.selectAll()
         Mockito.when(fileFeignClient.deleteFile(anyString(), anyString())).thenReturn(new ResponseEntity<>(HttpStatus.OK))
 
         when: '发送请求'

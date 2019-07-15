@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.BoardDependCreateDTO;
-import io.choerodon.agile.api.vo.BoardDependDTO;
+import io.choerodon.agile.api.vo.BoardDependCreateVO;
+import io.choerodon.agile.api.vo.BoardDependVO;
 
 /**
  * @author shinan.chen
@@ -9,9 +9,9 @@ import io.choerodon.agile.api.vo.BoardDependDTO;
  */
 public interface BoardDependService {
 
-    BoardDependDTO create(Long projectId, BoardDependCreateDTO createDTO);
+    BoardDependVO create(Long projectId, BoardDependCreateVO createVO);
 
-    BoardDependDTO queryById(Long projectId, Long boardDependId);
+    BoardDependVO queryById(Long projectId, Long boardDependId);
 
     void deleteById(Long projectId, Long boardDependId);
 }

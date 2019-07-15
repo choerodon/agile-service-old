@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.choerodon.agile.infra.mapper.WorkLogMapper">
 
-    <select id="queryByIssueId" resultType="io.choerodon.agile.infra.dataobject.WorkLogDO">
+    <select id="queryByIssueId" resultType="io.choerodon.agile.infra.dataobject.WorkLogDTO">
         SELECT *
         FROM agile_work_log
         WHERE issue_id = #{issueId} and project_id = #{projectId} order by creation_date desc

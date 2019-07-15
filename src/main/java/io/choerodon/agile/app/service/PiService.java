@@ -50,4 +50,9 @@ public interface PiService {
 
     List<PiWithFeatureVO> queryRoadMapOfProgram(Long programId, Long organizationId);
 
+    PiDTO createBase(PiDTO piDTO);
+
+    PiDTO updateBySelectiveBase(PiDTO piDTO);
+
+
 }

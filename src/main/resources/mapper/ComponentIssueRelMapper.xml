@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.ComponentIssueRelMapper">
 
-    <select id="selectByProjectIdAndIssueId" resultType="io.choerodon.agile.infra.dataobject.ComponentIssueRelDO">
+    <select id="selectByProjectIdAndIssueId" resultType="io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO">
         SELECT
             *
         FROM

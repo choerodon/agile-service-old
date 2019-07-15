@@ -1,19 +1,19 @@
-package io.choerodon.agile.domain.agile.converter;
-
-import io.choerodon.agile.api.vo.SprintUnClosedDTO;
-import io.choerodon.agile.infra.dataobject.SprintDO;
-import io.choerodon.core.convertor.ConvertorI;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
-
-@Component
-public class SprintUnClosedConverter implements ConvertorI<Object, SprintDO, SprintUnClosedDTO> {
-
-    @Override
-    public SprintUnClosedDTO doToDto(SprintDO sprintDO) {
-        SprintUnClosedDTO sprintUnClosedDTO = new SprintUnClosedDTO();
-        BeanUtils.copyProperties(sprintDO, sprintUnClosedDTO);
-        return sprintUnClosedDTO;
-    }
-
-}
+//package io.choerodon.agile.domain.agile.converter;
+//
+//import io.choerodon.agile.api.vo.SprintUnClosedVO;
+//import io.choerodon.agile.infra.dataobject.SprintDTO;
+//import io.choerodon.core.convertor.ConvertorI;
+//import org.springframework.beans.BeanUtils;
+//import org.springframework.stereotype.Component;
+//
+//@Component
+//public class SprintUnClosedConverter implements ConvertorI<Object, SprintDTO, SprintUnClosedVO> {
+//
+//    @Override
+//    public SprintUnClosedVO doToDto(SprintDTO sprintDTO) {
+//        SprintUnClosedVO sprintUnClosedVO = new SprintUnClosedVO();
+//        BeanUtils.copyProperties(sprintDTO, sprintUnClosedVO);
+//        return sprintUnClosedVO;
+//    }
+//
+//}

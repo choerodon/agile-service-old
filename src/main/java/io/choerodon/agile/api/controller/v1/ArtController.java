@@ -2,7 +2,7 @@ package io.choerodon.agile.api.controller.v1;
 
 import io.choerodon.agile.api.vo.ArtVO;
 import io.choerodon.agile.api.vo.ArtStopVO;
-import io.choerodon.agile.api.vo.PiCreateDTO;
+import io.choerodon.agile.api.vo.PiCreateVO;
 import io.choerodon.agile.app.service.ArtService;
 import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
@@ -116,8 +116,8 @@ public class ArtController {
     public ResponseEntity createOtherPi(@ApiParam(value = "项目id", required = true)
                                         @PathVariable(name = "project_id") Long projectId,
                                         @ApiParam(value = "pi create vo", required = true)
-                                        @RequestBody PiCreateDTO piCreateDTO) {
-        artService.createOtherPi(projectId, piCreateDTO);
+                                        @RequestBody PiCreateVO piCreateVO) {
+        artService.createOtherPi(projectId, piCreateVO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

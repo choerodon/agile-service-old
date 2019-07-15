@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.FileOperationHistoryDTO;
+import io.choerodon.agile.api.vo.FileOperationHistoryVO;
 import io.choerodon.agile.app.service.ExcelService;
 import io.choerodon.agile.infra.common.utils.ExcelUtil;
 import io.choerodon.base.annotation.Permission;
@@ -73,7 +73,7 @@ public class ExcelController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("查询最近的上传记录")
     @GetMapping(value = "/latest")
-    public ResponseEntity<FileOperationHistoryDTO> queryLatestRecode(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<FileOperationHistoryVO> queryLatestRecode(@ApiParam(value = "项目id", required = true)
                                                                      @PathVariable(name = "project_id") Long projectId) {
         return Optional.ofNullable(excelService.queryLatestRecode(projectId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

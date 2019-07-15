@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.feign;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.dataobject.UserDO;
+import io.choerodon.agile.infra.dataobject.UserDTO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +25,15 @@ public interface UserFeignClient {
      *
      * @param organizationId organizationId
      * @param id             id
-     * @return UserDO
+     * @return UserDTO
      */
     @GetMapping(value = "/v1/organizations/{organization_id}/users/{id}")
-    ResponseEntity<UserDO> query(@PathVariable(name = "organization_id") Long organizationId,
-                                 @PathVariable("id") Long id);
+    ResponseEntity<UserDTO> query(@PathVariable(name = "organization_id") Long organizationId,
+                                  @PathVariable("id") Long id);
 
     @PostMapping(value = "/v1/users/ids")
-    ResponseEntity<List<UserDO>> listUsersByIds(@RequestBody Long[] ids,
-                                                @RequestParam(name = "only_enabled") Boolean onlyEnabled);
+    ResponseEntity<List<UserDTO>> listUsersByIds(@RequestBody Long[] ids,
+                                                 @RequestParam(name = "only_enabled") Boolean onlyEnabled);
 
     /**
      * 按照Id查询项目
@@ -42,50 +42,50 @@ public interface UserFeignClient {
      * @return 查询到的项目
      */
     @GetMapping(value = "/v1/projects/{id}")
-    ResponseEntity<ProjectDTO> queryProject(@PathVariable("id") Long id);
+    ResponseEntity<ProjectVO> queryProject(@PathVariable("id") Long id);
 
     /**
      * 根据projectId和param模糊查询loginName和realName两列
      *
      * @param id          id
      * @param param       param
-     * @return UserDTO
+     * @return UserVO
      */
     @GetMapping(value = "/v1/projects/{id}/users")
-    ResponseEntity<PageInfo<UserDTO>> list(@PathVariable("id") Long id,
-                                           @RequestParam("param") String param);
+    ResponseEntity<PageInfo<UserVO>> list(@PathVariable("id") Long id,
+                                          @RequestParam("param") String param);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/count")
-    ResponseEntity<List<RoleDTO>> listRolesWithUserCountOnProjectLevel(
+    ResponseEntity<List<RoleVO>> listRolesWithUserCountOnProjectLevel(
             @PathVariable(name = "project_id") Long sourceId,
-            @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+            @RequestBody(required = false) @Valid RoleAssignmentSearchVO roleAssignmentSearchVO);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users")
-    ResponseEntity<PageInfo<UserDTO>> pagingQueryUsersByRoleIdOnProjectLevel(
+    ResponseEntity<PageInfo<UserVO>> pagingQueryUsersByRoleIdOnProjectLevel(
             @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size,
             @RequestParam(name = "role_id") Long roleId,
             @PathVariable(name = "project_id") Long sourceId,
-            @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO);
+            @RequestBody(required = false) @Valid RoleAssignmentSearchVO roleAssignmentSearchVO);
 
     @GetMapping(value = "/v1/organizations/{organization_id}")
-    ResponseEntity<OrganizationDTO> query(@PathVariable(name = "organization_id") Long id);
+    ResponseEntity<OrganizationVO> query(@PathVariable(name = "organization_id") Long id);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/project_relations/{parent_id}")
-    ResponseEntity<List<ProjectRelationshipDTO>> getProjUnderGroup(@PathVariable(name = "organization_id") Long orgId,
-                                                                   @PathVariable(name = "parent_id") Long id,
-                                                                   @RequestParam(name = "only_select_enable") Boolean onlySelectEnable);
+    ResponseEntity<List<ProjectRelationshipVO>> getProjUnderGroup(@PathVariable(name = "organization_id") Long orgId,
+                                                                  @PathVariable(name = "parent_id") Long id,
+                                                                  @RequestParam(name = "only_select_enable") Boolean onlySelectEnable);
 
     @GetMapping(value = "/v1/organizations/{organization_id}/projects/{project_id}/program")
-    ResponseEntity<ProjectDTO> getGroupInfoByEnableProject(@PathVariable(name = "organization_id") Long organizationId,
-                                                           @PathVariable(name = "project_id") Long projectId);
+    ResponseEntity<ProjectVO> getGroupInfoByEnableProject(@PathVariable(name = "organization_id") Long organizationId,
+                                                          @PathVariable(name = "project_id") Long projectId);
 
     @PostMapping(value = "/v1/projects/{project_id}/role_members/users/roles")
-    ResponseEntity<PageInfo<UserWithRoleDTO>> pagingQueryUsersWithProjectLevelRoles(
+    ResponseEntity<PageInfo<UserWithRoleVO>> pagingQueryUsersWithProjectLevelRoles(
             @RequestParam(name = "page") int page,
             @RequestParam(name = "size") int size,
             @PathVariable(name = "project_id") Long sourceId,
-            @RequestBody(required = false) @Valid RoleAssignmentSearchDTO roleAssignmentSearchDTO,
+            @RequestBody(required = false) @Valid RoleAssignmentSearchVO roleAssignmentSearchVO,
             @RequestParam(name = "doPage") boolean doPage);
 }
 

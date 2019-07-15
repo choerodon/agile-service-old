@@ -2,7 +2,7 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.ArtVO;
 import io.choerodon.agile.api.vo.ArtStopVO;
-import io.choerodon.agile.api.vo.PiCreateDTO;
+import io.choerodon.agile.api.vo.PiCreateVO;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.infra.dataobject.ArtDTO;
 import io.choerodon.agile.infra.dataobject.PiCalendarDTO;
@@ -28,7 +28,7 @@ public interface ArtService {
 
     ArtVO queryArt(Long programId, Long id);
 
-    void createOtherPi(Long programId, PiCreateDTO piCreateDTO);
+    void createOtherPi(Long programId, PiCreateVO piCreateVO);
 
     List<PiCalendarDTO> queryArtCalendar(Long programId, Long artId);
 

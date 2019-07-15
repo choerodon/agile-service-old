@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.choerodon.agile.infra.mapper.SprintMapper">
 
-    <resultMap type="io.choerodon.agile.infra.dataobject.SprintSearchDO" id="SprintSearchDO">
+    <resultMap type="io.choerodon.agile.infra.dataobject.SprintSearchDTO" id="SprintSearchDO">
         <id column="sprint_id" property="sprintId"/>
         <id column="sprint_name" property="sprintName"/>
         <id column="sprint_goal" property="sprintGoal"/>
@@ -11,7 +11,7 @@
         <id column="status_code" property="statusCode"/>
         <id column="object_version_number" property="objectVersionNumber"/>
         <id column="pi_id" property="piId"/>
-        <collection property="assigneeIssueDOList" ofType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
+        <collection property="assigneeIssueDTOList" ofType="io.choerodon.agile.infra.dataobject.AssigneeIssueDTO">
             <result property="sprintId" column="asi_sprint_id"/>
             <result property="assigneeId" column="asi_assignee_id"/>
             <result property="totalStoryPoints" column="total_story_points"/>
@@ -21,11 +21,11 @@
             <result property="remainingTime" column="remaining_time"/>
             <result property="remainingIssueCount" column="remaining_issue_count"/>
         </collection>
-        <collection property="issueSearchDOList" resultMap="issueSearch">
+        <collection property="issueSearchDTOList" resultMap="issueSearch">
         </collection>
     </resultMap>
 
-    <resultMap type="io.choerodon.agile.infra.dataobject.SprintSearchDO" id="SprintSearchNoIssueDO">
+    <resultMap type="io.choerodon.agile.infra.dataobject.SprintSearchDTO" id="SprintSearchNoIssueDO">
         <id column="sprint_id" property="sprintId"/>
         <id column="sprint_name" property="sprintName"/>
         <id column="sprint_goal" property="sprintGoal"/>
@@ -34,7 +34,7 @@
         <id column="status_code" property="statusCode"/>
         <id column="object_version_number" property="objectVersionNumber"/>
         <id column="pi_id" property="piId"/>
-        <collection property="assigneeIssueDOList" ofType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
+        <collection property="assigneeIssueDTOList" ofType="io.choerodon.agile.infra.dataobject.AssigneeIssueDTO">
             <result property="sprintId" column="asi_sprint_id"/>
             <result property="assigneeId" column="asi_assignee_id"/>
             <result property="totalStoryPoints" column="total_story_points"/>
@@ -46,7 +46,7 @@
         </collection>
     </resultMap>
 
-    <resultMap id="issueSearch" type="io.choerodon.agile.infra.dataobject.IssueSearchDO">
+    <resultMap id="issueSearch" type="io.choerodon.agile.infra.dataobject.IssueSearchDTO">
         <id property="issueId" column="issue_id"/>
         <id property="issueNum" column="issue_num"/>
         <id property="typeCode" column="type_code"/>
@@ -174,7 +174,7 @@
         WHERE sp.project_id = #{projectId} AND sp.status_code = 'started'
     </sql>
 
-    <select id="queryActiveSprintNoIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintSearchDO">
+    <select id="queryActiveSprintNoIssueIds" resultType="io.choerodon.agile.infra.dataobject.SprintSearchDTO">
         select
         spa.*
         from
@@ -263,7 +263,7 @@
         ) bb ON cc.asi_assignee_id = bb.asi_assignee_id and cc.asi_sprint_id = bb.asi_sprint_id order by cc.asi_assignee_id
     </sql>
 
-    <select id="queryAssigneeIssueByActiveSprintId" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDO">
+    <select id="queryAssigneeIssueByActiveSprintId" resultType="io.choerodon.agile.infra.dataobject.AssigneeIssueDTO">
       SELECT
         cc.sprint_id,
         cc.assignee_id,
@@ -516,7 +516,7 @@
             and aisr.project_id = #{projectId}
     </select>
 
-    <select id="queryNotPlanSprintByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+    <select id="queryNotPlanSprintByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintDTO">
         SELECT
         asp.sprint_name,
         asp.sprint_id,
@@ -536,7 +536,7 @@
         order by asp.start_date asc
     </select>
 
-    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="queryNameByOptions" resultType="io.choerodon.agile.infra.dataobject.SprintNameDTO">
         SELECT
         sprint_id,
         sprint_name,
@@ -571,7 +571,7 @@
         AND ai.status_id = ais.status_id and ai.project_id = ais.project_id AND ais.is_completed = 1
     </select>
 
-    <select id="queryPlanSprintName" resultType="io.choerodon.agile.infra.dataobject.SprintNameDO">
+    <select id="queryPlanSprintName" resultType="io.choerodon.agile.infra.dataobject.SprintNameDTO">
         SELECT
         sprint_id,
         sprint_name
@@ -580,13 +580,13 @@
     </select>
 
 
-    <select id="queryByProjectIdAndSprintId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+    <select id="queryByProjectIdAndSprintId" resultType="io.choerodon.agile.infra.dataobject.SprintDTO">
         SELECT *
         FROM agile_sprint
         WHERE sprint_id = #{sprintId} AND project_id = #{projectId}
     </select>
 
-    <select id="getActiveSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+    <select id="getActiveSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDTO">
         SELECT
             sprint_id,
             sprint_name,
@@ -691,7 +691,7 @@
         </choose>
     </select>
 
-    <select id="queryLastSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+    <select id="queryLastSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDTO">
         SELECT *
         FROM agile_sprint
         WHERE sprint_id = (
@@ -783,7 +783,7 @@
         ORDER BY rank DESC
     </select>
 
-    <select id="queryParentsDoneUnfinishedSubtasks" resultType="io.choerodon.agile.infra.dataobject.IssueNumDO">
+    <select id="queryParentsDoneUnfinishedSubtasks" resultType="io.choerodon.agile.infra.dataobject.IssueNumDTO">
         SELECT ai.issue_id, CONCAT_WS('-', api.project_code, ai.issue_num) AS issue_num, ai.project_id
         FROM agile_issue ai
               LEFT JOIN agile_project_info api ON ai.project_id = api.project_id,
@@ -807,7 +807,7 @@
               AND ais.is_completed != 1
     </select>
 
-    <select id="queryUnClosedSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+    <select id="queryUnClosedSprint" resultType="io.choerodon.agile.infra.dataobject.SprintDTO">
         SELECT
           sprint_id,
           sprint_name
@@ -842,13 +842,13 @@
         </foreach>
     </update>
 
-    <select id="selectListByPiId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+    <select id="selectListByPiId" resultType="io.choerodon.agile.infra.dataobject.SprintDTO">
         select *
         from agile_sprint
         where project_id = #{projectId} and pi_id = #{piId}
     </select>
 
-    <select id="selectFirstSprintByPiId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+    <select id="selectFirstSprintByPiId" resultType="io.choerodon.agile.infra.dataobject.SprintDTO">
         select *
         from agile_sprint
         where project_id = #{projectId} and pi_id = #{piId} and status_code != 'closed'
@@ -856,7 +856,7 @@
         limit 1
     </select>
 
-    <select id="getSprintByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+    <select id="getSprintByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintDTO">
         SELECT
           sprint_id,
           status_code,
@@ -868,7 +868,7 @@
         order by sprint_id
     </select>
 
-    <select id="selectNotDoneByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintDO">
+    <select id="selectNotDoneByProjectId" resultType="io.choerodon.agile.infra.dataobject.SprintDTO">
         select *
         from agile_sprint
         where project_id = #{projectId} and status_code != 'closed'

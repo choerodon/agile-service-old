@@ -1,6 +1,7 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.WorkLogDTO;
+import io.choerodon.agile.api.vo.WorkLogVO;
+import io.choerodon.agile.infra.dataobject.WorkLogDTO;
 
 import java.util.List;
 
@@ -10,13 +11,19 @@ import java.util.List;
  */
 public interface WorkLogService {
 
-    WorkLogDTO create(Long projectId, WorkLogDTO workLogDTO);
+    WorkLogVO createWorkLog(Long projectId, WorkLogVO workLogVO);
 
-    WorkLogDTO update(Long projectId, Long logId, WorkLogDTO workLogDTO);
+    WorkLogVO updateWorkLog(Long projectId, Long logId, WorkLogVO workLogVO);
 
-    void delete(Long projectId, Long logId);
+    void deleteWorkLog(Long projectId, Long logId);
 
-    WorkLogDTO queryWorkLogById(Long projectId, Long logId);
+    WorkLogVO queryWorkLogById(Long projectId, Long logId);
 
-    List<WorkLogDTO> queryWorkLogListByIssueId(Long projectId, Long issueId);
+    List<WorkLogVO> queryWorkLogListByIssueId(Long projectId, Long issueId);
+
+    WorkLogDTO createBase(WorkLogDTO workLogDTO);
+
+    WorkLogDTO updateBase(WorkLogDTO workLogDTO);
+
+    void deleteBase(Long projectId,Long logId);
 }

@@ -1,59 +1,59 @@
-package io.choerodon.agile.domain.agile.converter;
-
-
-import io.choerodon.core.convertor.ConvertorI;
-import org.springframework.stereotype.Component;
-import org.springframework.beans.BeanUtils;
-import io.choerodon.agile.api.vo.ComponentIssueRelDTO;
-import io.choerodon.agile.infra.dataobject.ComponentIssueRelDO;
-import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
-
-/**
- * @author dinghuang123@gmail.com
- * @since 2018-05-15 16:47:27
- */
-@Component
-public class ComponentIssueRelConverter implements ConvertorI<ComponentIssueRelE, ComponentIssueRelDO, ComponentIssueRelDTO> {
-
-    @Override
-    public ComponentIssueRelE dtoToEntity(ComponentIssueRelDTO componentIssueRelDTO) {
-        ComponentIssueRelE componentIssueRelE = new ComponentIssueRelE();
-        BeanUtils.copyProperties(componentIssueRelDTO, componentIssueRelE);
-        return componentIssueRelE;
-    }
-
-    @Override
-    public ComponentIssueRelE doToEntity(ComponentIssueRelDO componentIssueRelDO) {
-        ComponentIssueRelE componentIssueRelE = new ComponentIssueRelE();
-        BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelE);
-        return componentIssueRelE;
-    }
-
-    @Override
-    public ComponentIssueRelDTO entityToDto(ComponentIssueRelE componentIssueRelE) {
-        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
-        BeanUtils.copyProperties(componentIssueRelE, componentIssueRelDTO);
-        return componentIssueRelDTO;
-    }
-
-    @Override
-    public ComponentIssueRelDO entityToDo(ComponentIssueRelE componentIssueRelE) {
-        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
-        BeanUtils.copyProperties(componentIssueRelE, componentIssueRelDO);
-        return componentIssueRelDO;
-    }
-
-    @Override
-    public ComponentIssueRelDTO doToDto(ComponentIssueRelDO componentIssueRelDO) {
-        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
-        BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelDTO);
-        return componentIssueRelDTO;
-    }
-
-    @Override
-    public ComponentIssueRelDO dtoToDo(ComponentIssueRelDTO componentIssueRelDTO) {
-        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
-        BeanUtils.copyProperties(componentIssueRelDTO, componentIssueRelDO);
-        return componentIssueRelDO;
-    }
-}
+//package io.choerodon.agile.domain.agile.converter;
+//
+//
+//import io.choerodon.agile.api.vo.ComponentIssueRelVO;
+//import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
+//import io.choerodon.core.convertor.ConvertorI;
+//import org.springframework.stereotype.Component;
+//import org.springframework.beans.BeanUtils;
+//import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
+//
+///**
+// * @author dinghuang123@gmail.com
+// * @since 2018-05-15 16:47:27
+// */
+//@Component
+//public class ComponentIssueRelConverter implements ConvertorI<ComponentIssueRelE, ComponentIssueRelDTO, ComponentIssueRelVO> {
+//
+//    @Override
+//    public ComponentIssueRelE dtoToEntity(ComponentIssueRelVO componentIssueRelVO) {
+//        ComponentIssueRelE componentIssueRelE = new ComponentIssueRelE();
+//        BeanUtils.copyProperties(componentIssueRelVO, componentIssueRelE);
+//        return componentIssueRelE;
+//    }
+//
+//    @Override
+//    public ComponentIssueRelE doToEntity(ComponentIssueRelDTO componentIssueRelDTO) {
+//        ComponentIssueRelE componentIssueRelE = new ComponentIssueRelE();
+//        BeanUtils.copyProperties(componentIssueRelDTO, componentIssueRelE);
+//        return componentIssueRelE;
+//    }
+//
+//    @Override
+//    public ComponentIssueRelVO entityToDto(ComponentIssueRelE componentIssueRelE) {
+//        ComponentIssueRelVO componentIssueRelVO = new ComponentIssueRelVO();
+//        BeanUtils.copyProperties(componentIssueRelE, componentIssueRelVO);
+//        return componentIssueRelVO;
+//    }
+//
+//    @Override
+//    public ComponentIssueRelDTO entityToDo(ComponentIssueRelE componentIssueRelE) {
+//        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
+//        BeanUtils.copyProperties(componentIssueRelE, componentIssueRelDTO);
+//        return componentIssueRelDTO;
+//    }
+//
+//    @Override
+//    public ComponentIssueRelVO doToDto(ComponentIssueRelDTO componentIssueRelDTO) {
+//        ComponentIssueRelVO componentIssueRelVO = new ComponentIssueRelVO();
+//        BeanUtils.copyProperties(componentIssueRelDTO, componentIssueRelVO);
+//        return componentIssueRelVO;
+//    }
+//
+//    @Override
+//    public ComponentIssueRelDTO dtoToDo(ComponentIssueRelVO componentIssueRelVO) {
+//        ComponentIssueRelDTO componentIssueRelDTO = new ComponentIssueRelDTO();
+//        BeanUtils.copyProperties(componentIssueRelVO, componentIssueRelDTO);
+//        return componentIssueRelDTO;
+//    }
+//}

@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.agile.api.vo.SprintWorkCalendarDTO;
-import io.choerodon.agile.api.vo.WorkCalendarRefCreateDTO;
-import io.choerodon.agile.api.vo.WorkCalendarRefDTO;
+import io.choerodon.agile.api.vo.SprintWorkCalendarVO;
+import io.choerodon.agile.api.vo.WorkCalendarRefCreateVO;
+import io.choerodon.agile.api.vo.WorkCalendarRefVO;
 import io.choerodon.agile.app.service.WorkCalendarRefService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -33,13 +33,13 @@ public class WorkCalendarRefController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "创建冲刺工作日历")
     @PostMapping(value = "/sprint/{sprint_id}")
-    public ResponseEntity<WorkCalendarRefDTO> createSprintWorkCalendarRef(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<WorkCalendarRefVO> createSprintWorkCalendarRef(@ApiParam(value = "项目id", required = true)
                                                                           @PathVariable(name = "project_id") Long projectId,
-                                                                          @ApiParam(value = "冲刺id", required = true)
+                                                                         @ApiParam(value = "冲刺id", required = true)
                                                                           @PathVariable(name = "sprint_id") Long sprintId,
-                                                                          @ApiParam(value = "创建冲刺工作日对象", required = true)
-                                                                          @RequestBody @Valid WorkCalendarRefCreateDTO workCalendarRefCreateDTO) {
-        return Optional.ofNullable(workCalendarRefService.createWorkCalendarRef(projectId, sprintId, workCalendarRefCreateDTO))
+                                                                         @ApiParam(value = "创建冲刺工作日对象", required = true)
+                                                                          @RequestBody @Valid WorkCalendarRefCreateVO workCalendarRefCreateVO) {
+        return Optional.ofNullable(workCalendarRefService.createWorkCalendarRef(projectId, sprintId, workCalendarRefCreateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.workCalendarRef.create"));
     }
@@ -47,9 +47,9 @@ public class WorkCalendarRefController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取冲刺工作日历设置")
     @GetMapping(value = "/sprint")
-    public ResponseEntity<SprintWorkCalendarDTO> querySprintWorkCalendarRefs(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<SprintWorkCalendarVO> querySprintWorkCalendarRefs(@ApiParam(value = "项目id", required = true)
                                                                              @PathVariable(name = "project_id") Long projectId,
-                                                                             @ApiParam(value = "年份", required = true)
+                                                                            @ApiParam(value = "年份", required = true)
                                                                              @RequestParam(name = "year") Integer year) {
         return Optional.ofNullable(workCalendarRefService.querySprintWorkCalendarRefs(projectId, year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -59,11 +59,11 @@ public class WorkCalendarRefController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "创建项目工作日历")
     @PostMapping(value = "/project")
-    public ResponseEntity<WorkCalendarRefDTO> createProjectWorkCalendarRef(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<WorkCalendarRefVO> createProjectWorkCalendarRef(@ApiParam(value = "项目id", required = true)
                                                                            @PathVariable(name = "project_id") Long projectId,
-                                                                           @ApiParam(value = "创建项目工作日对象", required = true)
-                                                                           @RequestBody @Valid WorkCalendarRefCreateDTO workCalendarRefCreateDTO) {
-        return Optional.ofNullable(workCalendarRefService.createWorkCalendarRef(projectId, null, workCalendarRefCreateDTO))
+                                                                          @ApiParam(value = "创建项目工作日对象", required = true)
+                                                                           @RequestBody @Valid WorkCalendarRefCreateVO workCalendarRefCreateVO) {
+        return Optional.ofNullable(workCalendarRefService.createWorkCalendarRef(projectId, null, workCalendarRefCreateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.workCalendarRef.create"));
     }
@@ -71,9 +71,9 @@ public class WorkCalendarRefController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("获取项目工作日历设置")
     @GetMapping(value = "/project")
-    public ResponseEntity<List<WorkCalendarRefDTO>> queryProjectWorkCalendarRefs(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<WorkCalendarRefVO>> queryProjectWorkCalendarRefs(@ApiParam(value = "项目id", required = true)
                                                                                  @PathVariable(name = "project_id") Long projectId,
-                                                                                 @ApiParam(value = "年份", required = true)
+                                                                                @ApiParam(value = "年份", required = true)
                                                                                  @RequestParam(name = "year") Integer year) {
         return Optional.ofNullable(workCalendarRefService.queryProjectWorkCalendarRefs(projectId, year))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

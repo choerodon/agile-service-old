@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.controller.v1;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.vo.WikiRelationDTO;
+import io.choerodon.agile.api.vo.WikiRelationVO;
 import io.choerodon.agile.app.service.WikiRelationService;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
@@ -34,8 +34,8 @@ public class WikiRelationController {
     public ResponseEntity create(@ApiParam(value = "项目id", required = true)
                                  @PathVariable(name = "project_id") Long projectId,
                                  @ApiParam(value = "knowledge relation vo list", required = true)
-                                 @RequestBody List<WikiRelationDTO> wikiRelationDTOList) {
-        wikiRelationService.create(projectId, wikiRelationDTOList);
+                                 @RequestBody List<WikiRelationVO> wikiRelationVOList) {
+        wikiRelationService.create(projectId, wikiRelationVOList);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 

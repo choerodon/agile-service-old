@@ -2,19 +2,22 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueStatusValidator;
+import io.choerodon.agile.api.vo.event.AddStatusWithProject;
+import io.choerodon.agile.app.service.ColumnStatusRelService;
 import io.choerodon.agile.app.service.IssueStatusService;
-import io.choerodon.agile.domain.agile.entity.ColumnStatusRelE;
-import io.choerodon.agile.domain.agile.entity.IssueStatusE;
 import io.choerodon.agile.api.vo.event.StatusPayload;
-import io.choerodon.agile.infra.repository.ColumnStatusRelRepository;
-import io.choerodon.agile.infra.repository.IssueStatusRepository;
-import io.choerodon.agile.infra.repository.UserRepository;
+import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
+import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +25,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/5/16.
@@ -37,12 +39,15 @@ import java.util.regex.Pattern;
 public class IssueStatusServiceImpl implements IssueStatusService {
 
     private static final Logger logger = LoggerFactory.getLogger(IssueStatusServiceImpl.class);
+    private static final String AGILE = "Agile:";
+    private static final String PIECHART = AGILE + "PieChart";
+    private static final String STATUS = "status";
 
-    @Autowired
-    private IssueStatusRepository issueStatusRepository;
-
-    @Autowired
-    private ColumnStatusRelRepository columnStatusRelRepository;
+//    @Autowired
+//    private IssueStatusRepository issueStatusRepository;
+//
+//    @Autowired
+//    private ColumnStatusRelRepository columnStatusRelRepository;
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;
@@ -57,7 +62,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     private IssueMapper issueMapper;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private StateMachineFeignClient stateMachineFeignClient;
@@ -68,134 +73,150 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     @Autowired
     private QuickFilterMapper quickFilterMapper;
 
+    @Autowired
+    private ColumnStatusRelService columnStatusRelService;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+    @Autowired
+    private DataLogRedisUtil dataLogRedisUtil;
+
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     @Override
-    public IssueStatusDTO create(Long projectId, String applyType, IssueStatusDTO issueStatusDTO) {
-        IssueStatusValidator.checkCreateStatus(projectId, issueStatusDTO);
-        StatusInfoDTO statusInfoDTO = new StatusInfoDTO();
-        statusInfoDTO.setType(issueStatusDTO.getCategoryCode());
-        statusInfoDTO.setName(issueStatusDTO.getName());
-        ResponseEntity<StatusInfoDTO> responseEntity = issueFeignClient.createStatusForAgile(projectId, applyType, statusInfoDTO);
+    public IssueStatusVO create(Long projectId, String applyType, IssueStatusVO issueStatusVO) {
+        IssueStatusValidator.checkCreateStatus(projectId, issueStatusVO);
+        StatusInfoVO statusInfoVO = new StatusInfoVO();
+        statusInfoVO.setType(issueStatusVO.getCategoryCode());
+        statusInfoVO.setName(issueStatusVO.getName());
+        ResponseEntity<StatusInfoVO> responseEntity = issueFeignClient.createStatusForAgile(projectId, applyType, statusInfoVO);
         if (responseEntity.getStatusCode().value() == 200 && responseEntity.getBody() != null && responseEntity.getBody().getId() != null) {
             Long statusId = responseEntity.getBody().getId();
             if (issueStatusMapper.selectByStatusId(projectId, statusId) != null) {
                 throw new CommonException("error.status.exist");
             }
-            issueStatusDTO.setCompleted(false);
-            issueStatusDTO.setStatusId(statusId);
-            IssueStatusE issueStatusE = ConvertHelper.convert(issueStatusDTO, IssueStatusE.class);
-            return ConvertHelper.convert(issueStatusRepository.create(issueStatusE), IssueStatusDTO.class);
+            issueStatusVO.setCompleted(false);
+            issueStatusVO.setStatusId(statusId);
+            IssueStatusDTO issueStatusDTO = modelMapper.map(issueStatusVO, IssueStatusDTO.class);
+            return modelMapper.map(insertIssueStatus(issueStatusDTO), IssueStatusVO.class);
         } else {
             throw new CommonException("error.status.create");
         }
     }
 
     @Override
-    public IssueStatusDTO createStatusByStateMachine(Long projectId, IssueStatusDTO issueStatusDTO) {
-        IssueStatusDO issueStatusDO = issueStatusMapper.selectByStatusId(projectId, issueStatusDTO.getStatusId());
-        if (issueStatusDO == null) {
-            issueStatusDTO.setCompleted(false);
-            issueStatusDTO.setEnable(false);
-            return ConvertHelper.convert(issueStatusRepository.create(ConvertHelper.convert(issueStatusDTO, IssueStatusE.class)), IssueStatusDTO.class);
+    public IssueStatusVO createStatusByStateMachine(Long projectId, IssueStatusVO issueStatusVO) {
+        IssueStatusDTO issueStatusDTO = issueStatusMapper.selectByStatusId(projectId, issueStatusVO.getStatusId());
+        if (issueStatusDTO == null) {
+            issueStatusVO.setCompleted(false);
+            issueStatusVO.setEnable(false);
+            return modelMapper.map(insertIssueStatus(modelMapper.map(issueStatusVO, IssueStatusDTO.class)), IssueStatusVO.class);
         }
-        return ConvertHelper.convert(issueStatusDO, IssueStatusDTO.class);
+        return modelMapper.map(issueStatusDTO, IssueStatusVO.class);
     }
 
     public Boolean checkColumnStatusRelExist(Long projectId, Long statusId, Long originColumnId) {
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        columnStatusRelDO.setStatusId(statusId);
-        columnStatusRelDO.setColumnId(originColumnId);
-        columnStatusRelDO.setProjectId(projectId);
-        ColumnStatusRelDO rel = columnStatusRelMapper.selectOne(columnStatusRelDO);
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setStatusId(statusId);
+        columnStatusRelDTO.setColumnId(originColumnId);
+        columnStatusRelDTO.setProjectId(projectId);
+        ColumnStatusRelDTO rel = columnStatusRelMapper.selectOne(columnStatusRelDTO);
         return rel == null;
     }
 
     public void deleteColumnStatusRel(Long projectId, Long statusId, Long originColumnId) {
-        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-        columnStatusRelE.setStatusId(statusId);
-        columnStatusRelE.setColumnId(originColumnId);
-        columnStatusRelE.setProjectId(projectId);
-        columnStatusRelRepository.delete(columnStatusRelE);
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setStatusId(statusId);
+        columnStatusRelDTO.setColumnId(originColumnId);
+        columnStatusRelDTO.setProjectId(projectId);
+        columnStatusRelService.delete(columnStatusRelDTO);
     }
 
-    public void createColumnStatusRel(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
-        ColumnStatusRelDO columnStatusRelDO = new ColumnStatusRelDO();
-        columnStatusRelDO.setStatusId(statusId);
-        columnStatusRelDO.setProjectId(projectId);
-        columnStatusRelDO.setColumnId(statusMoveDTO.getColumnId());
-        if (columnStatusRelMapper.select(columnStatusRelDO).isEmpty()) {
-            ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-            columnStatusRelE.setColumnId(statusMoveDTO.getColumnId());
-            columnStatusRelE.setPosition(statusMoveDTO.getPosition());
-            columnStatusRelE.setStatusId(statusId);
-            columnStatusRelE.setProjectId(projectId);
-            columnStatusRelRepository.create(columnStatusRelE);
+    public void createColumnStatusRel(Long projectId, Long statusId, StatusMoveVO statusMoveVO) {
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setStatusId(statusId);
+        columnStatusRelDTO.setProjectId(projectId);
+        columnStatusRelDTO.setColumnId(statusMoveVO.getColumnId());
+        if (columnStatusRelMapper.select(columnStatusRelDTO).isEmpty()) {
+            ColumnStatusRelDTO columnStatusRel = new ColumnStatusRelDTO();
+            columnStatusRel.setColumnId(statusMoveVO.getColumnId());
+            columnStatusRel.setPosition(statusMoveVO.getPosition());
+            columnStatusRel.setStatusId(statusId);
+            columnStatusRel.setProjectId(projectId);
+            columnStatusRelService.create(columnStatusRel);
         }
     }
 
     @Override
-    public IssueStatusDTO moveStatusToColumn(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
-        if (!checkColumnStatusRelExist(projectId, statusId, statusMoveDTO.getOriginColumnId())) {
-            deleteColumnStatusRel(projectId, statusId, statusMoveDTO.getOriginColumnId());
+    public IssueStatusVO moveStatusToColumn(Long projectId, Long statusId, StatusMoveVO statusMoveVO) {
+        if (!checkColumnStatusRelExist(projectId, statusId, statusMoveVO.getOriginColumnId())) {
+            deleteColumnStatusRel(projectId, statusId, statusMoveVO.getOriginColumnId());
         }
-        createColumnStatusRel(projectId, statusId, statusMoveDTO);
-        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusDTO.class);
+        createColumnStatusRel(projectId, statusId, statusMoveVO);
+        return modelMapper.map(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusVO.class);
     }
 
     @Override
-    public IssueStatusDTO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveDTO statusMoveDTO) {
-        ColumnStatusRelE columnStatusRelE = new ColumnStatusRelE();
-        columnStatusRelE.setStatusId(statusId);
-        columnStatusRelE.setColumnId(statusMoveDTO.getColumnId());
-        columnStatusRelE.setProjectId(projectId);
-        columnStatusRelRepository.delete(columnStatusRelE);
-        return ConvertHelper.convert(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusDTO.class);
+    public IssueStatusVO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveVO statusMoveVO) {
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
+        columnStatusRelDTO.setStatusId(statusId);
+        columnStatusRelDTO.setColumnId(statusMoveVO.getColumnId());
+        columnStatusRelDTO.setProjectId(projectId);
+        columnStatusRelService.delete(columnStatusRelDTO);
+        return modelMapper.map(issueStatusMapper.selectByStatusId(projectId, statusId), IssueStatusVO.class);
     }
 
     @Override
-    public List<StatusAndIssuesDTO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType) {
-        List<StatusMapDTO> statusMapDTOList = issueFeignClient.queryStatusByProjectId(projectId, applyType).getBody();
+    public List<StatusAndIssuesVO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType) {
+        List<StatusMapVO> statusMapVOList = issueFeignClient.queryStatusByProjectId(projectId, applyType).getBody();
         List<Long> realStatusIds = new ArrayList<>();
-        for (StatusMapDTO statusMapDTO : statusMapDTOList) {
-            realStatusIds.add(statusMapDTO.getId());
+        for (StatusMapVO statusMapVO : statusMapVOList) {
+            realStatusIds.add(statusMapVO.getId());
         }
         if (realStatusIds.isEmpty()) {
             return new ArrayList<>();
         }
-        List<StatusAndIssuesDO> statusAndIssuesDOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId, realStatusIds);
-        if (statusAndIssuesDOList != null && !statusAndIssuesDOList.isEmpty()) {
+        List<StatusAndIssuesDTO> statusAndIssuesDTOList = issueStatusMapper.queryUnCorrespondStatus(projectId, boardId, realStatusIds);
+        if (statusAndIssuesDTOList != null && !statusAndIssuesDTOList.isEmpty()) {
             List<Long> ids = new ArrayList<>();
-            for (StatusAndIssuesDO statusAndIssuesDO : statusAndIssuesDOList) {
-                ids.add(statusAndIssuesDO.getStatusId());
+            for (StatusAndIssuesDTO statusAndIssuesDTO : statusAndIssuesDTOList) {
+                ids.add(statusAndIssuesDTO.getStatusId());
             }
             Map<Long, Status> map = stateMachineFeignClient.batchStatusGet(ids).getBody();
-            for (StatusAndIssuesDO statusAndIssuesDO : statusAndIssuesDOList) {
-                Status status = map.get(statusAndIssuesDO.getStatusId());
-                statusAndIssuesDO.setCategoryCode(status.getType());
-                statusAndIssuesDO.setName(status.getName());
+            for (StatusAndIssuesDTO statusAndIssuesDTO : statusAndIssuesDTOList) {
+                Status status = map.get(statusAndIssuesDTO.getStatusId());
+                statusAndIssuesDTO.setCategoryCode(status.getType());
+                statusAndIssuesDTO.setName(status.getName());
             }
         }
-        List<StatusAndIssuesDTO> statusAndIssuesDTOList = new ArrayList<>();
-        if (statusAndIssuesDOList != null) {
-            statusAndIssuesDTOList = ConvertHelper.convertList(statusAndIssuesDOList, StatusAndIssuesDTO.class);
+        List<StatusAndIssuesVO> statusAndIssuesVOList = new ArrayList<>();
+        if (statusAndIssuesDTOList != null) {
+            statusAndIssuesVOList = modelMapper.map(statusAndIssuesDTOList, new TypeToken<List<StatusAndIssuesVO>>(){}.getType());
         }
-        return statusAndIssuesDTOList;
+        return statusAndIssuesVOList;
     }
 
     private void checkIssueNumOfStatus(Long projectId, Long statusId) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setStatusId(statusId);
-        issueDO.setProjectId(projectId);
-        List<IssueDO> issueDOList = issueMapper.select(issueDO);
-        if (issueDOList != null && !issueDOList.isEmpty()) {
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setStatusId(statusId);
+        issueDTO.setProjectId(projectId);
+        List<IssueDTO> issueDTOList = issueMapper.select(issueDTO);
+        if (issueDTOList != null && !issueDTOList.isEmpty()) {
             throw new CommonException("error.statusHasIssues.delete");
         }
     }
 
     private void checkStatusExist(Long projectId, Long statusId) {
-        IssueStatusDO issueStatusDO = new IssueStatusDO();
-        issueStatusDO.setProjectId(projectId);
-        issueStatusDO.setStatusId(statusId);
-        IssueStatusDO res = issueStatusMapper.selectOne(issueStatusDO);
+        IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
+        issueStatusDTO.setProjectId(projectId);
+        issueStatusDTO.setStatusId(statusId);
+        IssueStatusDTO res = issueStatusMapper.selectOne(issueStatusDTO);
         if (res == null) {
             throw new CommonException("error.checkStatusExist.get");
         }
@@ -217,36 +238,57 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         Long projectId = statusPayload.getProjectId();
         Long statusId = statusPayload.getStatusId();
         checkStatusExist(projectId, statusId);
-        IssueStatusE issueStatusE = new IssueStatusE();
-        issueStatusE.setProjectId(projectId);
-        issueStatusE.setStatusId(statusId);
-        issueStatusRepository.delete(issueStatusE);
+        IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
+        issueStatusDTO.setProjectId(projectId);
+        issueStatusDTO.setStatusId(statusId);
+        delete(issueStatusDTO);
     }
 
     @Override
-    public List<IssueStatusDTO> queryIssueStatusList(Long projectId) {
-        IssueStatusDO issueStatusDO = new IssueStatusDO();
-        issueStatusDO.setProjectId(projectId);
-        return ConvertHelper.convertList(issueStatusMapper.select(issueStatusDO), IssueStatusDTO.class);
+    public List<IssueStatusVO> queryIssueStatusList(Long projectId) {
+        IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
+        issueStatusDTO.setProjectId(projectId);
+        return modelMapper.map(issueStatusMapper.select(issueStatusDTO), new TypeToken<List<IssueStatusVO>>(){}.getType());
     }
 
     @Override
-    public IssueStatusDTO updateStatus(Long projectId, IssueStatusDTO issueStatusDTO) {
-        IssueStatusValidator.checkUpdateStatus(projectId, issueStatusDTO);
-        IssueStatusE issueStatusE = ConvertHelper.convert(issueStatusDTO, IssueStatusE.class);
-        return ConvertHelper.convert(issueStatusRepository.update(issueStatusE), IssueStatusDTO.class);
+    public IssueStatusVO updateStatus(Long projectId, IssueStatusVO issueStatusVO) {
+        IssueStatusValidator.checkUpdateStatus(projectId, issueStatusVO);
+        IssueStatusDTO issueStatusDTO = modelMapper.map(issueStatusVO, IssueStatusDTO.class);
+        return modelMapper.map(update(issueStatusDTO), IssueStatusVO.class);
     }
 
-    private Long getPriorityId(Map<Long, Map<String, Long>> prioritys, Map<Long, Long> proWithOrg, QuickFilterDO quickFilterDO, String priorityStr) {
-        Map<String, Long> ps = prioritys.get(proWithOrg.get(quickFilterDO.getProjectId()));
-        return ps.get(priorityStr);
+
+    @Override
+    public IssueStatusDTO insertIssueStatus(IssueStatusDTO issueStatusDTO) {
+        if (issueStatusMapper.insert(issueStatusDTO) != 1) {
+            throw new CommonException("error.IssueStatus.insert");
+        }
+        redisUtil.deleteRedisCache(new String[]{PIECHART + issueStatusDTO.getProjectId() + ':' + STATUS + "*"});
+        return modelMapper.map(issueStatusMapper.selectByStatusId(issueStatusDTO.getProjectId(), issueStatusDTO.getStatusId()), IssueStatusDTO.class);
     }
 
-    private String getStatusNumber(String str) {
-        String regEx = "[^0-9]";
-        Pattern p = Pattern.compile(regEx);
-        Matcher m = p.matcher(str);
-        return m.replaceAll(" ").trim().replaceAll(" ", ",");
+    @Override
+    @DataLog(type = "batchUpdateIssueStatus", single = false)
+    public IssueStatusDTO update(IssueStatusDTO issueStatusDTO) {
+        if (issueStatusMapper.updateByPrimaryKeySelective(issueStatusDTO) != 1) {
+            throw new CommonException("error.status.update");
+        }
+        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusDTO);
+        return modelMapper.map(issueStatusMapper.selectByStatusId(issueStatusDTO.getProjectId(), issueStatusDTO.getStatusId()), IssueStatusDTO.class);
+    }
+
+    @Override
+    public void delete(IssueStatusDTO issueStatusDTO) {
+        if (issueStatusMapper.delete(issueStatusDTO) != 1) {
+            throw new CommonException("error.status.delete");
+        }
+        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusDTO);
+    }
+
+    @Override
+    public void batchCreateStatusByProjectIds(List<AddStatusWithProject> addStatusWithProjects, Long userId) {
+        issueStatusMapper.batchCreateStatusByProjectIds(addStatusWithProjects, userId);
     }
 
 }

@@ -1,10 +1,10 @@
 package io.choerodon.agile.app.assembler;
 
-import io.choerodon.agile.api.vo.IdWithNameDTO;
-import io.choerodon.agile.api.vo.MessageDTO;
-import io.choerodon.agile.infra.repository.UserRepository;
-import io.choerodon.agile.infra.dataobject.MessageDO;
-import io.choerodon.agile.infra.dataobject.UserMessageDO;
+import io.choerodon.agile.api.vo.IdWithNameVO;
+import io.choerodon.agile.api.vo.MessageVO;
+import io.choerodon.agile.app.service.UserService;
+import io.choerodon.agile.infra.dataobject.MessageDTO;
+import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,29 +21,29 @@ import java.util.Map;
 public class NoticeMessageAssembler {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
 
-    public List<MessageDTO> messageDOToIDTO(List<MessageDO> messageDOList, List<Long> ids) {
-        List<MessageDTO> messageDTOList = new ArrayList<>(messageDOList.size());
-        Map<Long, UserMessageDO> usersMap = userRepository.queryUsersMap(ids, true);
-        messageDOList.forEach(messageDO -> {
-            List<IdWithNameDTO> idWithNameDTOList = new ArrayList<>();
-            if (messageDO.getEnable() && messageDO.getUser() != null && messageDO.getUser().length() != 0 && !"null".equals(messageDO.getUser())) {
-                String[] strs = messageDO.getUser().split(",");
+    public List<MessageVO> messageDOToIDTO(List<MessageDTO> messageDTOList, List<Long> ids) {
+        List<MessageVO> messageVOList = new ArrayList<>(messageDTOList.size());
+        Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(ids, true);
+        messageDTOList.forEach(messageDTO -> {
+            List<IdWithNameVO> idWithNameVOList = new ArrayList<>();
+            if (messageDTO.getEnable() && messageDTO.getUser() != null && messageDTO.getUser().length() != 0 && !"null".equals(messageDTO.getUser())) {
+                String[] strs = messageDTO.getUser().split(",");
                 for (String str : strs) {
                     Long id = Long.parseLong(str);
                     if (usersMap.get(id) != null) {
-                        idWithNameDTOList.add(new IdWithNameDTO(id, usersMap.get(id).getName()));
+                        idWithNameVOList.add(new IdWithNameVO(id, usersMap.get(id).getName()));
                     }
                 }
             }
-            MessageDTO messageDTO = new MessageDTO();
-            BeanUtils.copyProperties(messageDO, messageDTO);
-            messageDTO.setIdWithNameDTOList(idWithNameDTOList);
-            messageDTOList.add(messageDTO);
+            MessageVO messageVO = new MessageVO();
+            BeanUtils.copyProperties(messageDTO, messageVO);
+            messageVO.setIdWithNameVOList(idWithNameVOList);
+            messageVOList.add(messageVO);
         });
-        return messageDTOList;
+        return messageVOList;
     }
 
 }

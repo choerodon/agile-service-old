@@ -62,13 +62,13 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("项目层下查询查询单个issue")
     @GetMapping(value = "/issue/{issueId}")
-    public ResponseEntity<IssueDTO> queryIssue(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<IssueVO> queryIssue(@ApiParam(value = "项目id", required = true)
                                                @PathVariable(name = "project_id") Long projectId,
-                                               @ApiParam(value = "项目群id", required = true)
+                                              @ApiParam(value = "项目群id", required = true)
                                                @RequestParam Long programId,
-                                               @ApiParam(value = "issueId", required = true)
+                                              @ApiParam(value = "issueId", required = true)
                                                @PathVariable Long issueId,
-                                               @ApiParam(value = "组织id", required = true)
+                                              @ApiParam(value = "组织id", required = true)
                                                @RequestParam(required = false) Long organizationId) {
         return Optional.ofNullable(issueService.queryIssue(programId, issueId, organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -78,11 +78,11 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("项目层下查询查询DataLog列表")
     @GetMapping(value = "/datalog")
-    public ResponseEntity<List<DataLogDTO>> listByIssueId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<DataLogVO>> listByIssueId(@ApiParam(value = "项目id", required = true)
                                                           @PathVariable(name = "project_id") Long projectId,
-                                                          @ApiParam(value = "项目群id", required = true)
+                                                         @ApiParam(value = "项目群id", required = true)
                                                           @RequestParam Long programId,
-                                                          @ApiParam(value = "issue id", required = true)
+                                                         @ApiParam(value = "issue id", required = true)
                                                           @RequestParam Long issueId) {
         return Optional.ofNullable(dataLogService.listByIssueId(programId, issueId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -92,9 +92,9 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("项目层下查询根据projectId查询项目下的board")
     @GetMapping("/board")
-    public ResponseEntity<List<BoardDTO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<List<BoardVO>> queryByProjectId(@ApiParam(value = "项目id", required = true)
                                                            @PathVariable(name = "project_id") Long projectId,
-                                                           @ApiParam(value = "项目群id", required = true)
+                                                          @ApiParam(value = "项目群id", required = true)
                                                            @RequestParam Long programId) {
         return Optional.ofNullable(boardService.queryByProjectId(programId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -114,8 +114,8 @@ public class ProjectInvokeProgramController {
                                                               @ApiParam(value = "组织id", required = true)
                                                               @PathVariable(name = "organization_id") Long organizationId,
                                                               @ApiParam(name = "search DTO", required = false)
-                                                              @RequestBody SearchDTO searchDTO) {
-        return Optional.ofNullable(boardService.queryByOptionsInProgram(programId, boardId, organizationId, searchDTO))
+                                                              @RequestBody SearchVO searchVO) {
+        return Optional.ofNullable(boardService.queryByOptionsInProgram(programId, boardId, organizationId, searchVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.programBoard.get"));
     }
@@ -123,11 +123,11 @@ public class ProjectInvokeProgramController {
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation("项目层下查询获取公告板所有信息")
     @PostMapping(value = "/query_board_info")
-    public ResponseEntity<ProgramBoardInfoDTO> queryBoardInfo(@ApiParam(value = "项目id", required = true)
+    public ResponseEntity<ProgramBoardInfoVO> queryBoardInfo(@ApiParam(value = "项目id", required = true)
                                                               @PathVariable(name = "project_id") Long projectId,
-                                                              @ApiParam(value = "项目群id", required = true)
+                                                             @ApiParam(value = "项目群id", required = true)
                                                               @RequestParam Long programId,
-                                                              @RequestBody ProgramBoardFilterDTO boardFilterDTO) {
+                                                             @RequestBody ProgramBoardFilterVO boardFilterDTO) {
         return Optional.ofNullable(boardFeatureService.queryBoardInfo(programId, boardFilterDTO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.boardFeature.queryBoardInfo"));

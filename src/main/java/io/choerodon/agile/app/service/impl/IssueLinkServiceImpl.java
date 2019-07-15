@@ -1,17 +1,21 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.IssueLinkCreateDTO;
-import io.choerodon.agile.api.vo.IssueLinkDTO;
+import io.choerodon.agile.api.vo.IssueLinkCreateVO;
+import io.choerodon.agile.api.vo.IssueLinkVO;
 import io.choerodon.agile.api.validator.IssueLinkValidator;
 import io.choerodon.agile.app.assembler.IssueLinkAssembler;
 import io.choerodon.agile.app.service.IssueLinkService;
-import io.choerodon.agile.domain.agile.entity.IssueLinkE;
-import io.choerodon.agile.infra.repository.IssueLinkRepository;
+import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;
+import io.choerodon.core.exception.CommonException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -22,23 +26,32 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class IssueLinkServiceImpl implements IssueLinkService {
 
+    private static final String INSERT_ERROR = "error.IssueLink.create";
+
     @Autowired
     private IssueLinkMapper issueLinkMapper;
-    @Autowired
-    private IssueLinkRepository issueLinkRepository;
+//    @Autowired
+//    private IssueLinkRepository issueLinkRepository;
     @Autowired
     private IssueLinkValidator issueLinkValidator;
     @Autowired
     private IssueLinkAssembler issueLinkAssembler;
 
+    private ModelMapper modelMapper = new ModelMapper();
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     @Override
-    public List<IssueLinkDTO> createIssueLinkList(List<IssueLinkCreateDTO> issueLinkCreateDTOList, Long issueId, Long projectId) {
-        List<IssueLinkE> issueLinkEList = issueLinkAssembler.toTargetList(issueLinkCreateDTOList, IssueLinkE.class);
-        issueLinkEList.forEach(issueLinkE -> {
-            issueLinkE.setProjectId(projectId);
-            issueLinkValidator.verifyCreateData(issueLinkE);
-            if (issueLinkValidator.checkUniqueLink(issueLinkE)) {
-                issueLinkRepository.create(issueLinkE);
+    public List<IssueLinkVO> createIssueLinkList(List<IssueLinkCreateVO> issueLinkCreateVOList, Long issueId, Long projectId) {
+        List<IssueLinkDTO> issueLinkDTOList = issueLinkAssembler.toTargetList(issueLinkCreateVOList, IssueLinkDTO.class);
+        issueLinkDTOList.forEach(issueLinkDTO -> {
+            issueLinkDTO.setProjectId(projectId);
+            issueLinkValidator.verifyCreateData(issueLinkDTO);
+            if (issueLinkValidator.checkUniqueLink(issueLinkDTO)) {
+                create(issueLinkDTO);
             }
         });
         return listIssueLinkByIssueId(issueId, projectId, false);
@@ -47,17 +60,37 @@ public class IssueLinkServiceImpl implements IssueLinkService {
 
     @Override
     public void deleteIssueLink(Long issueLinkId) {
-        issueLinkRepository.delete(issueLinkId);
+        delete(issueLinkId);
     }
 
     @Override
-    public List<IssueLinkDTO> listIssueLinkByIssueId(Long issueId, Long projectId, Boolean noIssueTest) {
+    public List<IssueLinkVO> listIssueLinkByIssueId(Long issueId, Long projectId, Boolean noIssueTest) {
         return issueLinkAssembler.issueLinkDoToDto(projectId, issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId, noIssueTest));
     }
 
     @Override
-    public List<IssueLinkDTO> listIssueLinkByBatch(Long projectId, List<Long> issueIds) {
+    public List<IssueLinkVO> listIssueLinkByBatch(Long projectId, List<Long> issueIds) {
         return issueLinkAssembler.issueLinkDoToDto(projectId, issueLinkMapper.listIssueLinkByBatch(projectId, issueIds));
+    }
+
+    @Override
+    public List<IssueLinkDTO> create(IssueLinkDTO issueLinkDTO) {
+        if (issueLinkMapper.insert(issueLinkDTO) != 1) {
+            throw new CommonException(INSERT_ERROR);
+        }
+        IssueLinkDTO query = new IssueLinkDTO();
+        query.setIssueId(issueLinkDTO.getIssueId());
+        return modelMapper.map(issueLinkMapper.select(query), new TypeToken<List<IssueLinkDTO>>(){}.getType());
+    }
+
+    @Override
+    public int deleteByIssueId(Long issueId) {
+        return issueLinkMapper.deleteByIssueId(issueId);
+    }
+
+    @Override
+    public int delete(Long issueLinkId) {
+        return issueLinkMapper.deleteByPrimaryKey(issueLinkId);
     }
 
 }

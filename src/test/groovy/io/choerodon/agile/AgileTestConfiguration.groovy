@@ -9,11 +9,11 @@ import io.choerodon.agile.api.vo.event.OrganizationCreateEventPayload
 import io.choerodon.agile.api.vo.event.ProjectCreateAgilePayload
 import io.choerodon.agile.api.vo.event.ProjectEvent
 import io.choerodon.agile.api.vo.event.StatusPayload
-import io.choerodon.agile.infra.repository.UserRepository
 import io.choerodon.agile.infra.common.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.FileFeignClient
 import io.choerodon.agile.infra.mapper.*
+import io.choerodon.agile.app.service.UserService
 import io.choerodon.core.convertor.ApplicationContextHelper
 import io.choerodon.core.oauth.CustomUserDetails
 import io.choerodon.liquibase.LiquibaseConfig
@@ -109,8 +109,8 @@ class AgileTestConfiguration {
     @Autowired
     private ProductVersionMapper productVersionMapper
 
-    @MockBean(name = "userRepository")
-    private UserRepository userRepository
+    @MockBean(name = "userService")
+    private UserService userRepository
 
     @MockBean
     private SiteMsgUtil siteMsgUtil
@@ -211,7 +211,7 @@ class AgileTestConfiguration {
     }
 
     private void initComponent() {
-        IssueComponentDO issueComponentDO = new IssueComponentDO()
+        IssueComponentDTO issueComponentDO = new IssueComponentDTO()
         issueComponentDO.projectId = 1L
         issueComponentDO.name = "测试模块"
         issueComponentDO.description = "测试模块描述"
@@ -221,7 +221,7 @@ class AgileTestConfiguration {
     }
 
     private void initLabel() {
-        IssueLabelDO issueLabelDO = new IssueLabelDO()
+        IssueLabelDTO issueLabelDO = new IssueLabelDTO()
         issueLabelDO.projectId = 1L
         issueLabelDO.labelName = "测试标签"
         issueLabelMapper.insert(issueLabelDO)
@@ -270,7 +270,7 @@ class AgileTestConfiguration {
     }
 
     private void initIssues() {
-        IssueDO epicIssue = new IssueDO()
+        IssueDTO epicIssue = new IssueDTO()
         epicIssue.issueId = 1L
         epicIssue.issueNum = '1'
         epicIssue.projectId = 1L
@@ -286,7 +286,7 @@ class AgileTestConfiguration {
         epicIssue.epicName = 'epicNameTest'
         issueMapper.insert(epicIssue)
 
-        IssueDO story = new IssueDO()
+        IssueDTO story = new IssueDTO()
         story.projectId = 1L
         story.typeCode = 'story'
         story.statusId = 1L
@@ -305,13 +305,13 @@ class AgileTestConfiguration {
         story.rank = '0|c00000:'
         issueMapper.insert(story)
 
-        ProjectInfoDO projectInfoDO = projectInfoMapper.selectByPrimaryKey(1L)
+        ProjectInfoDTO projectInfoDO = projectInfoMapper.selectByPrimaryKey(1L)
         projectInfoDO.setIssueMaxNum(2)
         projectInfoMapper.updateByPrimaryKeySelective(projectInfoDO)
     }
 
     private void initSprint() {
-        SprintDO sprintDO = new SprintDO()
+        SprintDTO sprintDO = new SprintDTO()
         sprintDO.sprintId = 1L
         sprintDO.projectId = 1L
         sprintDO.sprintName = 'sprint-test'
@@ -321,7 +321,7 @@ class AgileTestConfiguration {
         sprintDO.endDate = sdf.parse("2018-06-06 00:00:00")
         sprintDO.actualEndDate = sdf.parse("2018-06-06 00:00:00")
         sprintMapper.insert(sprintDO)
-        IssueSprintRelDO issueSprintRelDO = new IssueSprintRelDO()
+        IssueSprintRelDTO issueSprintRelDO = new IssueSprintRelDTO()
         issueSprintRelDO.sprintId = 1L
         issueSprintRelDO.issueId = 2L
         issueSprintRelDO.projectId = 1L
@@ -329,13 +329,13 @@ class AgileTestConfiguration {
     }
 
     private void initVersion() {
-        ProductVersionDO productVersionDO = new ProductVersionDO()
+        ProductVersionDTO productVersionDO = new ProductVersionDTO()
         productVersionDO.projectId = 1L
         productVersionDO.name = "v1.0.0"
         productVersionDO.statusCode = 'version_planning'
         productVersionDO.versionId = 1L
         productVersionMapper.insert(productVersionDO)
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO()
+        VersionIssueRelDTO versionIssueRelDO = new VersionIssueRelDTO()
         versionIssueRelDO.projectId = 1L
         versionIssueRelDO.issueId = 2L
         versionIssueRelDO.versionId = 1L

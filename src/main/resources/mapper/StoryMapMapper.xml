@@ -18,7 +18,7 @@
         order by ai.issue_id desc
     </select>
 
-    <resultMap id="epicWithFeatureListMap" type="io.choerodon.agile.infra.dataobject.EpicWithFeatureDO">
+    <resultMap id="epicWithFeatureListMap" type="io.choerodon.agile.infra.dataobject.EpicWithFeatureDTO">
         <id column="ai_issue_id" property="issueId"/>
         <id column="ai_issue_num" property="issueNum"/>
         <id column="ai_type_code" property="typeCode"/>
@@ -27,7 +27,7 @@
         <id column="ai_program_id" property="programId"/>
         <id column="ar_rank" property="epicRank"/>
         <id column="ar_object_version_number" property="epicRankObjectVersionNumber"/>
-        <collection property="featureCommonDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
+        <collection property="featureCommonDTOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.FeatureCommonDTO">
             <id property="issueId" column="feature_issue_id"/>
             <id property="issueNum" column="feature_issue_num"/>
             <id property="typeCode" column="feature_type_code"/>
@@ -88,7 +88,7 @@
         order by ai.issue_id desc, feature_info.issue_id desc
     </select>
 
-    <select id="selectFeatureByNoEpicByProject" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
+    <select id="selectFeatureByNoEpicByProject" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDTO">
         select
           ai.issue_id,
           IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as issue_num,
@@ -108,7 +108,7 @@
         order by ai.issue_id desc
     </select>
 
-    <select id="selectFeatureByNoEpicByProgram" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDO">
+    <select id="selectFeatureByNoEpicByProgram" resultType="io.choerodon.agile.infra.dataobject.FeatureCommonDTO">
         select
           ai.issue_id,
           IF(ai.issue_num IS NULL, NULL, CONCAT_WS('-', api.project_code, ai.issue_num)) as issue_num,
@@ -128,7 +128,7 @@
         and ai.issue_id = af.issue_id
     </select>
 
-    <resultMap id="storyListMap" type="io.choerodon.agile.infra.dataobject.StoryMapStoryDO">
+    <resultMap id="storyListMap" type="io.choerodon.agile.infra.dataobject.StoryMapStoryDTO">
         <id column="ai_issue_id" property="issueId"/>
         <id column="ai_issue_num" property="issueNum"/>
         <id column="ai_summary" property="summary"/>
@@ -137,7 +137,7 @@
         <id column="ai_issue_type_id" property="issueTypeId"/>
         <id column="ai_status_id" property="statusId"/>
         <id column="ai_completed" property="completed"/>
-        <collection property="storyMapVersionDOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.StoryMapVersionDO">
+        <collection property="storyMapVersionDTOList" autoMapping="true" ofType="io.choerodon.agile.infra.dataobject.StoryMapVersionDTO">
             <id property="versionId" column="version_version_id"/>
             <id property="name" column="version_name"/>
         </collection>
@@ -179,20 +179,20 @@
                </foreach>
            </if>
         )
-        <if test='searchDTO.advancedSearchArgs.versionList != null and searchDTO.advancedSearchArgs.versionList.size > 0'>
+        <if test='searchVO.advancedSearchArgs.versionList != null and searchVO.advancedSearchArgs.versionList.size > 0'>
             and ai.issue_id in (
                  select avir2.issue_id
                  from agile_version_issue_rel avir2
                  where avir2.version_id in
-                 <foreach collection="searchDTO.advancedSearchArgs.versionList" item="versionId" open="(" separator=","
+                 <foreach collection="searchVO.advancedSearchArgs.versionList" item="versionId" open="(" separator=","
                          close=")">
                      #{versionId}
                  </foreach>
             )
         </if>
-        <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
+        <if test='searchVO.advancedSearchArgs.statusList != null and searchVO.advancedSearchArgs.statusList.size > 0'>
             and ai.status_id in
-            <foreach collection="searchDTO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
+            <foreach collection="searchVO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
                      close=")">
                 #{statusId}
             </foreach>
@@ -221,25 +221,25 @@
         where ai.project_id = #{projectId} and ai.type_code = 'story'
         and (ai.epic_id is null or ai.epic_id = 0)
         and (ai.feature_id is null or ai.feature_id = 0)
-        <if test="searchDTO.searchArgs != null">
-            <if test='searchDTO.searchArgs.assigneeId != null and searchDTO.searchArgs.assigneeId != "" '>
-                AND ai.assignee_id = #{searchDTO.searchArgs.assigneeId}
+        <if test="searchVO.searchArgs != null">
+            <if test='searchVO.searchArgs.assigneeId != null and searchVO.searchArgs.assigneeId != "" '>
+                AND ai.assignee_id = #{searchVO.searchArgs.assigneeId}
             </if>
         </if>
-        <if test='searchDTO.advancedSearchArgs.versionList != null and searchDTO.advancedSearchArgs.versionList.size > 0'>
+        <if test='searchVO.advancedSearchArgs.versionList != null and searchVO.advancedSearchArgs.versionList.size > 0'>
             and ai.issue_id in (
             select avir2.issue_id
             from agile_version_issue_rel avir2
             where avir2.version_id in
-            <foreach collection="searchDTO.advancedSearchArgs.versionList" item="versionId" open="(" separator=","
+            <foreach collection="searchVO.advancedSearchArgs.versionList" item="versionId" open="(" separator=","
                      close=")">
                 #{versionId}
             </foreach>
             )
         </if>
-        <if test='searchDTO.advancedSearchArgs.statusList != null and searchDTO.advancedSearchArgs.statusList.size > 0'>
+        <if test='searchVO.advancedSearchArgs.statusList != null and searchVO.advancedSearchArgs.statusList.size > 0'>
             and ai.status_id in
-            <foreach collection="searchDTO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
+            <foreach collection="searchVO.advancedSearchArgs.statusList" item="statusId" open="(" separator=","
                      close=")">
                 #{statusId}
             </foreach>

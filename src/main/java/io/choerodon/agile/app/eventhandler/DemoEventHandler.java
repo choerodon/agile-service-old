@@ -4,12 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.app.service.DemoService;
 import io.choerodon.agile.app.service.IssueLinkTypeService;
 import io.choerodon.agile.app.service.ProjectInfoService;
-import io.choerodon.agile.domain.agile.entity.TimeZoneWorkCalendarE;
+import io.choerodon.agile.app.service.TimeZoneWorkCalendarService;
 import io.choerodon.agile.api.vo.event.OrganizationRegisterEventPayload;
 import io.choerodon.agile.api.vo.event.OrganizationRegisterPayload;
 import io.choerodon.agile.api.vo.event.ProjectEvent;
-import io.choerodon.agile.infra.repository.TimeZoneWorkCalendarRepository;
-import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDO;
+import io.choerodon.agile.infra.dataobject.TimeZoneWorkCalendarDTO;
 import io.choerodon.agile.infra.mapper.TimeZoneWorkCalendarMapper;
 import io.choerodon.asgard.saga.annotation.SagaTask;
 import org.slf4j.Logger;
@@ -35,8 +34,11 @@ public class DemoEventHandler {
     @Autowired
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
 
+//    @Autowired
+//    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
+
     @Autowired
-    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
+    private TimeZoneWorkCalendarService timeZoneWorkCalendarService;
 
     @Autowired
     private ProjectInfoService projectInfoService;
@@ -50,18 +52,18 @@ public class DemoEventHandler {
 
     private void demoHandleOrgInitTimeZoneSagaTask(OrganizationRegisterPayload organizationRegisterPayload) {
         Long organizationId = organizationRegisterPayload.getOrganization().getId();
-        TimeZoneWorkCalendarDO timeZoneWorkCalendarDO = new TimeZoneWorkCalendarDO();
-        timeZoneWorkCalendarDO.setOrganizationId(organizationId);
-        TimeZoneWorkCalendarDO query = timeZoneWorkCalendarMapper.selectOne(timeZoneWorkCalendarDO);
+        TimeZoneWorkCalendarDTO timeZoneWorkCalendarDTO = new TimeZoneWorkCalendarDTO();
+        timeZoneWorkCalendarDTO.setOrganizationId(organizationId);
+        TimeZoneWorkCalendarDTO query = timeZoneWorkCalendarMapper.selectOne(timeZoneWorkCalendarDTO);
         if (query == null) {
-            TimeZoneWorkCalendarE timeZoneWorkCalendarE = new TimeZoneWorkCalendarE();
-            timeZoneWorkCalendarE.setOrganizationId(organizationId);
-            timeZoneWorkCalendarE.setAreaCode("Asia");
-            timeZoneWorkCalendarE.setTimeZoneCode("Asia/Shanghai");
-            timeZoneWorkCalendarE.setSaturdayWork(false);
-            timeZoneWorkCalendarE.setSundayWork(false);
-            timeZoneWorkCalendarE.setUseHoliday(true);
-            timeZoneWorkCalendarRepository.create(timeZoneWorkCalendarE);
+            TimeZoneWorkCalendarDTO timeZoneWorkCalendar = new TimeZoneWorkCalendarDTO();
+            timeZoneWorkCalendar.setOrganizationId(organizationId);
+            timeZoneWorkCalendar.setAreaCode("Asia");
+            timeZoneWorkCalendar.setTimeZoneCode("Asia/Shanghai");
+            timeZoneWorkCalendar.setSaturdayWork(false);
+            timeZoneWorkCalendar.setSundayWork(false);
+            timeZoneWorkCalendar.setUseHoliday(true);
+            timeZoneWorkCalendarService.create(timeZoneWorkCalendar);
         }
     }
 

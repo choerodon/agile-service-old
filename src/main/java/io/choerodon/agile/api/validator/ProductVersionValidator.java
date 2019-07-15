@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.validator;
 
-import io.choerodon.agile.api.vo.ProductVersionReleaseDTO;
-import io.choerodon.agile.infra.dataobject.ProductVersionDO;
+import io.choerodon.agile.api.vo.ProductVersionReleaseVO;
+import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +26,13 @@ public class ProductVersionValidator {
     private static final String ARCHIVED = "archived";
     private static final String RELEASED = "released";
     private static final String ERROR_VERSION_ISARCHIVED = "error.version.isArchived";
+    private static final String VERSION_DATE_ERROR = "error.versionDate.startAfterReleaseDate";
+
+    public void checkDate(ProductVersionDTO productVersionDTO) {
+        if (productVersionDTO.getStartDate() != null && productVersionDTO.getExpectReleaseDate() != null && productVersionDTO.getStartDate().after(productVersionDTO.getExpectReleaseDate())) {
+            throw new CommonException(VERSION_DATE_ERROR);
+        }
+    }
 
     public void judgeName(Long projectId, Long versionId, String name) {
         if (versionId != null && !Objects.equals(versionId, 0L) && productVersionMapper.isNotReName(projectId, versionId, name)) {
@@ -38,10 +45,10 @@ public class ProductVersionValidator {
 
     public void judgeExist(Long projectId, Long versionId) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
-            ProductVersionDO productVersionDO = new ProductVersionDO();
-            productVersionDO.setProjectId(projectId);
-            productVersionDO.setVersionId(versionId);
-            if (productVersionMapper.selectByPrimaryKey(productVersionDO) == null) {
+            ProductVersionDTO productVersionDTO = new ProductVersionDTO();
+            productVersionDTO.setProjectId(projectId);
+            productVersionDTO.setVersionId(versionId);
+            if (productVersionMapper.selectByPrimaryKey(productVersionDTO) == null) {
                 throw new CommonException(VERSION_NOT_FOUND);
             }
         }
@@ -49,10 +56,10 @@ public class ProductVersionValidator {
 
     public void judgeExistStoryMap(Long projectId, Long versionId) {
         if (versionId != null && !Objects.equals(versionId, 0L)) {
-            ProductVersionDO productVersionDO = new ProductVersionDO();
-            productVersionDO.setVersionId(versionId);
-            productVersionDO.setProjectId(projectId);
-            ProductVersionDO result = productVersionMapper.selectByPrimaryKey(productVersionDO);
+            ProductVersionDTO productVersionDTO = new ProductVersionDTO();
+            productVersionDTO.setVersionId(versionId);
+            productVersionDTO.setProjectId(projectId);
+            ProductVersionDTO result = productVersionMapper.selectByPrimaryKey(productVersionDTO);
             if (result == null) {
                 throw new CommonException(VERSION_NOT_FOUND);
             }
@@ -62,13 +69,13 @@ public class ProductVersionValidator {
         }
     }
 
-    public void isRelease(Long projectId, ProductVersionReleaseDTO productVersionRelease) {
+    public void isRelease(Long projectId, ProductVersionReleaseVO productVersionRelease) {
         judgeExist(projectId, productVersionRelease.getTargetVersionId());
-        ProductVersionDO productVersionDO = new ProductVersionDO();
-        productVersionDO.setProjectId(projectId);
-        productVersionDO.setVersionId(productVersionRelease.getVersionId());
-        productVersionDO = productVersionMapper.selectOne(productVersionDO);
-        if (productVersionDO == null || !Objects.equals(productVersionDO.getStatusCode(), VERSION_STATUS_PLAN_CODE)) {
+        ProductVersionDTO productVersionDTO = new ProductVersionDTO();
+        productVersionDTO.setProjectId(projectId);
+        productVersionDTO.setVersionId(productVersionRelease.getVersionId());
+        productVersionDTO = productVersionMapper.selectOne(productVersionDTO);
+        if (productVersionDTO == null || !Objects.equals(productVersionDTO.getStatusCode(), VERSION_STATUS_PLAN_CODE)) {
             throw new CommonException(RELEASE_ERROR);
         }
     }

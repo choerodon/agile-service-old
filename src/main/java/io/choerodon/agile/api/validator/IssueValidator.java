@@ -3,10 +3,7 @@ package io.choerodon.agile.api.validator;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
-import io.choerodon.agile.domain.agile.entity.IssueE;
-import io.choerodon.agile.domain.agile.entity.LabelIssueRelE;
-import io.choerodon.agile.domain.agile.entity.VersionIssueRelE;
+import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.dataobject.*;
@@ -70,27 +67,27 @@ public class IssueValidator {
     private IssueFeignClient issueFeignClient;
 
 
-    public void verifyCreateData(IssueCreateDTO issueCreateDTO, Long projectId, String applyType) {
-        issueCreateDTO.setProjectId(projectId);
-        if (issueCreateDTO.getTypeCode() == null) {
+    public void verifyCreateData(IssueCreateVO issueCreateVO, Long projectId, String applyType) {
+        issueCreateVO.setProjectId(projectId);
+        if (issueCreateVO.getTypeCode() == null) {
             throw new CommonException("error.IssueRule.typeCode");
         }
-        if (issueCreateDTO.getSummary() == null) {
+        if (issueCreateVO.getSummary() == null) {
             throw new CommonException("error.IssueRule.Summary");
         }
-        if (issueCreateDTO.getPriorityCode() == null) {
+        if (issueCreateVO.getPriorityCode() == null) {
             throw new CommonException("error.IssueRule.PriorityCode");
         }
-        if (issueCreateDTO.getProjectId() == null) {
+        if (issueCreateVO.getProjectId() == null) {
             throw new CommonException("error.IssueRule.ProjectId");
         }
-        if (issueCreateDTO.getEpicName() != null && !ISSUE_EPIC.equals(issueCreateDTO.getTypeCode())) {
+        if (issueCreateVO.getEpicName() != null && !ISSUE_EPIC.equals(issueCreateVO.getTypeCode())) {
             throw new CommonException("error.IssueRule.EpicName");
         }
-        if (issueCreateDTO.getPriorityId() == null) {
+        if (issueCreateVO.getPriorityId() == null) {
             throw new CommonException("error.priorityId.isNull");
         }
-        if (issueCreateDTO.getIssueTypeId() == null) {
+        if (issueCreateVO.getIssueTypeId() == null) {
             throw new CommonException("error.issueTypeId.isNull");
         }
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
@@ -102,19 +99,19 @@ public class IssueValidator {
         if (issueUpdate.get(ISSUE_ID) == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
-        IssueDO issueDO = new IssueDO();
-        issueDO.setIssueId(Long.parseLong(issueUpdate.get(ISSUE_ID).toString()));
-        issueDO.setProjectId(projectId);
-        issueDO = issueMapper.selectByPrimaryKey(issueDO);
-        if (issueDO == null) {
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setIssueId(Long.parseLong(issueUpdate.get(ISSUE_ID).toString()));
+        issueDTO.setProjectId(projectId);
+        issueDTO = issueMapper.selectByPrimaryKey(issueDTO);
+        if (issueDTO == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
         //不是epic类型的，不能修改颜色
-        if (issueUpdate.get(COLOR) != null && !ISSUE_EPIC.equals(issueDO.getTypeCode())) {
+        if (issueUpdate.get(COLOR) != null && !ISSUE_EPIC.equals(issueDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.color");
         }
         //不是epic类型的，不能修改epicName
-        if (issueUpdate.get(EPIC_NAME) != null && !ISSUE_EPIC.equals(issueDO.getTypeCode())) {
+        if (issueUpdate.get(EPIC_NAME) != null && !ISSUE_EPIC.equals(issueDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.EpicName");
         }
         //修改状态要有当前状态
@@ -122,13 +119,13 @@ public class IssueValidator {
             throw new CommonException("error.IssueRule.statusId");
         }
         //不是故事无法修改feature
-        if (issueUpdate.get(FEATURE_ID) != null && !STORY.equals(issueDO.getTypeCode())) {
+        if (issueUpdate.get(FEATURE_ID) != null && !STORY.equals(issueDTO.getTypeCode())) {
             throw new CommonException("error.issue.type");
         } else if (issueUpdate.get(EPIC_ID) != null
                 && Long.parseLong(issueUpdate.get(EPIC_ID).toString()) != 0
                 && issueUpdate.get(FEATURE_ID) != null
                 && Long.parseLong(issueUpdate.get(FEATURE_ID).toString()) != 0) {
-            IssueDO issue = new IssueDO();
+            IssueDTO issue = new IssueDTO();
             issue.setProjectId(projectId);
             issue.setTypeCode(FEATURE);
             issue.setEpicId(Long.parseLong(issueUpdate.get(EPIC_ID).toString()));
@@ -138,25 +135,25 @@ public class IssueValidator {
             }
         } else if (issueUpdate.get(EPIC_ID) != null
                 && Long.parseLong(issueUpdate.get(EPIC_ID).toString()) != 0
-                && STORY.equals(issueDO.getTypeCode())
-                && issueDO.getFeatureId() != null
-                && issueDO.getFeatureId() != 0) {
-            IssueDO issue = new IssueDO();
+                && STORY.equals(issueDTO.getTypeCode())
+                && issueDTO.getFeatureId() != null
+                && issueDTO.getFeatureId() != 0) {
+            IssueDTO issue = new IssueDTO();
             issue.setProjectId(projectId);
             issue.setTypeCode(FEATURE);
             issue.setEpicId(Long.parseLong(issueUpdate.get(EPIC_ID).toString()));
-            issue.setIssueId(issueDO.getFeatureId());
+            issue.setIssueId(issueDTO.getFeatureId());
             if (issueMapper.selectByPrimaryKey(issue) == null) {
                 issueUpdate.put("featureId", 0);
             }
         } else if (issueUpdate.get(FEATURE_ID) != null
                 && Long.parseLong(issueUpdate.get(FEATURE_ID).toString()) != 0
-                && issueDO.getEpicId() != null
-                && issueDO.getEpicId() != 0) {
-            IssueDO issue = new IssueDO();
+                && issueDTO.getEpicId() != null
+                && issueDTO.getEpicId() != 0) {
+            IssueDTO issue = new IssueDTO();
             issue.setProjectId(projectId);
             issue.setTypeCode(FEATURE);
-            issue.setEpicId(issueDO.getEpicId());
+            issue.setEpicId(issueDTO.getEpicId());
             issue.setIssueId(Long.parseLong(issueUpdate.get(FEATURE_ID).toString()));
             if (issueMapper.selectByPrimaryKey(issue) == null) {
                 throw new CommonException("error.featureId.of.epic");
@@ -165,16 +162,16 @@ public class IssueValidator {
 
     }
 
-    public void verifySubCreateData(IssueSubCreateDTO issueSubCreateDTO, Long projectId) {
-        if (issueSubCreateDTO.getParentIssueId() == null) {
+    public void verifySubCreateData(IssueSubCreateVO issueSubCreateVO, Long projectId) {
+        if (issueSubCreateVO.getParentIssueId() == null) {
             throw new CommonException("error.IssueRule.ParentIssueId");
         }
-        IssueDO issueDO = new IssueDO();
-        issueDO.setProjectId(projectId);
-        issueDO.setIssueId(issueSubCreateDTO.getParentIssueId());
-        IssueDO query = issueMapper.selectOne(issueDO);
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setProjectId(projectId);
+        issueDTO.setIssueId(issueSubCreateVO.getParentIssueId());
+        IssueDTO query = issueMapper.selectOne(issueDTO);
         if (query != null) {
-            issueSubCreateDTO.setProjectId(projectId);
+            issueSubCreateVO.setProjectId(projectId);
         } else {
             throw new CommonException("error.IssueRule.issueNoFound");
         }
@@ -182,10 +179,10 @@ public class IssueValidator {
 
     public void judgeExist(Long projectId, Long epicId) {
         if (epicId != null && !Objects.equals(epicId, 0L)) {
-            IssueDO issueDO = new IssueDO();
-            issueDO.setProjectId(projectId);
-            issueDO.setIssueId(epicId);
-            if (issueMapper.selectByPrimaryKey(issueDO) == null) {
+            IssueDTO issueDTO = new IssueDTO();
+            issueDTO.setProjectId(projectId);
+            issueDTO.setIssueId(epicId);
+            if (issueMapper.selectByPrimaryKey(issueDTO) == null) {
                 throw new CommonException("error.epic.notFound");
             }
         }
@@ -199,80 +196,80 @@ public class IssueValidator {
         }
     }
 
-    public void verifyLabelIssueData(LabelIssueRelE labelIssueRelE) {
-        if (labelIssueRelE.getProjectId() == null) {
+    public void verifyLabelIssueData(LabelIssueRelDTO labelIssueRelDTO) {
+        if (labelIssueRelDTO.getProjectId() == null) {
             throw new CommonException("error.label.ProjectId");
-        } else if (labelIssueRelE.getLabelName() == null && labelIssueRelE.getLabelId() == null) {
+        } else if (labelIssueRelDTO.getLabelName() == null && labelIssueRelDTO.getLabelId() == null) {
             throw new CommonException("error.label.LabelName");
         }
     }
 
-    public void verifyVersionIssueRelData(VersionIssueRelE versionIssueRelE) {
-        if (versionIssueRelE.getName() == null && versionIssueRelE.getVersionId() == null) {
+    public void verifyVersionIssueRelData(VersionIssueRelDTO versionIssueRelDTO) {
+        if (versionIssueRelDTO.getName() == null && versionIssueRelDTO.getVersionId() == null) {
             throw new CommonException("error.versionIssueRel.Name");
         }
     }
 
-    public void verifyComponentIssueRelData(ComponentIssueRelE componentIssueRelE) {
-        if (componentIssueRelE.getComponentId() == null && componentIssueRelE.getName() == null) {
+    public void verifyComponentIssueRelData(ComponentIssueRelDTO componentIssueRelDTO) {
+        if (componentIssueRelDTO.getComponentId() == null && componentIssueRelDTO.getName() == null) {
             throw new CommonException("error.componentIssueRelE.Name");
         }
     }
 
-    public IssueE verifyUpdateTypeData(Long projectId, IssueUpdateTypeDTO issueUpdateTypeDTO) {
-        if (issueUpdateTypeDTO.getIssueId() == null) {
+    public IssueConvertDTO verifyUpdateTypeData(Long projectId, IssueUpdateTypeVO issueUpdateTypeVO) {
+        if (issueUpdateTypeVO.getIssueId() == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
-        if (issueUpdateTypeDTO.getIssueTypeId() == null) {
+        if (issueUpdateTypeVO.getIssueTypeId() == null) {
             throw new CommonException("error.issuetypeId.isNull");
         }
-        if (issueUpdateTypeDTO.getTypeCode() == null) {
+        if (issueUpdateTypeVO.getTypeCode() == null) {
             throw new CommonException("error.IssueRule.typeCode");
         }
-        if (issueUpdateTypeDTO.getTypeCode().equals(ISSUE_EPIC) && issueUpdateTypeDTO.getEpicName() == null) {
+        if (issueUpdateTypeVO.getTypeCode().equals(ISSUE_EPIC) && issueUpdateTypeVO.getEpicName() == null) {
             throw new CommonException("error.IssueRule.epicName");
         }
-        IssueE issueE = issueService.queryIssueByProjectIdAndIssueId(projectId, issueUpdateTypeDTO.getIssueId());
-        if (issueE == null) {
-            throw new CommonException("error.IssueUpdateTypeDTO.issueDO");
+        IssueConvertDTO issueConvertDTO = issueService.queryIssueByProjectIdAndIssueId(projectId, issueUpdateTypeVO.getIssueId());
+        if (issueConvertDTO == null) {
+            throw new CommonException("error.IssueUpdateTypeVO.issueDO");
         }
-        if (issueUpdateTypeDTO.getTypeCode().equals(SUB_TASK)) {
+        if (issueUpdateTypeVO.getTypeCode().equals(SUB_TASK)) {
             throw new CommonException("error.IssueRule.subTask");
         }
-        if (issueUpdateTypeDTO.getTypeCode().equals(issueE.getTypeCode())) {
+        if (issueUpdateTypeVO.getTypeCode().equals(issueConvertDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
         }
-        Long originStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueE.getIssueTypeId()).getBody();
-        Long currentStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueUpdateTypeDTO.getIssueTypeId()).getBody();
+        Long originStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueConvertDTO.getIssueTypeId()).getBody();
+        Long currentStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueUpdateTypeVO.getIssueTypeId()).getBody();
         if (originStateMachineId == null || currentStateMachineId == null) {
             throw new CommonException("error.IssueRule.stateMachineId");
         }
         if (!originStateMachineId.equals(currentStateMachineId)) {
             throw new CommonException("error.IssueRule.stateMachineId");
         }
-        return issueE;
+        return issueConvertDTO;
     }
 
-    public Boolean existVersionIssueRel(VersionIssueRelE versionIssueRelE) {
-        VersionIssueRelDO versionIssueRelDO = new VersionIssueRelDO();
-        versionIssueRelDO.setVersionId(versionIssueRelE.getVersionId());
-        versionIssueRelDO.setIssueId(versionIssueRelE.getIssueId());
-        versionIssueRelDO.setRelationType(versionIssueRelE.getRelationType());
-        return versionIssueRelMapper.selectOne(versionIssueRelDO) == null;
+    public Boolean existVersionIssueRel(VersionIssueRelDTO versionIssueRelDTO) {
+        VersionIssueRelDTO versionIssueRel = new VersionIssueRelDTO();
+        versionIssueRel.setVersionId(versionIssueRelDTO.getVersionId());
+        versionIssueRel.setIssueId(versionIssueRelDTO.getIssueId());
+        versionIssueRel.setRelationType(versionIssueRelDTO.getRelationType());
+        return versionIssueRelMapper.selectOne(versionIssueRel) == null;
     }
 
-    public Boolean existComponentIssueRel(ComponentIssueRelE componentIssueRelE) {
-        ComponentIssueRelDO componentIssueRelDO = new ComponentIssueRelDO();
-        componentIssueRelDO.setIssueId(componentIssueRelE.getIssueId());
-        componentIssueRelDO.setComponentId(componentIssueRelE.getComponentId());
-        return componentIssueRelMapper.selectOne(componentIssueRelDO) == null;
+    public Boolean existComponentIssueRel(ComponentIssueRelDTO componentIssueRelDTO) {
+        ComponentIssueRelDTO componentIssueRel = new ComponentIssueRelDTO();
+        componentIssueRel.setIssueId(componentIssueRelDTO.getIssueId());
+        componentIssueRel.setComponentId(componentIssueRelDTO.getComponentId());
+        return componentIssueRelMapper.selectOne(componentIssueRel) == null;
     }
 
-    public Boolean existLabelIssue(LabelIssueRelE labelIssueRelE) {
-        LabelIssueRelDO labelIssueRelDO = new LabelIssueRelDO();
-        labelIssueRelDO.setLabelId(labelIssueRelE.getLabelId());
-        labelIssueRelDO.setIssueId(labelIssueRelE.getIssueId());
-        return labelIssueRelMapper.selectOne(labelIssueRelDO) == null;
+    public Boolean existLabelIssue(LabelIssueRelDTO labelIssueRelDTO) {
+        LabelIssueRelDTO labelIssueRel = new LabelIssueRelDTO();
+        labelIssueRel.setLabelId(labelIssueRelDTO.getLabelId());
+        labelIssueRel.setIssueId(labelIssueRelDTO.getIssueId());
+        return labelIssueRelMapper.selectOne(labelIssueRel) == null;
     }
 
     public void verifyTransformedSubTask(IssueTransformSubTask issueTransformSubTask) {
@@ -287,7 +284,7 @@ public class IssueValidator {
         }
     }
 
-    public IssueE verifyTransformedTask(Long projectId, IssueTransformTask issueTransformTask) {
+    public IssueConvertDTO verifyTransformedTask(Long projectId, IssueTransformTask issueTransformTask) {
         if (issueTransformTask.getIssueId() == null) {
             throw new CommonException(ERROR_ISSUE_ID_NOT_FOUND);
         }
@@ -300,23 +297,23 @@ public class IssueValidator {
         if (issueTransformTask.getTypeCode().equals(ISSUE_EPIC) && issueTransformTask.getEpicName() == null) {
             throw new CommonException("error.IssueRule.epicName");
         }
-        IssueE issueE = issueService.queryIssueByProjectIdAndIssueId(projectId, issueTransformTask.getIssueId());
-        if (issueE == null) {
-            throw new CommonException("error.IssueUpdateTypeDTO.issueDO");
+        IssueConvertDTO issueConvertDTO = issueService.queryIssueByProjectIdAndIssueId(projectId, issueTransformTask.getIssueId());
+        if (issueConvertDTO == null) {
+            throw new CommonException("error.IssueUpdateTypeVO.issueDO");
         }
         if (issueTransformTask.getTypeCode().equals(SUB_TASK)) {
             throw new CommonException("error.IssueRule.subTask");
         }
-        if (issueTransformTask.getTypeCode().equals(issueE.getTypeCode())) {
+        if (issueTransformTask.getTypeCode().equals(issueConvertDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
         }
-        return issueE;
+        return issueConvertDTO;
     }
 
     public void verifySubTask(Long parentIssueId) {
-        IssueDO issueDO = new IssueDO();
-        issueDO.setIssueId(parentIssueId);
-        IssueDO query = issueMapper.selectByPrimaryKey(issueDO);
+        IssueDTO issueDTO = new IssueDTO();
+        issueDTO.setIssueId(parentIssueId);
+        IssueDTO query = issueMapper.selectByPrimaryKey(issueDTO);
         if (query == null) {
             throw new CommonException("error.IssueRule.issueNoFound");
         } else if (query.getTypeCode().equals(SUB_TASK)) {
@@ -324,34 +321,34 @@ public class IssueValidator {
         }
     }
 
-    public void verifyStoryPoints(IssueE issueE) {
-        if (issueE.getStoryPoints() != null && !(STORY.equals(issueE.getTypeCode()) || "feature".equals(issueE.getTypeCode()))) {
+    public void verifyStoryPoints(IssueConvertDTO issueConvertDTO) {
+        if (issueConvertDTO.getStoryPoints() != null && !(STORY.equals(issueConvertDTO.getTypeCode()) || "feature".equals(issueConvertDTO.getTypeCode()))) {
             throw new CommonException("error.IssueRule.onlyStory");
         }
     }
 
-    public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO) {
-        if (storyMapMoveDTO.getSprintId() != null && storyMapMoveDTO.getVersionId() != null) {
-            throw new CommonException(ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL);
-        }
-    }
+//    public static void checkStoryMapMove(StoryMapMoveDTO storyMapMoveDTO) {
+//        if (storyMapMoveDTO.getSprintId() != null && storyMapMoveDTO.getVersionId() != null) {
+//            throw new CommonException(ERROR_SPRINTIDANDVERSIONID_ALLNOTNULL);
+//        }
+//    }
 
-    public static void checkParentIdUpdate(IssueDO issueDO, IssueDO parentIssueDO) {
-        if (issueDO == null) {
+    public static void checkParentIdUpdate(IssueDTO issueDTO, IssueDTO parentIssueDTO) {
+        if (issueDTO == null) {
             throw new CommonException(ERROR_ISSUE_GET);
         }
-        if (parentIssueDO == null) {
+        if (parentIssueDTO == null) {
             throw new CommonException(ERROR_PARENT_ISSUE_NOT_EXIST);
         }
-        String typeCode = issueDO.getTypeCode();
+        String typeCode = issueDTO.getTypeCode();
         if (!"sub_task".equals(typeCode)) {
             throw new CommonException(ERROR_TYPECODE_ISSUBTASK);
         }
-        typeCode = parentIssueDO.getTypeCode();
+        typeCode = parentIssueDTO.getTypeCode();
         if ("sub_task".equals(typeCode)) {
             throw new CommonException(ERROR_PARENT_ISSUE_ISSUBTASK);
         }
-        if (SchemeApplyType.TEST.equals(issueDO.getApplyType())) {
+        if (SchemeApplyType.TEST.equals(issueDTO.getApplyType())) {
             throw new CommonException(ERROR_PARENT_ISSUE_ISTEST);
         }
     }
@@ -361,33 +358,33 @@ public class IssueValidator {
         if (issueIds.isEmpty()) {
             throw new CommonException("error.issueValidator.issueIdsNull");
         }
-        ProductVersionDO productVersionDO = new ProductVersionDO();
-        productVersionDO.setProjectId(projectId);
-        productVersionDO.setVersionId(versionId);
-        if (productVersionMapper.selectByPrimaryKey(productVersionDO) == null) {
+        ProductVersionDTO productVersionDTO = new ProductVersionDTO();
+        productVersionDTO.setProjectId(projectId);
+        productVersionDTO.setVersionId(versionId);
+        if (productVersionMapper.selectByPrimaryKey(productVersionDTO) == null) {
             throw new CommonException("error.issueValidator.versionNotFound");
         }
     }
 
-    public void checkIssueCreate(IssueCreateDTO issueCreateDTO, String applyType) {
+    public void checkIssueCreate(IssueCreateVO issueCreateVO, String applyType) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
         }
-        if (SchemeApplyType.AGILE.equals(applyType) && issueCreateDTO.getEpicName() != null && issueService.checkEpicName(issueCreateDTO.getProjectId(), issueCreateDTO.getEpicName())) {
+        if (SchemeApplyType.AGILE.equals(applyType) && issueCreateVO.getEpicName() != null && issueService.checkEpicName(issueCreateVO.getProjectId(), issueCreateVO.getEpicName())) {
             throw new CommonException("error.epicName.exist");
         }
-        if (issueCreateDTO.getRankDTO() != null) {
-            RankDTO rankDTO = issueCreateDTO.getRankDTO();
-            if (rankDTO.getReferenceIssueId() == null) {
+        if (issueCreateVO.getRankVO() != null) {
+            RankVO rankVO = issueCreateVO.getRankVO();
+            if (rankVO.getReferenceIssueId() == null) {
                 throw new CommonException("error.referenceIssueId.isNull");
             }
-            if (rankDTO.getBefore() == null) {
+            if (rankVO.getBefore() == null) {
                 throw new CommonException("error.before.isNull");
             }
-            if (rankDTO.getType() == null) {
+            if (rankVO.getType() == null) {
                 throw new CommonException("error.type.isNull");
             }
-            if (rankDTO.getProjectId() == null) {
+            if (rankVO.getProjectId() == null) {
                 throw new CommonException("error.projectId.isNull");
             }
         }

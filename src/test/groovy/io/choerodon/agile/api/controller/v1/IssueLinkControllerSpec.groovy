@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
-import io.choerodon.agile.api.vo.IssueLinkCreateDTO
-import io.choerodon.agile.api.vo.IssueLinkDTO
+import io.choerodon.agile.api.vo.IssueLinkCreateVO
+import io.choerodon.agile.api.vo.IssueLinkVO
 import io.choerodon.agile.infra.mapper.IssueLinkMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -39,8 +39,8 @@ class IssueLinkControllerSpec extends Specification {
 
     def 'createIssueLinkList'() {
         given: '链接issueDTO对象'
-        List<IssueLinkCreateDTO> issueLinkCreateDTOList = new ArrayList<IssueLinkCreateDTO>()
-        IssueLinkCreateDTO issueLinkCreateDTO = new IssueLinkCreateDTO()
+        List<IssueLinkCreateVO> issueLinkCreateDTOList = new ArrayList<IssueLinkCreateVO>()
+        IssueLinkCreateVO issueLinkCreateDTO = new IssueLinkCreateVO()
         issueLinkCreateDTO.linkTypeId = 1L
         issueLinkCreateDTO.issueId = 1L
         issueLinkCreateDTO.linkedIssueId = 2L
@@ -53,7 +53,7 @@ class IssueLinkControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueLinkDTO> result = entity.body
+        List<IssueLinkVO> result = entity.body
 
         expect: '设置期望值'
         result.size() == 1
@@ -68,7 +68,7 @@ class IssueLinkControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueLinkDTO> result = entity.body
+        List<IssueLinkVO> result = entity.body
 
         expect: '设置期望值'
         result.size() == expectConut
@@ -95,7 +95,7 @@ class IssueLinkControllerSpec extends Specification {
         entity.statusCode.is2xxSuccessful()
 
         and: '设置值'
-        List<IssueLinkDTO> result = entity.body
+        List<IssueLinkVO> result = entity.body
 
         expect: '设置期望值'
         result.size() == 2
