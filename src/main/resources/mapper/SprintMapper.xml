@@ -64,6 +64,8 @@
         <id property="objectVersionNumber" column="is_object_version_number"/>
         <id property="epicName" column="issue_epic_name"/>
         <id property="color" column="color"/>
+        <id property="featureName" column="feature_name"/>
+        <id property="featureType" column="feature_type"/>
         <collection property="versionIds" autoMapping="true" ofType="java.lang.Long">
             <id column="version_id"/>
         </collection>
@@ -110,6 +112,8 @@
         ai.object_version_number as is_object_version_number, ai.priority_code,
         ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
+        feature_info.feature_name AS feature_name,
+        feature_info.feature_type AS feature_type,
         apv1.version_id AS version_id,
         apv1.name AS version_name
         FROM (select ai3.* from agile_issue ai3
@@ -123,6 +127,16 @@
         LEFT JOIN agile_issue_status ais ON ai.status_id = ais.status_id and ai.project_id = ais.project_id
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
+        LEFT JOIN (
+            select
+            ai3.issue_id as issue_id
+            ai3.summary as feature_name,
+            af.feature_type as feature_type
+            from agile_issue ai3, agile_feature af
+            where ai3.project_id = #{projectId}
+            and ai3.type_code = 'feature'
+            and ai3.issue_id = af.issue_id
+        ) feature_info ON ai2.feature_id = feature_info.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
         LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
@@ -347,6 +361,8 @@
         ai2.object_version_number as is_object_version_number, ai2.priority_code,
         ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
+        feature_info.feature_name AS feature_name,
+        feature_info.feature_type AS feature_type,
         apv1.version_id AS version_id,
         apv1.name AS version_name
         FROM
@@ -359,6 +375,16 @@
         </foreach>)ai2
         LEFT JOIN agile_project_info api ON ai2.project_id = api.project_id
         LEFT JOIN agile_issue ai1 ON ai2.epic_id = ai1.issue_id
+        LEFT JOIN (
+            select
+            ai3.issue_id as issue_id
+            ai3.summary as feature_name,
+            af.feature_type as feature_type
+            from agile_issue ai3, agile_feature af
+            where ai3.project_id = #{projectId}
+            and ai3.type_code = 'feature'
+            and ai3.issue_id = af.issue_id
+        ) feature_info ON ai2.feature_id = feature_info.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
         left join agile_issue_sprint_rel aisr2 on aisr2.issue_id = ai2.issue_id
         LEFT JOIN
@@ -427,6 +453,8 @@
         ai2.object_version_number as is_object_version_number, ai2.priority_code,
         ai1.epic_name AS issue_epic_name,
         alv2.name AS color,
+        feature_info.feature_name AS feature_name,
+        feature_info.feature_type AS feature_type,
         apv1.version_id AS version_id,
         apv1.name AS version_name
         FROM
@@ -439,6 +467,16 @@
         </foreach>)ai2
         LEFT JOIN agile_project_info api ON ai2.project_id = api.project_id
         LEFT JOIN agile_issue ai1 ON ai2.epic_id = ai1.issue_id
+        LEFT JOIN (
+          select
+            ai3.issue_id as issue_id
+            ai3.summary as feature_name,
+            af.feature_type as feature_type
+          from agile_issue ai3, agile_feature af
+          where ai3.project_id = #{projectId}
+          and ai3.type_code = 'feature'
+          and ai3.issue_id = af.issue_id
+        ) feature_info ON ai2.feature_id = feature_info.issue_id
         LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
         LEFT JOIN (
             SELECT
