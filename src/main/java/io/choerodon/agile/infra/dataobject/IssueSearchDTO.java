@@ -25,7 +25,6 @@ public class IssueSearchDTO {
     private Long epicId;
     private String epicName;
     private String featureName;
-    private String featureType;
     private List<Long> versionIds;
     private List<String> versionNames;
     private Long sprintId;
@@ -257,13 +256,5 @@ public class IssueSearchDTO {
 
     public void setFeatureName(String featureName) {
         this.featureName = featureName;
-    }
-
-    public String getFeatureType() {
-        return featureType;
-    }
-
-    public void setFeatureType(String featureType) {
-        this.featureType = featureType;
     }
 }
