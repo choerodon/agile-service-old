@@ -53,7 +53,7 @@ import { createCommit } from '../../../../api/NewIssueApi';
   renderCommits() {
     const { store } = this.props;
     const issue = store.getIssue;
-    const { issueCommentDTOList = [] } = issue;
+    const { issueCommentVOList = [] } = issue;
 
     const { addCommitDes, addCommit } = this.state;
     const { reloadIssue } = this.props;
@@ -83,7 +83,7 @@ import { createCommit } from '../../../../api/NewIssueApi';
           )
         }
         {
-          issueCommentDTOList.map(comment => (
+          issueCommentVOList.map(comment => (
             <Comment
               key={comment.commentId}
               comment={comment}

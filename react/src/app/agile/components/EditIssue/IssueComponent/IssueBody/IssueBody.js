@@ -26,7 +26,7 @@ import TestLink from './TestLink';
       store,
     } = this.props;
     const issue = store.getIssue;
-    const { issueTypeDTO = {} } = issue;
+    const { issueTypeVO = {} } = issue;
 
     return (
       <div className="c7n-content-bottom" id="scroll-area" style={{ position: 'relative' }}>
@@ -35,27 +35,27 @@ import TestLink from './TestLink';
             <IssueDetail {...this.props} />
             <IssueDes {...this.props} />
             <IssueAttachment {...this.props} />
-            {issueTypeDTO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeDTO.typeCode) === -1
+            {issueTypeVO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeVO.typeCode) === -1
               ? <IssueDoc {...this.props} /> : ''
             }
-            {issueTypeDTO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeDTO.typeCode) === -1
+            {issueTypeVO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeVO.typeCode) === -1
               ? <SubTask {...this.props} /> : ''
             }
-            {issueTypeDTO.typeCode && ['feature'].indexOf(issueTypeDTO.typeCode) === -1
+            {issueTypeVO.typeCode && ['feature'].indexOf(issueTypeVO.typeCode) === -1
               ? <IssueWorkLog {...this.props} /> : ''
             }
-            {issueTypeDTO.typeCode && ['story', 'task'].indexOf(issueTypeDTO.typeCode) !== -1
+            {issueTypeVO.typeCode && ['story', 'task'].indexOf(issueTypeVO.typeCode) !== -1
               ? <SubBug {...this.props} /> : ''
             }
-            {issueTypeDTO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeDTO.typeCode) === -1
+            {issueTypeVO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeVO.typeCode) === -1
               ? <TestLink {...this.props} /> : ''
             }
-            {issueTypeDTO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeDTO.typeCode) === -1
+            {issueTypeVO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeVO.typeCode) === -1
               ? <IssueLink {...this.props} /> : ''
             }
             <IssueCommit {...this.props} />
             <IssueLog {...this.props} />
-            {issueTypeDTO.typeCode && ['feature'].indexOf(issueTypeDTO.typeCode) === -1
+            {issueTypeVO.typeCode && ['feature'].indexOf(issueTypeVO.typeCode) === -1
               ? <IssueBranch {...this.props} /> : ''
             }
           </div>

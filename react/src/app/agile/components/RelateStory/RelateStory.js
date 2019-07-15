@@ -184,7 +184,7 @@ class RelateStory extends Component {
                         >
                           <div>
                             <TypeTag
-                              data={issue.issueTypeDTO}
+                              data={issue.issueTypeVO}
                             />
                           </div>
                           <div style={{

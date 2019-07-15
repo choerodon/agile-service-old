@@ -51,7 +51,7 @@ class CreateFeatureModal extends Component {
           issueTypeId: featureType && featureType.id,
           priorityCode: `priority-${defaultPriorityId}`,
           priorityId: defaultPriorityId,
-          featureDTO: {
+          featureVO: {
             // benfitHypothesis: values.benfitHypothesis,
             // acceptanceCritera: values.acceptanceCritera,
             featureType: value.featureType,

@@ -51,7 +51,7 @@ class DocItem extends Component {
           target="_blank"
           rel="noopener noreferrer"
         >
-          {doc.workSpaceDTO ? doc.workSpaceDTO.name : doc.wikiName}
+          {doc.workSpaceVO ? doc.workSpaceVO.name : doc.wikiName}
         </a>
         <Popconfirm
           title="确认删除文档关联吗？"

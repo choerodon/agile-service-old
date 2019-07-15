@@ -50,7 +50,7 @@ class IssueList extends Component {
         <Tooltip mouseEnterDelay={0.5} title={`任务类型： ${issue.typeCode}`}>
           <div>
             <TypeTag
-              data={issue.issueTypeDTO}
+              data={issue.issueTypeVO}
             />
           </div>
         </Tooltip>
@@ -73,10 +73,10 @@ class IssueList extends Component {
           </div>
         </Tooltip>
         <div style={{ marginRight: '15px', overflow: 'hidden' }}>
-          <Tooltip mouseEnterDelay={0.5} title={`优先级： ${issue.priorityDTO.name}`}>
+          <Tooltip mouseEnterDelay={0.5} title={`优先级： ${issue.priorityVO.name}`}>
             <div style={{ marginRight: 12 }}>
               <PriorityTag
-                priority={issue.priorityDTO}
+                priority={issue.priorityVO}
               />
             </div>
           </Tooltip>
@@ -106,10 +106,10 @@ class IssueList extends Component {
           width: '48px', marginRight: '15px', display: 'flex', justifyContent: 'flex-end', 
         }}
         >
-          <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${issue.statusMapDTO.name}`}>
+          <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${issue.statusMapVO.name}`}>
             <div>
               <StatusTag
-                data={issue.statusMapDTO}
+                data={issue.statusMapVO}
               />
             </div>
           </Tooltip>

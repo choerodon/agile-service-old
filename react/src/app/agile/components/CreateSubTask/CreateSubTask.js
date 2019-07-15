@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { stores } from '@choerodon/boot';
 import _ from 'lodash';
 import {
-  Select, Form, Input, Button, Modal, Icon, InputNumber,
+  Select, Form, Input, Modal, InputNumber,
   Checkbox, TimePicker, Row, Col, Radio, DatePicker, Spin,
 } from 'choerodon-ui';
 import moment from 'moment';
@@ -41,8 +41,6 @@ class CreateSubIssue extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      delta: '',
-      edit: false,
       createLoading: false,
       fileList: [],
       sprint: {},
@@ -99,8 +97,9 @@ class CreateSubIssue extends Component {
       pageCode: 'agile_issue_create',
     };
     getFields(param).then((fields) => {
+      const Fields = fields.filter(({ fieldCode }) => !['issueType', 'epic', 'component'].includes(fieldCode));
       this.setState({
-        fields,
+        fields: Fields,
         loading: false,
       });
     });
@@ -127,7 +126,7 @@ class CreateSubIssue extends Component {
         const { description } = values;
         const subIssueType = store.getIssueTypes && store.getIssueTypes.find(t => t.typeCode === 'sub_task');
         const exitLabels = originLabels;
-        const labelIssueRelDTOList = _.map(values.issueLink, (label) => {
+        const labelIssueRelVOList = _.map(values.issueLink, (label) => {
           const target = _.find(exitLabels, { labelName: label.substr(0, 10) });
           if (target) {
             return target;
@@ -139,7 +138,7 @@ class CreateSubIssue extends Component {
           }
         });
         const exitFixVersions = originFixVersions;
-        const fixVersionIssueRelDTOList = _.map(values.fixVersionIssueRel
+        const fixVersionIssueRelVOList = _.map(values.fixVersionIssueRel
           && values.fixVersionIssueRel.filter(v => v && v.trim()), (version) => {
           const target = _.find(exitFixVersions, { name: version.trim() });
           if (target) {
@@ -162,9 +161,9 @@ class CreateSubIssue extends Component {
           assigneeId: values.assigneedId,
           projectId: AppState.currentMenuType.id,
           parentIssueId: issueId,
-          labelIssueRelDTOList,
+          labelIssueRelVOList,
           sprintId: sprint.sprintId || 0,
-          versionIssueRelDTOList: fixVersionIssueRelDTOList,
+          versionIssueRelVOList: fixVersionIssueRelVOList,
           issueTypeId: subIssueType && subIssueType.id,
           remainingTime: estimatedTime,
         };
@@ -277,8 +276,7 @@ class CreateSubIssue extends Component {
       if (fieldOptions && fieldOptions.length > 0) {
         return (
           <Radio.Group
-            label={fieldName}
-            className="fieldWith"
+            label={fieldName}          
           >
             {fieldOptions && fieldOptions.length > 0
               && fieldOptions.filter(option => option.enabled).map(item => (
@@ -296,7 +294,7 @@ class CreateSubIssue extends Component {
         return (
           <Radio.Group
             label={fieldName}
-            className="fieldWith"
+            
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Radio.Group>
@@ -307,7 +305,7 @@ class CreateSubIssue extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+            
           >
             <Row>
               {fieldOptions && fieldOptions.length > 0
@@ -332,7 +330,7 @@ class CreateSubIssue extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+            
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Checkbox.Group>
@@ -342,7 +340,7 @@ class CreateSubIssue extends Component {
       return (
         <TimePicker
           label={fieldName}
-          className="fieldWith"
+          style={{ display: 'block' }}
           defaultOpenValue={moment('00:00:00', 'HH:mm:ss')}
           allowEmpty={!required}
         />
@@ -353,7 +351,7 @@ class CreateSubIssue extends Component {
           showTime
           label={fieldName}
           format="YYYY-MM-DD HH:mm:ss"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -362,7 +360,7 @@ class CreateSubIssue extends Component {
         <DatePicker
           label={fieldName}
           format="YYYY-MM-DD"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -371,7 +369,7 @@ class CreateSubIssue extends Component {
         <Select
           label={fieldName}
           dropdownMatchSelectWidth
-          className="fieldWith"
+          
           allowClear={!required}
         >
           {field.fieldOptions && field.fieldOptions.length > 0
@@ -391,7 +389,7 @@ class CreateSubIssue extends Component {
           label={fieldName}
           dropdownMatchSelectWidth
           mode="multiple"
-          className="fieldWith"
+          
         >
           {field.fieldOptions && field.fieldOptions.length > 0
             && field.fieldOptions.filter(option => option.enabled).map(item => (
@@ -408,7 +406,7 @@ class CreateSubIssue extends Component {
       return (
         <InputNumber
           label={fieldName}
-          className="fieldWith"
+          
           step={field.extraConfig === '1' ? 0.1 : 1}
           maxLength={8}
         />
@@ -418,7 +416,7 @@ class CreateSubIssue extends Component {
         <TextArea
           autosize
           label={fieldName}
-          className="fieldWith"
+          
           maxLength={255}
         />
       );
@@ -452,7 +450,7 @@ class CreateSubIssue extends Component {
       return (
         <Input
           label={fieldName}
-          className="fieldWith"
+          
           maxLength={100}
         />
       );
@@ -467,18 +465,17 @@ class CreateSubIssue extends Component {
     } = field;
     const {
       originPriorities, defaultPriorityId,
-      edit, delta, originUsers, selectLoading, estimatedTime,
+      originUsers, selectLoading, estimatedTime,
       originFixVersions, originLabels, sprint,
     } = this.state;
     switch (field.fieldCode) {
-      case 'issueType':
-        return '';
       case 'assignee':
         return (
-          <React.Fragment>
-            <FormItem label="经办人" style={{ width: 520, display: 'inline-block' }}>
+          <FormItem label="经办人">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               {getFieldDecorator('assigneedId', {})(
                 <Select
+                  style={{ flex: 1 }}
                   label="经办人"
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   loading={selectLoading}
@@ -503,25 +500,24 @@ class CreateSubIssue extends Component {
                   ))}
                 </Select>,
               )}
-            </FormItem>
-            <span
-              onClick={this.assigneeMe}
-              role="none"
-              style={{
-                display: 'inline-block',
-                color: 'rgba(63, 81, 181)',
-                marginLeft: 10,
-                marginTop: 15,
-                cursor: 'pointer',
-              }}
-            >
-              {'分派给我'}
-            </span>
-          </React.Fragment>
+              <span
+                onClick={this.assigneeMe}
+                role="none"
+                style={{
+                  display: 'inline-block',
+                  color: 'rgba(63, 81, 181)',
+                  marginLeft: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                {'分派给我'}
+              </span>
+            </div>
+          </FormItem>
         );
       case 'sprint':
         return (
-          <FormItem label="冲刺" style={{ width: 520 }}>
+          <FormItem label="冲刺">
             {getFieldDecorator('sprintId', {
               initialValue: sprint.sprintName,
             })(
@@ -531,7 +527,7 @@ class CreateSubIssue extends Component {
         );
       case 'priority':
         return (
-          <FormItem label="优先级" style={{ width: 520 }}>
+          <FormItem label="优先级">
             {getFieldDecorator('priorityId', {
               rules: [{ required: true, message: '优先级为必选项' }],
               initialValue: defaultPriorityId,
@@ -553,7 +549,7 @@ class CreateSubIssue extends Component {
         );
       case 'label':
         return (
-          <FormItem label="标签" style={{ width: 520 }}>
+          <FormItem label="标签">
             {getFieldDecorator('issueLink', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
               normalize: value => (value ? value.map(s => s.toString().substr(0, 10)) : value),
@@ -587,7 +583,7 @@ class CreateSubIssue extends Component {
         );
       case 'fixVersion':
         return (
-          <FormItem label="版本" style={{ width: 520 }}>
+          <FormItem label="版本">
             {getFieldDecorator('fixVersionIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
             })(
@@ -620,7 +616,7 @@ class CreateSubIssue extends Component {
         return '';
       case 'summary':
         return (
-          <FormItem label="子任务概要" style={{ width: 520 }}>
+          <FormItem label="子任务概要" className="c7nagile-line">
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '子任务概要为必输项' }],
             })(
@@ -632,7 +628,7 @@ class CreateSubIssue extends Component {
         return '';
       case 'remainingTime':
         return (
-          <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
+          <FormItem>
             <Select
               label="预估时间"
               value={estimatedTime && estimatedTime.toString()}
@@ -644,7 +640,7 @@ class CreateSubIssue extends Component {
                 this.componentRef.rcSelect.focus();
               }}
               tokenSeparators={[',']}
-              style={{ marginTop: 0, paddingTop: 0, width: 520 }}
+              style={{ marginTop: 0, paddingTop: 0 }}
               onChange={value => this.handleChangeEstimatedTime(value)}
             >
               {storyPointList.map(sp => (
@@ -653,23 +649,32 @@ class CreateSubIssue extends Component {
                 </Option>
               ))}
             </Select>
-          </div>
+          </FormItem>
         );
       case 'storyPoints':
         return '';
       case 'description':
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
-            {getFieldDecorator(fieldCode)(
-              <WYSIWYGEditor
-                style={{ height: 200, width: '100%' }}
-              />,
-            )}
-          </FormItem>
+          <Fragment>
+            <FormItem label={fieldName} className="c7nagile-line">
+              {getFieldDecorator(fieldCode)(
+                <WYSIWYGEditor
+                  style={{ height: 200, width: '100%' }}
+                />,
+              )}
+            </FormItem>
+            <FormItem className="c7nagile-line">
+              <UploadButton
+                onRemove={this.setFileList}
+                onBeforeUpload={this.setFileList}
+                fileList={this.state.fileList}
+              />
+            </FormItem>
+          </Fragment>
         );
       default:
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
+          <FormItem label={fieldName}>
             {getFieldDecorator(fieldCode, {
               rules: [{ required, message: `${fieldName}为必填项` }],
               initialValue: this.transformValue(fieldType, defaultValue),
@@ -702,11 +707,10 @@ class CreateSubIssue extends Component {
 
     const {
       createLoading,
-      fields,     
+      fields,
       fileList,
       loading,
     } = this.state;
-
     return (
       <Sidebar
         className="c7n-createSubIssue"
@@ -719,34 +723,24 @@ class CreateSubIssue extends Component {
         confirmLoading={createLoading}
       >
         <Spin spinning={loading}>
-          <h2>
-            {'在项目“'}
-            {AppState.currentMenuType.name}
-            {' ”中创建子任务'}
-          </h2>
-          <p style={{ width: 520, marginBottom: 24 }}>
-            {' 请在下面输入子任务的详细信息，创建问题的子任务。子任务会与父级问题的冲刺、史诗保持一致，并且子任务的状态会受父级问题的限制。'}
-          </p>
-          <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
-            <Input label="父任务概要" value={parentSummary} disabled />
-          </div>
-          <Form layout="vertical">
-            {fields && fields.map(field => this.getFieldComponent(field))}
-          </Form>
 
-          <div className="sign-upload" style={{ marginTop: 20 }}>
-            <div style={{ display: 'flex', marginBottom: 13, alignItems: 'center' }}>
-              <div style={{ fontWeight: 'bold' }}>附件</div>
-            </div>
-            <div style={{ marginTop: -38 }}>
-              <UploadButton
-                onRemove={this.setFileList}
-                onBeforeUpload={this.setFileList}
-                fileList={fileList}
-              />
-            </div>
-          </div>
-        </Spin>        
+          <Form layout="vertical" style={{ width: 670 }} className="c7nagile-form">
+            <h2>
+              {'在项目“'}
+              {AppState.currentMenuType.name}
+              {' ”中创建子任务'}
+            </h2>
+            <p style={{ marginBottom: 24 }}>
+              {' 请在下面输入子任务的详细信息，创建问题的子任务。子任务会与父级问题的冲刺、史诗保持一致，并且子任务的状态会受父级问题的限制。'}
+            </p>            
+            <div className="c7nagile-createIssue-fields">
+              <FormItem>
+                <Input label="父任务概要" value={parentSummary} disabled />
+              </FormItem>
+              {fields && fields.map(field => this.getFieldComponent(field))}
+            </div>            
+          </Form>          
+        </Spin>
       </Sidebar>
     );
   }

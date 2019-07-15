@@ -50,8 +50,8 @@ const { Text, Edit } = TextEditToggle;
       store, onUpdate, reloadIssue, AppState, onCreateVersion,
     } = this.props;
     const issue = store.getIssue;
-    const { versionIssueRelDTOList = [], issueId, objectVersionNumber } = issue;
-    const influenceVersions = _.filter(versionIssueRelDTOList, { relationType: 'influence' }) || [];
+    const { versionIssueRelVOList = [], issueId, objectVersionNumber } = issue;
+    const influenceVersions = _.filter(versionIssueRelVOList, { relationType: 'influence' }) || [];
 
     if (JSON.stringify(influenceVersions) !== JSON.stringify(newVersion)) {
       const versionList = [];
@@ -72,7 +72,7 @@ const { Text, Edit } = TextEditToggle;
       const obj = {
         issueId,
         objectVersionNumber,
-        versionIssueRelDTOList: versionList,
+        versionIssueRelVOList: versionList,
         versionType: 'influence',
       };
       updateIssue(obj)
@@ -95,8 +95,8 @@ const { Text, Edit } = TextEditToggle;
     const { selectLoading, originVersions } = this.state;
     const { store, hasPermission, disabled } = this.props;
     const issue = store.getIssue;
-    const { versionIssueRelDTOList = [] } = issue;
-    const influenceVersions = _.filter(versionIssueRelDTOList, { relationType: 'influence' }) || [];
+    const { versionIssueRelVOList = [] } = issue;
+    const influenceVersions = _.filter(versionIssueRelVOList, { relationType: 'influence' }) || [];
 
     return (
       <div className="line-start mt-10">

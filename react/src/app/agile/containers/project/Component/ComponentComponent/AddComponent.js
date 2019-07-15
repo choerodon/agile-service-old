@@ -141,7 +141,7 @@ class AddComponent extends Component {
             width: 512,
           }}
           >
-            <FormItem>
+            <FormItem style={{marginBottom:20}}>
               {getFieldDecorator('name', {
                 rules: [{
                   required: true,
@@ -154,12 +154,12 @@ class AddComponent extends Component {
                 <Input label="模块名称" maxLength={10} />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem style={{marginBottom:20}}>
               {getFieldDecorator('description', {})(
                 <Input label="模块描述" maxLength={30} />,
               )}
             </FormItem>
-            <FormItem>
+            <FormItem style={{marginBottom:20}}>
               {getFieldDecorator('defaultAssigneeRole', {
                 rules: [{
                   required: true,
@@ -176,7 +176,7 @@ class AddComponent extends Component {
               )}
             </FormItem>
             {getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole && getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole === '模块负责人' && (
-            <FormItem>
+            <FormItem style={{marginBottom:20}}>
               {getFieldDecorator('managerId', {})(
                 <Select
                   label="负责人"

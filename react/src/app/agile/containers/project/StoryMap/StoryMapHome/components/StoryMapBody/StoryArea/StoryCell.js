@@ -37,16 +37,16 @@ class StoryCell extends Component {
       epic, otherData, storyCollapse, isLastRow, isLastColumn, epicIndex, lastCollapse,
     } = this.props;
     const { storyData, swimLine } = StoryMapStore;
-    const { issueId: epicId, featureCommonDOList, adding } = epic;
+    const { issueId: epicId, featureCommonDTOList, adding } = epic;
     const targetEpic = storyData[epicId];
     const { collapse } = otherData || {};
     // let epicStorys = [];
     // if (targetEpic && targetEpic.feature && targetEpic.feature.none) {
     //   epicStorys = targetEpic.feature.none.storys;
     // }
-    // const featureList = epicStorys.length > 0 ? featureCommonDOList.concat([{ issueId: 'none' }]) : featureCommonDOList;
+    // const featureList = epicStorys.length > 0 ? featureCommonDTOList.concat([{ issueId: 'none' }]) : featureCommonDTOList;
     // 没有史诗不显示直接关联史诗的列
-    const featureList = epicId === 0 ? featureCommonDOList : featureCommonDOList.concat([{ issueId: 'none' }]);
+    const featureList = epicId === 0 ? featureCommonDTOList : featureCommonDTOList.concat([{ issueId: 'none' }]);
 
     return (
       !storyCollapse && !collapse && (

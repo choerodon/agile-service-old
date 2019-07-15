@@ -4,10 +4,12 @@
   }
 
   .info {
+    width: 520px;
     display: flex;
     flex-direction: column;
 
     .line-info {
+      width: 100%;
       display: flex;
       align-items: flex-end;
     }

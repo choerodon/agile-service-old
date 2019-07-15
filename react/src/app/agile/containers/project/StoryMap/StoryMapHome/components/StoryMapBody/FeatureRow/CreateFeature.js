@@ -27,17 +27,17 @@ class CreateFeature extends Component {
     if (value !== '') {
       const { onCreate, epicId } = this.props;
       const { featureType } = this.state;
-      const featureTypeDTO = StoryMapStore.getFeatureType;
+      const featureTypeVO = StoryMapStore.getFeatureType;
       const defaultPriority = StoryMapStore.getDefaultPriority;
       const req = {
         projectId: getProjectId(),
         epicId,      
         summary: value,
         typeCode: 'feature',
-        featureDTO: {
+        featureVO: {
           featureType,
         },        
-        issueTypeId: featureTypeDTO.id,
+        issueTypeId: featureTypeVO.id,
         priorityCode: `priority-${defaultPriority.id}`,
         priorityId: defaultPriority.id,
       };

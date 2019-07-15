@@ -41,13 +41,13 @@ class ChangeParent extends Component {
       if (!err) {
         const projectId = AppState.currentMenuType.id;
         const parentIssueId = values.issues;
-        const issueUpdateParentIdDTO = {
+        const issueUpdateParentIdVO = {
           issueId,
           parentIssueId,
           objectVersionNumber,
         };
         this.setState({ loading: true });
-        axios.post(`/agile/v1/projects/${projectId}/issues/update_parent`, issueUpdateParentIdDTO)
+        axios.post(`/agile/v1/projects/${projectId}/issues/update_parent`, issueUpdateParentIdVO)
           .then((res) => {
             this.setState({ loading: false });
             onOk();
@@ -108,7 +108,7 @@ class ChangeParent extends Component {
                     <div className="c7n-agile-changeParent-listWrap">
                       <div>
                         <TypeTag
-                          data={issue.issueTypeDTO}
+                          data={issue.issueTypeVO}
                         />
                       </div>
                       <a className="issueNum text-overflow-hidden">

@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom';
 import { inject } from 'mobx-react';
 import {
-  asyncRouter, asyncLocaleProvider, stores, nomatch, 
+  asyncRouter, asyncLocaleProvider, stores, nomatch,
 } from '@choerodon/boot';
 import IsInProgramStore from '../stores/common/program/IsInProgramStore';
 import RunWhenProjectChange from '../common/RunWhenProjectChange';
@@ -32,50 +32,54 @@ class AGILEIndex extends React.Component {
   componentDidCatch(error, info) {
     // Choerodon.prompt(error.message);
   }
-  
+
   componentDidMount() {
     // 切换项目查是否在项目群中
     RunWhenProjectChange(IsInProgramStore.refresh);
-    IsInProgramStore.refresh();    
+    IsInProgramStore.refresh();
   }
-  
-  render() {  
+
+  render() {
     const { match } = this.props;
     const { AppState } = stores;
     const langauge = AppState.currentLanguage;
     const IntlProviderAsync = asyncLocaleProvider(langauge, () => import(`../locale/${langauge}`));
     return (
-      <IntlProviderAsync>
-        <Switch>
-          {/* 发布版本 */}
-          <Route path={`${match.url}/release`} component={RELEASEINDEX} />
-          {/* 待办事项 */}
-          <Route path={`${match.url}/backlog`} component={BACKLOGINDEX} />
-          {/* 活跃冲刺 */}
-          <Route path={`${match.url}/scrumboard`} component={SCRUMBOARDINDEX} /> 
-          {/* 问题管理 */}
-          <Route path={`${match.url}/issue`} component={ISSUEIndex} />
-          {/* 模块管理 */}
-          <Route path={`${match.url}/component`} component={COMPONENTIndex} />
-          {/* 报告 */}
-          <Route path={`${match.url}/reporthost`} component={REPORTHOSTINDEX} />
-          {/* 项目设置 */}
-          <Route path={`${match.url}/projectSetting`} component={PROJECTSETTINGINDEX} />
-          {/* 快速搜索 */}
-          <Route path={`${match.url}/fastSearch`} component={FASTSEARCHINDEX} />
-          {/* 问题链接 */}
-          <Route path={`${match.url}/issueLink`} component={ISSUELINKINDEX} />
-          <Route path={`${match.url}/userMap`} component={STORYMAPINDEX} />
-          {/* 迭代工作台 */}
-          <Route path={`${match.url}/iterationBoard/:id`} component={INERATIONBOARDINDEX} />
-          <Route path={`${match.url}/reportBoard`} component={REPORTBOARD} />
-          <Route path={`${match.url}/messageNotification`} component={MESSAGENOTIFICATION} />
+      <div className="agile">
+        <IntlProviderAsync>
+          <Switch>
+            {/* 发布版本 */}
+            <Route path={`${match.url}/release`} component={RELEASEINDEX} />
+            {/* 待办事项 */}
+            <Route path={`${match.url}/backlog`} component={BACKLOGINDEX} />
+            {/* 活跃冲刺 */}
+            <Route path={`${match.url}/scrumboard`} component={SCRUMBOARDINDEX} />
+            {/* 问题管理 */}
+            <Route path={`${match.url}/issue`} component={ISSUEIndex} />
+            {/* 模块管理 */}
+            <Route path={`${match.url}/component`} component={COMPONENTIndex} />
+            {/* 报告 */}
+            <Route path={`${match.url}/reporthost`} component={REPORTHOSTINDEX} />
+            {/* 项目设置 */}
+            <Route path={`${match.url}/projectSetting`} component={PROJECTSETTINGINDEX} />
+            {/* 快速搜索 */}
+            <Route path={`${match.url}/fastSearch`} component={FASTSEARCHINDEX} />
+            {/* 问题链接 */}
+            <Route path={`${match.url}/issueLink`} component={ISSUELINKINDEX} />
+            <Route path={`${match.url}/userMap`} component={STORYMAPINDEX} />
+            {/* 迭代工作台 */}
+            <Route path={`${match.url}/iterationBoard/:id`} component={INERATIONBOARDINDEX} />
+            <Route path={`${match.url}/reportBoard`} component={REPORTBOARD} />
+            <Route path={`${match.url}/messageNotification`} component={MESSAGENOTIFICATION} />
 
-          <Route path={`${match.url}/workCalendar`} component={WORKCALENDARINDEX} />
-          
-          <Route path="*" component={nomatch} />
-        </Switch>
-      </IntlProviderAsync>
+            <Route path={`${match.url}/workCalendar`} component={WORKCALENDARINDEX} />
+            <Route path={`${match.url}/objectScheme`} component={OBJECTSCHEMEINDEX} />
+            <Route path={`${match.url}/page`} component={PAGEINDEX} />
+
+            <Route path="*" component={nomatch} />
+          </Switch>
+        </IntlProviderAsync>
+      </div>
     );
   }
 }

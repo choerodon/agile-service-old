@@ -66,12 +66,12 @@ import StartSprint from '../../StartSprint';
             <div style={{ display: 'flex' }}>
               <p
                 className={classnames('c7n-backlog-closeSprint', {
-                  'c7n-backlog-canCloseSprint': store.getHasActiveSprint || !data.issueSearchDTOList || data.issueSearchDTOList.length === 0,
+                  'c7n-backlog-canCloseSprint': store.getHasActiveSprint || !data.issueSearchVOList || data.issueSearchVOList.length === 0,
                 })}
                 role="none"
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (!store.getHasActiveSprint && data.issueSearchDTOList && data.issueSearchDTOList.length > 0) {
+                  if (!store.getHasActiveSprint && data.issueSearchVOList && data.issueSearchVOList.length > 0) {
                     this.setState({
                       startSprintVisible: true,
                     });

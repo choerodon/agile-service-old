@@ -91,25 +91,25 @@ class Priority extends Component {
   renderPriority() {
     const { priorityInfo } = this.state;
     return priorityInfo.map(priority => (
-      <div className="list" key={priority.priorityDTO.id}>
+      <div className="list" key={priority.priorityVO.id}>
         <div className="tip">
           {`${priority.doneCount}/${priority.totalCount}`}
         </div>
         <div className="body">
           <div>
             <PriorityTag
-              priority={priority.priorityDTO}
+              priority={priority.priorityVO}
             />
           </div>
           <div className="progress">
             <div
               className="progress-bg"
-              style={{ background: `${priority.priorityDTO.colour}1F` }}
+              style={{ background: `${priority.priorityVO.colour}1F` }}
             />
             <div
               className="progress-inner"
               style={{
-                background: priority.priorityDTO.colour,
+                background: priority.priorityVO.colour,
                 width: `${priority.doneCount / priority.totalCount * 100}%`,
               }}
             />

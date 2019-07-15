@@ -19,7 +19,7 @@ const { RangePicker } = DatePicker;
 @observer
 class AdvancedSearch extends Component {
     getSearchFilter = (filterId) => {
-      this.filterControler = new IssueFilterControler();
+      this.filterControler = IssueFilterControler;
       const projectInfo = IssueStore.getProjectInfo;
       const myFilters = IssueStore.getMyFilters;
       
@@ -29,7 +29,7 @@ class AdvancedSearch extends Component {
         const searchFilterInfo = myFilters.find(item => item.filterId === filterId);
         const {
           advancedSearchArgs, searchArgs, otherArgs, contents, 
-        } = searchFilterInfo.personalFilterSearchDTO;
+        } = searchFilterInfo.personalFilterSearchVO;
         if (otherArgs.assigneeId && otherArgs.assigneeId.includes(0)) {
           otherArgs.assigneeId = otherArgs.assigneeId.map(item => (item === 0 ? '0' : item));
         }
@@ -75,7 +75,7 @@ class AdvancedSearch extends Component {
       const selectedStatus = IssueStore.getSelectedStatus;
       const selectedPriority = IssueStore.getSelectedPriority;
       IssueStore.setSelectedIssueType(map(value, 'key'));
-      this.filterControler = new IssueFilterControler();
+      this.filterControler = IssueFilterControler;
       this.filterControler.advancedSearchArgsFilterUpdate(map(value, 'key'), selectedStatus, selectedPriority);
       IssueStore.judgeConditionWithFilter();
       IssueStore.judgeFilterConditionIsEmpty();
@@ -86,7 +86,7 @@ class AdvancedSearch extends Component {
       const selectedIssueType = IssueStore.getSelectedIssueType;
       const selectedPriority = IssueStore.getSelectedPriority;
       IssueStore.setSelectedStatus(map(value, 'key'));
-      this.filterControler = new IssueFilterControler();
+      this.filterControler = IssueFilterControler;
       this.filterControler.advancedSearchArgsFilterUpdate(selectedIssueType, map(value, 'key'), selectedPriority);
       IssueStore.judgeConditionWithFilter();
       IssueStore.judgeFilterConditionIsEmpty();
@@ -97,7 +97,7 @@ class AdvancedSearch extends Component {
       const selectedIssueType = IssueStore.getSelectedIssueType;
       const selectedStatus = IssueStore.getSelectedStatus;
       IssueStore.setSelectedPriority(map(value, 'key'));
-      this.filterControler = new IssueFilterControler();
+      this.filterControler = IssueFilterControler;
       this.filterControler.advancedSearchArgsFilterUpdate(selectedIssueType, selectedStatus, map(value, 'key'));
       IssueStore.judgeConditionWithFilter();
       IssueStore.judgeFilterConditionIsEmpty();
@@ -105,7 +105,7 @@ class AdvancedSearch extends Component {
     }
   
     handleAssigneeSelectChange = (value) => {
-      this.filterControler = new IssueFilterControler();
+      this.filterControler = IssueFilterControler;
       IssueStore.setSelectedAssignee(value);
       if (value.find(item => item === 'none')) {
         this.filterControler.assigneeFilterUpdate([]);
@@ -136,7 +136,7 @@ class AdvancedSearch extends Component {
         IssueStore.setCreateEndDate('');
       }
       IssueStore.setSaveFilterVisible(false);
-      this.filterControler = new IssueFilterControler();
+      this.filterControler = IssueFilterControler;
       this.filterControler.searchArgsFilterUpdate(IssueStore.getCreateStartDate, IssueStore.getCreateEndDate);
       IssueStore.judgeConditionWithFilter();
       IssueStore.judgeFilterConditionIsEmpty();
@@ -173,7 +173,7 @@ class AdvancedSearch extends Component {
       const myFilters = IssueStore.getMyFilters;
       const filterListVisible = IssueStore.getFilterListVisible;
       const emptyBtnVisible = IssueStore.getEmptyBtnVisible;
-      const filterControler = new IssueFilterControler();
+      const filterControler = IssueFilterControler;
 
       const debounceCallback = this.deBounce(500);
       return (
@@ -206,7 +206,7 @@ class AdvancedSearch extends Component {
               className="SelectTheme"  
               mode="multiple"
               allowClear
-              
+              style={{ width: 100 }}
               dropdownMatchSelectWidth={false}
               placeholder="问题类型"
               labelInValue
@@ -231,6 +231,7 @@ class AdvancedSearch extends Component {
             <Select
               key="statusSelect"
               className="SelectTheme"  
+              style={{ width: 100 }}
               mode="multiple"
               allowClear              
               dropdownMatchSelectWidth={false}
@@ -257,6 +258,7 @@ class AdvancedSearch extends Component {
             <Select
               key="prioritySelect"
               className="SelectTheme"  
+              style={{ width: 100 }}
               mode="multiple"             
               dropdownMatchSelectWidth={false}
               allowClear
@@ -285,6 +287,7 @@ class AdvancedSearch extends Component {
               loadWhenMount
               key="assigneeSelect"
               className="SelectTheme"  
+              style={{ width: 100 }}
               mode="multiple"
               allowClear
               dropdownMatchSelectWidth={false}

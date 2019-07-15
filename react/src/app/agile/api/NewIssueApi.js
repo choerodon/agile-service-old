@@ -33,9 +33,9 @@ export function loadVersions(arr = []) {
   return axios.post(`/agile/v1/projects/${projectId}/product_version/names`, arr);
 }
 
-export function createVersion(versionCreateDTO) {
+export function createVersion(versionCreateVO) {
   const projectId = AppState.currentMenuType.id;
-  return axios.post(`/agile/v1/projects/${projectId}/product_version`, versionCreateDTO);
+  return axios.post(`/agile/v1/projects/${projectId}/product_version`, versionCreateVO);
 }
 export function checkVersionNameRepeat(value) {
   const projectId = AppState.currentMenuType.id;
@@ -212,26 +212,26 @@ export function deleteWorklog(logId, projectId = AppState.currentMenuType.id) {
 
 export function updateIssueType(data, projectId = AppState.currentMenuType.id) {
   const orgId = AppState.currentMenuType.organizationId;
-  const issueUpdateTypeDTO = {
+  const issueUpdateTypeVO = {
     projectId,
     ...data,
   };
-  return axios.post(`/agile/v1/projects/${projectId}/issues/update_type?organizationId=${orgId}`, issueUpdateTypeDTO);
+  return axios.post(`/agile/v1/projects/${projectId}/issues/update_type?organizationId=${orgId}`, issueUpdateTypeVO);
 }
 
 export function transformedTask(data, projectId = AppState.currentMenuType.id) {
   const orgId = AppState.currentMenuType.organizationId;
-  const issueUpdateTypeDTO = {
+  const issueUpdateTypeVO = {
     projectId,
     ...data,
   };
-  return axios.post(`/agile/v1/projects/${projectId}/issues/transformed_task?organizationId=${orgId}`, issueUpdateTypeDTO);
+  return axios.post(`/agile/v1/projects/${projectId}/issues/transformed_task?organizationId=${orgId}`, issueUpdateTypeVO);
 }
 
-export function loadIssues(page = 1, size = 10, searchDTO, orderField, orderType) {
+export function loadIssues(page = 1, size = 10, searchVO, orderField, orderType) {
   const orgId = AppState.currentMenuType.organizationId;
   const projectId = AppState.currentMenuType.id;
-  return axios.post(`/agile/v1/projects/${projectId}/issues/include_sub?page=${page}&size=${size}${orgId ? `&organizationId=${orgId}` : ''}`, searchDTO, {
+  return axios.post(`/agile/v1/projects/${projectId}/issues/include_sub?page=${page}&size=${size}${orgId ? `&organizationId=${orgId}` : ''}`, searchVO, {
     params: {
       sort: `${orderField && orderType ? `${orderField},${orderType}` : ''}`,
     },
@@ -251,9 +251,9 @@ export function loadIssuesInLink(page = 1, size = 10, issueId, content) {
   }
 }
 
-export function createLink(issueId, issueLinkCreateDTOList) {
+export function createLink(issueId, issueLinkCreateVOList) {
   const projectId = AppState.currentMenuType.id;
-  return axios.post(`/agile/v1/projects/${projectId}/issue_links/${issueId}`, issueLinkCreateDTOList);
+  return axios.post(`/agile/v1/projects/${projectId}/issue_links/${issueId}`, issueLinkCreateVOList);
 }
 
 export function loadLinkIssues(issueId) {

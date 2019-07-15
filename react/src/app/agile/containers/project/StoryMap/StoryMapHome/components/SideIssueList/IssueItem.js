@@ -21,14 +21,14 @@ class IssueItem extends Component {
       issue, connectDragSource,
     } = this.props;
     const {
-      issueTypeDTO, summary, issueNum, issueId,
+      issueTypeVO, summary, issueNum, issueId,
     } = issue;
     // const opacity = isDragging ? 0 : 1;
     return (
       connectDragSource(
         <div className={preFix}>
-          <TypeTag data={issueTypeDTO} />
-          <Link target="_blank" to={issueLink(issueId, issueTypeDTO && issueTypeDTO.typeCode, issueNum)} style={{ color: '#3F51B5', margin: '0 10px' }}>{issueNum}</Link>
+          <TypeTag data={issueTypeVO} />
+          <Link target="_blank" to={issueLink(issueId, issueTypeVO && issueTypeVO.typeCode, issueNum)} style={{ color: '#3F51B5', margin: '0 10px' }}>{issueNum}</Link>
           <div className={`${preFix}-summary`}>
             <Tooltip title={summary}>
               {summary}
@@ -57,12 +57,12 @@ export default DragSource(
       if (dropResult) {
         const { epic: { issueId: targetEpicId }, feature: { issueId: targetFeatureId }, version } = dropResult;
         const { versionId: targetVersionId } = version || {};
-        const { issue: { issueId, storyMapVersionDTOList } } = source;
-        const storyMapDragDTO = {
+        const { issue: { issueId, storyMapVersionVOList } } = source;
+        const storyMapDragVO = {
           versionIssueIds: [],
           versionId: 0, // 要关联的版本id
           epicId: targetEpicId, // 要关联的史诗id
-          versionIssueRelDTOList: [],
+          versionIssueRelVOList: [],
           // 问题id列表，移动到史诗，配合epicId使用
           epicIssueIds: [issueId],
           featureId: 0, // 要关联的特性id
@@ -70,18 +70,18 @@ export default DragSource(
           featureIssueIds: [],
         };
         if (targetFeatureId && targetFeatureId !== 'none') {
-          storyMapDragDTO.featureId = targetFeatureId;
-          storyMapDragDTO.featureIssueIds = [issueId];
+          storyMapDragVO.featureId = targetFeatureId;
+          storyMapDragVO.featureIssueIds = [issueId];
         }
-        if (targetVersionId && !find(storyMapVersionDTOList, { versionId: targetVersionId }) && targetVersionId !== 'none') {
-          storyMapDragDTO.versionId = targetVersionId;
-          storyMapDragDTO.versionIssueIds = [issueId];
+        if (targetVersionId && !find(storyMapVersionVOList, { versionId: targetVersionId }) && targetVersionId !== 'none') {
+          storyMapDragVO.versionId = targetVersionId;
+          storyMapDragVO.versionIssueIds = [issueId];
         }
-        if (targetVersionId === 'none' && storyMapVersionDTOList.length > 0) {
-          storyMapDragDTO.versionIssueRelDTOList = storyMapVersionDTOList.map(v => ({ ...v, issueId }));
+        if (targetVersionId === 'none' && storyMapVersionVOList.length > 0) {
+          storyMapDragVO.versionIssueRelVOList = storyMapVersionVOList.map(v => ({ ...v, issueId }));
         }
-        // console.log(storyMapDragDTO);
-        storyMove(storyMapDragDTO).then(() => {
+        // console.log(storyMapDragVO);
+        storyMove(storyMapDragVO).then(() => {
           // StoryMapStore.removeStoryFromStoryMap(story);
           StoryMapStore.getStoryMap();
           StoryMapStore.loadIssueList();

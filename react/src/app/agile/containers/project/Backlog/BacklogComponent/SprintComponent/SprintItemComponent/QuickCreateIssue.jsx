@@ -86,10 +86,10 @@ const FormItem = Form.Item;
           {expand ? (
             <div className="c7n-backlog-sprintIssueSide" style={{ display: 'block', width: '100%' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Form onSubmit={this.handleBlurCreateIssue} style={{ width: 640 }}>
-                  <div style={{ display: 'flex' }}>
+                <Form onSubmit={this.handleBlurCreateIssue} style={{ width: '100%', paddingRight: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
                     <Dropdown overlay={typeList} trigger={['click']} getPopupContainer={trigger => trigger.parentNode}>
-                      <div style={{ display: 'flex', alignItem: 'center' }}>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
                         <TypeTag
                           data={currentType || defaultType}
                         />
@@ -99,28 +99,31 @@ const FormItem = Form.Item;
                         />
                       </div>
                     </Dropdown>
-                    <FormItem label="summary" style={{ flex: 1 }}>
+                    <FormItem label="summary" style={{ flex: 1, margin: '0 10px', padding: 0 }}>
                       {getFieldDecorator('summary', {
                         rules: [{ required: true, message: '请输入问题概要！' }],
                       })(
                         <Input
+                          className="hidden-label"
                           autoFocus
                           maxLength={44}
-                          placeholder="需要做什么"
+                          placeholder="请输入问题概要"
                         />,
                       )}
                     </FormItem>
-                  </div>
-                  <div style={{
-                    margin: '10px 0 5px',
-                    display: 'flex',
-                    justifyContent: 'flex-start',
-                    paddingRight: 70,
-                  }}
-                  >
-                    <FormItem>
+                    <FormItem style={{ margin: '0 10px', padding: 0 }}>
                       <Button
                         type="primary"
+                        funcType="raised"
+                        htmlType="submit"
+                        loading={loading}
+                      >
+                        {'确定'}
+                      </Button>
+                    </FormItem>
+                    <FormItem style={{ padding: 0 }}>
+                      <Button
+                        funcType="raised"
                         onClick={() => {
                           this.setState({
                             expand: false,
@@ -131,37 +134,29 @@ const FormItem = Form.Item;
                         {'取消'}
                       </Button>
                     </FormItem>
-                    <FormItem>
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        loading={loading}
-                      >
-                        {'确定'}
-                      </Button>
-                    </FormItem>
+
                   </div>
                 </Form>
               </div>
             </div>
           ) : (
             <div className="c7n-backlog-sprintIssueSide">
-              <Button
-                className="leftBtn"
-                functyp="flat"
-                style={{
-                  color: '#3f51b5',
-                }}
-                onClick={() => {
-                  this.setState({
-                    expand: true,
-                  });
-                }}
-              >
-                <Icon type="playlist_add" />
-                {'创建问题'}
-              </Button>
-            </div>
+                <Button
+                  className="leftBtn"
+                  functyp="flat"
+                  style={{
+                    color: '#3f51b5',
+                  }}
+                  onClick={() => {
+                    this.setState({
+                      expand: true,
+                    });
+                  }}
+                >
+                  <Icon type="playlist_add" />
+                  {'创建问题'}
+                </Button>
+              </div>
           )}
         </div>
       </div>

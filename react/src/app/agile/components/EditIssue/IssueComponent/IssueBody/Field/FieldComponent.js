@@ -50,9 +50,9 @@ const { Text, Edit } = TextEditToggle;
       store, onUpdate, reloadIssue, AppState,
     } = this.props;
     const issue = store.getIssue;
-    const { componentIssueRelDTOList = [], issueId, objectVersionNumber } = issue;
+    const { componentIssueRelVOList = [], issueId, objectVersionNumber } = issue;
 
-    if (JSON.stringify(componentIssueRelDTOList) !== JSON.stringify(newComponents)) {
+    if (JSON.stringify(componentIssueRelVOList) !== JSON.stringify(newComponents)) {
       const componentList = [];
       newComponents.forEach((label) => {
         const target = _.find(originComponents, { name: label });
@@ -68,7 +68,7 @@ const { Text, Edit } = TextEditToggle;
       const obj = {
         issueId,
         objectVersionNumber,
-        componentIssueRelDTOList: componentList,
+        componentIssueRelVOList: componentList,
       };
       updateIssue(obj)
         .then(() => {
@@ -89,7 +89,7 @@ const { Text, Edit } = TextEditToggle;
     const { selectLoading, originComponents } = this.state;
     const { store, disabled } = this.props;
     const issue = store.getIssue;
-    const { componentIssueRelDTOList = [] } = issue;
+    const { componentIssueRelVOList = [] } = issue;
     return (
       <div className="line-start mt-10">
         <div className="c7n-property-wrapper">
@@ -102,14 +102,14 @@ const { Text, Edit } = TextEditToggle;
             disabled={disabled}
             formKey="component"
             onSubmit={this.updateIssueComponents}
-            originData={componentIssueRelDTOList.map(component => component.name)}
+            originData={componentIssueRelVOList.map(component => component.name)}
           >
             <Text>
-              {componentIssueRelDTOList && componentIssueRelDTOList.length
+              {componentIssueRelVOList && componentIssueRelVOList.length
                 ? (
                   <div>
                     <p style={{ color: '#3f51b5', wordBreak: 'break-word', marginTop: 2 }}>
-                      {this.transToArr(componentIssueRelDTOList, 'name')}
+                      {this.transToArr(componentIssueRelVOList, 'name')}
                     </p>
                   </div>
                 ) : (

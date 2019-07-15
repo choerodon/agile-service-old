@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { stores } from '@choerodon/boot';
 import { DeltaOperation } from 'react-quill';
-import { find } from 'lodash';
+import { find, findIndex, chunk } from 'lodash';
 import { uploadImage, uploadFile } from '../api/FileApi';
 
 const { AppState } = stores;

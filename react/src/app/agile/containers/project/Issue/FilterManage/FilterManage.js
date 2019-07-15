@@ -85,7 +85,7 @@ class FilterManage extends Component {
 
     deleteFilter = (filter) => {
       const selectedFilterId = IssueStore.getSelectedFilterId;
-      const filterControler = new IssueFilterControler();
+      const filterControler = IssueFilterControler;
       IssueStore.setLoading(true);
       axios.delete(`/agile/v1/projects/${AppState.currentMenuType.id}/personal_filter/${filter.filterId}`)
         .then((res) => {
@@ -137,7 +137,7 @@ class FilterManage extends Component {
                       {
                           isEditing ? (
                             <Form className="c7n-filterNameForm">
-                              <FormItem>
+                              <FormItem style={{ marginTop: 22 }}>
                                 {getFieldDecorator(`filterName_${filter.filterId}`, {
                                   rules: [{
                                     required: true, message: '名称必填',

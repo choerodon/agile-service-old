@@ -26,9 +26,9 @@ class QuickCreateFeatureProvider extends Component {
   render() {
     const { children, ...otherProps } = this.props;
     const { issueTypes, defaultPriority } = this.state;  
-    const featureTypeDTO = issueTypes.find(type => type.typeCode === 'feature');
+    const featureTypeVO = issueTypes.find(type => type.typeCode === 'feature');
     return (children({
-      featureTypeDTO,
+      featureTypeVO,
       defaultPriority,
       ...otherProps,
     }));    

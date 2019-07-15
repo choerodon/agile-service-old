@@ -1,11 +1,4 @@
 .c7n-createSubIssue {
-  .c7n-form-item {
-    margin-bottom: 12px !important;
-
-    .c7n-input-length-info {
-      margin-bottom: -18px !important;
-    }
-  }
 
   input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px #fff inset;
@@ -38,10 +31,11 @@
     padding-right: 20px;
     max-width: 100%;
   }
-
-  .fieldWith {
-    width: 520px;
-  }
+  .radioStyle {
+    display: block;
+    height: 30px;
+    line-height: 30px;
+  }  
 }
 
 .is-required {

@@ -164,34 +164,7 @@ const { Text, Edit } = TextEditToggle;
                 ))}
               </Select>
             </Edit>
-          </TextEditToggle>
-          {reporterId !== loginUserId && hasPermission
-            ? (
-              <span
-                role="none"
-                style={{
-                  color: '#3f51b5',
-                  cursor: 'pointer',
-                  marginTop: '-3px',
-                  margin: '-3px 0 0 10px',
-                  display: 'inline-block',
-                }}
-                onClick={() => {
-                  getSelf().then((res) => {
-                    if (res.id !== reporterId) {
-                      this.setState({
-                        newReporterId: res.id,
-                      }, () => {
-                        this.updateIssueReporter();
-                      });
-                    }
-                  });
-                }}
-              >
-                {'分配给我'}
-              </span>
-            ) : ''
-          }
+          </TextEditToggle>          
         </div>
       </div>
     );

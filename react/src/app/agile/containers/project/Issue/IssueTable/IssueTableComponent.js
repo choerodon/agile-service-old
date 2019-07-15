@@ -32,8 +32,8 @@ export function IssueNum({ text }) {
 export function TypeCode({ record }) {
   return (
     <TypeTag
-      data={record.issueTypeDTO}
-      showName={record.issueTypeDTO && record.issueTypeDTO.name}
+      data={record.issueTypeVO}
+      showName={record.issueTypeVO && record.issueTypeVO.name}
       style={{ minWidth: 80 }}
       featureType={record.featureType}
     />
@@ -62,10 +62,10 @@ export function Summary({ text }) {
  */
 export function Priority({ record }) {
   return (
-    <Tooltip mouseEnterDelay={0.5} title={`优先级： ${record.priorityDTO ? record.priorityDTO.name : ''}`}>
+    <Tooltip mouseEnterDelay={0.5} title={`优先级： ${record.priorityVO ? record.priorityVO.name : ''}`}>
       <div>
         <PriorityTag
-          priority={record.priorityDTO}
+          priority={record.priorityVO}
           style={{ minWidth: 65 }}
         />
       </div>
@@ -80,9 +80,9 @@ export function Priority({ record }) {
  */
 export function StatusName({ record }) {
   return (
-    <Tooltip mouseEnterDelay={0.5} title={`问题状态： ${record.statusMapDTO && record.statusMapDTO.name}`}>
+    <Tooltip mouseEnterDelay={0.5} title={`问题状态： ${record.statusMapVO && record.statusMapVO.name}`}>
       <StatusTag
-        data={record.statusMapDTO}
+        data={record.statusMapVO}
         style={{ display: 'inline-block', verticalAlign: 'middle' }}
       />
     </Tooltip>

@@ -41,11 +41,11 @@ export function getPIAims(piId) {
  * 更新某个PI目标
  *
  * @export
- * @param {*} piObjectiveDTO
+ * @param {*} piObjectiveVO
  * @returns
  */
-export function upDatePIAmix(piObjectiveDTO) {
-  return axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/pi_objective`, piObjectiveDTO);
+export function upDatePIAmix(piObjectiveVO) {
+  return axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/pi_objective`, piObjectiveVO);
 }
 
 
@@ -64,9 +64,9 @@ export function deletePIAims(piId) {
  * 创建PI目标
  *
  * @export
- * @param {*} piObjectiveDTO
+ * @param {*} piObjectiveVO
  * @returns
  */
-export function createPIAims(piObjectiveDTO) {
-  return axios.post(`/agile/v1/projects/${AppState.currentMenuType.id}/pi_objective`, piObjectiveDTO);
+export function createPIAims(piObjectiveVO) {
+  return axios.post(`/agile/v1/projects/${AppState.currentMenuType.id}/pi_objective`, piObjectiveVO);
 }

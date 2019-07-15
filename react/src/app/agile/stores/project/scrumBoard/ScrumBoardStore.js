@@ -456,7 +456,7 @@ class ScrumBoardStore {
     ).then(
       action('fetchSuccess', (res) => {
         this.updatedParentIssue = this.interconnectedData.get(parentId);
-        this.translateToCompleted = res.filter(transform => transform.statusDTO.type === 'done');
+        this.translateToCompleted = res.filter(transform => transform.statusVO.type === 'done');
         this.interconnectedData.set(+parentId, {
           ...this.interconnectedData.get(parentId),
           canMoveToComplish: true,

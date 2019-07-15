@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { stores } from '@choerodon/boot';
 import _ from 'lodash';
 import {
@@ -40,7 +40,7 @@ class CreateSubBug extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {     
+    this.state = {
       createLoading: false,
       fileList: [],
       sprint: {},
@@ -97,8 +97,9 @@ class CreateSubBug extends Component {
       pageCode: 'agile_issue_create',
     };
     getFields(param).then((fields) => {
+      const Fields = fields.filter(({ fieldCode }) => !['issueType', 'epic', 'component'].includes(fieldCode));
       this.setState({
-        fields,
+        fields: Fields,
         loading: false,
       });
     });
@@ -125,7 +126,7 @@ class CreateSubBug extends Component {
         const { description } = values;
         const subIssueType = store.getIssueTypes && store.getIssueTypes.find(t => t.typeCode === 'bug');
         const exitLabels = originLabels;
-        const labelIssueRelDTOList = _.map(values.issueLink, (label) => {
+        const labelIssueRelVOList = _.map(values.issueLink, (label) => {
           const target = _.find(exitLabels, { labelName: label.substr(0, 10) });
           if (target) {
             return target;
@@ -137,7 +138,7 @@ class CreateSubBug extends Component {
           }
         });
         const exitFixVersions = originFixVersions;
-        const fixVersionIssueRelDTOList = _.map(values.fixVersionIssueRel
+        const fixVersionIssueRelVOList = _.map(values.fixVersionIssueRel
           && values.fixVersionIssueRel.filter(v => v && v.trim()), (version) => {
           const target = _.find(exitFixVersions, { name: version.trim() });
           if (target) {
@@ -159,9 +160,9 @@ class CreateSubBug extends Component {
           priorityCode: `priority-${values.priorityId}`,
           assigneeId: values.assigneedId,
           projectId: AppState.currentMenuType.id,
-          labelIssueRelDTOList,
+          labelIssueRelVOList,
           sprintId: sprint.sprintId || 0,
-          versionIssueRelDTOList: fixVersionIssueRelDTOList,
+          versionIssueRelVOList: fixVersionIssueRelVOList,
           issueTypeId: subIssueType && subIssueType.id,
           typeCode: 'bug',
           remainingTime: estimatedTime,
@@ -276,7 +277,7 @@ class CreateSubBug extends Component {
         return (
           <Radio.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             {fieldOptions && fieldOptions.length > 0
               && fieldOptions.filter(option => option.enabled).map(item => (
@@ -294,7 +295,7 @@ class CreateSubBug extends Component {
         return (
           <Radio.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Radio.Group>
@@ -305,7 +306,7 @@ class CreateSubBug extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <Row>
               {fieldOptions && fieldOptions.length > 0
@@ -330,7 +331,7 @@ class CreateSubBug extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Checkbox.Group>
@@ -340,7 +341,7 @@ class CreateSubBug extends Component {
       return (
         <TimePicker
           label={fieldName}
-          className="fieldWith"
+          style={{ display: 'block' }}
           defaultOpenValue={moment('00:00:00', 'HH:mm:ss')}
           allowEmpty={!required}
         />
@@ -350,7 +351,7 @@ class CreateSubBug extends Component {
         <DatePicker
           label={fieldName}
           format="YYYY-MM-DD HH:mm:ss"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -359,7 +360,7 @@ class CreateSubBug extends Component {
         <DatePicker
           label={fieldName}
           format="YYYY-MM-DD"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -368,7 +369,7 @@ class CreateSubBug extends Component {
         <Select
           label={fieldName}
           dropdownMatchSelectWidth
-          className="fieldWith"
+
           allowClear={!required}
         >
           {field.fieldOptions && field.fieldOptions.length > 0
@@ -388,7 +389,7 @@ class CreateSubBug extends Component {
           label={fieldName}
           dropdownMatchSelectWidth
           mode="multiple"
-          className="fieldWith"
+
         >
           {field.fieldOptions && field.fieldOptions.length > 0
             && field.fieldOptions.filter(option => option.enabled).map(item => (
@@ -405,7 +406,7 @@ class CreateSubBug extends Component {
       return (
         <InputNumber
           label={fieldName}
-          className="fieldWith"
+
           step={field.extraConfig === '1' ? 0.1 : 1}
         />
       );
@@ -414,7 +415,7 @@ class CreateSubBug extends Component {
         <TextArea
           autosize
           label={fieldName}
-          className="fieldWith"
+
         />
       );
     } else if (field.fieldType === 'member') {
@@ -447,7 +448,7 @@ class CreateSubBug extends Component {
       return (
         <Input
           label={fieldName}
-          className="fieldWith"
+
         />
       );
     }
@@ -461,7 +462,7 @@ class CreateSubBug extends Component {
     } = field;
     const {
       originPriorities, defaultPriorityId,
-      edit, delta, originUsers, selectLoading, estimatedTime,
+      originUsers, selectLoading, estimatedTime,
       originFixVersions, originLabels, sprint,
     } = this.state;
     switch (field.fieldCode) {
@@ -469,10 +470,11 @@ class CreateSubBug extends Component {
         return '';
       case 'assignee':
         return (
-          <React.Fragment>
-            <FormItem label="经办人" style={{ width: 520, display: 'inline-block' }}>
+          <FormItem label="经办人">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               {getFieldDecorator('assigneedId', {})(
                 <Select
+                  style={{ flex: 1 }}
                   label="经办人"
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   loading={selectLoading}
@@ -497,25 +499,24 @@ class CreateSubBug extends Component {
                   ))}
                 </Select>,
               )}
-            </FormItem>
-            <span
-              onClick={this.assigneeMe}
-              role="none"
-              style={{
-                display: 'inline-block',
-                color: 'rgba(63, 81, 181)',
-                marginLeft: 10,
-                marginTop: 15,
-                cursor: 'pointer',
-              }}
-            >
-              {'分派给我'}
-            </span>
-          </React.Fragment>
+              <span
+                onClick={this.assigneeMe}
+                role="none"
+                style={{
+                  display: 'inline-block',
+                  color: 'rgba(63, 81, 181)',
+                  marginLeft: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                {'分派给我'}
+              </span>
+            </div>
+          </FormItem>
         );
       case 'sprint':
         return (
-          <FormItem label="冲刺" style={{ width: 520 }}>
+          <FormItem label="冲刺">
             {getFieldDecorator('sprintId', {
               initialValue: sprint.sprintName,
             })(
@@ -525,7 +526,7 @@ class CreateSubBug extends Component {
         );
       case 'priority':
         return (
-          <FormItem label="优先级" style={{ width: 520 }}>
+          <FormItem label="优先级">
             {getFieldDecorator('priorityId', {
               rules: [{ required: true, message: '优先级为必选项' }],
               initialValue: defaultPriorityId,
@@ -547,7 +548,7 @@ class CreateSubBug extends Component {
         );
       case 'label':
         return (
-          <FormItem label="标签" style={{ width: 520 }}>
+          <FormItem label="标签">
             {getFieldDecorator('issueLink', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
               normalize: value => (value ? value.map(s => s.toString().substr(0, 10)) : value),
@@ -581,7 +582,7 @@ class CreateSubBug extends Component {
         );
       case 'fixVersion':
         return (
-          <FormItem label="版本" style={{ width: 520 }}>
+          <FormItem label="版本">
             {getFieldDecorator('fixVersionIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
             })(
@@ -614,7 +615,7 @@ class CreateSubBug extends Component {
         return '';
       case 'summary':
         return (
-          <FormItem label="缺陷概要" style={{ width: 520 }}>
+          <FormItem label="缺陷概要" className="c7nagile-line">
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '缺陷概要为必输项' }],
             })(
@@ -626,7 +627,7 @@ class CreateSubBug extends Component {
         return '';
       case 'remainingTime':
         return (
-          <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
+          <FormItem>
             <Select
               label="预估时间"
               value={estimatedTime && estimatedTime.toString()}
@@ -638,7 +639,7 @@ class CreateSubBug extends Component {
                 this.componentRef.rcSelect.focus();
               }}
               tokenSeparators={[',']}
-              style={{ marginTop: 0, paddingTop: 0, width: 520 }}
+              style={{ marginTop: 0, paddingTop: 0 }}
               onChange={value => this.handleChangeEstimatedTime(value)}
             >
               {storyPointList.map(sp => (
@@ -647,23 +648,32 @@ class CreateSubBug extends Component {
                 </Option>
               ))}
             </Select>
-          </div>
+          </FormItem>
         );
       case 'storyPoints':
         return '';
       case 'description':
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
-            {getFieldDecorator(fieldCode)(
-              <WYSIWYGEditor
-                style={{ height: 200, width: '100%' }}
-              />,
-            )}
-          </FormItem>
+          <Fragment>
+            <FormItem label={fieldName} className="c7nagile-line">
+              {getFieldDecorator(fieldCode)(
+                <WYSIWYGEditor
+                  style={{ height: 200, width: '100%' }}
+                />,
+              )}
+            </FormItem>
+            <FormItem className="c7nagile-line">
+              <UploadButton
+                onRemove={this.setFileList}
+                onBeforeUpload={this.setFileList}
+                fileList={this.state.fileList}
+              />
+            </FormItem>
+          </Fragment>
         );
       default:
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
+          <FormItem label={fieldName}>
             {getFieldDecorator(fieldCode, {
               rules: [{ required, message: `${fieldName}为必填项` }],
               initialValue: this.transformValue(fieldType, defaultValue),
@@ -697,18 +707,9 @@ class CreateSubBug extends Component {
     const {
       createLoading,
       fields,
-      edit,
-      delta,
       fileList,
       loading,
     } = this.state;
-
-    const callback = (value) => {
-      this.setState({
-        delta: value,
-        edit: false,
-      });
-    };
 
     return (
       <Sidebar
@@ -722,34 +723,24 @@ class CreateSubBug extends Component {
         confirmLoading={createLoading}
       >
         <Spin spinning={loading}>
-          <h2>
-            {'在项目“'}
-            {AppState.currentMenuType.name}
-            {' ”中创建缺陷'}
-          </h2>
-          <p style={{ width: 520, marginBottom: 24 }}>
-            {' 请在下面输入缺陷的详细信息，创建问题的缺陷。缺陷会与父级问题的冲刺、史诗保持一致，并且缺陷的状态会受父级问题的限制。'}
-          </p>
-          <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
-            <Input label="父任务概要" value={parentSummary} disabled />
-          </div>
-          <Form layout="vertical">
-            {fields && fields.map(field => this.getFieldComponent(field))}
-          </Form>
 
-          <div className="sign-upload" style={{ marginTop: 20 }}>
-            <div style={{ display: 'flex', marginBottom: 13, alignItems: 'center' }}>
-              <div style={{ fontWeight: 'bold' }}>附件</div>
+          <Form layout="vertical" style={{ width: 670 }} className="c7nagile-form">
+            <h2>
+              {'在项目“'}
+              {AppState.currentMenuType.name}
+              {' ”中创建缺陷'}
+            </h2>
+            <p style={{ marginBottom: 24 }}>
+              {' 请在下面输入缺陷的详细信息，创建问题的缺陷。缺陷会与父级问题的冲刺、史诗保持一致，并且缺陷的状态会受父级问题的限制。'}
+            </p>
+            <div className="c7nagile-createIssue-fields">
+              <FormItem>
+                <Input label="父任务概要" value={parentSummary} disabled />
+              </FormItem>
+              {fields && fields.map(field => this.getFieldComponent(field))}
             </div>
-            <div style={{ marginTop: -38 }}>
-              <UploadButton
-                onRemove={this.setFileList}
-                onBeforeUpload={this.setFileList}
-                fileList={fileList}
-              />
-            </div>
-          </div>
-        </Spin>        
+          </Form>
+        </Spin>
       </Sidebar>
     );
   }

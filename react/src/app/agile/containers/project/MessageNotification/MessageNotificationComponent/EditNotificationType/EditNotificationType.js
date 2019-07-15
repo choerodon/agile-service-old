@@ -47,9 +47,9 @@ class EditNotificationType extends Component {
         this.setState({
           loading: false,
           checkeds: _.map(noticeTypeData, 'enable'),
-          userOptions: [...users.list.filter(item => item.enabled), ...noticeTypeData[3].idWithNameDTOList.filter(item => !users.list.find(o => o.id === item.userId))], // 如果后端返回的idWithNameDTOList中的用户不在20条数据之内，就拼接在后面
+          userOptions: [...users.list.filter(item => item.enabled), ...noticeTypeData[3].idWithNameVOList.filter(item => !users.list.find(o => o.id === item.userId))], // 如果后端返回的idWithNameVOList中的用户不在20条数据之内，就拼接在后面
           updateData: _.map(noticeTypeData, (item) => {
-            const pickItem = _.pick(item, ['id', 'event', 'noticeType', 'noticeName', 'enable', 'user', 'objectVersionNumber']); // 去除对象中的idWithNameDTOList字段，更新时不需要
+            const pickItem = _.pick(item, ['id', 'event', 'noticeType', 'noticeName', 'enable', 'user', 'objectVersionNumber']); // 去除对象中的idWithNameVOList字段，更新时不需要
             return ({ ...pickItem, objectVersionNumber: pickItem.id ? pickItem.objectVersionNumber : null });// 如果之前没有更新过,pickItem.id为null, 此时后端接受的objectVersionNumber为null
           }),
           selectedValue: noticeTypeUsers && noticeTypeUsers.user && noticeTypeData.filter(item => item.noticeType === 'users')[0].user.split(',').map(item => Number(item)), // user字段为id拼接字符串
@@ -113,6 +113,7 @@ class EditNotificationType extends Component {
       {
         render: (text, record, index) => (index > 2 ? (
           <Select
+            className="hidden-label"
             style={{ width: 520 }}
             value={selectedValue}
             // value={}

@@ -105,7 +105,7 @@ class PublicRelease extends Component {
                     </div>
                   ) : ''
                 }
-                <Form style={{ width: 512, marginTop: 24 }}>
+                <Form style={{ width: 512, marginTop: 24 }} className="c7nagile-form">
                   {
                     ReleaseStore.getPublicVersionDetail.fixIssueCount ? (
                       <div>

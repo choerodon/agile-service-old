@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component,Fragment } from 'react';
 import { stores, axios, Content } from '@choerodon/boot';
 import _ from 'lodash';
 import {
-  Select, Form, Input, Button, Modal, Icon, InputNumber,
+  Select, Form, Input, Button, Modal, InputNumber,
   Checkbox, TimePicker, Row, Col, Radio, DatePicker, Spin,
 } from 'choerodon-ui';
 import moment from 'moment';
@@ -319,7 +319,7 @@ class CreateIssue extends Component {
         } = values;
         const { typeCode } = originIssueTypes.find(t => t.id === typeId);
         const exitComponents = originComponents;
-        const componentIssueRelDTOList = _.map(componentIssueRel
+        const componentIssueRelVOList = _.map(componentIssueRel
           && componentIssueRel.filter(v => v && v.trim()), (component) => {
           const target = _.find(exitComponents, { name: component.trim() });
           if (target) {
@@ -332,7 +332,7 @@ class CreateIssue extends Component {
           }
         });
         const exitLabels = originLabels;
-        const labelIssueRelDTOList = _.map(issueLabel, (label) => {
+        const labelIssueRelVOList = _.map(issueLabel, (label) => {
           const target = _.find(exitLabels, { labelName: label });
           if (target) {
             return target;
@@ -344,7 +344,7 @@ class CreateIssue extends Component {
           }
         });
         const exitFixVersions = originFixVersions;
-        const fixVersionIssueRelDTOList = _.map(fixVersionIssueRel
+        const fixVersionIssueRelVOList = _.map(fixVersionIssueRel
           && fixVersionIssueRel.filter(v => v && v.trim()), (version) => {
           const target = _.find(exitFixVersions, { name: version.trim() });
           if (target) {
@@ -360,20 +360,20 @@ class CreateIssue extends Component {
             });
           }
         });
-        const issueLinkCreateDTOList = [];
+        const issueLinkCreateVOList = [];
         if (linkTypeId) {
           Object.keys(linkTypeId).forEach((link) => {
             if (linkTypeId[link] && linkIssues[link]) {
               const currentLinkType = _.find(originLinks, { linkTypeId: linkTypeId[link].split('+')[0] * 1 });
               linkIssues[link].forEach((issueId) => {
                 if (currentLinkType.inWard === linkTypeId[link].split('+')[1]) {
-                  issueLinkCreateDTOList.push({
+                  issueLinkCreateVOList.push({
                     linkTypeId: linkTypeId[link].split('+')[0] * 1,
                     linkedIssueId: issueId * 1,
                     in: false,
                   });
                 } else {
-                  issueLinkCreateDTOList.push({
+                  issueLinkCreateVOList.push({
                     linkTypeId: linkTypeId[link].split('+')[0] * 1,
                     linkedIssueId: issueId * 1,
                     in: true,
@@ -395,13 +395,13 @@ class CreateIssue extends Component {
           epicName,
           parentIssueId: 0,
           assigneeId: assigneedId,
-          labelIssueRelDTOList,
-          versionIssueRelDTOList: fixVersionIssueRelDTOList,
-          componentIssueRelDTOList,
+          labelIssueRelVOList,
+          versionIssueRelVOList: fixVersionIssueRelVOList,
+          componentIssueRelVOList,
           storyPoints,
           remainingTime: estimatedTime,
-          issueLinkCreateDTOList,
-          featureDTO: {
+          issueLinkCreateVOList,
+          featureVO: {
             benfitHypothesis,
             acceptanceCritera,
             featureType,
@@ -466,7 +466,7 @@ class CreateIssue extends Component {
         return (
           <Radio.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             {fieldOptions && fieldOptions.length > 0
               && fieldOptions.filter(option => option.enabled).map(item => (
@@ -484,7 +484,7 @@ class CreateIssue extends Component {
         return (
           <Radio.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Radio.Group>
@@ -495,7 +495,7 @@ class CreateIssue extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <Row>
               {fieldOptions && fieldOptions.length > 0
@@ -520,7 +520,7 @@ class CreateIssue extends Component {
         return (
           <Checkbox.Group
             label={fieldName}
-            className="fieldWith"
+
           >
             <span style={{ color: '#D50000' }}>暂无选项，请联系管理员</span>
           </Checkbox.Group>
@@ -530,7 +530,7 @@ class CreateIssue extends Component {
       return (
         <TimePicker
           label={fieldName}
-          className="fieldWith"
+          style={{ display: 'block' }}
           defaultOpenValue={moment('00:00:00', 'HH:mm:ss')}
           allowEmpty={!required}
         />
@@ -541,7 +541,7 @@ class CreateIssue extends Component {
           showTime
           label={fieldName}
           format="YYYY-MM-DD HH:mm:ss"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -550,7 +550,7 @@ class CreateIssue extends Component {
         <DatePicker
           label={fieldName}
           format="YYYY-MM-DD"
-          className="fieldWith"
+          style={{ display: 'block' }}
           allowClear={!required}
         />
       );
@@ -559,7 +559,7 @@ class CreateIssue extends Component {
         <Select
           label={fieldName}
           dropdownMatchSelectWidth
-          className="fieldWith"
+
           allowClear={!required}
         >
           {field.fieldOptions && field.fieldOptions.length > 0
@@ -579,7 +579,7 @@ class CreateIssue extends Component {
           label={fieldName}
           dropdownMatchSelectWidth
           mode="multiple"
-          className="fieldWith"
+
         >
           {field.fieldOptions && field.fieldOptions.length > 0
             && field.fieldOptions.filter(option => option.enabled).map(item => (
@@ -596,7 +596,7 @@ class CreateIssue extends Component {
       return (
         <InputNumber
           label={fieldName}
-          className="fieldWith"
+
           step={field.extraConfig === '1' ? 0.1 : 1}
           maxLength={8}
         />
@@ -606,7 +606,7 @@ class CreateIssue extends Component {
         <TextArea
           autosize
           label={fieldName}
-          className="fieldWith"
+
           maxLength={255}
         />
       );
@@ -640,7 +640,7 @@ class CreateIssue extends Component {
       return (
         <Input
           label={fieldName}
-          className="fieldWith"
+
           maxLength={100}
         />
       );
@@ -670,7 +670,7 @@ class CreateIssue extends Component {
       case 'issueType':
         return (
           [
-            <FormItem label="问题类型" style={{ width: 520 }}>
+            <FormItem label="问题类型">
               {getFieldDecorator('typeId', {
                 rules: [{ required: true, message: '问题类型为必输项' }],
                 initialValue: defaultTypeId || '',
@@ -688,7 +688,7 @@ class CreateIssue extends Component {
                       context: typeCode,
                       pageCode: 'agile_issue_create',
                     };
-                    getFields(param).then((res) => {
+                    getFields(param, typeCode).then((res) => {
                       this.setState({
                         fields: res,
                       });
@@ -707,7 +707,7 @@ class CreateIssue extends Component {
               )}
             </FormItem>,
             newIssueTypeCode === 'feature' ? (
-              <FormItem style={{ width: 520 }}>
+              <FormItem>
                 {getFieldDecorator('featureType', {
                   rules: [{ required: true, message: '特性类型为必输项' }],
                   initialValue: 'business',
@@ -729,11 +729,12 @@ class CreateIssue extends Component {
         );
       case 'assignee':
         return (
-          <React.Fragment>
-            <FormItem label="经办人" style={{ width: 520, display: 'inline-block' }}>
+          <FormItem label="经办人">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
               {getFieldDecorator('assigneedId', {})(
                 <Select
                   label="经办人"
+                  style={{ flex: 1 }}
                   getPopupContainer={triggerNode => triggerNode.parentNode}
                   loading={selectLoading}
                   filter
@@ -757,25 +758,25 @@ class CreateIssue extends Component {
                   ))}
                 </Select>,
               )}
-            </FormItem>
-            <span
-              onClick={this.assigneeMe}
-              role="none"
-              style={{
-                display: 'inline-block',
-                color: 'rgba(63, 81, 181)',
-                marginLeft: 10,
-                marginTop: 15,
-                cursor: 'pointer',
-              }}
-            >
-              {'分派给我'}
-            </span>
-          </React.Fragment>
+              <span
+                onClick={this.assigneeMe}
+                role="none"
+                style={{
+                  display: 'inline-block',
+                  color: 'rgba(63, 81, 181)',
+                  marginLeft: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                {'分派给我'}
+              </span>
+            </div>
+          </FormItem>
+
         );
       case 'sprint':
         return (
-          <FormItem label="冲刺" style={{ width: 520 }}>
+          <FormItem label="冲刺">
             {getFieldDecorator('sprintId', {})(
               <Select
                 label="冲刺"
@@ -811,7 +812,7 @@ class CreateIssue extends Component {
         );
       case 'priority':
         return (
-          <FormItem label="优先级" style={{ width: 520 }}>
+          <FormItem label="优先级">
             {getFieldDecorator('priorityId', {
               rules: [{ required: true, message: '优先级为必选项' }],
               initialValue: defaultPriority ? defaultPriority.id : '',
@@ -833,7 +834,7 @@ class CreateIssue extends Component {
         );
       case 'label':
         return (
-          <FormItem label="标签" style={{ width: 520 }}>
+          <FormItem label="标签">
             {getFieldDecorator('issueLabel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
               normalize: value => (value ? value.map(s => s.toString().substr(0, 10)) : value), // 限制最长10位
@@ -867,7 +868,7 @@ class CreateIssue extends Component {
         );
       case 'fixVersion':
         return (
-          <FormItem label="版本" style={{ width: 520 }}>
+          <FormItem label="版本">
             {getFieldDecorator('fixVersionIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
             })(
@@ -907,7 +908,7 @@ class CreateIssue extends Component {
       case 'epic':
         return (
           newIssueTypeCode !== 'issue_epic' && (
-            <FormItem label="史诗" style={{ width: 520 }}>
+            <FormItem label="史诗">
               {getFieldDecorator('epicId', {})(
                 <Select
                   label="史诗"
@@ -949,7 +950,7 @@ class CreateIssue extends Component {
         );
       case 'component':
         return (
-          <FormItem label="模块" style={{ width: 520 }}>
+          <FormItem label="模块">
             {getFieldDecorator('componentIssueRel', {
               rules: [{ transform: value => (value ? value.toString() : value) }],
             })(
@@ -988,7 +989,7 @@ class CreateIssue extends Component {
         );
       case 'summary':
         return (
-          <FormItem label="概要" style={{ width: 520 }}>
+          <FormItem label="概要" className="c7nagile-line">
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '概要为必输项', whitespace: true }],
             })(
@@ -999,7 +1000,7 @@ class CreateIssue extends Component {
       case 'epicName':
         return (
           newIssueTypeCode === 'issue_epic' && (
-            <FormItem label="史诗名称" style={{ width: 520 }}>
+            <FormItem label="史诗名称" className="c7nagile-line">
               {getFieldDecorator('epicName', {
                 rules: [{ required: true, message: '史诗名称为必输项' }, {
                   validator: this.checkEpicNameRepeat,
@@ -1013,7 +1014,7 @@ class CreateIssue extends Component {
       case 'remainingTime':
         return (
           newIssueTypeCode !== 'issue_epic' && (
-            <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
+            <FormItem>
               <Select
                 label="预估时间"
                 value={estimatedTime && estimatedTime.toString()}
@@ -1035,13 +1036,13 @@ class CreateIssue extends Component {
                   </Option>
                 ))}
               </Select>
-            </div>
+            </FormItem>
           )
         );
       case 'storyPoints':
         return (
           newIssueTypeCode === 'story' && (
-            <div style={{ width: 520, paddingBottom: 8, marginBottom: 12 }}>
+            <FormItem>
               <Select
                 label="故事点"
                 value={storyPoints && storyPoints.toString()}
@@ -1063,22 +1064,31 @@ class CreateIssue extends Component {
                   </Option>
                 ))}
               </Select>
-            </div>
+            </FormItem>
           )
         );
       case 'description':
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
-            {getFieldDecorator(fieldCode)(
-              <WYSIWYGEditor
-                style={{ height: 200, width: '100%' }}
-              />,
-            )}
-          </FormItem>
+          <Fragment>
+            <FormItem label={fieldName} className="c7nagile-line">
+              {getFieldDecorator(fieldCode)(
+                <WYSIWYGEditor
+                  style={{ height: 200, width: '100%' }}
+                />,
+              )}
+            </FormItem>
+            <FormItem className="c7nagile-line">
+              <UploadButton
+                onRemove={this.setFileList}
+                onBeforeUpload={this.setFileList}
+                fileList={this.state.fileList}
+              />
+            </FormItem>
+          </Fragment>
         );
       default:
         return (
-          <FormItem label={fieldName} style={{ width: 520 }}>
+          <FormItem label={fieldName}>
             {getFieldDecorator(fieldCode, {
               rules: [{ required, message: `${fieldName}为必填项` }],
               initialValue: this.transformValue(fieldType, defaultValue),
@@ -1113,7 +1123,7 @@ class CreateIssue extends Component {
     const {
       createLoading, selectLoading, fields, loading,
       fileList, newIssueTypeCode, issueLinkArr, originIssues, links,
-    } = this.state;
+    } = this.state;    
     return (
       <Sidebar
         className="c7n-createIssue"
@@ -1131,15 +1141,17 @@ class CreateIssue extends Component {
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/create-issue/"
         >
           <Spin spinning={loading}>
-            <Form layout="vertical">
-              {fields && fields.map(field => this.getFieldComponent(field))}
+            <Form layout="vertical" style={{ width: 670 }} className="c7nagile-form">
+              <div className="c7nagile-createIssue-fields">
+                {fields && fields.map(field => this.getFieldComponent(field))}
+              </div>
               {
                 newIssueTypeCode !== 'issue_epic' && (
                   issueLinkArr && issueLinkArr.length > 0 && (
                     issueLinkArr.map((item, index, arr) => (
-                      <Row gutter={16} style={{ width: 520 }}>
-                        <Col span={8}>
-                          <FormItem label="关系">
+                      <div style={{ display: 'flex' }}>
+                        <div style={{ flex: 1, display: 'flex' }}>
+                          <FormItem label="关系" style={{ width: '30%' }}>
                             {getFieldDecorator(`linkTypeId[${item}]`, {
                             })(
                               <Select
@@ -1159,9 +1171,7 @@ class CreateIssue extends Component {
                               </Select>,
                             )}
                           </FormItem>
-                        </Col>
-                        <Col span={12}>
-                          <FormItem label="问题">
+                          <FormItem label="问题" style={{ marginLeft: 20, width: 'calc(70% - 20px)' }}>
                             {getFieldDecorator(`linkIssues[${item}]`, {
                             })(
                               <Select
@@ -1185,11 +1195,11 @@ class CreateIssue extends Component {
                                       flex: 1,
                                       width: 'calc(100% - 30px)',
                                       alignItems: 'center',
-                                      verticalAlign: 'bottom',
+                                      verticalAlign: 'middle',
                                     }}
                                     >
                                       <TypeTag
-                                        data={issue.issueTypeDTO}
+                                        data={issue.issueTypeVO}
                                       />
                                       <span style={{
                                         paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
@@ -1211,8 +1221,8 @@ class CreateIssue extends Component {
                               </Select>,
                             )}
                           </FormItem>
-                        </Col>
-                        <Col span={4} style={{ marginTop: 10 }}>
+                        </div>
+                        <div style={{ marginTop: 10, width: 70, marginLeft: 20 }}>
                           <Button
                             shape="circle"
                             icon="add"
@@ -1238,24 +1248,13 @@ class CreateIssue extends Component {
                               />
                             ) : null
                           }
-                        </Col>
-                      </Row>
+
+                        </div>
+                      </div>
                     )))
                 )
-              }
+              }             
             </Form>
-            <div className="sign-upload" style={{ marginTop: 20 }}>
-              <div style={{ display: 'flex', marginBottom: '13px', alignItems: 'center' }}>
-                <div style={{ fontWeight: 'bold' }}>附件</div>
-              </div>
-              <div style={{ marginTop: -38 }}>
-                <UploadButton
-                  onRemove={this.setFileList}
-                  onBeforeUpload={this.setFileList}
-                  fileList={fileList}
-                />
-              </div>
-            </div>
           </Spin>
         </Content>
       </Sidebar>

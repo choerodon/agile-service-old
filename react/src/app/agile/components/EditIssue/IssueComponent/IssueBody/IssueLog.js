@@ -25,12 +25,12 @@ import DataLogs from '../../Component/DataLogs';
     const {
       typeCode, creationDate, createdBy,
       createrImageUrl, createrEmail,
-      createrName, issueTypeDTO = {},
+      createrName, issueTypeVO = {},
     } = issue;
     // 创建Issue日志
     const createLog = {
       email: createrEmail,
-      field: issueTypeDTO && issueTypeDTO.typeCode,
+      field: issueTypeVO && issueTypeVO.typeCode,
       imageUrl: createrImageUrl,
       name: createrName,
       lastUpdateDate: creationDate,

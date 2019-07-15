@@ -5,12 +5,12 @@ import QuickCreateFeatureProvider from './QuickCreateFeatureProvider';
 const QuickCreateFeatureWithProvider = props => (
   <QuickCreateFeatureProvider>
     {({
-      featureTypeDTO, 
+      featureTypeVO, 
       defaultPriority,      
       ...otherProps
     }) => (
       <QuickCreateFeature
-        featureTypeDTO={featureTypeDTO}  
+        featureTypeVO={featureTypeVO}  
         defaultPriority={defaultPriority}
         {...otherProps}
         {...props}

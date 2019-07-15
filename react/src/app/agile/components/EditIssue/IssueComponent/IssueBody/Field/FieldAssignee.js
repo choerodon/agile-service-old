@@ -107,13 +107,14 @@ const { Text, Edit } = TextEditToggle;
             {'经办人：'}
           </span>
         </div>
-        <div className="c7n-value-wrapper">
+        <div className="c7n-value-wrapper" style={{ display: 'flex' }}>
           <TextEditToggle
             disabled={disabled}
             formKey="assignee"
             onSubmit={this.updateIssueAssignee}
             originData={assigneeId || []}
             className="assignee"
+            style={{ flex: 1 }}
           >
             <Text>
               {
@@ -170,6 +171,7 @@ const { Text, Edit } = TextEditToggle;
                   color: '#3f51b5',
                   cursor: 'pointer',
                   marginLeft: '10px',
+                  marginRight: 10,
                   display: 'inline-block',
                   verticalAlign: 'middle',
                 }}

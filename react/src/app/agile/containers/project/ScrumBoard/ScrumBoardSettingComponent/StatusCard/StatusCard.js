@@ -26,7 +26,7 @@ class StatusCard extends Component {
     const data = ScrumBoardStore.getBoardData;
     let length = 0;
     for (let index = 0, len = data.length; index < len; index += 1) {
-      length += data[index].subStatuses.length;
+      length += data[index].subStatusDTOS.length;
     }
     return length;
   }
@@ -61,12 +61,12 @@ class StatusCard extends Component {
     const data = JSON.parse(JSON.stringify(ScrumBoardStore.getBoardData));
     const deleteCode = propData.statusId;
     let deleteIndex = '';
-    for (let index = 0, len = data[data.length - 1].subStatuses.length; index < len; index += 1) {
-      if (String(data[data.length - 1].subStatuses[index].id) === String(deleteCode)) {
+    for (let index = 0, len = data[data.length - 1].subStatusDTOS.length; index < len; index += 1) {
+      if (String(data[data.length - 1].subStatusDTOS[index].id) === String(deleteCode)) {
         deleteIndex = index;
       }
     }
-    data[data.length - 1].subStatuses.splice(deleteIndex, 1);
+    data[data.length - 1].subStatusDTOS.splice(deleteIndex, 1);
     ScrumBoardStore.setBoardData(data);
     try {
       await ScrumBoardStore.axiosDeleteStatus(deleteCode);

@@ -21,7 +21,7 @@ import IssueDoc from './IssueDoc';
       store,
     } = this.props;
     const issue = store.getIssue;
-    const { issueTypeDTO = {} } = issue;
+    const { issueTypeVO = {} } = issue;
 
     return (
       <div className="c7n-content-bottom" id="scroll-area" style={{ position: 'relative' }}>
@@ -30,7 +30,7 @@ import IssueDoc from './IssueDoc';
             <IssueDetail {...this.props} />
             <IssueDes {...this.props} />
             <IssueAttachment {...this.props} />
-            {issueTypeDTO.typeCode && issueTypeDTO.typeCode === 'issue_epic'
+            {issueTypeVO.typeCode && issueTypeVO.typeCode === 'issue_epic'
               ? <IssueDoc {...this.props} /> : ''
             }
             <IssueCommit {...this.props} />

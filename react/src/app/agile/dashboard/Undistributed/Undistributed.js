@@ -64,7 +64,7 @@ class Undistributed extends Component {
       <div className="list" key={issue.issueNum}>
         <div>
           <TypeTag
-            data={issue.issueTypeDTO}
+            data={issue.issueTypeVO}
           />
         </div>
         <span
@@ -94,7 +94,7 @@ class Undistributed extends Component {
         <div className="flex-shrink">
           <div className="priority">
             <PriorityTag
-              priority={issue.priorityDTO}
+              priority={issue.priorityVO}
             />
           </div>
         </div>

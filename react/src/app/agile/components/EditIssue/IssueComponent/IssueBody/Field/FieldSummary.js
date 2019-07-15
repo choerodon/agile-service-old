@@ -30,16 +30,16 @@ const { TextArea } = Input;
     const { fieldCode } = field;
     const issue = store.getIssue;
     const {
-      issueId, objectVersionNumber, [fieldCode]: value, featureDTO = {},
+      issueId, objectVersionNumber, [fieldCode]: value, featureVO = {},
     } = issue;
-    const { id, objectVersionNumber: featureObjNum } = featureDTO || {};
+    const { id, objectVersionNumber: featureObjNum } = featureVO || {};
     if (value !== newValue.trim()) {
       let obj = false;
       if (feature) {
         obj = {
           issueId,
           objectVersionNumber,
-          featureDTO: {
+          featureVO: {
             id,
             issueId,
             objectVersionNumber: featureObjNum,
@@ -73,8 +73,8 @@ const { TextArea } = Input;
     } = this.props;
     const { fieldCode } = field;
     const issue = store.getIssue;
-    const { featureDTO = {} } = issue;
-    const value = feature ? featureDTO[fieldCode] : issue[fieldCode];
+    const { featureVO = {} } = issue;
+    const value = feature ? featureVO[fieldCode] : issue[fieldCode];
 
     return (
       <div className="line-start mt-10" style={{ width: '100%', fontSize: 20, fontWeight: 500 }}>

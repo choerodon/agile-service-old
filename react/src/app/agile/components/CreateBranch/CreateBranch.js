@@ -52,7 +52,7 @@ class CreateBranch extends Component {
     const { form, issueId, onOk } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const devopsBranchDTO = {
+        const devopsBranchVO = {
           branchName: values.type === 'custom' ? values.name : `${values.type}-${values.name}`,
           issueId,
           originBranch: values.branch,
@@ -62,7 +62,7 @@ class CreateBranch extends Component {
         this.setState({
           confirmLoading: true,
         });
-        axios.post(`/devops/v1/projects/${projectId}/apps/${applicationId}/git/branch`, devopsBranchDTO)
+        axios.post(`/devops/v1/projects/${projectId}/apps/${applicationId}/git/branch`, devopsBranchVO)
           .then((res) => {
             this.setState({
               confirmLoading: false,
@@ -134,7 +134,7 @@ class CreateBranch extends Component {
           description="您可以在此选择应用、分支来源，可以修改默认的分支类型及分支名称，即可为该问题创建关联的分支。"
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/manage-branch/"
         >
-          <Form layout="vertical" className="c7nagile-sidebar-form">
+          <Form layout="vertical" className="c7nagile-sidebar-form c7nagile-form">
             <div className="branch-formItem-icon">
               <span className="icon icon-widgets" />
             </div>

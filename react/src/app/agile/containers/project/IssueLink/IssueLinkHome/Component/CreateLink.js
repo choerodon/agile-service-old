@@ -68,7 +68,7 @@ class CreateLink extends Component {
           description="通过自定义问题链接，可以帮助您更好的对多个问题进行关联，不再局限于父子任务。"
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/setup/issue-link/"
         >
-          <Form layout="vertical" style={{ width: 512 }}>
+          <Form layout="vertical" style={{ width: 512 }} className="c7nagile-form">
             <FormItem>
               {getFieldDecorator('name', {
                 rules: [{

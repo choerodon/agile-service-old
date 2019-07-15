@@ -101,7 +101,7 @@ class EditIssue extends Component {
         loadWorklogs(id),
         loadDatalogs(id),
         loadLinkIssues(id),
-        loadBranchs(id),
+        // loadBranchs(id),
       ])
         .then(axios.spread((doc, workLogs, dataLogs, linkIssues, branches) => {
           store.initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branches);

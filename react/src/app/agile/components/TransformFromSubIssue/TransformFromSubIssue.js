@@ -64,7 +64,7 @@ class TransformFromSubIssue extends Component {
       if (!err) {
         const { originTypes, isEpicType } = this.state;
         const { typeCode } = originTypes.find(t => t.id === values.typeId);
-        const issueUpdateTypeDTO = {
+        const issueUpdateTypeVO = {
           epicName: isEpicType ? values.epicName : undefined,
           issueId,
           objectVersionNumber: ovn,
@@ -75,7 +75,7 @@ class TransformFromSubIssue extends Component {
         this.setState({
           loading: true,
         });
-        transformedTask(issueUpdateTypeDTO)
+        transformedTask(issueUpdateTypeVO)
           .then((res) => {
             this.setState({
               loading: false,
@@ -147,7 +147,7 @@ class TransformFromSubIssue extends Component {
           title={`将问题“${issueNum}”转化为任务`}
           description="请在下面选择问题类型，表示将该子任务转化为该种问题，实现子任务与其他类型问题之间的互转。"
         >
-          <Form layout="vertical">
+          <Form layout="vertical" className="c7nagile-form">
             <FormItem label="问题类型" style={{ width: 520 }}>
               {getFieldDecorator('typeId', {
                 rules: [{ required: true }],

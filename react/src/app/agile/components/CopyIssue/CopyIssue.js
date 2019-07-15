@@ -36,7 +36,7 @@ class CopyIssue extends Component {
         const {
           issueSummary, copySubIssue, copyLinkIssue, sprint, 
         } = values;
-        const copyConditionDTO = {
+        const copyConditionVO = {
           issueLink: copyLinkIssue || false,
           sprintValues: sprint || false,
           subTask: copySubIssue || false,
@@ -45,7 +45,7 @@ class CopyIssue extends Component {
         this.setState({
           loading: true,
         });
-        axios.post(`/agile/v1/projects/${projectId}/issues/${issueId}/clone_issue?organizationId=${orgId}&applyType=${applyType}`, copyConditionDTO)
+        axios.post(`/agile/v1/projects/${projectId}/issues/${issueId}/clone_issue?organizationId=${orgId}&applyType=${applyType}`, copyConditionVO)
           .then((res) => {
             this.setState({
               loading: false,
@@ -73,13 +73,13 @@ class CopyIssue extends Component {
         cancelText="取消"
         confirmLoading={this.state.loading}
       >
-        <Form layout="vertical">
+        <Form layout="vertical" className="c7nagile-form">
           <FormItem>
             {getFieldDecorator('issueSummary', {
               rules: [{ required: true, message: '请输入概要' }],
               initialValue: issueSummary,
             })(
-              <Input
+              <Input   
                 ref={(input) => { this.textInput = input; }}
                 label="概要"
                 prefix="CLONE - "
@@ -99,7 +99,7 @@ class CopyIssue extends Component {
             ) : null
           }
           {
-            this.props.issue.subIssueDTOList.length ? (
+            this.props.issue.subIssueVOList.length ? (
               <FormItem>
                 {getFieldDecorator('copySubIssue', {})(
                   <Checkbox>

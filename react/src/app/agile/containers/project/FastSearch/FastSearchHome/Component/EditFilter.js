@@ -666,7 +666,7 @@ class AddComponent extends Component {
           name: values.name.trim(),
           description: `${values.description || ''}+++${json}`,
           projectId: AppState.currentMenuType.id,
-          quickFilterValueDTOList: arrCopy,
+          quickFilterValueVOList: arrCopy,
           relationOperations: o,
         };
         this.setState({
@@ -853,7 +853,7 @@ class AddComponent extends Component {
           description="通过定义快速搜索，可以在待办事项和活跃冲刺的快速搜索工具栏生效，帮助您更好的筛选过滤问题面板。"
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/setup/quick-search/"
         >
-          <Form layout="vertical">
+          <Form layout="vertical" className="c7nagile-form">
             <FormItem style={{ width: 520 }}>
               {getFieldDecorator('name', {
                 rules: [{
@@ -879,7 +879,10 @@ class AddComponent extends Component {
                       <div>
                         {
                           index !== 0 && (
-                            <FormItem style={{ width: 100, display: 'inline-block', marginRight: 10 }}>
+                            <FormItem style={{
+                              width: 100, display: 'inline-block', marginRight: 10,
+                            }}
+                            >
                               {getFieldDecorator(`filter-${index}-ao`, {
                                 rules: [{
                                   required: true,
@@ -895,7 +898,10 @@ class AddComponent extends Component {
                             </FormItem>
                           )
                         }
-                        <FormItem style={{ width: index === 0 ? 230 : 120, display: 'inline-block', marginRight: 10 }}>
+                        <FormItem style={{
+                          width: index === 0 ? 230 : 120, display: 'inline-block', marginRight: 10,
+                        }}
+                        >
                           {getFieldDecorator(`filter-${index}-prop`, {
                             rules: [{
                               required: true,
@@ -920,7 +926,10 @@ class AddComponent extends Component {
                             </Select>,
                           )}
                         </FormItem>
-                        <FormItem style={{ width: 80, display: 'inline-block', marginRight: 10 }}>
+                        <FormItem style={{
+                          width: 80, display: 'inline-block', marginRight: 10,
+                        }}
+                        >
                           {getFieldDecorator(`filter-${index}-rule`, {
                             rules: [{
                               required: true,

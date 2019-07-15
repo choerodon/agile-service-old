@@ -3,18 +3,18 @@ import { Tooltip } from 'choerodon-ui';
 
 export default class Priority extends Component {
   shouldComponentUpdate(nextProps, nextState, nextContext) {
-    const { priorityDTO } = this.props;
-    return nextProps.priorityDTO.name !== priorityDTO.name || nextProps.priorityDTO.colour !== priorityDTO.colour;
+    const { priorityVO } = this.props;
+    return nextProps.priorityVO.name !== priorityVO.name || nextProps.priorityVO.colour !== priorityVO.colour;
   }
 
   render() {
-    const { priorityDTO } = this.props;
+    const { priorityVO } = this.props;
     return (
       <Tooltip>
         <p
           style={{
-            background: `${priorityDTO ? priorityDTO.colour : '#FFFFFF'}1F`,
-            color: priorityDTO ? priorityDTO.colour : '#FFFFFF',
+            background: `${priorityVO ? priorityVO.colour : '#FFFFFF'}1F`,
+            color: priorityVO ? priorityVO.colour : '#FFFFFF',
             textAlign: 'center',
             marginLeft: '8px',
             minWidth: 16,
@@ -28,7 +28,7 @@ export default class Priority extends Component {
             textOverflow: 'ellipsis',
           }}
         >
-          {priorityDTO && priorityDTO.name}
+          {priorityVO && priorityVO.name}
         </p>
       </Tooltip>
     );

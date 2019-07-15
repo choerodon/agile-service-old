@@ -522,7 +522,7 @@ class BacklogStore {
     this.issueMap.set('0', backlogData.backLogIssue);
     this.backlogData = backlogData;
     sprintData.forEach((sprint) => {
-      this.issueMap.set(sprint.sprintId.toString(), sprint.issueSearchDTOList);
+      this.issueMap.set(sprint.sprintId.toString(), sprint.issueSearchVOList);
     });
     this.sprintData = sprintData;
   }
@@ -645,7 +645,7 @@ class BacklogStore {
         // eslint-disable-next-line no-param-reassign
         sprintData[index].isCreated = true;
       }
-      this.issueMap.set(sprint.sprintId.toString(), sprint.issueSearchDTOList);
+      this.issueMap.set(sprint.sprintId.toString(), sprint.issueSearchVOList);
     });
     this.sprintData = sprintData;
     this.hasActiveSprint = Boolean(sprintData.find(element => element.statusCode === 'started'));
@@ -698,7 +698,7 @@ class BacklogStore {
   @action dealWithShift(data, currentIndex) {
     const [startIndex, endIndex] = this.checkStartAndEnd(this.prevClickedIssue.index, currentIndex);
     for (let i = startIndex; i <= endIndex; i += 1) {
-      // if (this.whichVisible === 'feature' && data[i].issueTypeDTO.typeCode === 'story') {
+      // if (this.whichVisible === 'feature' && data[i].issueTypeVO.typeCode === 'story') {
       // this.multiSelected.set(data[i].issueId, data[i]);
       // } else {
       this.multiSelected.set(data[i].issueId, data[i]);
@@ -708,7 +708,7 @@ class BacklogStore {
 
   @action dealWithCtrl(data, currentIndex, item) {
     // console.log(data, currentIndex, item);
-    // if (this.whichVisible === 'feature' && item.issueTypeDTO.typeCode !== 'story') {
+    // if (this.whichVisible === 'feature' && item.issueTypeVO.typeCode !== 'story') {
     //   return;
     // }
     if (this.multiSelected.has(item.issueId)) {
@@ -888,7 +888,7 @@ class BacklogStore {
     this.epicList.splice(destinationIndex, 0, movedItem);
     const before = destinationIndex < this.epicList.length - 1;
     const referenceIssueId = before ? this.epicList[destinationIndex + 1].issueId : this.epicList[destinationIndex - 1].issueId;
-    const sortDTO = {
+    const sortVO = {
       projectId: getProjectId(),
       objectVersionNumber: epicRankObjectVersionNumber, // 乐观锁     
       issueId,
@@ -896,7 +896,7 @@ class BacklogStore {
       before,     
       referenceIssueId,
     };
-    sort(sortDTO).then(
+    sort(sortVO).then(
       action('fetchSuccess', (res) => {
         if (!res.message) {
           this.axiosGetEpic().then((epics) => {
@@ -917,7 +917,7 @@ class BacklogStore {
     this.featureList.splice(destinationIndex, 0, movedItem);
     const before = destinationIndex < this.featureList.length - 1;
     const referenceIssueId = before ? this.featureList[destinationIndex + 1].issueId : this.featureList[destinationIndex - 1].issueId;
-    const sortDTO = {
+    const sortVO = {
       projectId: getProjectId(),
       objectVersionNumber: featureRankObjectVersionNumber, // 乐观锁     
       issueId,
@@ -925,7 +925,7 @@ class BacklogStore {
       before,     
       referenceIssueId,
     };
-    sort(sortDTO).then(
+    sort(sortVO).then(
       action('fetchSuccess', (res) => {
         if (!res.message) {
           getFeaturesInProject().then((data) => {

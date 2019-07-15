@@ -63,6 +63,7 @@ class SideIssueList extends Component {
         <div className="c7nagile-SideIssueList-header">
           <div className="c7nagile-SideIssueList-input">
             <Input
+              className="hidden-label"
               placeholder="按照名称搜索"
               prefix={<Icon type="search" />}
               value={filter}

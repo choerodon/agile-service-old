@@ -34,11 +34,11 @@ class SettingColumn extends Component {
   updateColumnMaxMin(type, value) {
     let totalIssues = 0;
     const { data: propData, refresh } = this.props;
-    for (let index = 0, len = propData.subStatuses.length; index < len; index += 1) {
-      for (let index2 = 0, len2 = propData.subStatuses[index].issues.length; index2 < len2; index2 += 1) {
+    for (let index = 0, len = propData.subStatusDTOS.length; index < len; index += 1) {
+      for (let index2 = 0, len2 = propData.subStatusDTOS[index].issues.length; index2 < len2; index2 += 1) {
         if (ScrumBoardStore.getCurrentConstraint === 'issue') {
           totalIssues += 1;
-        } else if (propData.subStatuses[index].issues[index2].typeCode !== 'sub_task') {
+        } else if (propData.subStatusDTOS[index].issues[index2].typeCode !== 'sub_task') {
           totalIssues += 1;
         }
       }
@@ -110,7 +110,7 @@ class SettingColumn extends Component {
 
   renderStatus() {
     const { data, draggabled, refresh } = this.props;
-    const list = data.subStatuses;
+    const list = data.subStatusDTOS;
     const result = [];
     for (let index = 0, len = list.length; index < len; index += 1) {
       result.push(

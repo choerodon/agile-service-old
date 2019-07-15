@@ -226,7 +226,7 @@ class ScrumBoardHome extends Component {
           ScrumBoardStore.getEditRef.reloadIssue();
         }
         if (startColumn !== destinationColumn) {
-          ScrumBoardStore.resetHeaderData(startColumn, destinationColumn, issue.issueTypeDTO.typeCode);
+          ScrumBoardStore.resetHeaderData(startColumn, destinationColumn, issue.issueTypeVO.typeCode);
         }
         ScrumBoardStore.rewriteObjNumber(data, issueId, issue);
       }
@@ -304,7 +304,7 @@ class ScrumBoardHome extends Component {
              </Tooltip>
            ) : (
              <Select
-               className="select-without-underline"
+               className="SelectTheme primary"
                value={ScrumBoardStore.getSelectedBoard}
                style={{
                  maxWidth: 100, color: '#3F51B5', margin: '0 30px', fontWeight: 500, lineHeight: '28px',
@@ -498,7 +498,7 @@ class ScrumBoardHome extends Component {
                         key={item.id}
                         value={item.id}
                       >
-                        {item.statusDTO.name}
+                        {item.statusVO.name}
                       </Option>
                     ))
                   }

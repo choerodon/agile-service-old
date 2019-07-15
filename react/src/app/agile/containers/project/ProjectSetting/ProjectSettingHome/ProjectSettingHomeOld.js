@@ -69,14 +69,14 @@ class ProjectSetting extends Component {
   handleUpdateProjectCode = () => {
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        const projectInfoDTO = {
+        const projectInfoVO = {
           ...this.state.origin,
           projectCode: values.code,
         };
         this.setState({
           loading: true,
         });
-        axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/project_info`, projectInfoDTO)
+        axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/project_info`, projectInfoVO)
           .then((res) => {
             this.setState({
               origin: res,

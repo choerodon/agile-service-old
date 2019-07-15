@@ -13,7 +13,7 @@ const debounceCallback = deBounce(500);
 
 const propTypes = {
   defaultPriority: PropTypes.number,
-  featureTypeDTO: PropTypes.shape({}),
+  featureTypeVO: PropTypes.shape({}),
   piId: PropTypes.number,
   onCreate: PropTypes.func,
 };
@@ -40,7 +40,7 @@ class QuickCreateFeature extends Component {
   handleCreateFeature = () => {
     const { createIssueValue, currentType } = this.state;
     const {
-      defaultPriority, piId, epicId, onCreate, featureTypeDTO,
+      defaultPriority, piId, epicId, onCreate, featureTypeVO,
     } = this.props;
     debounceCallback(() => {
       if (createIssueValue.trim() !== '') {
@@ -49,14 +49,14 @@ class QuickCreateFeature extends Component {
           priorityId: defaultPriority.id,
           projectId: getProjectId(),
           programId: getProjectId(),
-          featureDTO: {
+          featureVO: {
             featureType: currentType,
           },
           piId,
           epicId,
           summary: createIssueValue,
-          issueTypeId: featureTypeDTO.id,
-          typeCode: featureTypeDTO.typeCode,
+          issueTypeId: featureTypeVO.id,
+          typeCode: featureTypeVO.typeCode,
           parentIssueId: 0,
         };
         this.setState({
@@ -92,17 +92,17 @@ class QuickCreateFeature extends Component {
     const {
       create, loading, currentType, createIssueValue,
     } = this.state;
-    const { featureTypeDTO } = this.props;
+    const { featureTypeVO } = this.props;
     let featureTypeList = [];
-    if (featureTypeDTO) {
+    if (featureTypeVO) {
       featureTypeList = [
         {
-          ...featureTypeDTO,
+          ...featureTypeVO,
           colour: '#29B6F6',
           featureType: 'business',
           name: '特性',
         }, {
-          ...featureTypeDTO,
+          ...featureTypeVO,
           colour: '#FFCA28',
           featureType: 'enabler',
           name: '使能',

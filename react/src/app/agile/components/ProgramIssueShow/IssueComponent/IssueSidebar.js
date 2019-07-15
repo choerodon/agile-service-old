@@ -20,22 +20,22 @@ import '../../EditIssue/IssueComponent/IssueComponent.scss';
     } = this.props;
     const issue = store.getIssue;
     const {
-      issueTypeDTO = {}, issueId, objectVersionNumber, summary, featureDTO = {},
+      issueTypeVO = {}, issueId, objectVersionNumber, summary, featureVO = {},
     } = issue;
-    const { id, objectVersionNumber: featureObjNum } = featureDTO;
-    const { typeCode } = issueTypeDTO;
+    const { id, objectVersionNumber: featureObjNum } = featureVO;
+    const { typeCode } = issueTypeVO;
     if (typeCode === 'feature') {
-      const issueUpdateDTO = {
+      const issueUpdateVO = {
         issueId,
         objectVersionNumber,
-        featureDTO: {
+        featureVO: {
           id,
           issueId,
           objectVersionNumber: featureObjNum,
           featureType: type.item.props.value,
         },
       };
-      updateIssue(issueUpdateDTO)
+      updateIssue(issueUpdateVO)
         .then(() => {
           if (reloadIssue) {
             reloadIssue(issueId);
@@ -45,14 +45,14 @@ import '../../EditIssue/IssueComponent/IssueComponent.scss';
           }
         });
     } else {
-      const issueUpdateTypeDTO = {
+      const issueUpdateTypeVO = {
         epicName: type.key === 'issue_epic' ? summary : undefined,
         issueId,
         objectVersionNumber,
         typeCode: type.key,
         issueTypeId: type.item.props.value,
       };
-      updateIssueType(issueUpdateTypeDTO)
+      updateIssueType(issueUpdateTypeVO)
         .then(() => {
           if (reloadIssue) {
             reloadIssue(issueId);
@@ -71,20 +71,20 @@ import '../../EditIssue/IssueComponent/IssueComponent.scss';
 
     let issueTypeData = store.getIssueTypes ? store.getIssueTypes : [];
     const issue = store.getIssue;
-    const { issueTypeDTO = {}, featureDTO = {} } = issue;
-    const { typeCode } = issueTypeDTO;
-    const { featureType } = featureDTO || {};
-    let currentIssueType = issueTypeDTO;
+    const { issueTypeVO = {}, featureVO = {} } = issue;
+    const { typeCode } = issueTypeVO;
+    const { featureType } = featureVO || {};
+    let currentIssueType = issueTypeVO;
     if (typeCode === 'feature') {
       issueTypeData = [
         {
-          ...issueTypeDTO,
+          ...issueTypeVO,
           colour: '#29B6F6',
           featureType: 'business',
           name: '特性',
           id: 'business',
         }, {
-          ...issueTypeDTO,
+          ...issueTypeVO,
           colour: '#FFCA28',
           featureType: 'enabler',
           name: '使能',
@@ -124,7 +124,7 @@ import '../../EditIssue/IssueComponent/IssueComponent.scss';
       <div className="c7n-nav">
         {/* 转换类型 */}
         <div>
-          {/* <Dropdown overlay={typeList} trigger={['click']} disabled={disabled || issueTypeDTO.typeCode === 'issue_epic'}> */}
+          {/* <Dropdown overlay={typeList} trigger={['click']} disabled={disabled || issueTypeVO.typeCode === 'issue_epic'}> */}
           <div
             style={{
               height: 50,
@@ -145,7 +145,7 @@ import '../../EditIssue/IssueComponent/IssueComponent.scss';
           {/* </Dropdown> */}
         </div>
         {/* 锚点 */}
-        <IssueNav typeCode={issueTypeDTO.typeCode} />
+        <IssueNav typeCode={issueTypeVO.typeCode} />
       </div>
     );
   }

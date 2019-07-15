@@ -247,7 +247,7 @@ class ReleaseDetail extends Component {
               </span>
               <span>
                 {
-                  ReleaseStore.getOriginIssue.filter(issues => (issues.statusMapDTO && item.id && issues.statusMapDTO.id === item.id)).length
+                  ReleaseStore.getOriginIssue.filter(issues => (issues.statusMapVO && item.id && issues.statusMapVO.id === item.id)).length
                 }
                 {'个'}
               </span>
@@ -312,7 +312,7 @@ class ReleaseDetail extends Component {
         render: (text, record) => (
           <TypeTag
             style={{ minWidth: 90 }}
-            data={record.issueTypeDTO}
+            data={record.issueTypeVO}
             showName
           />
         ),
@@ -334,11 +334,11 @@ class ReleaseDetail extends Component {
       {
         width: '15%',
         title: '模块',
-        dataIndex: 'issueComponentBriefDTOS',
-        key: 'issueComponentBriefDTOS',
+        dataIndex: 'issueComponentBriefVOS',
+        key: 'issueComponentBriefVOS',
         render: (text, record) => (
-          <Tooltip mouseEnterDelay={0.5} title={`模块：${_.map(record.issueComponentBriefDTOS, 'name').join(',')}`}>
-            <span className="textDisplayOneColumn" style={{ minWidth: 100 }}>{_.map(record.issueComponentBriefDTOS, 'name').join(',')}</span>
+          <Tooltip mouseEnterDelay={0.5} title={`模块：${_.map(record.issueComponentBriefVOS, 'name').join(',')}`}>
+            <span className="textDisplayOneColumn" style={{ minWidth: 100 }}>{_.map(record.issueComponentBriefVOS, 'name').join(',')}</span>
           </Tooltip>
         ),
         hidden: true,
@@ -369,7 +369,7 @@ class ReleaseDetail extends Component {
         render: (text, record) => (
           <PriorityTag
             style={{ minWidth: 55 }}
-            priority={record.priorityDTO}
+            priority={record.priorityVO}
           />
         ),
         filters: filterMap.get('priorityId'),
@@ -381,7 +381,7 @@ class ReleaseDetail extends Component {
         key: 'statusId',
         render: (text, record) => (
           <StatusTag
-            data={record.statusMapDTO}
+            data={record.statusMapVO}
           />
         ),
         filters: filterMap.get('statusId'),

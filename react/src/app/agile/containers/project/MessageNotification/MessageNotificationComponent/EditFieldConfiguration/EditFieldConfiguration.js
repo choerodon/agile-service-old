@@ -36,9 +36,9 @@ class EditFieldConfiguration extends Component {
         this.setState({
           loading: false,
           users: [
-            createUser && createUser.user && createUser.user !== 'null' ? createUser.idWithNameDTOList : [],
-            distributionUser && distributionUser.user && distributionUser.user !== 'null' ? distributionUser.idWithNameDTOList : [],
-            solvedUser && solvedUser.user && solvedUser.user !== 'null' ? solvedUser.idWithNameDTOList : [],
+            createUser && createUser.user && createUser.user !== 'null' ? createUser.idWithNameVOList : [],
+            distributionUser && distributionUser.user && distributionUser.user !== 'null' ? distributionUser.idWithNameVOList : [],
+            solvedUser && solvedUser.user && solvedUser.user !== 'null' ? solvedUser.idWithNameVOList : [],
           ],
           dataSource: [{
             key: 'issue_created',

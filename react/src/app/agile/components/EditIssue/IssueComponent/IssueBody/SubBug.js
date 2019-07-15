@@ -50,11 +50,11 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 
   renderSubIssues = () => {
     const { store } = this.props;
-    const { subBugDTOList = [] } = store.getIssue;
+    const { subBugVOList = [] } = store.getIssue;
     return (
       <div className="c7n-tasks">
         {
-          subBugDTOList.map((subIssue, i) => this.renderIssueList(subIssue, i))
+          subBugVOList.map((subIssue, i) => this.renderIssueList(subIssue, i))
         }
       </div>
     );

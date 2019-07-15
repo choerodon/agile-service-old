@@ -104,7 +104,7 @@ const { confirm } = Modal;
     const { data, refresh } = this.props;
 
     if (key === '0') {
-      if (data.issueSearchDTOList && data.issueSearchDTOList.length > 0) {
+      if (data.issueSearchVOList && data.issueSearchVOList.length > 0) {
         confirm({
           width: 560,
           wrapClassName: 'deleteConfirm',

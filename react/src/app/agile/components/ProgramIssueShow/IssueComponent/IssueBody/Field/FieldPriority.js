@@ -60,8 +60,8 @@ const { Text, Edit } = TextEditToggle;
     const { selectLoading, originPriorities } = this.state;
     const { store, disabled } = this.props;
     const issue = store.getIssue;
-    const { priorityId, priorityDTO = {} } = issue;
-    const { colour, name } = priorityDTO;
+    const { priorityId, priorityVO = {} } = issue;
+    const { colour, name } = priorityVO;
 
     return (
       <div className="line-start mt-10">

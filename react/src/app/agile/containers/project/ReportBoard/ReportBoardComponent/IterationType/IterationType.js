@@ -27,8 +27,8 @@ class IterationType extends Component {
     const xAxisData = [];
     if (iterationTypeInfo && iterationTypeInfo.length !== 0) {
       iterationTypeInfo.forEach((item) => {
-        if (_.findIndex(xAxisData, o => o === (item.issueTypeDTO
-            && item.issueTypeDTO.name)) === -1) {
+        if (_.findIndex(xAxisData, o => o === (item.issueTypeVO
+            && item.issueTypeVO.name)) === -1) {
           xAxisData.push(item.name);
         }
       });
@@ -44,19 +44,19 @@ class IterationType extends Component {
     const { todoData, doingData, doneData } = iterationTypeData;
     if (iterationTypeInfo && iterationTypeInfo.length !== 0) {
       for (let i = 0; i < xAxisData.length; i += 1) {
-        const iterationType = iterationTypeInfo.filter(item => (item.issueTypeDTO
-          && item.issueTypeDTO.name) === xAxisData[i]);
+        const iterationType = iterationTypeInfo.filter(item => (item.issueTypeVO
+          && item.issueTypeVO.name) === xAxisData[i]);
         let todoValue = 0;
         let doingValue = 0;
         let doneValue = 0;
         iterationType.forEach((obj) => {
-          if (obj.statusMapDTO && obj.statusMapDTO.type === 'todo') {
+          if (obj.statusMapVO && obj.statusMapVO.type === 'todo') {
             todoValue += obj.count || 0;
           }
-          if (obj.statusMapDTO && obj.statusMapDTO.type === 'doing') {
+          if (obj.statusMapVO && obj.statusMapVO.type === 'doing') {
             doingValue += obj.count || 0;
           }
-          if (obj.statusMapDTO && obj.statusMapDTO.type === 'done') {
+          if (obj.statusMapVO && obj.statusMapVO.type === 'done') {
             doneValue += obj.count || 0;
           }
         });

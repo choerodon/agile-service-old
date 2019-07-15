@@ -55,8 +55,8 @@ import { handleFileUpload } from '../../../../common/utils';
   render() {
     const { fileList } = this.state;
     const { store, disabled } = this.props;
-    const { issueAttachmentDTOList = [] } = store.getIssue;
-    const files = fileList || _.map(issueAttachmentDTOList, issueAttachment => ({
+    const { issueAttachmentVOList = [] } = store.getIssue;
+    const files = fileList || _.map(issueAttachmentVOList, issueAttachment => ({
       uid: issueAttachment.attachmentId,
       name: issueAttachment.fileName,
       url: issueAttachment.url,

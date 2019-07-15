@@ -163,11 +163,8 @@ class TextEditToggle extends Component {
     const EditChildren = children.filter(child => child.type === Edit);
     const childrenArray = React.Children.toArray(EditChildren);
     const targetElement = React.Children.toArray(childrenArray[0].props.children)[0];
-    if (!targetElement) {
-      throw new Error('使用Form功能时，Edit的children必须是Component');
-    }   
     // 替换成自动打开的Select
-    if (targetElement.type.name === 'Select') {
+    if (targetElement && targetElement.type.displayName === 'Select') {
       return 'Select';
     }
     return 'Input';
@@ -179,11 +176,15 @@ class TextEditToggle extends Component {
     const targetElement = childrenArray[0];
     if (!targetElement) {
       throw new Error('使用Form功能时，Edit的children必须是Component');
-    }
-    // console.log(targetElement.type.name === 'Select');
-    // 替换成自动打开的Select
-    if (targetElement.type.name === 'Select') {
-      return <DefaultOpenSelect {...targetElement.props} />;
+    } 
+    // 替换成自动打开的Select 
+    if (targetElement.type.displayName === 'Select') {
+      if (targetElement.props.mode) {
+        return <DefaultOpenSelect {...targetElement.props} />;
+      } else {
+        // 单选选择后自动提交
+        return <DefaultOpenSelect {...targetElement.props} onSelect={() => setTimeout(this.handleSubmit)} />;
+      }      
     }
     return targetElement;
   }

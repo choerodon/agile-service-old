@@ -461,7 +461,7 @@ class VersionBurndown extends Component {
             <div>
               <TypeTag
                 style={{ minWidth: 90 }}
-                data={record.issueTypeDTO}
+                data={record.issueTypeVO}
                 showName
               />
             </div>
@@ -475,7 +475,7 @@ class VersionBurndown extends Component {
             <div>
               <PriorityTag
                 style={{ minWidth: 55 }}
-                priority={record.priorityDTO}
+                priority={record.priorityVO}
               />
             </div>
           ),
@@ -486,12 +486,12 @@ class VersionBurndown extends Component {
           dataIndex: 'statusCode',
           render: (statusCode, record) => (
             <div>
-              <Tooltip mouseEnterDelay={0.5} title={`任务状态:${record.statusMapDTO.name}`}>
+              <Tooltip mouseEnterDelay={0.5} title={`任务状态:${record.statusMapVO.name}`}>
                 <div>
                   <StatusTag
                     style={{ display: 'inline-block', minWidth: 55 }}
-                    name={record.statusMapDTO.name}
-                    color={STATUS[record.statusMapDTO.type]}
+                    name={record.statusMapVO.name}
+                    color={STATUS[record.statusMapVO.type]}
                   />
                 </div>
               </Tooltip>
@@ -518,7 +518,7 @@ class VersionBurndown extends Component {
   getTableDta(type) {
     if (type === 'compoleted') {
       // return ES.tableData.filter(v => v.completed === 1);
-      return ES.tableData.sprintBurnDownReportDTOS;
+      return ES.tableData.sprintBurnDownReportVOS;
     }
     if (type === 'unFinish') {
       // return ES.tableData.filter(v => v.completed === 0);
@@ -620,7 +620,7 @@ class VersionBurndown extends Component {
 
 
   renderTable = (type) => {
-    const sprintBurnDownReportDTOS = this.getTableDta('compoleted');
+    const sprintBurnDownReportVOS = this.getTableDta('compoleted');
     let firstCompleteIssues = 0;
     if (type === 'unFinish') {
       return (
@@ -636,19 +636,19 @@ class VersionBurndown extends Component {
         />
       );
     }
-    if (sprintBurnDownReportDTOS && sprintBurnDownReportDTOS.length !== 0) {
-      for (let i = 0; i < sprintBurnDownReportDTOS.length; i += 1) {
-        if (sprintBurnDownReportDTOS[i].completeIssues.length !== 0) {
+    if (sprintBurnDownReportVOS && sprintBurnDownReportVOS.length !== 0) {
+      for (let i = 0; i < sprintBurnDownReportVOS.length; i += 1) {
+        if (sprintBurnDownReportVOS[i].completeIssues.length !== 0) {
           firstCompleteIssues = i;
           break;
         }
         firstCompleteIssues += 1;
       }
-      if (firstCompleteIssues !== sprintBurnDownReportDTOS.length) {
+      if (firstCompleteIssues !== sprintBurnDownReportVOS.length) {
         return (
           <div>
             {
-                sprintBurnDownReportDTOS.map((item) => {
+                sprintBurnDownReportVOS.map((item) => {
                   if (item.completeIssues.length !== 0) {
                     return (
                       <div

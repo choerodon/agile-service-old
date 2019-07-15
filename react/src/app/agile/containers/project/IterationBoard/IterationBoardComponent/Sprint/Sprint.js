@@ -85,15 +85,15 @@ class Sprint extends Component {
   }
 
   renderUserHead() {
-    const { sprintInfo: { assigneeIssueDTOList } } = this.state;
+    const { sprintInfo: { assigneeIssueVOList } } = this.state;
     const { history } = this.props;
     return (
       <div className="users">
         {
-          assigneeIssueDTOList.length ? assigneeIssueDTOList.slice(0, 10).map(user => (
+          assigneeIssueVOList.length ? assigneeIssueVOList.slice(0, 10).map(user => (
             <div key={user.assigneeName}>
               {
-                  user.assigneeId === 0 && assigneeIssueDTOList.length === 1
+                  user.assigneeId === 0 && assigneeIssueVOList.length === 1
                     ? (<div style={{ height: 18 }} />)
                     : (
                       <Tooltip
@@ -134,7 +134,7 @@ class Sprint extends Component {
           ))
             : <div style={{ height: 18, width: '100%' }} />
         }
-        {assigneeIssueDTOList.length > 10 && <a role="none" onClick={() => { history.push(`/agile/backlog?type=project&id=${AppState.currentMenuType.id}&name=${encodeURIComponent(AppState.currentMenuType.name)}&organizationId=${AppState.currentMenuType.organizationId}`); }}>查看更多...</a>}
+        {assigneeIssueVOList.length > 10 && <a role="none" onClick={() => { history.push(`/agile/backlog?type=project&id=${AppState.currentMenuType.id}&name=${encodeURIComponent(AppState.currentMenuType.name)}&organizationId=${AppState.currentMenuType.organizationId}`); }}>查看更多...</a>}
       </div>
     );
   }

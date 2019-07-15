@@ -2,4 +2,13 @@
     .saveOrCancel {
         margin-top: 20px;
     }
+    .c7n-select {
+      .c7n-select-selection__rendered {
+        height: 0.36rem;
+      }
+  
+      .c7n-select-label {
+        margin-top: 0;
+      }
+    }
 }
