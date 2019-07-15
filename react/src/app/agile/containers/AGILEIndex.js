@@ -27,6 +27,9 @@ const REPORTBOARD = asyncRouter(() => import('./project/ReportBoard'));
 const MESSAGENOTIFICATION = asyncRouter(() => import('./project/MessageNotification'));
 
 const WORKCALENDARINDEX = asyncRouter(() => import('./organization/WorkCalendar'));
+const OBJECTSCHEMEINDEX = asyncRouter(() => import('./organization/ObjectScheme'));
+const PAGEINDEX = asyncRouter(() => import('./organization/Page'));
+
 
 class AGILEIndex extends React.Component {
   componentDidCatch(error, info) {
