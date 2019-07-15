@@ -218,7 +218,7 @@ class SideBarContent extends Component {
           description={`请在下面输入${modifiedName}名称，选择${modifiedName}的类别。可以添加、删除、重新排序和重命名一个${modifiedName}，${description}`}
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/sprint/manage-kanban/"
         >
-          <Form style={{ width: 512 }}>
+          <Form style={{ width: 512 }} className="c7nagile-form">
             <FormItem>
               {getFieldDecorator('name', {
                 rules: [{

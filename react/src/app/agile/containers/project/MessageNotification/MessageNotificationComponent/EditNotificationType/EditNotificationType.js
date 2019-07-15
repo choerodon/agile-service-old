@@ -116,6 +116,7 @@ class EditNotificationType extends Component {
             className="hidden-label"
             style={{ width: 520 }}
             value={selectedValue}
+            getPopupContainer={trigger => trigger.parentNode}
             // value={}
             onChange={value => this.handleSelectChange(value, index)}
             onFilterChange={(param) => {

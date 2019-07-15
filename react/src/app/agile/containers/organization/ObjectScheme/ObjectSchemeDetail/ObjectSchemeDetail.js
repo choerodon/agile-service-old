@@ -96,7 +96,19 @@ class ObjectSchemeDetail extends Component {
       title: '字段',
       dataIndex: 'name',
       // width: '15%',
-    },
+    },    
+    {
+      title: '显示范围',
+      dataIndex: 'contextName',
+      // width: '25%',
+      render: contextName => (
+        <Fragment>
+          {contextName.split(',').map(name => (
+            showIcons[name] ? <div><TypeTag data={showIcons[name]} showName /></div> : name
+          ))}
+        </Fragment>
+      ),
+    },    
     {
       title: '字段来源',
       render: ({ projectId, system }) => (
@@ -108,18 +120,6 @@ class ObjectSchemeDetail extends Component {
             : <Tag color="geekblue">组织</Tag>
       ),
     },
-    {
-      title: '显示范围',
-      dataIndex: 'contextName',
-      // width: '25%',
-      render: contextName => (
-        <Fragment>
-          {contextName.split(',').map(name => (
-            showIcons[name] ? <TypeTag data={showIcons[name]} showName /> : name
-          ))}
-        </Fragment>
-      ),
-    },    
     {
       title: '字段类型',
       dataIndex: 'fieldTypeName',

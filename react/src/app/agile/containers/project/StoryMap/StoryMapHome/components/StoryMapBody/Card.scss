@@ -13,10 +13,15 @@
     margin-bottom: 0;
   }
 
-  .c7n-input-content {
-    // margin-bottom: 0;
+  .c7n-input-wrapper:before {
+    border: none;
   }
-
+  .c7n-input-focused {
+    .c7n-input-label-wrapper {
+      transition: none;
+      display: none;
+    }
+  }
   .c7n-input-length-info {
     display: none;
   }

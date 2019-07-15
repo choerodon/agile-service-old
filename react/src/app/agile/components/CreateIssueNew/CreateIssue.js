@@ -1,4 +1,4 @@
-import React, { Component,Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import { stores, axios, Content } from '@choerodon/boot';
 import _ from 'lodash';
 import {
@@ -989,11 +989,12 @@ class CreateIssue extends Component {
         );
       case 'summary':
         return (
-          <FormItem label="概要" className="c7nagile-line">
+          // 切换类型时将组件卸载，保证切换到史诗时的聚焦生效
+          <FormItem label="概要" className="c7nagile-line" key={`${newIssueTypeCode}-summary`}>
             {getFieldDecorator('summary', {
               rules: [{ required: true, message: '概要为必输项', whitespace: true }],
             })(
-              <Input autoFocus label="概要" maxLength={44} />,
+              <Input autoFocus={newIssueTypeCode !== 'issue_epic'} label="概要" maxLength={44} />,
             )}
           </FormItem>
         );
@@ -1006,7 +1007,7 @@ class CreateIssue extends Component {
                   validator: this.checkEpicNameRepeat,
                 }],
               })(
-                <Input label="史诗名称" maxLength={20} />,
+                <Input autoFocus label="史诗名称" maxLength={20} />,
               )}
             </FormItem>
           )
