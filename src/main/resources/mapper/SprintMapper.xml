@@ -129,7 +129,7 @@
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
         LEFT JOIN (
             select
-            aio.issue_id as issue_id
+            aio.issue_id as issue_id,
             aio.summary as feature_name,
             af.feature_type as feature_type
             from agile_issue aio, agile_feature af
@@ -377,7 +377,7 @@
         LEFT JOIN agile_issue ai1 ON ai2.epic_id = ai1.issue_id
         LEFT JOIN (
             select
-            ai3.issue_id as issue_id
+            ai3.issue_id as issue_id,
             ai3.summary as feature_name,
             af.feature_type as feature_type
             from agile_issue ai3, agile_feature af
@@ -471,7 +471,7 @@
         LEFT JOIN agile_issue ai1 ON ai2.epic_id = ai1.issue_id
         LEFT JOIN (
           select
-            ai3.issue_id as issue_id
+            ai3.issue_id as issue_id,
             ai3.summary as feature_name,
             af.feature_type as feature_type
           from agile_issue ai3, agile_feature af
