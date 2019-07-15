@@ -16,12 +16,17 @@
   .c7n-input-wrapper:before {
     border: none;
   }
+
   .c7n-input-focused {
     .c7n-input-label-wrapper {
-      transition: none;
-      display: none;
+      .c7n-input-label {
+        color: rgba(0, 0, 0, 0.6);
+        transform: none;
+      }
+      transform: none;
     }
   }
+
   .c7n-input-length-info {
     display: none;
   }

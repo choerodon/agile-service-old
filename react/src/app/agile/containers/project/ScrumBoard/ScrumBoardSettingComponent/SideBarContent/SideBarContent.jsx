@@ -229,7 +229,7 @@ class SideBarContent extends Component {
                 },
                 ],
               })(
-                <Input label={`${modifiedName}名称`} placeholder={`请输入${modifiedName}名称`} maxLength={10} ref={(ref) => { this.nameInputRef = ref; }} />,
+                <Input label={`${modifiedName}名称`} placeholder={`${modifiedName}名称`} maxLength={10} ref={(ref) => { this.nameInputRef = ref; }} />,
               )}
             </FormItem>
             <FormItem>
@@ -240,7 +240,7 @@ class SideBarContent extends Component {
               })(
                 <Select
                   label="类别"
-                  placeholder="请选择类别"
+                  placeholder="类别"
                   disabled={type === 'Status' ? !!statusType : false}
                 >
                   {this.renderOptions()}

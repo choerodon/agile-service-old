@@ -192,7 +192,7 @@ class QuickCreateIssue extends Component {
                   autoFocus
                   className="hidden-label"
                   ref={(e) => { this.inputvalue = e; }}
-                  placeholder="请输入问题概要"
+                  placeholder="问题概要"
                   maxLength={44}
                   onPressEnter={this.handleBlurCreateIssue.bind(this)}
                 />

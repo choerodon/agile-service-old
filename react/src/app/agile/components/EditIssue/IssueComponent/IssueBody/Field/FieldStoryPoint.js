@@ -110,7 +110,7 @@ const defaultList = ['0.5', '1', '2', '3', '4', '5', '8', '13'];
             onSubmit={this.updateIssueField}
           >
             <Text>
-              <div>
+              <div style={{ whiteSpace: 'nowrap' }}>
                 {value ? `${value} ${fieldCode === 'storyPoints' ? '点' : '小时'}` : '无'}
               </div>
             </Text>
