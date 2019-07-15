@@ -55,9 +55,6 @@ public class IssueSearchVO {
     @ApiModelProperty(value = "史诗名称")
     private String epicName;
 
-    @ApiModelProperty(value = "特性名称")
-    private String featureName;
-
     @ApiModelProperty(value = "特性类型")
     private String featureType;
 
@@ -354,11 +351,4 @@ public class IssueSearchVO {
         return featureType;
     }
 
-    public void setFeatureName(String featureName) {
-        this.featureName = featureName;
-    }
-
-    public String getFeatureName() {
-        return featureName;
-    }
 }
