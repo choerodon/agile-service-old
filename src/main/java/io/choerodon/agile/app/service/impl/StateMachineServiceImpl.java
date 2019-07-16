@@ -19,7 +19,6 @@ import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.EnumUtil;
 import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
@@ -82,16 +81,12 @@ public class StateMachineServiceImpl implements StateMachineService {
     private InstanceFeignClient instanceFeignClient;
     @Autowired
     private IssueFeignClient issueFeignClient;
-//    @Autowired
-//    private IssueRepository issueRepository;
     @Autowired
     private IssueAccessDataService issueAccessDataService;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
     private StateMachineClient stateMachineClient;
-    @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
     @Autowired
     private FeatureService featureService;
     @Autowired
@@ -308,7 +303,7 @@ public class StateMachineServiceImpl implements StateMachineService {
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
-        Long targetStatusId = stateMachineFeignClient.queryDeployTransformForAgile(organizationId, transformId).getBody().getEndStatusId();
+        Long targetStatusId = issueFeignClient.queryDeployTransformForAgile(organizationId, transformId).getBody().getEndStatusId();
         if (UPDATE_STATUS.equals(inputDTO.getInvokeCode())) {
             updateStatus(issueId, targetStatusId, inputDTO.getInput());
         } else if (UPDATE_STATUS_MOVE.equals(inputDTO.getInvokeCode())) {

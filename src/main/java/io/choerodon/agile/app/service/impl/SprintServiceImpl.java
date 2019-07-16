@@ -18,7 +18,6 @@ import io.choerodon.agile.infra.common.utils.RankUtil;
 import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.base.domain.PageRequest;
@@ -47,14 +46,10 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class SprintServiceImpl implements SprintService {
 
-//    @Autowired
-//    private SprintRepository sprintRepository;
     @Autowired
     private SprintMapper sprintMapper;
     @Autowired
     private IssueMapper issueMapper;
-//    @Autowired
-//    private IssueRepository issueRepository;
     @Autowired
     private SprintCreateAssembler sprintCreateAssembler;
     @Autowired
@@ -81,17 +76,12 @@ public class SprintServiceImpl implements SprintService {
     private DateUtil dateUtil;
     @Autowired
     private WorkCalendarRefMapper workCalendarRefMapper;
-//    @Autowired
-//    private SprintWorkCalendarRefRepository sprintWorkCalendarRefRepository;
     @Autowired
     private WorkCalendarRefService workCalendarRefService;
     @Autowired
     private IssueStatusMapper issueStatusMapper;
     @Autowired
     private IssueFeignClient issueFeignClient;
-
-    @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
 
     @Autowired
     private PiMapper piMapper;
@@ -242,7 +232,7 @@ public class SprintServiceImpl implements SprintService {
         List<SprintSearchVO> sprintSearches = new ArrayList<>();
         BackLogIssueVO backLogIssueVO = new BackLogIssueVO();
         Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         setStatusIsCompleted(projectId, statusMapDTOMap);
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         if (issueIdSprintIdVOS != null && !issueIdSprintIdVOS.isEmpty()) {
@@ -466,7 +456,7 @@ public class SprintServiceImpl implements SprintService {
         if (reportIssueIds.isEmpty()) {
             return new PageInfo<>(new ArrayList<>());
         }
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         //冲刺报告查询的issue
         List<IssueDTO> reportIssues = reportMapper.queryIssueByIssueIds(projectId, reportIssueIds);
         //冲刺中新添加的issue

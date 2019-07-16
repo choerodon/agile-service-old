@@ -21,10 +21,7 @@ import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.FoundationFeignClient;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
@@ -47,7 +44,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -70,14 +66,10 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class IssueServiceImpl implements IssueService {
 
-//    @Autowired
-//    private IssueRepository issueRepository;
     @Autowired
     private IssueAccessDataService issueAccessDataService;
     @Autowired
     private ComponentIssueRelService componentIssueRelService;
-//    @Autowired
-//    private IssueLinkRepository issueLinkRepository;
     @Autowired
     private IssueLinkService issueLinkService;
     @Autowired
@@ -151,11 +143,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueFeignClient issueFeignClient;
     @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
-    @Autowired
     private InstanceFeignClient instanceFeignClient;
-    @Autowired
-    private FoundationFeignClient foundationFeignClient;
     @Autowired
     private StateMachineService stateMachineService;
     @Autowired
@@ -372,7 +360,7 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private StatusMapVO getStatusById(Long organizationId, Long statusId) {
-        ResponseEntity<StatusMapVO> statusInfoDTOResponseEntity = stateMachineFeignClient.queryStatusById(organizationId, statusId);
+        ResponseEntity<StatusMapVO> statusInfoDTOResponseEntity = issueFeignClient.queryStatusById(organizationId, statusId);
         if (statusInfoDTOResponseEntity == null) {
             throw new CommonException("error.status.get");
         }
@@ -459,7 +447,7 @@ public class IssueServiceImpl implements IssueService {
                 order.put(fieldCode, sortCode);
                 PageUtil.sortResetOrder(pageRequest.getSort(), null, order);
                 List<Long> issueIdsWithSub = issueMapper.queryIssueIdsListWithSub(projectId, searchVO, searchSql, searchVO.getAssigneeFilterIds());
-                List<Long> foundationIssueIds = foundationFeignClient.sortIssueIdsByFieldValue(organizationId, projectId, pageRequest.getSort().toString()).getBody();
+                List<Long> foundationIssueIds = issueFeignClient.sortIssueIdsByFieldValue(organizationId, projectId, pageRequest.getSort().toString()).getBody();
 
                 List<Long> foundationIssueIdsWithSub = foundationIssueIds.stream().filter(issueIdsWithSub::contains).collect(Collectors.toList());
                 List<Long> issueIdsWithSubWithoutFoundation = issueIdsWithSub.stream().filter(t -> !foundationIssueIdsWithSub.contains(t)).collect(Collectors.toList());
@@ -485,8 +473,8 @@ public class IssueServiceImpl implements IssueService {
                 List<IssueDTO> issueDTOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getList());
                 Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
                 Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-                Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
-                Map<Long, Map<String, String>> foundationCodeValue = foundationFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIdPage.getList()).getBody();
+                Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+                Map<Long, Map<String, String>> foundationCodeValue = issueFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIdPage.getList()).getBody();
                 issueListDTOPage = PageUtil.buildPageInfoWithPageInfoList(issueIdPage,
                         issueAssembler.issueDoToIssueListFieldKVDTO(issueDTOList, priorityMap, statusMapDTOMap, issueTypeDTOMap, foundationCodeValue));
             } else {
@@ -1491,7 +1479,7 @@ public class IssueServiceImpl implements IssueService {
                 Map<Long, List<VersionIssueRelDTO>> influenceVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, INFLUENCE_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDTO::getIssueId));
                 Map<Long, List<LabelIssueRelDTO>> labelNames = issueMapper.queryLabelIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(LabelIssueRelDTO::getIssueId));
                 Map<Long, List<ComponentIssueRelDTO>> componentMap = issueMapper.queryComponentIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(ComponentIssueRelDTO::getIssueId));
-                Map<Long, Map<String, String>> foundationCodeValue = foundationFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIds).getBody();
+                Map<Long, Map<String, String>> foundationCodeValue = issueFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIds).getBody();
                 exportIssues.forEach(exportIssue -> {
                     String closeSprintName = closeSprintNames.get(exportIssue.getIssueId()) != null ? closeSprintNames.get(exportIssue.getIssueId()).stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(",")) : "";
                     String fixVersionName = fixVersionNames.get(exportIssue.getIssueId()) != null ? fixVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDTO::getName).collect(Collectors.joining(",")) : "";
@@ -1530,7 +1518,7 @@ public class IssueServiceImpl implements IssueService {
         List<FeatureExportDTO> featureExportDTOList = issueMapper.selectExportIssuesInProgram(programId, exportIssueIds);
         List<FeatureExportVO> featureExportVOList = (featureExportDTOList != null && !featureExportDTOList.isEmpty() ? modelMapper.map(featureExportDTOList, new TypeToken<List<FeatureExportVO>>(){}.getType()) : null);
         if (featureExportVOList != null && !featureExportVOList.isEmpty()) {
-            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             Map<Long, List<PiExportNameDTO>> closePiIssueMap = issueMapper.queryPiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.groupingBy(PiExportNameDTO::getIssueId));
             Map<Long, PiExportNameDTO> activePiIssueMap = issueMapper.queryActivePiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.toMap(PiExportNameDTO::getIssueId, Function.identity()));
@@ -1561,7 +1549,7 @@ public class IssueServiceImpl implements IssueService {
         Map<String, String[]> fieldMap = new HashMap<>(2);
         ObjectMapper m = new ObjectMapper();
 
-        Object content = Optional.ofNullable(foundationFeignClient
+        Object content = Optional.ofNullable(issueFeignClient
                 .listQuery(projectId, organizationId, ObjectSchemeCode.AGILE_ISSUE)
                 .getBody()).orElseThrow(() -> new CommonException("error.foundation.listQuery"))
                 .get("content");
@@ -1927,7 +1915,7 @@ public class IssueServiceImpl implements IssueService {
 
     private PageInfo<IssueListTestVO> handleIssueListTestDoToDto(PageInfo<IssueDTO> issueDOPage, Long organizationId, Long projectId) {
         Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
         return PageUtil.buildPageInfoWithPageInfoList(issueDOPage, issueAssembler.issueDoToIssueTestListDto(issueDOPage.getList(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
@@ -2296,7 +2284,7 @@ public class IssueServiceImpl implements IssueService {
                 issueMapper.selectFeatureIdsByPage(programId, searchVO)
         );
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         return PageUtil.buildPageInfoWithPageInfoList(featureCommonDOPage, featureCommonDOPage.getList() != null && !featureCommonDOPage.getList().isEmpty() ? featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getList()), statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
     }
 

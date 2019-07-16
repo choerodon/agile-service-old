@@ -15,9 +15,7 @@ import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.common.utils.SendMsgUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.core.convertor.ConvertHelper;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -58,9 +56,6 @@ public class BoardServiceImpl implements BoardService {
     private static final String RANK = "rank";
     private static final String UPDATE_STATUS_MOVE = "updateStatusMove";
 
-//    @Autowired
-//    private BoardRepository boardRepository;
-
     @Autowired
     private BoardMapper boardMapper;
 
@@ -75,12 +70,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private IssueMapper issueMapper;
-
-//    @Autowired
-//    private ColumnStatusRelRepository columnStatusRelRepository;
-//
-//    @Autowired
-//    private BoardColumnRepository boardColumnRepository;
 
     @Autowired
     private UserService userService;
@@ -101,9 +90,6 @@ public class BoardServiceImpl implements BoardService {
     private WorkCalendarRefMapper workCalendarRefMapper;
 
     @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
-
-    @Autowired
     private IssueFeignClient issueFeignClient;
 
     @Autowired
@@ -111,9 +97,6 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private SprintMapper sprintMapper;
-
-//    @Autowired
-//    private IssueRepository issueRepository;
 
     @Autowired
     private PiMapper piMapper;
@@ -422,7 +405,7 @@ public class BoardServiceImpl implements BoardService {
         List<ColumnAndIssueDTO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql, assigneeFilterIds);
         Boolean condition = assigneeId != null && onlyStory;
         Map<Long, List<Long>> parentWithSubs = new HashMap<>();
-        Map<Long, StatusMapVO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition, organizationId, parentWithSubs, statusMap, issueTypeDTOMap);
         jsonObject.put("parentIds", parentIds);
@@ -725,7 +708,7 @@ public class BoardServiceImpl implements BoardService {
             });
         });
         // get status map from organization
-        Map<Long, StatusMapVO> statusMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         // reset status info
         setColumnDeatil(columns, statusMap, issueTypeDTOMap);

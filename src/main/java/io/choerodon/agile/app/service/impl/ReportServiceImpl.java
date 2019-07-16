@@ -9,14 +9,12 @@ import io.choerodon.agile.app.service.DataLogService;
 import io.choerodon.agile.app.service.ReportService;
 import io.choerodon.agile.infra.dataobject.ReportIssueConvertDTO;
 import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
-import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 
 import com.github.pagehelper.PageInfo;
@@ -81,13 +79,7 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private IssueFeignClient issueFeignClient;
     @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
-//    @Autowired
-//    private DataLogRepository dataLogRepository;
-    @Autowired
     private DataLogService dataLogService;
-    @Autowired
-    private UserFeignClient userFeignClient;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
@@ -403,7 +395,7 @@ public class ReportServiceImpl implements ReportService {
                 queryReportIssues(projectId, versionId, status, type));
         Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         return PageUtil.buildPageInfoWithPageInfoList(reportIssuePage, issueAssembler.issueDoToIssueListDto(reportIssuePage.getList(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
 
@@ -1370,7 +1362,7 @@ public class ReportServiceImpl implements ReportService {
         List<GroupDataChartListDTO> groupDataChartListDOList = reportMapper.selectEpicIssueList(projectId, epicId);
         Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         for (GroupDataChartListDTO groupDataChartListDTO : groupDataChartListDOList) {
             groupDataChartListDTO.setPriorityVO(priorityMap.get(groupDataChartListDTO.getPriorityId()));
             groupDataChartListDTO.setStatusMapVO(statusMapDTOMap.get(groupDataChartListDTO.getStatusId()));
@@ -1477,7 +1469,7 @@ public class ReportServiceImpl implements ReportService {
         handleBurnDownReportTypeData(burnDownReportVO, id, projectId, typeCondition);
         if (issueDOList != null && !issueDOList.isEmpty()) {
             Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             List<IssueBurnDownReportDTO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
             burnDownReportVO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
@@ -1655,7 +1647,7 @@ public class ReportServiceImpl implements ReportService {
         List<GroupDataChartListDTO> groupDataChartListDOList = reportMapper.selectVersionIssueList(projectId, versionId);
         Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         for (GroupDataChartListDTO groupDataChartListDTO : groupDataChartListDOList) {
             groupDataChartListDTO.setPriorityVO(priorityMap.get(groupDataChartListDTO.getPriorityId()));
             groupDataChartListDTO.setStatusMapVO(statusMapDTOMap.get(groupDataChartListDTO.getStatusId()));

@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.feign;
 
 import io.choerodon.agile.api.vo.WorkSpaceVO;
 import io.choerodon.agile.infra.dataobject.WorkSpaceDTO;
-import io.choerodon.agile.infra.feign.fallback.FoundationFeignClientFallback;
+import io.choerodon.agile.infra.feign.fallback.KnowledgebaseClientFallback;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(value = "knowledgebase-service", fallback = FoundationFeignClientFallback.class)
+@FeignClient(value = "knowledgebase-service", fallback = KnowledgebaseClientFallback.class)
 public interface KnowledgebaseClient {
 
     @GetMapping("/v1/fix_data/all_project_space")
