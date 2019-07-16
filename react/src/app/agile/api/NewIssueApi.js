@@ -14,7 +14,7 @@ export function createIssue(issueObj, applyType = 'agile', projectId = AppState.
 export function createIssueField(issueId, dto) {
   const projectId = AppState.currentMenuType.id;
   const orgId = AppState.currentMenuType.organizationId;
-  return axios.post(`/foundation/v1/projects/${projectId}/field_value/quick_create/${issueId}?organizationId=${orgId}`, dto);
+  return axios.post(`/issue/v1/projects/${projectId}/field_value/quick_create/${issueId}?organizationId=${orgId}`, dto);
 }
 
 export function loadIssueTypes(applyType) {
@@ -43,7 +43,7 @@ export function checkVersionNameRepeat(value) {
 }
 export function getFoundationHeader() {
   const projectId = AppState.currentMenuType.id;
-  return axios.get(`/foundation/v1/projects/${projectId}/field_value/list/getFields`, {
+  return axios.get(`/issue/v1/projects/${projectId}/field_value/list/getFields`, {
     params: {
       project_id: projectId * 1,
       organizationId: AppState.currentMenuType.organizationId * 1,
@@ -313,7 +313,7 @@ export function cancelImport(id, ovn) {
 export function getFields(dto) {
   const projectId = AppState.currentMenuType.id;
   const orgId = AppState.currentMenuType.organizationId;
-  return axios.post(`/foundation/v1/projects/${projectId}/field_value/list?organizationId=${orgId}`, dto);
+  return axios.post(`/issue/v1/projects/${projectId}/field_value/list?organizationId=${orgId}`, dto);
 }
 
 /**
@@ -323,7 +323,7 @@ export function getFields(dto) {
 export function getFieldAndValue(id, dto) {
   const projectId = AppState.currentMenuType.id;
   const orgId = AppState.currentMenuType.organizationId;
-  return axios.post(`/foundation/v1/projects/${projectId}/field_value/list/${id}?organizationId=${orgId}`, dto);
+  return axios.post(`/issue/v1/projects/${projectId}/field_value/list/${id}?organizationId=${orgId}`, dto);
 }
 
 /**
@@ -333,7 +333,7 @@ export function getFieldAndValue(id, dto) {
 export function updateFieldValue(id, fieldId, code, dto) {
   const projectId = AppState.currentMenuType.id;
   const orgId = AppState.currentMenuType.organizationId;
-  return axios.post(`/foundation/v1/projects/${projectId}/field_value/update/${id}?organizationId=${orgId}&fieldId=${fieldId}&schemeCode=${code}`, dto);
+  return axios.post(`/issue/v1/projects/${projectId}/field_value/update/${id}?organizationId=${orgId}&fieldId=${fieldId}&schemeCode=${code}`, dto);
 }
 
 /**
@@ -343,7 +343,7 @@ export function updateFieldValue(id, fieldId, code, dto) {
 export function createFieldValue(id, code, dto) {
   const projectId = AppState.currentMenuType.id;
   const orgId = AppState.currentMenuType.organizationId;
-  return axios.post(`/foundation/v1/projects/${projectId}/field_value/${id}?organizationId=${orgId}&schemeCode=${code}`, dto);
+  return axios.post(`/issue/v1/projects/${projectId}/field_value/${id}?organizationId=${orgId}&schemeCode=${code}`, dto);
 }
 export function getMyFilters() {
   const { userInfo: { id } } = AppState;

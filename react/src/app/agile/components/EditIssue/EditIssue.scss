@@ -65,6 +65,7 @@
     .c7n-value-wrapper {
       flex: 1;
     }
+
     .c7ntest-TextEditToggle {
       width: 100%;
       max-width: 200px;
@@ -535,11 +536,35 @@
     margin-right: 2px;
   }
 
-  .c7n-btn >.icon +span {
+  .c7n-btn > .icon + span {
     margin-left: 0 !important;
   }
 
-  .c7n-btn >.icon {
+  .c7n-btn > .icon {
     margin-right: 0 !important;
+  }
+
+  .c7n-input {
+    height: 0.32rem;
+
+    & + .c7n-input-label-wrapper {
+      border-color: transparent;
+
+      .c7n-input-label {
+        margin-top: -4px;
+      }
+    }
+  }
+
+  .c7n-select {
+    .c7n-select-selection__rendered {
+      line-height: 0.3rem;
+      height: 0.32rem;
+      min-height: 0.32rem;
+    }
+
+    .c7n-select-label {
+      margin-top: -4px;
+    }
   }
 }
