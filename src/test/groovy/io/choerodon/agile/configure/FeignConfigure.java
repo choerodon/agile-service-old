@@ -4,7 +4,6 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.impl.IssueServiceImpl;
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl;
 import io.choerodon.agile.infra.feign.*;
-import io.choerodon.agile.infra.feign.fallback.FoundationFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.NotifyFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
@@ -88,64 +87,64 @@ public class FeignConfigure {
         return instanceFeignClient;
     }
 
-    @Bean
-    @Primary
-    StateMachineFeignClient stateMachineFeignClient() {
-        StateMachineFeignClient stateMachineFeignClient = Mockito.mock(StateMachineFeignClient.class);
-        Map<Long, StatusMapVO> statusMapDTOMap = new HashMap<>(3);
-        StatusMapVO todoStatus = new StatusMapVO();
-        todoStatus.setId(1L);
-        todoStatus.setName("待处理");
-        todoStatus.setDescription("待处理");
-        todoStatus.setOrganizationId(1L);
-        todoStatus.setType("todo");
-        todoStatus.setCode("todo");
-        StatusMapVO doingStatus = new StatusMapVO();
-        doingStatus.setId(2L);
-        doingStatus.setName("处理中");
-        doingStatus.setDescription("处理中");
-        doingStatus.setOrganizationId(1L);
-        doingStatus.setType("doing");
-        doingStatus.setCode("doing");
-        StatusMapVO doneStatus = new StatusMapVO();
-        doneStatus.setId(3L);
-        doneStatus.setName("完成");
-        doneStatus.setDescription("完成");
-        doneStatus.setOrganizationId(1L);
-        doneStatus.setType("done");
-        doneStatus.setCode("done");
-        statusMapDTOMap.put(1L, todoStatus);
-        statusMapDTOMap.put(2L, doingStatus);
-        statusMapDTOMap.put(3L, doneStatus);
-        Mockito.when(stateMachineFeignClient.queryAllStatusMap(Matchers.anyLong())).thenReturn(new ResponseEntity<>(statusMapDTOMap, HttpStatus.OK));
-        Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(1L))).thenReturn(new ResponseEntity<>(todoStatus, HttpStatus.OK));
-        Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(2L))).thenReturn(new ResponseEntity<>(doingStatus, HttpStatus.OK));
-        Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(3L))).thenReturn(new ResponseEntity<>(doneStatus, HttpStatus.OK));
-        Mockito.when(stateMachineFeignClient.queryInitStatusIds(Matchers.anyLong(), Matchers.anyListOf(Long.class)))
-                .thenReturn(new ResponseEntity<>(statusMapDTOMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getKey)), HttpStatus.OK));
-        Map<Long, Status> statusMap = new HashMap<>();
-        Status status1 = new Status();
-        status1.setId(1L);
-        status1.setName("待处理");
-        status1.setOrganizationId(1L);
-        status1.setType("todo");
-        Status status2 = new Status();
-        status2.setId(2L);
-        status2.setName("处理中");
-        status2.setOrganizationId(1L);
-        status2.setType("doing");
-        Status status3 = new Status();
-        status3.setId(3L);
-        status3.setName("已完成");
-        status3.setOrganizationId(1L);
-        status3.setType("done");
-        statusMap.put(1L, status1);
-        statusMap.put(2L, status2);
-        statusMap.put(3L, status3);
-        Mockito.when(stateMachineFeignClient.batchStatusGet(Matchers.any(List.class))).thenReturn(new ResponseEntity(statusMap, HttpStatus.OK));
-        Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.anyLong())).thenReturn(new ResponseEntity<>(todoStatus, HttpStatus.OK));
-        return stateMachineFeignClient;
-    }
+//    @Bean
+//    @Primary
+//    StateMachineFeignClient stateMachineFeignClient() {
+//        StateMachineFeignClient stateMachineFeignClient = Mockito.mock(StateMachineFeignClient.class);
+//        Map<Long, StatusMapVO> statusMapDTOMap = new HashMap<>(3);
+//        StatusMapVO todoStatus = new StatusMapVO();
+//        todoStatus.setId(1L);
+//        todoStatus.setName("待处理");
+//        todoStatus.setDescription("待处理");
+//        todoStatus.setOrganizationId(1L);
+//        todoStatus.setType("todo");
+//        todoStatus.setCode("todo");
+//        StatusMapVO doingStatus = new StatusMapVO();
+//        doingStatus.setId(2L);
+//        doingStatus.setName("处理中");
+//        doingStatus.setDescription("处理中");
+//        doingStatus.setOrganizationId(1L);
+//        doingStatus.setType("doing");
+//        doingStatus.setCode("doing");
+//        StatusMapVO doneStatus = new StatusMapVO();
+//        doneStatus.setId(3L);
+//        doneStatus.setName("完成");
+//        doneStatus.setDescription("完成");
+//        doneStatus.setOrganizationId(1L);
+//        doneStatus.setType("done");
+//        doneStatus.setCode("done");
+//        statusMapDTOMap.put(1L, todoStatus);
+//        statusMapDTOMap.put(2L, doingStatus);
+//        statusMapDTOMap.put(3L, doneStatus);
+//        Mockito.when(stateMachineFeignClient.queryAllStatusMap(Matchers.anyLong())).thenReturn(new ResponseEntity<>(statusMapDTOMap, HttpStatus.OK));
+//        Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(1L))).thenReturn(new ResponseEntity<>(todoStatus, HttpStatus.OK));
+//        Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(2L))).thenReturn(new ResponseEntity<>(doingStatus, HttpStatus.OK));
+//        Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(3L))).thenReturn(new ResponseEntity<>(doneStatus, HttpStatus.OK));
+//        Mockito.when(stateMachineFeignClient.queryInitStatusIds(Matchers.anyLong(), Matchers.anyListOf(Long.class)))
+//                .thenReturn(new ResponseEntity<>(statusMapDTOMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getKey)), HttpStatus.OK));
+//        Map<Long, Status> statusMap = new HashMap<>();
+//        Status status1 = new Status();
+//        status1.setId(1L);
+//        status1.setName("待处理");
+//        status1.setOrganizationId(1L);
+//        status1.setType("todo");
+//        Status status2 = new Status();
+//        status2.setId(2L);
+//        status2.setName("处理中");
+//        status2.setOrganizationId(1L);
+//        status2.setType("doing");
+//        Status status3 = new Status();
+//        status3.setId(3L);
+//        status3.setName("已完成");
+//        status3.setOrganizationId(1L);
+//        status3.setType("done");
+//        statusMap.put(1L, status1);
+//        statusMap.put(2L, status2);
+//        statusMap.put(3L, status3);
+//        Mockito.when(stateMachineFeignClient.batchStatusGet(Matchers.any(List.class))).thenReturn(new ResponseEntity(statusMap, HttpStatus.OK));
+//        Mockito.when(stateMachineFeignClient.queryStatusById(Matchers.anyLong(), Matchers.anyLong())).thenReturn(new ResponseEntity<>(todoStatus, HttpStatus.OK));
+//        return stateMachineFeignClient;
+//    }
 
     @Bean
     @Primary
@@ -266,6 +265,63 @@ public class FeignConfigure {
         statusMapVOList.add(statusMapVO2);
         statusMapVOList.add(statusMapVO3);
         Mockito.when(issueFeignClient.queryStatusByProjectId(Mockito.anyLong(), Mockito.anyString())).thenReturn(new ResponseEntity<>(statusMapVOList, HttpStatus.OK));
+
+        Map<Long, StatusMapVO> statusMapDTOMap = new HashMap<>(3);
+        StatusMapVO todoStatus = new StatusMapVO();
+        todoStatus.setId(1L);
+        todoStatus.setName("待处理");
+        todoStatus.setDescription("待处理");
+        todoStatus.setOrganizationId(1L);
+        todoStatus.setType("todo");
+        todoStatus.setCode("todo");
+        StatusMapVO doingStatus = new StatusMapVO();
+        doingStatus.setId(2L);
+        doingStatus.setName("处理中");
+        doingStatus.setDescription("处理中");
+        doingStatus.setOrganizationId(1L);
+        doingStatus.setType("doing");
+        doingStatus.setCode("doing");
+        StatusMapVO doneStatus = new StatusMapVO();
+        doneStatus.setId(3L);
+        doneStatus.setName("完成");
+        doneStatus.setDescription("完成");
+        doneStatus.setOrganizationId(1L);
+        doneStatus.setType("done");
+        doneStatus.setCode("done");
+        statusMapDTOMap.put(1L, todoStatus);
+        statusMapDTOMap.put(2L, doingStatus);
+        statusMapDTOMap.put(3L, doneStatus);
+        Mockito.when(issueFeignClient.queryAllStatusMap(Matchers.anyLong())).thenReturn(new ResponseEntity<>(statusMapDTOMap, HttpStatus.OK));
+        Mockito.when(issueFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(1L))).thenReturn(new ResponseEntity<>(todoStatus, HttpStatus.OK));
+        Mockito.when(issueFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(2L))).thenReturn(new ResponseEntity<>(doingStatus, HttpStatus.OK));
+        Mockito.when(issueFeignClient.queryStatusById(Matchers.anyLong(), Matchers.eq(3L))).thenReturn(new ResponseEntity<>(doneStatus, HttpStatus.OK));
+        Mockito.when(issueFeignClient.queryInitStatusIds(Matchers.anyLong(), Matchers.anyListOf(Long.class)))
+                .thenReturn(new ResponseEntity<>(statusMapDTOMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getKey)), HttpStatus.OK));
+        Map<Long, Status> statusMap = new HashMap<>();
+        Status status1 = new Status();
+        status1.setId(1L);
+        status1.setName("待处理");
+        status1.setOrganizationId(1L);
+        status1.setType("todo");
+        Status status2 = new Status();
+        status2.setId(2L);
+        status2.setName("处理中");
+        status2.setOrganizationId(1L);
+        status2.setType("doing");
+        Status status3 = new Status();
+        status3.setId(3L);
+        status3.setName("已完成");
+        status3.setOrganizationId(1L);
+        status3.setType("done");
+        statusMap.put(1L, status1);
+        statusMap.put(2L, status2);
+        statusMap.put(3L, status3);
+        Mockito.when(issueFeignClient.batchStatusGet(Matchers.any(List.class))).thenReturn(new ResponseEntity(statusMap, HttpStatus.OK));
+        Mockito.when(issueFeignClient.queryStatusById(Matchers.anyLong(), Matchers.anyLong())).thenReturn(new ResponseEntity<>(todoStatus, HttpStatus.OK));
+
+        Mockito.when(issueFeignClient.queryDataLogByInstanceId(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK));
+
+
         return issueFeignClient;
     }
 
@@ -287,12 +343,12 @@ public class FeignConfigure {
         return sagaClient;
     }
 
-    @Bean
-    @Primary
-    FoundationFeignClient foundationFeignClient() {
-        FoundationFeignClient foundationFeignClient = Mockito.mock(FoundationFeignClientFallback.class);
-        Mockito.when(foundationFeignClient.queryDataLogByInstanceId(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK));
-        return foundationFeignClient;
-    }
+//    @Bean
+//    @Primary
+//    FoundationFeignClient foundationFeignClient() {
+//        FoundationFeignClient foundationFeignClient = Mockito.mock(FoundationFeignClientFallback.class);
+//        Mockito.when(foundationFeignClient.queryDataLogByInstanceId(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyString())).thenReturn(new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK));
+//        return foundationFeignClient;
+//    }
 
 }
