@@ -9,7 +9,6 @@ import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -138,8 +137,6 @@ public class DataLogAspect {
     private IssueStatusMapper issueStatusMapper;
     @Autowired
     private IssueMapper issueMapper;
-//    @Autowired
-//    private DataLogRepository dataLogRepository;
     @Autowired
     private DataLogService dataLogService;
     @Autowired
@@ -162,8 +159,6 @@ public class DataLogAspect {
     private IssueCommentMapper issueCommentMapper;
     @Autowired
     private RedisUtil redisUtil;
-    @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
     @Autowired
     private IssueFeignClient issueFeignClient;
     @Autowired
@@ -367,7 +362,7 @@ public class DataLogAspect {
         Long updateStatusId = (Long) args[1];
         List<IssueDTO> issueDTOList = (List<IssueDTO>) args[2];
         if (programId != null && updateStatusId != null && issueDTOList != null && !issueDTOList.isEmpty()) {
-            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(ConvertUtil.getOrganizationId(programId)).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(ConvertUtil.getOrganizationId(programId)).getBody();
             StatusMapVO newStatus = statusMapDTOMap.get(updateStatusId);
             for (IssueDTO issueDTO : issueDTOList) {
                 StatusMapVO oldStatus = statusMapDTOMap.get(issueDTO.getStatusId());
@@ -384,8 +379,8 @@ public class DataLogAspect {
         Long newStatusId = (Long) args[4];
         Long userId = (Long) args[5];
         if (projectId != null && Objects.nonNull(applyType) && issueTypeId != null && oldStatusId != null && newStatusId != null && !oldStatusId.equals(newStatusId)) {
-            StatusMapVO oldStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), oldStatusId).getBody();
-            StatusMapVO newStatus = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), newStatusId).getBody();
+            StatusMapVO oldStatus = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), oldStatusId).getBody();
+            StatusMapVO newStatus = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), newStatusId).getBody();
             IssueStatusDTO oldStatusDO = issueStatusMapper.selectByStatusId(projectId, oldStatusId);
             IssueStatusDTO newStatusDO = issueStatusMapper.selectByStatusId(projectId, newStatusId);
             List<IssueDTO> issueDTOS = issueMapper.queryIssueWithCompleteInfoByStatusId(projectId, applyType, issueTypeId, oldStatusId);
@@ -559,7 +554,7 @@ public class DataLogAspect {
             IssueDTO query = new IssueDTO();
             query.setStatusId(issueStatus.getStatusId());
             query.setProjectId(projectId);
-            StatusMapVO statusMapVO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), issueStatus.getStatusId()).getBody();
+            StatusMapVO statusMapVO = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), issueStatus.getStatusId()).getBody();
             List<IssueDTO> issueDTOS = issueMapper.select(query);
             if (issueDTOS != null && !issueDTOS.isEmpty()) {
                 Long userId = DetailsHelper.getUserDetails().getUserId();
@@ -1153,7 +1148,7 @@ public class DataLogAspect {
                 IssueStatusDTO issueStatusDTO = issueStatusMapper.selectByStatusId(issueConvertDTO.getProjectId(), issueConvertDTO.getStatusId());
                 Boolean condition = (issueStatusDTO.getCompleted() != null && issueStatusDTO.getCompleted());
                 if (condition) {
-                    StatusMapVO statusMapVO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(issueConvertDTO.getProjectId()), issueConvertDTO.getStatusId()).getBody();
+                    StatusMapVO statusMapVO = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(issueConvertDTO.getProjectId()), issueConvertDTO.getStatusId()).getBody();
                     createDataLog(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId(), FIELD_RESOLUTION, null,
                             statusMapVO.getName(), null, issueStatusDTO.getStatusId().toString());
                 }
@@ -1288,8 +1283,8 @@ public class DataLogAspect {
 
     private void handleStatus(List<String> field, IssueDTO originIssueDTO, IssueConvertDTO issueConvertDTO) {
         if (field.contains(STATUS_ID) && !Objects.equals(originIssueDTO.getStatusId(), issueConvertDTO.getStatusId())) {
-            StatusMapVO originStatusMapVO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getStatusId()).getBody();
-            StatusMapVO currentStatusMapVO = stateMachineFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getStatusId()).getBody();
+            StatusMapVO originStatusMapVO = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getStatusId()).getBody();
+            StatusMapVO currentStatusMapVO = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getStatusId()).getBody();
             IssueStatusDTO originStatus = issueStatusMapper.selectByStatusId(originIssueDTO.getProjectId(), originIssueDTO.getStatusId());
             IssueStatusDTO currentStatus = issueStatusMapper.selectByStatusId(originIssueDTO.getProjectId(), issueConvertDTO.getStatusId());
             createDataLog(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), FIELD_STATUS, originStatusMapVO.getName(),

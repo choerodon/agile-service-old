@@ -15,7 +15,6 @@ import io.choerodon.agile.infra.common.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 
@@ -64,12 +63,6 @@ public class PiServiceImpl implements PiService {
     private static final String SPRINT_COMPLETE_SETTING_BACKLOG = "backlog";
     private static final String SPRINT_COMPLETE_SETTING_NEXT_SPRINT = "next_sprint";
 
-//    @Autowired
-//    private PiRepository piRepository;
-//
-//    @Autowired
-//    private ArtRepository artRepository;
-
     @Autowired
     private PiMapper piMapper;
 
@@ -88,20 +81,11 @@ public class PiServiceImpl implements PiService {
     @Autowired
     private SprintService sprintService;
 
-//    @Autowired
-//    private IssueRepository issueRepository;
-
     @Autowired
     private IssueMapper issueMapper;
 
     @Autowired
     private SprintMapper sprintMapper;
-
-//    @Autowired
-//    private SprintRepository sprintRepository;
-
-    @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
 
     @Autowired
     private IssueFeignClient issueFeignClient;
@@ -311,7 +295,7 @@ public class PiServiceImpl implements PiService {
         // return result by JSONObject
         JSONObject result = new JSONObject();
         // get statusMap and issueTypeMap by organizationId
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         // set status completed
         setStatusIsCompleted(programId, statusMapDTOMap);
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
@@ -673,7 +657,7 @@ public class PiServiceImpl implements PiService {
         }
         List<PiWithFeatureDTO> piWithFeatureDTOList = piMapper.selectRoadMapPiList(programId, activeArt.getId());
         if (piWithFeatureDTOList != null && !piWithFeatureDTOList.isEmpty()) {
-            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
             setStatusIsCompleted(programId, statusMapDTOMap);
             Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             return piAssembler.piWithFeatureDOTODTO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap);

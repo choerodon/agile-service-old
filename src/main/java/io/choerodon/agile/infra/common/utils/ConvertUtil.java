@@ -2,7 +2,6 @@ package io.choerodon.agile.infra.common.utils;
 
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.core.exception.CommonException;
 
@@ -43,7 +42,7 @@ public class ConvertUtil {
      */
     public static Map<Long, StatusMapVO> getIssueStatusMap(Long projectId) {
         Long organizationId = getOrganizationId(projectId);
-        return SpringBeanUtil.getBean(StateMachineFeignClient.class).queryAllStatusMap(organizationId).getBody();
+        return SpringBeanUtil.getBean(IssueFeignClient.class).queryAllStatusMap(organizationId).getBody();
     }
 
     /**
@@ -87,7 +86,7 @@ public class ConvertUtil {
     public static Map<Long, IssueTypeWithStateMachineIdVO> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
         List<IssueTypeWithStateMachineIdVO> issueTypeWithStateMachineIdVOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesWithStateMachineIdByProjectId(projectId, applyType)
                 .getBody();
-        Map<Long, Long> statusIdMap = SpringBeanUtil.getBean(StateMachineFeignClient.class).queryInitStatusIds(getOrganizationId(projectId), issueTypeWithStateMachineIdVOS
+        Map<Long, Long> statusIdMap = SpringBeanUtil.getBean(IssueFeignClient.class).queryInitStatusIds(getOrganizationId(projectId), issueTypeWithStateMachineIdVOS
                 .stream().map(IssueTypeWithStateMachineIdVO::getStateMachineId).collect(Collectors.toList())).getBody();
         issueTypeWithStateMachineIdVOS.forEach(issueTypeWithStateMachineIdDTO -> issueTypeWithStateMachineIdDTO.setInitStatusId(statusIdMap.get(issueTypeWithStateMachineIdDTO.getStateMachineId())));
         return issueTypeWithStateMachineIdVOS.stream().collect(Collectors.toMap(IssueTypeWithStateMachineIdVO::getId, Function.identity()));

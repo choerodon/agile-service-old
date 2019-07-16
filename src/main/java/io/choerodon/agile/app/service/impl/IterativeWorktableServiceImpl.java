@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.WorkCalendarRefMapper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -54,9 +53,6 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     @Autowired
     private IssueFeignClient issueFeignClient;
 
-    @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
-
     private ModelMapper modelMapper = new ModelMapper();
 
     @PostConstruct
@@ -70,7 +66,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         IterativeWorktableValidator.checkSprintExist(sprintDTO);
         List<PriorityDistributeDTO> priorityDistributeDTOList = iterativeWorktableMapper.queryPriorityDistribute(projectId, sprintId);
         Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         for (PriorityDistributeDTO priorityDistributeDTO : priorityDistributeDTOList) {
             priorityDistributeDTO.setPriorityVO(priorityMap.get(priorityDistributeDTO.getPriorityId()));
             priorityDistributeDTO.setCategoryCode(statusMapDTOMap.get(priorityDistributeDTO.getStatusId()).getType());
@@ -111,7 +107,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
         IterativeWorktableValidator.checkSprintExist(sprintDTO);
         List<StatusCategoryDTO> statusCategoryDTOList = iterativeWorktableMapper.queryStatusCategoryDistribute(projectId, sprintId);
-        Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         for (StatusCategoryDTO statusCategoryDTO : statusCategoryDTOList) {
             statusCategoryDTO.setCategoryCode(statusMapDTOMap.get(statusCategoryDTO.getStatusId()).getType());
         }
@@ -167,7 +163,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
 
     @Override
     public List<IssueTypeDistributeVO> queryIssueTypeDistribute(Long projectId, Long sprintId, Long organizationId) {
-        Map<Long, StatusMapVO> statusMapVOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusMapVO> statusMapVOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
         List<IssueTypeDistributeDTO> issueTypeDistributeDTOList = iterativeWorktableMapper.queryIssueTypeDistribute(projectId, sprintId);
         for (IssueTypeDistributeDTO issueTypeDistributeDTO : issueTypeDistributeDTOList) {
             List<IssueStatus> issueStatuses = issueTypeDistributeDTO.getIssueStatus();

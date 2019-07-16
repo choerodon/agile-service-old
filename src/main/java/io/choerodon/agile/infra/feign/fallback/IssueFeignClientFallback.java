@@ -3,6 +3,7 @@ package io.choerodon.agile.infra.feign.fallback;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.statemachine.dto.StateMachineTransformDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -90,5 +91,51 @@ public class IssueFeignClientFallback implements IssueFeignClient {
     @Override
     public ResponseEntity<List<IssueTypeVO>> queryByOrgId(Long organizationId) {
         throw new CommonException("error.issueTypeList.get");
+    }
+
+    @Override
+    public ResponseEntity<Map<Long, Status>> batchStatusGet(List<Long> ids) {
+        throw new CommonException("error.statusBatch.get");
+    }
+
+    @Override
+    public ResponseEntity<Map<Long, StatusMapVO>> queryAllStatusMap(Long organizationId) {
+        throw new CommonException("error.statusMap.get");
+    }
+
+    @Override
+    public ResponseEntity<StatusMapVO> queryStatusById(Long organizationId, Long statusId) {
+        throw new CommonException("error.status.get");
+    }
+
+    @Override
+    public ResponseEntity<Map<Long, Long>> queryInitStatusIds(Long organizationId, List<Long> stateMachineIds) {
+        throw new CommonException("error.statusMap.queryInitStatusIds");
+    }
+
+    @Override
+    public ResponseEntity<StateMachineTransformDTO> queryDeployTransformForAgile(Long organizationId, Long tansformId) {
+        throw new CommonException("error.stateMachineFegin.queryDeployTransformForAgile");
+
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> listQuery(Long projectId, Long organizationId, String schemeCode) {
+        throw new CommonException("error.foundation.listQuery");
+    }
+
+    @Override
+    public ResponseEntity<Map<Long, Map<String, String>>> queryFieldValueWithIssueIds(Long organizationId, Long projectId, List<Long> instanceIds) {
+        throw new CommonException("error.foundation.CodeValue");
+    }
+
+    @Override
+    public ResponseEntity<List<FieldDataLogVO>> queryDataLogByInstanceId(Long projectId, Long instanceId, String schemeCode) {
+        throw new CommonException("error.foundation.queryDataLogByInstanceId");
+    }
+
+    @Override
+    public ResponseEntity<List<Long>> sortIssueIdsByFieldValue(Long organizationId, Long projectId, String pageRequestString) {
+        throw new CommonException("error.foundation.sortIssueIdsByFieldValue");
     }
 }

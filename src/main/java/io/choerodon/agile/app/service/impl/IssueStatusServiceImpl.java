@@ -9,10 +9,8 @@ import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
@@ -43,12 +41,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     private static final String PIECHART = AGILE + "PieChart";
     private static final String STATUS = "status";
 
-//    @Autowired
-//    private IssueStatusRepository issueStatusRepository;
-//
-//    @Autowired
-//    private ColumnStatusRelRepository columnStatusRelRepository;
-
     @Autowired
     private IssueStatusMapper issueStatusMapper;
 
@@ -56,22 +48,10 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     private ColumnStatusRelMapper columnStatusRelMapper;
 
     @Autowired
-    private BoardColumnMapper boardColumnMapper;
-
-    @Autowired
     private IssueMapper issueMapper;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
-
-    @Autowired
     private IssueFeignClient issueFeignClient;
-
-    @Autowired
-    private QuickFilterMapper quickFilterMapper;
 
     @Autowired
     private ColumnStatusRelService columnStatusRelService;
@@ -188,7 +168,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             for (StatusAndIssuesDTO statusAndIssuesDTO : statusAndIssuesDTOList) {
                 ids.add(statusAndIssuesDTO.getStatusId());
             }
-            Map<Long, Status> map = stateMachineFeignClient.batchStatusGet(ids).getBody();
+            Map<Long, Status> map = issueFeignClient.batchStatusGet(ids).getBody();
             for (StatusAndIssuesDTO statusAndIssuesDTO : statusAndIssuesDTOList) {
                 Status status = map.get(statusAndIssuesDTO.getStatusId());
                 statusAndIssuesDTO.setCategoryCode(status.getType());

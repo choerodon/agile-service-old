@@ -10,7 +10,7 @@ import io.choerodon.agile.infra.common.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.DataLogDTO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
-import io.choerodon.agile.infra.feign.FoundationFeignClient;
+import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.core.exception.CommonException;
@@ -33,14 +33,12 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class DataLogServiceImpl implements DataLogService {
 
-//    @Autowired
-//    private DataLogRepository dataLogRepository;
     @Autowired
     private DataLogMapper dataLogMapper;
     @Autowired
     private UserService userService;
     @Autowired
-    private FoundationFeignClient foundationFeignClient;
+    private IssueFeignClient issueFeignClient;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -63,7 +61,7 @@ public class DataLogServiceImpl implements DataLogService {
     public List<DataLogVO> listByIssueId(Long projectId, Long issueId) {
         List<DataLogVO> dataLogVOS = modelMapper.map(dataLogMapper.selectByIssueId(projectId, issueId), new TypeToken<List<DataLogVO>>() {
         }.getType());
-        List<FieldDataLogVO> fieldDataLogVOS = foundationFeignClient.queryDataLogByInstanceId(projectId, issueId, ObjectSchemeCode.AGILE_ISSUE).getBody();
+        List<FieldDataLogVO> fieldDataLogVOS = issueFeignClient.queryDataLogByInstanceId(projectId, issueId, ObjectSchemeCode.AGILE_ISSUE).getBody();
         for (FieldDataLogVO fieldDataLogVO : fieldDataLogVOS) {
             DataLogVO dataLogVO = modelMapper.map(fieldDataLogVO, DataLogVO.class);
             dataLogVO.setField(fieldDataLogVO.getFieldCode());

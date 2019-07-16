@@ -17,7 +17,6 @@ import io.choerodon.agile.app.service.VersionIssueRelService;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.VersionIssueDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.StateMachineFeignClient;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
@@ -75,8 +74,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionStatisticsAssembler versionStatisticsAssembler;
     @Autowired
     private IssueAssembler issueAssembler;
-//    @Autowired
-//    private ProductVersionRepository productVersionRepository;
     @Autowired
     private VersionIssueRelService versionIssueRelService;
     @Autowired
@@ -91,9 +88,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Autowired
     private IssueService issueService;
-
-    @Autowired
-    private StateMachineFeignClient stateMachineFeignClient;
 
     @Autowired
     private ProductVersionMapper versionMapper;
@@ -281,7 +275,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         Boolean condition = issueService.handleSearchUser(searchVO, projectId);
         if (condition) {
             Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-            Map<Long, StatusMapVO> statusMapDTOMap = stateMachineFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
             List<Long> filterStatusIds = new ArrayList<>();
             if (statusCode != null) {
