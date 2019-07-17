@@ -366,3 +366,23 @@ export function configTheme({
     maxTagPlaceholder: renderPlaceHolder,
   };
 }
+export function validateFile(rule, fileList, callback) {
+  if (fileList) {
+    fileList.forEach((file) => {
+      if (file.size > 1024 * 1024 * 30) {
+        callback('文件不能超过30M');
+      } else if (file.name && encodeURI(file.name).length > 210) {    
+        callback('文件名过长');
+      }
+    });
+    callback(); 
+  } else {
+    callback(); 
+  }
+}
+export function normFile(e) {
+  if (Array.isArray(e)) {
+    return e;
+  }
+  return e && e.fileList;
+}

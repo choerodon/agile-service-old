@@ -2,14 +2,36 @@
 import React from 'react';
 import { Select } from 'choerodon-ui';
 import { find } from 'lodash';
-import User from '../User';
+import UserHead from '../UserHead';
 import { getUsers, getUser } from '../../api/CommonApi';
 import {
-  loadEpics, loadProgramEpics, loadIssueTypes, loadStatusList, 
+  loadEpics, loadProgramEpics, loadIssueTypes, loadPriorities,
+  loadComponents, loadLabels, loadVersions,
+  loadStatusList, loadIssuesInLink,
+
 } from '../../api/NewIssueApi';
+import IssueLinkType from '../../api/IssueLinkType';
 import TypeTag from '../TypeTag';
 import StatusTag from '../StatusTag';
 
+function transform(links) {
+  // split active and passive
+  const active = links.map(link => ({
+    name: link.outWard,
+    linkTypeId: link.linkTypeId,
+  }));
+  const passive = [];
+  links.forEach((link) => {
+    if (link.inWard !== link.outWard) {
+      passive.push({
+        name: link.inWard,
+        linkTypeId: link.linkTypeId,
+      });
+    }
+  });
+
+  return active.concat(passive);
+}
 const { Option } = Select;
 const issue_type_program = {
   props: {
@@ -20,8 +42,8 @@ const issue_type_program = {
         ) >= 0,
   },
   request: () => new Promise(resolve => loadIssueTypes('program').then((issueTypes) => {
-    const defaultType = find(issueTypes, { typeCode: 'feature' }).id;
-    resolve(issueTypes, defaultType);
+    // const defaultType = find(issueTypes, { typeCode: 'feature' }).id;
+    resolve(issueTypes);
   })),
   render: issueType => (
     <Option
@@ -43,7 +65,11 @@ export default {
     request: (...args) => new Promise(resolve => getUsers(...args).then((UserData) => { resolve(UserData.list.filter(user => user.enabled)); })),
     render: user => (
       <Option key={user.id} value={user.id}>
-        <User user={user} />
+        <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
+          <UserHead
+            user={user}
+          />
+        </div>
       </Option>
     ),
     avoidShowError: (props, List) => new Promise((resolve) => {
@@ -55,7 +81,7 @@ export default {
         if (a && !find(List, { id: a })) {
           requestQue.push(getUser(a));
         }
-      }); 
+      });
       Promise.all(requestQue).then((users) => {
         users.forEach((res) => {
           if (res.list && res.list.length > 0) {
@@ -63,13 +89,13 @@ export default {
           }
         });
         resolve(extraList);
-      }).catch((err) => {        
+      }).catch((err) => {
         resolve(extraList);
       });
     }),
   },
   status_program: {
-    request: () => new Promise(resolve => loadStatusList('program').then((statusList) => {      
+    request: () => new Promise(resolve => loadStatusList('program').then((statusList) => {
       resolve(statusList);
     })),
     render: status => (
@@ -80,7 +106,7 @@ export default {
       >
         <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
           <StatusTag
-            data={status}            
+            data={status}
           />
         </div>
       </Option>
@@ -106,6 +132,7 @@ export default {
   },
   epic_program: {
     props: {
+      getPopupContainer: triggerNode => triggerNode.parentNode,
       filterOption:
         (input, option) => option.props.children
           && option.props.children.toLowerCase().indexOf(
@@ -155,6 +182,127 @@ export default {
         name={issueType.name}
       >
         {issueType.name}
+      </Option>
+    ),
+  },
+  issue_link: {
+    props: {
+      getPopupContainer: triggerNode => triggerNode.parentNode,
+      filter: false,
+      filterOption: false,
+      loadWhenMount: true,
+    },
+    request: () => new Promise(resolve => IssueLinkType.queryAll().then((res) => { resolve(transform(res.list)); })),
+    render: link => (
+      <Option key={`${link.linkTypeId}+${link.name}`} value={`${link.linkTypeId}+${link.name}`}>
+        {link.name}
+      </Option>
+    ),
+  },
+  issues_in_link: {
+    props: {
+      mode: 'multiple',
+      optionLabelProp: 'showName',
+      getPopupContainer: triggerNode => triggerNode.parentNode,
+    },
+    request: input => new Promise(resolve => loadIssuesInLink(1, 20, undefined, input).then((res) => { resolve(res.list); })),
+    render: issue => (
+      <Option
+        key={issue.issueId}
+        value={issue.issueId}
+        showName={issue.issueNum}
+      >
+        <div style={{
+          display: 'inline-flex',
+          flex: 1,
+          width: 'calc(100% - 30px)',
+          alignItems: 'center',
+          verticalAlign: 'middle',
+        }}
+        >
+          <TypeTag
+            data={issue.issueTypeVO}
+          />
+          <span style={{
+            paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}
+          >
+            {issue.issueNum}
+          </span>
+          <div style={{ overflow: 'hidden', flex: 1 }}>
+            <p style={{
+              paddingRight: '25px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 0, maxWidth: 'unset',
+            }}
+            >
+              {issue.summary}
+            </p>
+          </div>
+        </div>
+      </Option>
+    ),
+  },
+  priority: {
+    props: {
+      getPopupContainer: triggerNode => triggerNode.parentNode,
+      filter: false,
+      filterOption: false,
+      loadWhenMount: true,
+    },
+    request: loadPriorities,
+    getDefaultValue: priorities => find(priorities, { default: true }).id,
+    render: priority => (
+      <Option key={priority.id} value={priority.id}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
+          <span>{priority.name}</span>
+        </div>
+      </Option>
+    ),
+  },
+  component: {
+    props: {
+      getPopupContainer: triggerNode => triggerNode.parentNode,
+      filter: false,
+      filterOption: false,
+      loadWhenMount: true,
+    },
+    request: input => new Promise(resolve => loadComponents(input).then((res) => { resolve(res.list); })),
+    render: component => (
+      <Option
+        key={component.name}
+        value={component.name}
+      >
+        {component.name}
+      </Option>
+    ),
+  },
+  label: {
+    props: {
+      getPopupContainer: triggerNode => triggerNode.parentNode,
+      filter: false,
+      filterOption: false,
+      loadWhenMount: true,
+    },
+    request: loadLabels,
+    render: label => (
+      <Option key={label.labelName} value={label.labelName}>
+        {label.labelName}
+      </Option>
+    ),
+  },
+  version: {
+    props: {
+      getPopupContainer: triggerNode => triggerNode.parentNode,
+      filter: false,
+      filterOption: false,
+      loadWhenMount: true,
+    },
+    request: () => new Promise(resolve => loadVersions(['version_planning', 'released']).then((res) => { resolve(res); })),
+    render: version => (
+      <Option
+        key={version.versionId}
+        value={version.versionId}
+      >
+        {version.name}
       </Option>
     ),
   },

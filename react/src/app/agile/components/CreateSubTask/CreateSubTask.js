@@ -7,7 +7,9 @@ import {
 } from 'choerodon-ui';
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
-import { handleFileUpload, beforeTextUpload } from '../../common/utils';
+import {
+  handleFileUpload, beforeTextUpload, validateFile, normFile, 
+} from '../../common/utils';
 import {
   loadIssue, loadLabels, loadPriorities, loadVersions,
   createSubIssue, getFields, createFieldValue,
@@ -123,7 +125,7 @@ class CreateSubIssue extends Component {
     const { originLabels, originFixVersions } = this.state;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { description } = values;
+        const { description, fileList } = values;
         const subIssueType = store.getIssueTypes && store.getIssueTypes.find(t => t.typeCode === 'sub_task');
         const exitLabels = originLabels;
         const labelIssueRelVOList = _.map(values.issueLink, (label) => {
@@ -170,17 +172,19 @@ class CreateSubIssue extends Component {
         this.setState({ createLoading: true });
         const deltaOps = description;
         if (deltaOps) {
-          beforeTextUpload(deltaOps, extra, this.handleSave);
+          beforeTextUpload(deltaOps, extra, (data) => {
+            this.handleSave(data, fileList);
+          });
         } else {
           extra.description = '';
-          this.handleSave(extra);
+          this.handleSave(extra, fileList);
         }
       }
     });
   };
 
-  handleSave = (data) => {
-    const { fileList, fields } = this.state;
+  handleSave = (data, fileList) => {
+    const { fields } = this.state;
     const { issueId, onOk, form } = this.props;
     const callback = (newFileList) => {
       this.setState({ fileList: newFileList });
@@ -664,11 +668,15 @@ class CreateSubIssue extends Component {
               )}
             </FormItem>
             <FormItem className="c7nagile-line">
-              <UploadButton
-                onRemove={this.setFileList}
-                onBeforeUpload={this.setFileList}
-                fileList={this.state.fileList}
-              />
+              {getFieldDecorator('fileList', {
+                valuePropName: 'fileList',
+                getValueFromEvent: normFile,
+                rules: [{
+                  validator: validateFile,
+                }],
+              })(
+                <UploadButton />,
+              )}
             </FormItem>
           </Fragment>
         );

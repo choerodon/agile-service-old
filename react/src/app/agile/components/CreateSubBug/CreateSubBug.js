@@ -7,7 +7,9 @@ import {
 } from 'choerodon-ui';
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
-import { handleFileUpload, beforeTextUpload } from '../../common/utils';
+import {
+  handleFileUpload, beforeTextUpload, validateFile, normFile, 
+} from '../../common/utils';
 import {
   loadIssue, loadLabels, loadPriorities, loadVersions,
   createIssue, getFields, createFieldValue,
@@ -42,7 +44,6 @@ class CreateSubBug extends Component {
     super(props);
     this.state = {
       createLoading: false,
-      fileList: [],
       sprint: {},
       selectLoading: true,
       originLabels: [],
@@ -86,10 +87,6 @@ class CreateSubBug extends Component {
     }
   }
 
-  setFileList = (data) => {
-    this.setState({ fileList: data });
-  };
-
   loadFields = () => {
     const param = {
       schemeCode: 'agile_issue',
@@ -123,7 +120,7 @@ class CreateSubBug extends Component {
     const { originLabels, originFixVersions } = this.state;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        const { description } = values;
+        const { description, fileList } = values;
         const subIssueType = store.getIssueTypes && store.getIssueTypes.find(t => t.typeCode === 'bug');
         const exitLabels = originLabels;
         const labelIssueRelVOList = _.map(values.issueLink, (label) => {
@@ -171,10 +168,12 @@ class CreateSubBug extends Component {
         this.setState({ createLoading: true });
         const deltaOps = description;
         if (deltaOps) {
-          beforeTextUpload(deltaOps, extra, this.handleSave);
+          beforeTextUpload(deltaOps, extra, (data) => {
+            this.handleSave(data, fileList);
+          });
         } else {
           extra.description = '';
-          this.handleSave(extra);
+          this.handleSave(extra, fileList);
         }
       }
     });
@@ -663,11 +662,15 @@ class CreateSubBug extends Component {
               )}
             </FormItem>
             <FormItem className="c7nagile-line">
-              <UploadButton
-                onRemove={this.setFileList}
-                onBeforeUpload={this.setFileList}
-                fileList={this.state.fileList}
-              />
+              {getFieldDecorator('fileList', {
+                valuePropName: 'fileList',
+                getValueFromEvent: normFile,
+                rules: [{
+                  validator: validateFile,
+                }],
+              })(
+                <UploadButton />,
+              )}
             </FormItem>
           </Fragment>
         );
@@ -706,8 +709,7 @@ class CreateSubBug extends Component {
 
     const {
       createLoading,
-      fields,
-      fileList,
+      fields, 
       loading,
     } = this.state;
 

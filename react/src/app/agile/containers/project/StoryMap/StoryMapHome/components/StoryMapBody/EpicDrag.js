@@ -29,7 +29,7 @@ const EpicDrag = Component => DragSource(
       if (index === targetIndex || index === targetIndex - 1) {
         return; 
       }
-      StoryMapStore.sortEpic(epic, targetEpic);
+      StoryMapStore.sortEpic(epic, targetEpic, index, targetIndex);
     },
   },
   (connect, monitor) => ({
