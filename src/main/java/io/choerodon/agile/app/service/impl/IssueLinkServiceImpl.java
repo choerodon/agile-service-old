@@ -30,8 +30,6 @@ public class IssueLinkServiceImpl implements IssueLinkService {
 
     @Autowired
     private IssueLinkMapper issueLinkMapper;
-//    @Autowired
-//    private IssueLinkRepository issueLinkRepository;
     @Autowired
     private IssueLinkValidator issueLinkValidator;
     @Autowired

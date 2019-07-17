@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.ProductVersionValidator;
 import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.app.service.IProductVersionService;
 import io.choerodon.agile.app.service.IssueService;
 import io.choerodon.agile.app.service.ProductVersionService;
 import io.choerodon.agile.api.vo.event.VersionPayload;
@@ -95,6 +96,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private IProductVersionService iProductVersionService;
+
 
     private static final String VERSION_PLANNING = "version_planning";
     private static final String NOT_EQUAL_ERROR = "error.projectId.notEqual";
@@ -165,11 +169,11 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         if (targetVersionId != null && !Objects.equals(targetVersionId, 0L)) {
             List<VersionIssueDTO> versionFixIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, FIX_RELATION_TYPE);
             if (versionFixIssues != null && !versionFixIssues.isEmpty()) {
-                batchIssueToDestination(projectId, targetVersionId, versionFixIssues, new Date(), customUserDetails.getUserId());
+                iProductVersionService.batchIssueToDestination(projectId, targetVersionId, versionFixIssues, new Date(), customUserDetails.getUserId());
             }
             List<VersionIssueDTO> versionInfIssues = productVersionMapper.queryIssuesByRelationType(projectId, versionId, INFLUENCE_RELATION_TYPE);
             if (versionInfIssues != null && !versionInfIssues.isEmpty()) {
-                batchIssueToDestination(projectId, targetVersionId, versionInfIssues, new Date(), customUserDetails.getUserId());
+                iProductVersionService.batchIssueToDestination(projectId, targetVersionId, versionInfIssues, new Date(), customUserDetails.getUserId());
             }
         }
         versionIssueRelService.deleteByVersionId(projectId, versionId);
@@ -186,7 +190,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             if (versionDTO == null) {
                 throw new CommonException(NOT_FOUND);
             }
-            Boolean deleteResult = delete(versionDTO);
+            Boolean deleteResult = iProductVersionService.delete(versionDTO);
             VersionPayload versionPayload = new VersionPayload();
             versionPayload.setVersionId(versionDTO.getVersionId());
             versionPayload.setProjectId(versionDTO.getProjectId());
@@ -312,7 +316,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
             List<VersionIssueDTO> incompleteIssues = productVersionMapper.queryIncompleteIssues(projectId, productVersionRelease.getVersionId());
             if (!incompleteIssues.isEmpty()) {
                 versionIssueRelService.deleteIncompleteIssueByVersionId(projectId, productVersionRelease.getVersionId());
-                batchIssueToDestination(projectId, productVersionRelease.getTargetVersionId(), incompleteIssues, new Date(), customUserDetails.getUserId());
+                iProductVersionService.batchIssueToDestination(projectId, productVersionRelease.getTargetVersionId(), incompleteIssues, new Date(), customUserDetails.getUserId());
             }
         }
         release(projectId, productVersionRelease.getVersionId(), productVersionRelease.getReleaseDate());
@@ -395,7 +399,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         List<VersionIssueDTO> versionIssues = productVersionMapper.queryIssueByVersionIds(projectId, productVersionMergeVO.getSourceVersionIds(), productVersionMergeVO.getTargetVersionId());
         versionIssueRelService.deleteByVersionIds(projectId, productVersionMergeVO.getSourceVersionIds());
         if (!versionIssues.isEmpty()) {
-            batchIssueToDestination(projectId, productVersionMergeVO.getTargetVersionId(), versionIssues, new Date(), customUserDetails.getUserId());
+            iProductVersionService.batchIssueToDestination(projectId, productVersionMergeVO.getTargetVersionId(), versionIssues, new Date(), customUserDetails.getUserId());
         }
         //这里不用日志是因为deleteByVersionIds方法已经有删除的日志了
         deleteByVersionIds(projectId, productVersionMergeVO.getSourceVersionIds());
@@ -505,14 +509,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         return versionMapper.selectByPrimaryKey(versionDTO.getVersionId());
     }
 
-    @Override
-    @DataLog(type = "batchDeleteVersionByVersion", single = false)
-    public Boolean delete(ProductVersionDTO versionDTO) {
-        if (versionMapper.delete(versionDTO) != 1) {
-            throw new CommonException(DELETE_ERROR);
-        }
-        return true;
-    }
+//    @Override
+//    @DataLog(type = "batchDeleteVersionByVersion", single = false)
+//    public Boolean delete(ProductVersionDTO versionDTO) {
+//        if (versionMapper.delete(versionDTO) != 1) {
+//            throw new CommonException(DELETE_ERROR);
+//        }
+//        return true;
+//    }
 
     @Override
     public ProductVersionDTO update(ProductVersionDTO versionDTO, List<String> fieldList) {
@@ -525,12 +529,12 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         return versionMapper.selectByPrimaryKey(versionDTO.getVersionId());
     }
 
-    @Override
-    @DataLog(type = "batchMoveVersion", single = false)
-    public Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDTO> versionIssues, Date date, Long userId) {
-        versionMapper.issueToDestination(projectId, targetVersionId, versionIssues, date, userId);
-        return true;
-    }
+//    @Override
+//    @DataLog(type = "batchMoveVersion", single = false)
+//    public Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDTO> versionIssues, Date date, Long userId) {
+//        versionMapper.issueToDestination(projectId, targetVersionId, versionIssues, date, userId);
+//        return true;
+//    }
 
     @Override
     public Boolean release(Long projectId, Long versionId, Date releaseDate) {

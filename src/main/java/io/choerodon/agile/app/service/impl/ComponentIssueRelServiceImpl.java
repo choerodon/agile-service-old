@@ -9,6 +9,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
@@ -17,7 +18,7 @@ import javax.annotation.PostConstruct;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 16:47:27
  */
-@Component
+@Service
 public class ComponentIssueRelServiceImpl implements ComponentIssueRelService {
 
     private static final String INSERT_ERROR = "error.ComponentIssueRel.create";

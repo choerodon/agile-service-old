@@ -7,13 +7,14 @@ import io.choerodon.agile.infra.mapper.IssueSprintRelMapper;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 
 /**
  * @author dinghuang123@gmail.com
  * @since 2018/7/6
  */
-@Component
+@Service
 public class IssueSprintRelServiceImpl implements IssueSprintRelService {
 
     private static final String INSERT_ERROR = "error.issueSprintRel.create";

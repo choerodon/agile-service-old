@@ -29,8 +29,6 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class ProjectInfoServiceImpl implements ProjectInfoService {
 
-//    @Autowired
-//    private ProjectInfoRepository projectInfoRepository;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
@@ -49,7 +47,6 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
         projectInfoDTO.setIssueMaxNum(0L);
         projectInfoDTO.setProjectCode(projectEvent.getProjectCode());
         projectInfoDTO.setProjectId(projectEvent.getProjectId());
-//        projectInfoRepository.create(projectInfoE);
         int result = projectInfoMapper.insert(projectInfoDTO);
         if (result != 1) {
             throw new CommonException("error.projectInfo.initializationProjectInfo");

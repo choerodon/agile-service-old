@@ -210,7 +210,6 @@ public class PiServiceImpl implements PiService {
         artDTO.setProgramId(programId);
         artDTO.setPiCodeNumber(piCodeNumber);
         artDTO.setObjectVersionNumber(objectVersionNumber);
-//        artRepository.updateBySelective(artE);
         if (artMapper.updateByPrimaryKeySelective(artDTO) != 1) {
             throw new CommonException("error.art.update");
         }

@@ -7,6 +7,7 @@ import io.choerodon.agile.infra.dataobject.VersionIssueRelDTO;
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 16:21:18
  */
-@Component
+@Service
 public class VersionIssueRelServiceImpl implements VersionIssueRelService {
 
     private static final String INSERT_ERROR = "error.VersionIssueRel.create";

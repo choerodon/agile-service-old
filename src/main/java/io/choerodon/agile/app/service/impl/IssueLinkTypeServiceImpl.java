@@ -39,8 +39,6 @@ public class IssueLinkTypeServiceImpl implements IssueLinkTypeService {
 
     @Autowired
     private IssueLinkTypeMapper issueLinkTypeMapper;
-//    @Autowired
-//    private IssueLinkTypeRepository issueLinkTypeRepository;
     @Autowired
     private IssueLinkTypeAssembler issueLinkTypeAssembler;
     @Autowired

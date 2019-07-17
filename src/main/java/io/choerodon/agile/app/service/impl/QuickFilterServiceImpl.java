@@ -31,9 +31,6 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     private static final String NOT_IN = "not in";
     private static final String IS_NOT = "is not";
 
-//    @Autowired
-//    private QuickFilterRepository quickFilterRepository;
-
     @Autowired
     private QuickFilterMapper quickFilterMapper;
 
@@ -193,7 +190,6 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         //设置编号
         Integer sequence = quickFilterMapper.queryMaxSequenceByProject(projectId);
         quickFilterDTO.setSequence(sequence == null ? 0 : sequence + 1);
-//        return ConvertHelper.convert(quickFilterRepository.create(quickFilterE), QuickFilterVO.class);
         if (quickFilterMapper.insert(quickFilterDTO) != 1) {
             throw new CommonException("error.quickFilter.insert");
         }
@@ -229,7 +225,6 @@ public class QuickFilterServiceImpl implements QuickFilterService {
 
     @Override
     public void deleteById(Long projectId, Long filterId) {
-//        quickFilterRepository.deleteById(filterId);
         QuickFilterDTO quickFilterDTO = quickFilterMapper.selectByPrimaryKey(filterId);
         if (quickFilterDTO == null) {
             throw new CommonException("error.quickFilter.get");
@@ -283,14 +278,12 @@ public class QuickFilterServiceImpl implements QuickFilterService {
     private void handleSequence(QuickFilterSequenceVO quickFilterSequenceVO, Long projectId, QuickFilterDTO quickFilterDTO) {
         if (quickFilterSequenceVO.getBeforeSequence() == null) {
             quickFilterDTO.setSequence(quickFilterSequenceVO.getAfterSequence() + 1);
-//            quickFilterRepository.update(quickFilterE);
             updateBySelective(quickFilterDTO);
         } else if (quickFilterSequenceVO.getAfterSequence() == null) {
             if (quickFilterDTO.getSequence() > quickFilterSequenceVO.getBeforeSequence()) {
                 Integer add = quickFilterDTO.getSequence() - quickFilterSequenceVO.getBeforeSequence();
                 if (add > 0) {
                     quickFilterDTO.setSequence(quickFilterSequenceVO.getBeforeSequence() - 1);
-//                    quickFilterRepository.update(quickFilterE);
                     updateBySelective(quickFilterDTO);
                 } else {
                     quickFilterMapper.batchUpdateSequence(quickFilterSequenceVO.getBeforeSequence(), projectId,
@@ -300,7 +293,6 @@ public class QuickFilterServiceImpl implements QuickFilterService {
         } else {
             Integer sequence = quickFilterSequenceVO.getAfterSequence() + 1;
             quickFilterDTO.setSequence(sequence);
-//            quickFilterRepository.update(quickFilterE);
             updateBySelective(quickFilterDTO);
             Integer update = sequence - quickFilterSequenceVO.getBeforeSequence();
             if (update >= 0) {

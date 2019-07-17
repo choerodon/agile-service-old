@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +55,7 @@ import java.util.stream.Collectors;
  * @author shinan.chen
  * @date 2018/10/30
  */
-@Component
+@Service
 public class StateMachineServiceImpl implements StateMachineService {
 
     private static final Logger logger = LoggerFactory.getLogger(StateMachineServiceImpl.class);

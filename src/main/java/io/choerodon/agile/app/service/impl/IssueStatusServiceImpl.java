@@ -4,6 +4,7 @@ import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueStatusValidator;
 import io.choerodon.agile.api.vo.event.AddStatusWithProject;
 import io.choerodon.agile.app.service.ColumnStatusRelService;
+import io.choerodon.agile.app.service.IIssueStatusService;
 import io.choerodon.agile.app.service.IssueStatusService;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.common.annotation.DataLog;
@@ -61,6 +62,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Autowired
     private DataLogRedisUtil dataLogRedisUtil;
+
+    @Autowired
+    private IIssueStatusService iIssueStatusService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -235,7 +239,7 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     public IssueStatusVO updateStatus(Long projectId, IssueStatusVO issueStatusVO) {
         IssueStatusValidator.checkUpdateStatus(projectId, issueStatusVO);
         IssueStatusDTO issueStatusDTO = modelMapper.map(issueStatusVO, IssueStatusDTO.class);
-        return modelMapper.map(update(issueStatusDTO), IssueStatusVO.class);
+        return modelMapper.map(iIssueStatusService.update(issueStatusDTO), IssueStatusVO.class);
     }
 
 
@@ -248,15 +252,15 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         return modelMapper.map(issueStatusMapper.selectByStatusId(issueStatusDTO.getProjectId(), issueStatusDTO.getStatusId()), IssueStatusDTO.class);
     }
 
-    @Override
-    @DataLog(type = "batchUpdateIssueStatus", single = false)
-    public IssueStatusDTO update(IssueStatusDTO issueStatusDTO) {
-        if (issueStatusMapper.updateByPrimaryKeySelective(issueStatusDTO) != 1) {
-            throw new CommonException("error.status.update");
-        }
-        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusDTO);
-        return modelMapper.map(issueStatusMapper.selectByStatusId(issueStatusDTO.getProjectId(), issueStatusDTO.getStatusId()), IssueStatusDTO.class);
-    }
+//    @Override
+//    @DataLog(type = "batchUpdateIssueStatus", single = false)
+//    public IssueStatusDTO update(IssueStatusDTO issueStatusDTO) {
+//        if (issueStatusMapper.updateByPrimaryKeySelective(issueStatusDTO) != 1) {
+//            throw new CommonException("error.status.update");
+//        }
+//        dataLogRedisUtil.deleteByUpdateIssueStatus(issueStatusDTO);
+//        return modelMapper.map(issueStatusMapper.selectByStatusId(issueStatusDTO.getProjectId(), issueStatusDTO.getStatusId()), IssueStatusDTO.class);
+//    }
 
     @Override
     public void delete(IssueStatusDTO issueStatusDTO) {

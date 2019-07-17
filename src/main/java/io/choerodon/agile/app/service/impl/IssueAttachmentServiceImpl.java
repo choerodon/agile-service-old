@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import io.choerodon.agile.app.service.IIssueAttachmentService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.IssueAttachmentDTO;
 import io.choerodon.core.exception.CommonException;
@@ -38,7 +39,6 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
 
     private static final String BACKETNAME = "agile-service";
 
-    private static final String INSERT_ERROR = "error.IssueAttachment.create";
 
     private final FileFeignClient fileFeignClient;
 
@@ -47,11 +47,11 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         this.fileFeignClient = fileFeignClient;
     }
 
-//    @Autowired
-//    private IssueAttachmentRepository issueAttachmentRepository;
-
     @Autowired
     private IssueAttachmentMapper issueAttachmentMapper;
+
+    @Autowired
+    private IIssueAttachmentService iIssueAttachmentService;
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -64,30 +64,28 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         issueAttachmentDTO.setFileName(fileName);
         issueAttachmentDTO.setUrl(url);
         issueAttachmentDTO.setCommentId(1L);
-//        issueAttachmentRepository.create(issueAttachmentE);
-        insertIssueAttachment(issueAttachmentDTO);
+        iIssueAttachmentService.createBase(issueAttachmentDTO);
     }
 
-    @DataLog(type = "createAttachment")
-    public IssueAttachmentDTO insertIssueAttachment(IssueAttachmentDTO issueAttachmentDTO) {
-//        IssueAttachmentDTO issueAttachmentDTO = ConvertHelper.convert(issueAttachmentE, IssueAttachmentDTO.class);
-        if (issueAttachmentMapper.insert(issueAttachmentDTO) != 1) {
-            throw new CommonException(INSERT_ERROR);
-        }
-        return issueAttachmentMapper.selectByPrimaryKey(issueAttachmentDTO.getAttachmentId());
-    }
+//    @DataLog(type = "createAttachment")
+//    public IssueAttachmentDTO insertIssueAttachment(IssueAttachmentDTO issueAttachmentDTO) {
+//        if (issueAttachmentMapper.insert(issueAttachmentDTO) != 1) {
+//            throw new CommonException(INSERT_ERROR);
+//        }
+//        return issueAttachmentMapper.selectByPrimaryKey(issueAttachmentDTO.getAttachmentId());
+//    }
 
-    @DataLog(type = "deleteAttachment")
-    public Boolean deleteById(Long attachmentId) {
-        IssueAttachmentDTO issueAttachmentDTO = issueAttachmentMapper.selectByPrimaryKey(attachmentId);
-        if (issueAttachmentDTO == null) {
-            throw new CommonException("error.attachment.get");
-        }
-        if (issueAttachmentMapper.delete(issueAttachmentDTO) != 1) {
-            throw new CommonException("error.attachment.delete");
-        }
-        return true;
-    }
+//    @DataLog(type = "deleteAttachment")
+//    public Boolean deleteById(Long attachmentId) {
+//        IssueAttachmentDTO issueAttachmentDTO = issueAttachmentMapper.selectByPrimaryKey(attachmentId);
+//        if (issueAttachmentDTO == null) {
+//            throw new CommonException("error.attachment.get");
+//        }
+//        if (issueAttachmentMapper.delete(issueAttachmentDTO) != 1) {
+//            throw new CommonException("error.attachment.delete");
+//        }
+//        return true;
+//    }
 
     private String dealUrl(String url) {
         String dealUrl = null;
@@ -134,8 +132,7 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         if (issueAttachmentDTO == null) {
             throw new CommonException("error.attachment.get");
         }
-//        Boolean result = issueAttachmentRepository.deleteById(issueAttachmentE.getAttachmentId());
-        Boolean result = deleteById(issueAttachmentDTO.getAttachmentId());
+        Boolean result = iIssueAttachmentService.deleteBase(issueAttachmentDTO.getAttachmentId());
         String url = null;
         try {
             url = URLDecoder.decode(issueAttachmentDTO.getUrl(), "UTF-8");

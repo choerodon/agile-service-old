@@ -16,8 +16,7 @@ import java.util.List;
 public class PriorityServiceImpl implements PriorityService {
     @Autowired
     IssueMapper issueMapper;
-//    @Autowired
-//    IssueRepository issueRepository;
+
     @Autowired
     private IssueAccessDataService issueAccessDataService;
 

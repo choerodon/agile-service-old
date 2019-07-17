@@ -36,8 +36,6 @@ public class WorkCalendarRefServiceImpl implements WorkCalendarRefService {
     private SprintSearchAssembler sprintSearchAssembler;
     @Autowired
     private WorkCalendarRefMapper workCalendarRefMapper;
-//    @Autowired
-//    private SprintWorkCalendarRefRepository sprintWorkCalendarRefRepository;
 
     @Override
     public SprintWorkCalendarVO querySprintWorkCalendarRefs(Long projectId, Integer year) {
@@ -67,7 +65,6 @@ public class WorkCalendarRefServiceImpl implements WorkCalendarRefService {
 
     @Override
     public void deleteWorkCalendarRef(Long projectId, Long calendarId) {
-//        sprintWorkCalendarRefRepository.delete(projectId, calendarId);
         WorkCalendarRefDTO workCalendarRefDTO = new WorkCalendarRefDTO();
         workCalendarRefDTO.setProjectId(projectId);
         workCalendarRefDTO.setCalendarId(calendarId);

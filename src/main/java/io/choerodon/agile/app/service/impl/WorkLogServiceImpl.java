@@ -2,6 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.WorkLogVO;
 import io.choerodon.agile.api.validator.WorkLogValidator;
+import io.choerodon.agile.app.service.IWorkLogService;
 import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.WorkLogService;
 import io.choerodon.agile.infra.common.annotation.DataLog;
@@ -41,14 +42,8 @@ public class WorkLogServiceImpl implements WorkLogService {
     private static final String REDUCE = "reduce";
     private static final String REMAINING_TIME_FIELD = "remainingTime";
 
-//    @Autowired
-//    private WorkLogRepository workLogRepository;
-
     @Autowired
     private WorkLogMapper workLogMapper;
-
-//    @Autowired
-//    private IssueRepository issueRepository;
 
     @Autowired
     private IssueMapper issueMapper;
@@ -58,6 +53,9 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Autowired
     private IssueAccessDataService issueAccessDataService;
+
+    @Autowired
+    private IWorkLogService iWorkLogService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -114,8 +112,7 @@ public class WorkLogServiceImpl implements WorkLogService {
                     break;
             }
         }
-//        workLogE = workLogRepository.create(workLogE);
-        WorkLogDTO res = createBase(modelMapper.map(workLogVO, WorkLogDTO.class));
+        WorkLogDTO res = iWorkLogService.createBase(modelMapper.map(workLogVO, WorkLogDTO.class));
         return queryWorkLogById(res.getProjectId(), res.getLogId());
     }
 
@@ -129,7 +126,7 @@ public class WorkLogServiceImpl implements WorkLogService {
 
     @Override
     public void deleteWorkLog(Long projectId, Long logId) {
-        deleteBase(projectId, logId);
+        iWorkLogService.deleteBase(projectId, logId);
     }
 
     @Override
@@ -154,14 +151,14 @@ public class WorkLogServiceImpl implements WorkLogService {
         return workLogVOList;
     }
 
-    @Override
-    @DataLog(type = "createWorkLog")
-    public WorkLogDTO createBase(WorkLogDTO workLogDTO) {
-        if (workLogMapper.insert(workLogDTO) != 1) {
-            throw new CommonException("error.workLog.insert");
-        }
-        return workLogMapper.selectByPrimaryKey(workLogDTO.getLogId());
-    }
+//    @Override
+//    @DataLog(type = "createWorkLog")
+//    public WorkLogDTO createBase(WorkLogDTO workLogDTO) {
+//        if (workLogMapper.insert(workLogDTO) != 1) {
+//            throw new CommonException("error.workLog.insert");
+//        }
+//        return workLogMapper.selectByPrimaryKey(workLogDTO.getLogId());
+//    }
 
     @Override
     public WorkLogDTO updateBase(WorkLogDTO workLogDTO) {
@@ -171,18 +168,18 @@ public class WorkLogServiceImpl implements WorkLogService {
         return workLogMapper.selectByPrimaryKey(workLogDTO.getLogId());
     }
 
-    @Override
-    @DataLog(type = "deleteWorkLog")
-    public void deleteBase(Long projectId,Long logId) {
-        WorkLogDTO query = new WorkLogDTO();
-        query.setProjectId(projectId);
-        query.setLogId(logId);
-        WorkLogDTO workLogDTO = workLogMapper.selectOne(query);
-        if (workLogDTO == null) {
-            throw new CommonException("error.workLog.get");
-        }
-        if (workLogMapper.delete(workLogDTO) != 1) {
-            throw new CommonException("error.workLog.delete");
-        }
-    }
+//    @Override
+//    @DataLog(type = "deleteWorkLog")
+//    public void deleteBase(Long projectId,Long logId) {
+//        WorkLogDTO query = new WorkLogDTO();
+//        query.setProjectId(projectId);
+//        query.setLogId(logId);
+//        WorkLogDTO workLogDTO = workLogMapper.selectOne(query);
+//        if (workLogDTO == null) {
+//            throw new CommonException("error.workLog.get");
+//        }
+//        if (workLogMapper.delete(workLogDTO) != 1) {
+//            throw new CommonException("error.workLog.delete");
+//        }
+//    }
 }

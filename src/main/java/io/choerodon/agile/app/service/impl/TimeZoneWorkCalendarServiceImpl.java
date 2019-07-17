@@ -35,9 +35,6 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarService {
 
-//    @Autowired
-//    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
-
     @Autowired
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
 
@@ -49,9 +46,6 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
 
     @Autowired
     private TimeZoneWorkCalendarAssembler timeZoneWorkCalendarAssembler;
-
-//    @Autowired
-//    private TimeZoneWorkCalendarRefRepository timeZoneWorkCalendarRefRepository;
 
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeZoneWorkCalendarServiceImpl.class);
@@ -93,7 +87,6 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
 
     @Override
     public void deleteTimeZoneWorkCalendarRef(Long organizationId, Long calendarId) {
-//        timeZoneWorkCalendarRefRepository.delete(organizationId, calendarId);
         TimeZoneWorkCalendarRefDTO timeZoneWorkCalendarRefDTO = new TimeZoneWorkCalendarRefDTO();
         timeZoneWorkCalendarRefDTO.setOrganizationId(organizationId);
         timeZoneWorkCalendarRefDTO.setCalendarId(calendarId);
@@ -114,9 +107,6 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
             timeZoneWorkCalendarDTO.setSaturdayWork(false);
             timeZoneWorkCalendarDTO.setSundayWork(false);
             timeZoneWorkCalendarDTO.setUseHoliday(true);
-//            TimeZoneWorkCalendarE timeZoneWorkCalendarE = timeZoneWorkCalendarAssembler
-//                    .toTarget(timeZoneWorkCalendarDTO, TimeZoneWorkCalendarE.class);
-//            timeZoneWorkCalendarE.setOrganizationId(organizationId);
             return modelMapper.map(create(timeZoneWorkCalendarDTO), TimeZoneWorkCalendarVO.class);
         } else {
             return modelMapper.map(query, TimeZoneWorkCalendarVO.class);
@@ -142,8 +132,6 @@ public class TimeZoneWorkCalendarServiceImpl implements TimeZoneWorkCalendarServ
             timeZoneWorkCalendarDTO.setSaturdayWork(false);
             timeZoneWorkCalendarDTO.setSundayWork(false);
             timeZoneWorkCalendarDTO.setUseHoliday(true);
-//            TimeZoneWorkCalendarE timeZoneWorkCalendarE = timeZoneWorkCalendarAssembler
-//                    .toTarget(timeZoneWorkCalendarDTO, TimeZoneWorkCalendarE.class);
             timeZoneWorkCalendarDTO.setOrganizationId(organizationId);
             timeZoneWorkCalendarDTO = modelMapper.map(create(timeZoneWorkCalendarDTO), TimeZoneWorkCalendarDTO.class);
             return initTimeZoneWorkCalendarRefDetailDTO(timeZoneWorkCalendarDTO, organizationId, year);

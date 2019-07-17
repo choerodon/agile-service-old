@@ -23,10 +23,7 @@ public class BoardDependServiceImpl implements BoardDependService {
 
     @Autowired
     private BoardDependMapper boardDependMapper;
-//    @Autowired
-//    private BoardDependRepository boardDependRepository;
-//    @Autowired
-//    private BoardFeatureRepository boardFeatureRepository;
+
     @Autowired
     private BoardFeatureService boardFeatureService;
 
@@ -53,7 +50,6 @@ public class BoardDependServiceImpl implements BoardDependService {
         BoardDependDTO boardDependDTO = modelMapper.map(createVO, BoardDependDTO.class);
         boardDependDTO.setProgramId(projectId);
         checkExist(boardDependDTO);
-//        boardDependRepository.create(boardDependDTO);
         if (boardDependMapper.insert(boardDependDTO) != 1) {
             throw new CommonException(ERROR_BOARDDEPEND_CREATE);
         }
@@ -78,9 +74,7 @@ public class BoardDependServiceImpl implements BoardDependService {
 
     @Override
     public void deleteById(Long projectId, Long boardDependId) {
-//        boardDependRepository.checkId(projectId, boardDependId);
         checkId(projectId, boardDependId);
-//        boardDependRepository.delete(boardDependId);
         if (boardDependMapper.deleteByPrimaryKey(boardDependId) != 1) {
             throw new CommonException(ERROR_BOARDDEPEND_DELETE);
         }
