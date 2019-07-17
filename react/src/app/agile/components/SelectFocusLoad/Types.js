@@ -10,6 +10,7 @@ import {
   loadStatusList, loadIssuesInLink, loadSprints,
 
 } from '../../api/NewIssueApi';
+import { getPISelect } from '../../api/PIApi';
 import IssueLinkType from '../../api/IssueLinkType';
 import TypeTag from '../TypeTag';
 import StatusTag from '../StatusTag';
@@ -315,6 +316,19 @@ export default {
       <Option key={sprint.sprintId} value={sprint.sprintId}>
         {sprint.sprintName}
       </Option>
+    ),
+  },
+  pi: {
+    props: {
+      getPopupContainer: triggerNode => triggerNode.parentNode,     
+      filterOption,
+      loadWhenMount: true,
+    },
+    request: getPISelect,
+    render: pi => (
+      <Option key={pi.id} value={pi.id}>
+        {`${pi.code}-${pi.name}`}
+      </Option>    
     ),
   },
 };

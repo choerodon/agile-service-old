@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { stores, axios, Content } from '@choerodon/boot';
+import { stores, Content } from '@choerodon/boot';
 import { map, find } from 'lodash';
 import {
   Select, Form, Input, Button, Modal, Spin,
@@ -7,11 +7,11 @@ import {
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
 import {
-  handleFileUpload, beforeTextUpload, validateFile, normFile, getProjectName,
+  handleFileUpload, beforeTextUpload, validateFile, normFile, getProjectName, getProjectId,
 } from '../../common/utils';
 import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
 import {
-  createIssue, getFields, createFieldValue, loadIssue,
+  createIssue, getFields, createFieldValue, loadIssue, loadIssueTypes,
 } from '../../api/NewIssueApi';
 import SelectNumber from '../SelectNumber';
 import WYSIWYGEditor from '../WYSIWYGEditor';
@@ -34,6 +34,7 @@ const defaultProps = {
   contentTitle: `在项目“${getProjectName()}”中创建问题`,
   contentDescription: '请在下面输入问题的详细信息，包含详细描述、人员信息、版本信息、进度预估、优先级等等。您可以通过丰富的任务描述帮助相关人员更快更全面的理解任务，同时更好的把控问题进度。',
   contentLink: 'http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/create-issue/',
+  hiddenFields: [],
 };
 class CreateIssue extends Component {
   constructor(props) {
@@ -81,9 +82,10 @@ class CreateIssue extends Component {
   handleSave = (data, fileList) => {
     const { fields } = this.state;
     const {
-      onOk, form, request,
+      onOk, form, request, mode,
     } = this.props;
-    request(data).then((res) => {
+    const applyType = mode === 'feature' ? 'program' : 'agile';
+    request(data, applyType).then((res) => {
       const fieldList = [];
       fields.forEach((item) => {
         if (!item.system) {
@@ -115,39 +117,39 @@ class CreateIssue extends Component {
         createLoading: false,
       });
       onOk(res);
-    })
-      .catch(() => {
-        form.resetFields();
-        this.setState({
-          createLoading: false,
-        });
-        onOk();
+    }).catch(() => {
+      form.resetFields();
+      this.setState({
+        createLoading: false,
       });
+      onOk();
+    });
   };
 
   loadIssueTypes = () => {
-    axios.get(`/issue/v1/projects/${AppState.currentMenuType.projectId}/schemes/query_issue_types_with_sm_id?apply_type=agile`)
-      .then((res) => {
-        if (res && res.length) {
-          const defaultType = this.getDefaultType(res);
-          const param = {
-            schemeCode: 'agile_issue',
-            context: defaultType.typeCode,
-            pageCode: 'agile_issue_create',
-          };
-          getFields(param).then((fields) => {
-            this.setState({
-              fields,
-              originIssueTypes: res,
-              defaultTypeId: defaultType.id,
-              loading: false,
-              newIssueTypeCode: defaultType.typeCode,
-            }, () => {
-              this.setDefaultSprint();
-            });
+    const { mode } = this.props;
+    const applyType = mode === 'feature' ? 'program' : 'agile';
+    loadIssueTypes(applyType).then((res) => {
+      if (res && res.length) {
+        const defaultType = this.getDefaultType(res);
+        const param = {
+          schemeCode: 'agile_issue',
+          context: defaultType.typeCode,
+          pageCode: 'agile_issue_create',
+        };
+        getFields(param).then((fields) => {
+          this.setState({
+            fields,
+            originIssueTypes: res,
+            defaultTypeId: defaultType.id,
+            loading: false,
+            newIssueTypeCode: defaultType.typeCode,
+          }, () => {
+            this.setDefaultSprint();
           });
-        }
-      });
+        });
+      }
+    });
   };
 
   getIssueLinks = (linkTypes, linkIssues) => {
@@ -186,6 +188,7 @@ class CreateIssue extends Component {
           estimatedTime,
           sprintId,
           epicId,
+          pi,
           epicName,
           assigneedId,
           benfitHypothesis,
@@ -209,7 +212,7 @@ class CreateIssue extends Component {
           } else {
             return ({
               name: component.trim(),
-              projectId: AppState.currentMenuType.id,
+              projectId: getProjectId(),
             });
           }
         });
@@ -221,7 +224,7 @@ class CreateIssue extends Component {
           } else {
             return ({
               labelName: label,
-              projectId: AppState.currentMenuType.id,
+              projectId: getProjectId(),
             });
           }
         });
@@ -230,16 +233,19 @@ class CreateIssue extends Component {
           versionId,
           relationType: 'fix',
         }));
-        const issueLinkCreateVOList = this.getIssueLinks(linkTypes, linkIssues);
+        const issueLinkCreateVOList = this.getIssueLinks(linkTypes || [], linkIssues);
 
         const extra = {
+          programId: getProjectId(),
+          projectId: getProjectId(),
           issueTypeId: typeId,
           typeCode,
           summary: summary.trim(),
-          priorityId,
-          priorityCode: `priority-${priorityId}`,
+          priorityId: priorityId || 0,
+          priorityCode: `priority-${priorityId || 0}`,
           sprintId: sprintId || 0,
           epicId: epicId || 0,
+          piId: pi || 0,
           epicName,
           parentIssueId: parentIssueId || 0, // 子任务
           relateIssueId: relateIssueId || 0, // 子bug
@@ -319,7 +325,7 @@ class CreateIssue extends Component {
       case 'issueType':
         return (
           [
-            ['sub_task', 'sub_bug'].includes(mode)
+            ['sub_task', 'sub_bug', 'feature'].includes(mode)
               ? getFieldDecorator('typeId', {
                 rules: [{ required: true, message: '问题类型为必输项' }],
                 initialValue: defaultTypeId || '',
@@ -372,12 +378,26 @@ class CreateIssue extends Component {
                     label="特性类型"
                     getPopupContainer={triggerNode => triggerNode.parentNode}
                   >
-                    <Option key="business" value="business">
-                      特性
-                    </Option>
-                    <Option key="enabler" value="enabler">
-                      使能
-                    </Option>
+                    {[
+                      {
+                        ...this.getDefaultType(),
+                        colour: '#29B6F6',
+                        typeCode: 'business',
+                        name: '特性',
+                      }, {
+                        ...this.getDefaultType(),
+                        colour: '#FFCA28',
+                        typeCode: 'enabler',
+                        name: '使能',
+                      },
+                    ].map(type => (
+                      <Option key={type.typeCode} value={type.typeCode}>                     
+                        <TypeTag
+                          data={type}
+                          showName
+                        />                  
+                      </Option>
+                    ))}
                   </Select>,
                 )}
               </FormItem>
@@ -574,6 +594,35 @@ class CreateIssue extends Component {
             </FormItem>
           </Fragment>
         );
+      case 'benfitHypothesis':
+        return (
+          <FormItem key={field.id}>
+            {getFieldDecorator('benfitHypothesis', {
+            })(
+              <Input label="特性价值" placeholder="请输入特性价值" maxLength={100} />,
+            )}
+          </FormItem>
+        );
+      case 'acceptanceCritera':
+        return (
+          <FormItem key={field.id}>
+            {getFieldDecorator('acceptanceCritera', {
+            })(
+              <Input label="验收标准" placeholder="请输入验收标准" maxLength={100} />,
+            )}
+          </FormItem>
+        );
+      case 'pi':
+        return (
+          <FormItem key={field.id} label="PI">
+            {getFieldDecorator('pi')(
+              <SelectFocusLoad
+                label="PI"
+                type="pi"
+              />,
+            )}
+          </FormItem>
+        );
       default:
         return (
           <FormItem label={fieldName}>
@@ -661,6 +710,7 @@ class CreateIssue extends Component {
       contentTitle,
       contentDescription,
       contentLink,
+      hiddenFields,
     } = this.props;
     const {
       createLoading, fields, loading, newIssueTypeCode,
@@ -689,9 +739,9 @@ class CreateIssue extends Component {
                     <Input label="父任务概要" value={parentSummary} disabled />
                   </FormItem>
                 )}
-                {fields && fields.map(field => this.getFieldComponent(field))}
+                {fields && fields.filter(field => !hiddenFields.includes(field.fieldCode)).map(field => this.getFieldComponent(field))}
               </div>
-              {newIssueTypeCode !== 'issue_epic' && <FieldIssueLinks form={form} />}
+              {mode !== 'feature' && newIssueTypeCode !== 'issue_epic' && <FieldIssueLinks form={form} />}
             </Form>
           </Spin>
         </Content>
