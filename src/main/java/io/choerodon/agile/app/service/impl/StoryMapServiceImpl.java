@@ -127,7 +127,7 @@ public class StoryMapServiceImpl implements StoryMapService {
     public JSONObject queryStoryMapDemand(Long projectId, SearchVO searchVO) {
         JSONObject result = new JSONObject(true);
         List<StoryMapStoryDTO> storyMapStoryDTOList = storyMapMapper.selectDemandStoryList(projectId, searchVO);
-        result.put("demandStoryList", storyMapAssembler.storyMapStoryDOToDTO(projectId, storyMapStoryDTOList));
+        result.put("demandStoryList", storyMapAssembler.storyMapStoryDTOToVO(projectId, storyMapStoryDTOList));
         return result;
     }
 

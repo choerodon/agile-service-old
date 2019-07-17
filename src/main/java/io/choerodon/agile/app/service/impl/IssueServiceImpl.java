@@ -338,7 +338,7 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
-        IssueVO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
+        IssueVO result = issueAssembler.issueDetailDTOToVO(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueCreate(projectId, result);
         return result;
     }
@@ -390,7 +390,7 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
-        return issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
+        return issueAssembler.issueDetailDTOToVO(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
     }
 
     private IssueVO queryIssueByUpdate(Long projectId, Long issueId, List<String> fieldList) {
@@ -407,7 +407,7 @@ public class IssueServiceImpl implements IssueService {
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
-        IssueVO result = issueAssembler.issueDetailDoToDto(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
+        IssueVO result = issueAssembler.issueDetailDTOToVO(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueAssignee(projectId, fieldList, result);
         // return feature extends table info
         if (ISSUE_TYPE_FEATURE.equals(result.getTypeCode())) {
@@ -889,7 +889,7 @@ public class IssueServiceImpl implements IssueService {
         } else {
             issueAccessDataService.batchRemoveVersion(projectId, issueIds);
         }
-        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds),
+        return issueSearchAssembler.dtoListToVO(issueMapper.queryIssueByIssueIds(projectId, issueIds),
                 new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
@@ -911,7 +911,7 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueSearchVO> batchIssueToEpic(Long projectId, Long epicId, List<Long> issueIds) {
         issueValidator.judgeExist(projectId, epicId);
         issueAccessDataService.batchIssueToEpic(projectId, epicId, issueIds);
-        return issueSearchAssembler.doListToDTO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
+        return issueSearchAssembler.dtoListToVO(issueMapper.queryIssueByIssueIds(projectId, issueIds), new HashMap<>(), new HashMap<>(), new HashMap<>(), new HashMap<>());
     }
 
     @Override
@@ -983,7 +983,7 @@ public class IssueServiceImpl implements IssueService {
 //            batchHandleIssueStatus(projectId, moveIssueIdsFilter, sprintId);
             List<Long> assigneeIds = issueSearchDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueSearchDTO::getAssigneeId).distinct().collect(Collectors.toList());
             Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
-            return issueSearchAssembler.doListToDTO(issueSearchDTOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
+            return issueSearchAssembler.dtoListToVO(issueSearchDTOList, usersMap, new HashMap<>(), new HashMap<>(), new HashMap<>());
         } else {
             return new ArrayList<>();
         }
@@ -2285,7 +2285,7 @@ public class IssueServiceImpl implements IssueService {
         );
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
-        return PageUtil.buildPageInfoWithPageInfoList(featureCommonDOPage, featureCommonDOPage.getList() != null && !featureCommonDOPage.getList().isEmpty() ? featureCommonAssembler.featureCommonDOToDTO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getList()), statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
+        return PageUtil.buildPageInfoWithPageInfoList(featureCommonDOPage, featureCommonDOPage.getList() != null && !featureCommonDOPage.getList().isEmpty() ? featureCommonAssembler.featureCommonDTOToVO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getList()), statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
     }
 
     @Override

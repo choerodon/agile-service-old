@@ -300,14 +300,14 @@ public class PiServiceImpl implements PiService {
         Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
         // query backlog with all feature
         List<SubFeatureDTO> backlogFeatures = piMapper.selectBacklogNoPiList(programId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
-        result.put("backlogAllFeatures", backlogFeatures != null && !backlogFeatures.isEmpty() ? piAssembler.subFeatureDOTODTO(backlogFeatures, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
+        result.put("backlogAllFeatures", backlogFeatures != null && !backlogFeatures.isEmpty() ? piAssembler.subFeatureDTOToVO(backlogFeatures, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         // query active art with all pi
         ArtDTO activeArt = getActiveArt(programId);
         if (activeArt == null) {
             return result;
         }
         List<PiWithFeatureDTO> piWithFeatureDTOList = piMapper.selectBacklogPiList(programId, activeArt.getId(), StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
-        result.put("allPiList", piWithFeatureDTOList != null && !piWithFeatureDTOList.isEmpty() ? piAssembler.piWithFeatureDOTODTO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
+        result.put("allPiList", piWithFeatureDTOList != null && !piWithFeatureDTOList.isEmpty() ? piAssembler.piWithFeatureDTOToVO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
         return result;
     }
 
@@ -659,7 +659,7 @@ public class PiServiceImpl implements PiService {
             Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
             setStatusIsCompleted(programId, statusMapDTOMap);
             Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-            return piAssembler.piWithFeatureDOTODTO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap);
+            return piAssembler.piWithFeatureDTOToVO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap);
         } else {
             return new ArrayList<>();
         }

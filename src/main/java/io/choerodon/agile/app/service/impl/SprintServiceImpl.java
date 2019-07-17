@@ -261,11 +261,11 @@ public class SprintServiceImpl implements SprintService {
             if (assigneeIssueDTOS != null && !assigneeIssueDTOS.isEmpty()) {
                 sprintSearchDTO.setAssigneeIssueDTOList(assigneeIssueDTOS);
             }
-            SprintSearchVO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDTO, usersMap, null, null, null);
+            SprintSearchVO activeSprint = sprintSearchAssembler.dtoToVO(sprintSearchDTO, usersMap, null, null, null);
             sprintSearches.add(activeSprint);
         }
         List<SprintSearchDTO> sprintSearchDTOS = sprintMapper.queryPlanSprintNoIssueIds(projectId);
-        List<SprintSearchVO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, usersMap, null, null, null);
+        List<SprintSearchVO> planSprints = sprintSearchAssembler.dtoListToVO(sprintSearchDTOS, usersMap, null, null, null);
         if (planSprints != null && !planSprints.isEmpty()) {
             sprintSearches.addAll(planSprints);
         }
@@ -281,7 +281,7 @@ public class SprintServiceImpl implements SprintService {
             List<Long> activeSprintIssueIds = issueIdSprintIdVOS.stream().filter(x -> sprintSearchDTO.getSprintId().equals(x.getSprintId())).map(IssueIdSprintIdVO::getIssueId).collect(Collectors.toList());
             sprintSearchDTO.setIssueSearchDTOList(!activeSprintIssueIds.isEmpty() ? sprintMapper.queryActiveSprintIssueSearchByIssueIds(projectId, activeSprintIssueIds, sprintSearchDTO.getSprintId()) : new ArrayList<>());
             sprintSearchDTO.setAssigneeIssueDTOList(sprintMapper.queryAssigneeIssueByActiveSprintId(projectId, sprintSearchDTO.getSprintId()));
-            SprintSearchVO activeSprint = sprintSearchAssembler.doToDTO(sprintSearchDTO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
+            SprintSearchVO activeSprint = sprintSearchAssembler.dtoToVO(sprintSearchDTO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
             activeSprint.setIssueCount(activeSprint.getIssueSearchVOList() == null ? 0 : activeSprint.getIssueSearchVOList().size());
             Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
                     .stream().collect(Collectors.groupingBy(StatusMapVO::getType, Collectors.mapping(StatusMapVO::getId, Collectors.toList())));
@@ -293,13 +293,13 @@ public class SprintServiceImpl implements SprintService {
         }
         List<SprintSearchDTO> sprintSearchDTOS = sprintMapper.queryPlanSprint(projectId, allIssueIds);
         if (sprintSearchDTOS != null && !sprintSearchDTOS.isEmpty()) {
-            List<SprintSearchVO> planSprints = sprintSearchAssembler.doListToDTO(sprintSearchDTOS, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
+            List<SprintSearchVO> planSprints = sprintSearchAssembler.dtoListToVO(sprintSearchDTOS, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
             planSprints.parallelStream().forEachOrdered(planSprint -> planSprint.setIssueCount(planSprint.getIssueSearchVOList() == null ? 0 : planSprint.getIssueSearchVOList().size()));
             sprintSearches.addAll(planSprints);
         }
         if (issueIds != null && !issueIds.isEmpty()) {
             List<IssueSearchDTO> backLogIssue = sprintMapper.queryBacklogIssues(projectId, issueIds);
-            backLogIssueVO.setBackLogIssue(issueSearchAssembler.doListToDTO(backLogIssue, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
+            backLogIssueVO.setBackLogIssue(issueSearchAssembler.dtoListToVO(backLogIssue, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap));
             backLogIssueVO.setBacklogIssueCount(backLogIssue.size());
         }
     }

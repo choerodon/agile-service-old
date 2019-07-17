@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class IssueSearchAssembler extends AbstractAssembler {
 
-    public List<IssueSearchVO> doListToDTO(List<IssueSearchDTO> issueSearchDTOList, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    public List<IssueSearchVO> dtoListToVO(List<IssueSearchDTO> issueSearchDTOList, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         if (issueSearchDTOList != null && !issueSearchDTOList.isEmpty()) {
             List<IssueSearchVO> issueSearchVOList = new ArrayList<>(issueSearchDTOList.size());
             issueSearchDTOList.forEach(issueSearch -> {
@@ -41,7 +41,7 @@ public class IssueSearchAssembler extends AbstractAssembler {
         }
     }
 
-    public List<AssigneeIssueVO> doListToAssigneeIssueDTO(List<AssigneeIssueDTO> assigneeIssueDTOList, Map<Long, UserMessageDTO> usersMap) {
+    public List<AssigneeIssueVO> dtoListToAssigneeIssueVO(List<AssigneeIssueDTO> assigneeIssueDTOList, Map<Long, UserMessageDTO> usersMap) {
         if (assigneeIssueDTOList != null && !assigneeIssueDTOList.isEmpty()) {
             List<AssigneeIssueVO> assigneeIssues = new ArrayList<>(assigneeIssueDTOList.size());
             assigneeIssueDTOList.forEach(assigneeIssueDO -> {

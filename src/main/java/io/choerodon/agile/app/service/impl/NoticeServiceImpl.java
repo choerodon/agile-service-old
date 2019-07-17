@@ -71,7 +71,7 @@ public class NoticeServiceImpl implements NoticeService {
         }
         List<Long> ids = new ArrayList<>();
         getIds(result, ids);
-        return noticeMessageAssembler.messageDOToIDTO(result, ids);
+        return noticeMessageAssembler.messageDTOToVO(result, ids);
     }
 
     @Override

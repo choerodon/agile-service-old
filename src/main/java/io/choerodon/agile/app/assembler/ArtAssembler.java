@@ -38,7 +38,7 @@ public class ArtAssembler {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
-    public ArtVO artDOTODTO(ArtDTO artDTO) {
+    public ArtVO artDTOToVO(ArtDTO artDTO) {
         ArtVO artVO = modelMapper.map(artDTO, ArtVO.class);
         List<Long> rteIds = new ArrayList<>();
         if (artDTO.getRteId() != null) {
@@ -55,16 +55,4 @@ public class ArtAssembler {
         return artVO;
     }
 
-    public List<PiCalendarVO> piCalendarDOToDTO(List<PiCalendarDTO> piCalendarDTOList) {
-        List<PiCalendarVO> result = new ArrayList<>();
-        piCalendarDTOList.forEach(piCalendarDTO -> {
-            PiCalendarVO piCalendarVO = new PiCalendarVO();
-            BeanUtils.copyProperties(piCalendarDTO, piCalendarVO);
-            if (piCalendarDTO.getSprintCalendarDTOList() != null && !piCalendarDTO.getSprintCalendarDTOList().isEmpty()) {
-                piCalendarVO.setSprintCalendarVOList(modelMapper.map(piCalendarDTO.getSprintCalendarDTOList(), new TypeToken<List<SprintCalendarVO>>(){}.getType()));
-            }
-            result.add(piCalendarVO);
-        });
-        return result;
-    }
 }

@@ -43,7 +43,7 @@ public class IssueAssembler extends AbstractAssembler {
      * @param issueDetailDTO issueDetailDTO
      * @return IssueVO
      */
-    public IssueVO issueDetailDoToDto(IssueDetailDTO issueDetailDTO, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
+    public IssueVO issueDetailDTOToVO(IssueDetailDTO issueDetailDTO, Map<Long, IssueTypeVO> issueTypeDTOMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         IssueVO issueVO = new IssueVO();
         BeanUtils.copyProperties(issueDetailDTO, issueVO);
         issueVO.setFeatureVO(issueDetailDTO.getFeatureDTO() != null ? modelMapper.map(issueDetailDTO.getFeatureDTO(), FeatureVO.class) : null);

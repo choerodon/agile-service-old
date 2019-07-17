@@ -21,7 +21,7 @@ public class StoryMapAssembler extends AbstractAssembler {
 
     private static final String APPLYTYPE_AGILE = "agile";
 
-    public List<StoryMapStoryVO> storyMapStoryDOToDTO(Long projectId, List<StoryMapStoryDTO> storyMapStoryDTOList) {
+    public List<StoryMapStoryVO> storyMapStoryDTOToVO(Long projectId, List<StoryMapStoryDTO> storyMapStoryDTOList) {
         if (storyMapStoryDTOList == null || storyMapStoryDTOList.isEmpty()) {
             return new ArrayList<>();
         }

@@ -121,7 +121,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         Date actualEndDate = sprintDTO.getActualEndDate();
         SprintInfoVO result = modelMapper.map(sprintDTO, SprintInfoVO.class);
         List<AssigneeIssueDTO> assigneeIssueDTOList = iterativeWorktableMapper.queryAssigneeInfoBySprintId(projectId, sprintId);
-        result.setAssigneeIssueVOList(iterativeWorktableAssembler.assigneeIssueDOToDTO(assigneeIssueDTOList));
+        result.setAssigneeIssueVOList(iterativeWorktableAssembler.assigneeIssueDTOToVO(assigneeIssueDTOList));
         if (actualEndDate == null && result.getEndDate() != null) {
             Date startDate = new Date();
             if (result.getStartDate().after(startDate)) {
