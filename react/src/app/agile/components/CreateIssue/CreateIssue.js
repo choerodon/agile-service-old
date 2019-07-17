@@ -7,44 +7,45 @@ import {
 import moment from 'moment';
 import { UploadButton } from '../CommonComponent';
 import {
-  handleFileUpload, beforeTextUpload, randomString, validateFile, normFile,
+  handleFileUpload, beforeTextUpload, validateFile, normFile, getProjectName,
 } from '../../common/utils';
 import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
 import {
-  createIssue,
-  loadSprints,
-  getFields, createFieldValue,
+  createIssue, getFields, createFieldValue, loadIssue,
 } from '../../api/NewIssueApi';
+import SelectNumber from '../SelectNumber';
 import WYSIWYGEditor from '../WYSIWYGEditor';
 import TypeTag from '../TypeTag';
 import './CreateIssue.scss';
 import SelectFocusLoad from '../SelectFocusLoad';
 import renderField from './renderField';
+import FieldIssueLinks from './FieldIssueLinks';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
 const { Option } = Select;
 const FormItem = Form.Item;
 
-const storyPointList = ['0.5', '1', '2', '3', '4', '5', '8', '13'];
-
+const defaultProps = {
+  mode: 'default',
+  request: createIssue,
+  defaultTypeCode: 'story',
+  title: '创建问题',
+  contentTitle: `在项目“${getProjectName()}”中创建问题`,
+  contentDescription: '请在下面输入问题的详细信息，包含详细描述、人员信息、版本信息、进度预估、优先级等等。您可以通过丰富的任务描述帮助相关人员更快更全面的理解任务，同时更好的把控问题进度。',
+  contentLink: 'http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/create-issue/',
+};
 class CreateIssue extends Component {
   constructor(props) {
     super(props);
     this.state = {
       createLoading: false,
-      selectLoading: true,
       loading: true,
       originLabels: [],
       originComponents: [],
-      originSprints: [],
       originIssueTypes: [],
       defaultTypeId: false,
       newIssueTypeCode: '',
-      storyPoints: '',
-      estimatedTime: '',
-      issueLinkArr: [randomString(5)],
-      originLinks: [],
     };
   }
 
@@ -52,44 +53,69 @@ class CreateIssue extends Component {
     this.loadIssueTypes();
   }
 
+  /**
+   * 为子任务和子bug设置默认冲刺
+   *
+   * @memberof CreateIssue
+   */
+  setDefaultSprint = () => {
+    const { mode, parentIssueId, relateIssueId } = this.props;
+    if (['sub_task', 'sub_bug'].includes(mode)) {
+      loadIssue(parentIssueId || relateIssueId).then((res) => {
+        const { form: { setFieldsValue } } = this.props;
+        const { activeSprint } = res;
+        if (activeSprint) {
+          setFieldsValue({
+            sprintId: activeSprint.sprintId,
+          });
+        }
+      });
+    }
+  }
+
+  getDefaultType = (issueTypes = this.state.originIssueTypes) => {
+    const { defaultTypeCode } = this.props;
+    return find(issueTypes, { typeCode: defaultTypeCode });
+  }
 
   handleSave = (data, fileList) => {
     const { fields } = this.state;
-    const { onOk, form } = this.props;
-    createIssue(data)
-      .then((res) => {
-        const fieldList = [];
-        fields.forEach((item) => {
-          if (!item.system) {
-            let value = form.getFieldValue(item.fieldCode);
-            if (item.fieldType === 'time' || item.fieldType === 'datetime' || item.fieldType === 'date') {
-              value = value && value.format('YYYY-MM-DD HH:mm:ss');
-            }
-            fieldList.push({
-              fieldType: item.fieldType,
-              value,
-              fieldId: item.fieldId,
-            });
+    const {
+      onOk, form, request,
+    } = this.props;
+    request(data).then((res) => {
+      const fieldList = [];
+      fields.forEach((item) => {
+        if (!item.system) {
+          let value = form.getFieldValue(item.fieldCode);
+          if (item.fieldType === 'time' || item.fieldType === 'datetime' || item.fieldType === 'date') {
+            value = value && value.format('YYYY-MM-DD HH:mm:ss');
           }
-        });
-        createFieldValue(res.issueId, 'agile_issue', fieldList);
-        if (fileList.length > 0) {
-          const config = {
-            issueType: res.statusId,
-            issueId: res.issueId,
-            fileName: fileList[0].name,
-            projectId: AppState.currentMenuType.id,
-          };
-          if (fileList.some(one => !one.url)) {
-            handleFileUpload(fileList, () => {}, config);
-          }
+          fieldList.push({
+            fieldType: item.fieldType,
+            value,
+            fieldId: item.fieldId,
+          });
         }
-        form.resetFields();
-        this.setState({
-          createLoading: false,
-        });
-        onOk(res);
-      })
+      });
+      createFieldValue(res.issueId, 'agile_issue', fieldList);
+      if (fileList.length > 0) {
+        const config = {
+          issueType: res.statusId,
+          issueId: res.issueId,
+          fileName: fileList[0].name,
+          projectId: AppState.currentMenuType.id,
+        };
+        if (fileList.some(one => !one.url)) {
+          handleFileUpload(fileList, () => { }, config);
+        }
+      }
+      form.resetFields();
+      this.setState({
+        createLoading: false,
+      });
+      onOk(res);
+    })
       .catch(() => {
         form.resetFields();
         this.setState({
@@ -103,8 +129,7 @@ class CreateIssue extends Component {
     axios.get(`/issue/v1/projects/${AppState.currentMenuType.projectId}/schemes/query_issue_types_with_sm_id?apply_type=agile`)
       .then((res) => {
         if (res && res.length) {
-          const story = res.filter(item => item.typeCode === 'story');
-          const defaultType = (story && story.length) ? story[0] : res[0];
+          const defaultType = this.getDefaultType(res);
           const param = {
             schemeCode: 'agile_issue',
             context: defaultType.typeCode,
@@ -117,65 +142,39 @@ class CreateIssue extends Component {
               defaultTypeId: defaultType.id,
               loading: false,
               newIssueTypeCode: defaultType.typeCode,
+            }, () => {
+              this.setDefaultSprint();
             });
           });
         }
       });
   };
 
-  handleChangeStoryPoint = (value) => {
-    const { storyPoints } = this.state;
-    // 只允许输入整数，选择时可选0.5
-    if (value === '0.5') {
-      this.setState({
-        storyPoints: '0.5',
-      });
-    } else if (/^(0|[1-9][0-9]*)(\[0-9]*)?$/.test(value) || value === '') {
-      this.setState({
-        storyPoints: String(value).slice(0, 3),
-      });
-    } else if (value.toString().charAt(value.length - 1) === '.') {
-      this.setState({
-        storyPoints: value.slice(0, -1),
-      });
-    } else {
-      this.setState({
-        storyPoints,
-      });
-    }
-  };
-
-  handleChangeEstimatedTime = (value) => {
-    const { estimatedTime } = this.state;
-    // 只允许输入整数，选择时可选0.5
-    if (value === '0.5') {
-      this.setState({
-        estimatedTime: '0.5',
-      });
-    } else if (/^(0|[1-9][0-9]*)(\[0-9]*)?$/.test(value) || value === '') {
-      this.setState({
-        estimatedTime: String(value).slice(0, 3), // 限制最长三位
-      });
-    } else if (value.toString().charAt(value.length - 1) === '.') {
-      this.setState({
-        estimatedTime: value.slice(0, -1),
-      });
-    } else {
-      this.setState({
-        estimatedTime,
-      });
-    }
-  };
+  getIssueLinks = (linkTypes, linkIssues) => {
+    const issueLinkCreateVOList = [];
+    linkTypes.forEach((link, index) => {
+      if (link) {
+        const [linkTypeId, isIn] = link.split('+');
+        if (linkIssues[index]) {
+          linkIssues[index].forEach((issueId) => {
+            issueLinkCreateVOList.push({
+              linkTypeId,
+              linkedIssueId: issueId,
+              in: isIn === 'true',
+            });
+          });
+        }
+      }
+    });
+    return issueLinkCreateVOList;
+  }
 
   handleCreateIssue = () => {
-    const { form } = this.props;
+    const { form, parentIssueId, relateIssueId } = this.props;
     const {
       originComponents,
       originLabels,
       originIssueTypes,
-      storyPoints,
-      estimatedTime,
-      originLinks,
     } = this.state;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -183,6 +182,8 @@ class CreateIssue extends Component {
           typeId,
           summary,
           description,
+          storyPoints,
+          estimatedTime,
           sprintId,
           epicId,
           epicName,
@@ -194,7 +195,7 @@ class CreateIssue extends Component {
           priorityId,
           issueLabel,
           fixVersionIssueRel,
-          linkTypeId,
+          linkTypes,
           linkIssues,
           fileList,
         } = values;
@@ -229,29 +230,7 @@ class CreateIssue extends Component {
           versionId,
           relationType: 'fix',
         }));
-        const issueLinkCreateVOList = [];
-        if (linkTypeId) {
-          Object.keys(linkTypeId).forEach((link) => {
-            if (linkTypeId[link] && linkIssues[link]) {
-              const currentLinkType = find(originLinks, { linkTypeId: linkTypeId[link].split('+')[0] * 1 });
-              linkIssues[link].forEach((issueId) => {
-                if (currentLinkType.inWard === linkTypeId[link].split('+')[1]) {
-                  issueLinkCreateVOList.push({
-                    linkTypeId: linkTypeId[link].split('+')[0] * 1,
-                    linkedIssueId: issueId * 1,
-                    in: false,
-                  });
-                } else {
-                  issueLinkCreateVOList.push({
-                    linkTypeId: linkTypeId[link].split('+')[0] * 1,
-                    linkedIssueId: issueId * 1,
-                    in: true,
-                  });
-                }
-              });
-            }
-          });
-        }
+        const issueLinkCreateVOList = this.getIssueLinks(linkTypes, linkIssues);
 
         const extra = {
           issueTypeId: typeId,
@@ -262,7 +241,8 @@ class CreateIssue extends Component {
           sprintId: sprintId || 0,
           epicId: epicId || 0,
           epicName,
-          parentIssueId: 0,
+          parentIssueId: parentIssueId || 0, // 子任务
+          relateIssueId: relateIssueId || 0, // 子bug
           assigneeId: assigneedId,
           labelIssueRelVOList,
           versionIssueRelVOList: fixVersionIssueRelVOList,
@@ -276,7 +256,7 @@ class CreateIssue extends Component {
             featureType,
           },
         };
-        this.setState({ createLoading: true });
+        this.setState({ createLoading: true });     
         const deltaOps = description;
         if (deltaOps) {
           beforeTextUpload(deltaOps, extra, (data) => {
@@ -326,57 +306,62 @@ class CreateIssue extends Component {
   }
 
   getFieldComponent = (field) => {
-    const { form } = this.props;
+    const { form, mode } = this.props;
     const { getFieldDecorator } = form;
     const {
       defaultValue, fieldName, fieldCode, fieldType, required,
     } = field;
     const {
-      originIssueTypes, storyPoints,
-      selectLoading, estimatedTime,
-      originSprints,
+      originIssueTypes,
       newIssueTypeCode, defaultTypeId,
     } = this.state;
     switch (field.fieldCode) {
       case 'issueType':
         return (
           [
-            <FormItem label="问题类型">
-              {getFieldDecorator('typeId', {
+            ['sub_task', 'sub_bug'].includes(mode)
+              ? getFieldDecorator('typeId', {
                 rules: [{ required: true, message: '问题类型为必输项' }],
                 initialValue: defaultTypeId || '',
-              })(
-                <Select
-                  label="问题类型"
-                  getPopupContainer={triggerNode => triggerNode.parentNode}
-                  onChange={((value) => {
-                    const { typeCode } = originIssueTypes.find(item => item.id === value);
-                    this.setState({
-                      newIssueTypeCode: typeCode,
-                    });
-                    const param = {
-                      schemeCode: 'agile_issue',
-                      context: typeCode,
-                      pageCode: 'agile_issue_create',
-                    };
-                    getFields(param, typeCode).then((res) => {
-                      this.setState({
-                        fields: res,
-                      });
-                    });
-                  })}
-                >
-                  {this.getIssueTypes().map(type => (
-                    <Option key={type.id} value={type.id}>
-                      <TypeTag
-                        data={type}
-                        showName
-                      />
-                    </Option>
-                  ))}
-                </Select>,
-              )}
-            </FormItem>,
+              })
+              : (
+                <FormItem label="问题类型">
+                  {getFieldDecorator('typeId', {
+                    rules: [{ required: true, message: '问题类型为必输项' }],
+                    initialValue: defaultTypeId || '',
+                  })(
+                    <Select
+                      label="问题类型"
+                      getPopupContainer={triggerNode => triggerNode.parentNode}
+                      onChange={((value) => {
+                        const { typeCode } = originIssueTypes.find(item => item.id === value);
+                        this.setState({
+                          newIssueTypeCode: typeCode,
+                        });
+                        const param = {
+                          schemeCode: 'agile_issue',
+                          context: typeCode,
+                          pageCode: 'agile_issue_create',
+                        };
+                        getFields(param, typeCode).then((res) => {
+                          this.setState({
+                            fields: res,
+                          });
+                        });
+                      })}
+                    >
+                      {this.getIssueTypes().map(type => (
+                        <Option key={type.id} value={type.id}>
+                          <TypeTag
+                            data={type}
+                            showName
+                          />
+                        </Option>
+                      ))}
+                    </Select>,
+                  )}
+                </FormItem>
+              ),
             newIssueTypeCode === 'feature' ? (
               <FormItem>
                 {getFieldDecorator('featureType', {
@@ -431,35 +416,12 @@ class CreateIssue extends Component {
         return (
           <FormItem label="冲刺">
             {getFieldDecorator('sprintId', {})(
-              <Select
+              <SelectFocusLoad
                 label="冲刺"
                 allowClear
-                filter
-                filterOption={
-                  (input, option) => option.props.children && option.props.children.toLowerCase().indexOf(
-                    input.toLowerCase(),
-                  ) >= 0
-                }
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                loading={selectLoading}
-                onFilterChange={() => {
-                  this.setState({
-                    selectLoading: true,
-                  });
-                  loadSprints(['sprint_planning', 'started']).then((res) => {
-                    this.setState({
-                      originSprints: res,
-                      selectLoading: false,
-                    });
-                  });
-                }}
-              >
-                {originSprints.map(sprint => (
-                  <Option key={sprint.sprintId} value={sprint.sprintId}>
-                    {sprint.sprintName}
-                  </Option>
-                ))}
-              </Select>,
+                type="sprint"
+                disabled={['sub_task', 'sub_bug'].includes(mode)}
+              />,
             )}
           </FormItem>
         );
@@ -509,7 +471,7 @@ class CreateIssue extends Component {
         );
       case 'epic':
         return (
-          newIssueTypeCode !== 'issue_epic' && (
+          ['issue_epic', 'sub_task'].includes(newIssueTypeCode) ? null : (
             <FormItem label="史诗">
               {getFieldDecorator('epicId', {})(
                 <SelectFocusLoad
@@ -523,18 +485,20 @@ class CreateIssue extends Component {
         );
       case 'component':
         return (
-          <FormItem label="模块">
-            {getFieldDecorator('componentIssueRel', {
-              rules: [{ transform: value => (value ? value.toString() : value) }],
-            })(
-              <SelectFocusLoad
-                label="模块"
-                mode="multiple"
-                type="component"
-                allowClear
-              />,
-            )}
-          </FormItem>
+          !['sub_task'].includes(newIssueTypeCode) ? null : (
+            <FormItem label="模块">
+              {getFieldDecorator('componentIssueRel', {
+                rules: [{ transform: value => (value ? value.toString() : value) }],
+              })(
+                <SelectFocusLoad
+                  label="模块"
+                  mode="multiple"
+                  type="component"
+                  allowClear
+                />,
+              )}
+            </FormItem>
+          )
         );
       case 'summary':
         return (
@@ -565,20 +529,12 @@ class CreateIssue extends Component {
         return (
           newIssueTypeCode !== 'issue_epic' && (
             <FormItem>
-              <Select
-                label="预估时间"
-                value={estimatedTime && estimatedTime.toString()}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                mode="combobox"
-                style={{ marginTop: 0, paddingTop: 0 }}
-                onChange={value => this.handleChangeEstimatedTime(value)}
-              >
-                {storyPointList.map(sp => (
-                  <Option key={sp.toString()} value={sp}>
-                    {sp}
-                  </Option>
-                ))}
-              </Select>
+              {getFieldDecorator('estimatedTime')(
+                <SelectNumber
+                  label="预估时间"
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                />,
+              )}
             </FormItem>
           )
         );
@@ -586,20 +542,12 @@ class CreateIssue extends Component {
         return (
           newIssueTypeCode === 'story' && (
             <FormItem>
-              <Select
-                label="故事点"
-                value={storyPoints && storyPoints.toString()}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
-                mode="combobox"
-                style={{ marginTop: 0, paddingTop: 0 }}
-                onChange={value => this.handleChangeStoryPoint(value)}
-              >
-                {storyPointList.map(sp => (
-                  <Option key={sp.toString()} value={sp}>
-                    {sp}
-                  </Option>
-                ))}
-              </Select>
+              {getFieldDecorator('storyPoints')(
+                <SelectNumber
+                  label="故事点"
+                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                />,
+              )}
             </FormItem>
           )
         );
@@ -654,77 +602,74 @@ class CreateIssue extends Component {
     }
   };
 
+
   renderIssueLinks = () => {
-    const { newIssueTypeCode, issueLinkArr } = this.state;
-    const { form: { getFieldDecorator } } = this.props;
+    const { newIssueTypeCode } = this.state;
+    const { form: { getFieldDecorator, getFieldValue } } = this.props;
+    getFieldDecorator('keys', { initialValue: [] });
+    const keys = getFieldValue('keys');
     if (newIssueTypeCode !== 'issue_epic') {
-      return issueLinkArr && issueLinkArr.length > 0 && (
-        issueLinkArr.map((item, index, arr) => (
-          <div style={{ display: 'flex' }}>
-            <div style={{ flex: 1, display: 'flex' }}>
-              <FormItem label="关系" style={{ width: '30%' }}>
-                {getFieldDecorator(`linkTypeId[${item}]`, {
-                })(
-                  <SelectFocusLoad
-                    label="关系"
-                    type="issue_link"
-                  />,
-                )}
-              </FormItem>
-              <FormItem label="问题" style={{ marginLeft: 20, width: 'calc(70% - 20px)' }}>
-                {getFieldDecorator(`linkIssues[${item}]`, {
-                })(
-                  <SelectFocusLoad
-                    label="问题"
-                    type="issues_in_link"
-                  />,
-                )}
-              </FormItem>
-            </div>
-            <div style={{ marginTop: 10, width: 70, marginLeft: 20 }}>
-              <Button
-                shape="circle"
-                icon="add"
-                onClick={() => {
-                  arr.splice(index + 1, 0, randomString(5));
-                  this.setState({
-                    issueLinkArr: arr,
-                  });
-                }}
-              />
-              {
-                issueLinkArr.length > 1 ? (
-                  <Button
-                    shape="circle"
-                    style={{ marginLeft: 10 }}
-                    icon="delete"
-                    onClick={() => {
-                      arr.splice(index, 1);
-                      this.setState({
-                        issueLinkArr: arr,
-                      });
-                    }}
-                  />
-                ) : null
-              }
-            </div>
+      return keys.map((k, index) => (
+        <div style={{ display: 'flex' }} key={k}>
+          <div style={{ flex: 1, display: 'flex' }}>
+            <FormItem label="关系" style={{ width: '30%' }}>
+              {getFieldDecorator(`linkTypes[${index}]`, {
+              })(
+                <SelectFocusLoad
+                  label="关系"
+                  type="issue_link"
+                />,
+              )}
+            </FormItem>
+            <FormItem label="问题" style={{ marginLeft: 20, width: 'calc(70% - 20px)' }}>
+              {getFieldDecorator(`linkIssues[${index}]`, {
+              })(
+                <SelectFocusLoad
+                  label="问题"
+                  type="issues_in_link"
+                />,
+              )}
+            </FormItem>
           </div>
-        )));
+          <div style={{ marginTop: 10, width: 70, marginLeft: 20 }}>
+            <Button
+              shape="circle"
+              icon="add"
+              onClick={this.add}
+            />
+            {
+              keys.length > 1 ? (
+                <Button
+                  shape="circle"
+                  style={{ marginLeft: 10 }}
+                  icon="delete"
+                  onClick={() => this.remove(k)}
+                />
+              ) : null
+            }
+          </div>
+        </div>
+      ));
     }
     return null;
   }
 
 
   render() {
-    const { visible } = this.props;
     const {
-      createLoading, fields, loading,
+      visible, form, parentSummary, title, mode,
+      contentTitle,
+      contentDescription,
+      contentLink,
+    } = this.props;
+    const {
+      createLoading, fields, loading, newIssueTypeCode,
     } = this.state;
     return (
       <Sidebar
         className="c7n-createIssue"
-        title="创建问题"
-        visible={visible || false}
+        title={title}
+        visible={visible}
         onOk={this.handleCreateIssue}
         onCancel={this.handleCancel}
         okText="创建"
@@ -732,16 +677,21 @@ class CreateIssue extends Component {
         confirmLoading={createLoading}
       >
         <Content
-          title={`在项目“${AppState.currentMenuType.name}”中创建问题`}
-          description="请在下面输入问题的详细信息，包含详细描述、人员信息、版本信息、进度预估、优先级等等。您可以通过丰富的任务描述帮助相关人员更快更全面的理解任务，同时更好的把控问题进度。"
-          link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/create-issue/"
+          title={contentTitle}
+          description={contentDescription}
+          link={contentLink}
         >
           <Spin spinning={loading}>
             <Form layout="vertical" style={{ width: 670 }} className="c7nagile-form">
               <div className="c7nagile-createIssue-fields">
+                {['sub_task', 'sub_bug'].includes(mode) && (
+                  <FormItem>
+                    <Input label="父任务概要" value={parentSummary} disabled />
+                  </FormItem>
+                )}
                 {fields && fields.map(field => this.getFieldComponent(field))}
               </div>
-              {this.renderIssueLinks()}
+              {newIssueTypeCode !== 'issue_epic' && <FieldIssueLinks form={form} />}
             </Form>
           </Spin>
         </Content>
@@ -749,4 +699,5 @@ class CreateIssue extends Component {
     );
   }
 }
+CreateIssue.defaultProps = defaultProps;
 export default Form.create({})(CreateIssue);

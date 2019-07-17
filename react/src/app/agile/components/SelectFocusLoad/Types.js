@@ -7,17 +7,22 @@ import { getUsers, getUser } from '../../api/CommonApi';
 import {
   loadEpics, loadProgramEpics, loadIssueTypes, loadPriorities,
   loadComponents, loadLabels, loadVersions,
-  loadStatusList, loadIssuesInLink,
+  loadStatusList, loadIssuesInLink, loadSprints,
 
 } from '../../api/NewIssueApi';
 import IssueLinkType from '../../api/IssueLinkType';
 import TypeTag from '../TypeTag';
 import StatusTag from '../StatusTag';
 
+const filterOption = (input, option) => option.props.children && option.props.children.toLowerCase().indexOf(
+  input.toLowerCase(),
+) >= 0;
+
 function transform(links) {
   // split active and passive
   const active = links.map(link => ({
     name: link.outWard,
+    isIn: false,
     linkTypeId: link.linkTypeId,
   }));
   const passive = [];
@@ -25,6 +30,7 @@ function transform(links) {
     if (link.inWard !== link.outWard) {
       passive.push({
         name: link.inWard,
+        isIn: true,
         linkTypeId: link.linkTypeId,
       });
     }
@@ -35,11 +41,7 @@ function transform(links) {
 const { Option } = Select;
 const issue_type_program = {
   props: {
-    filterOption:
-      (input, option) => option.props.children
-        && option.props.children.toLowerCase().indexOf(
-          input.toLowerCase(),
-        ) >= 0,
+    filterOption,
   },
   request: () => new Promise(resolve => loadIssueTypes('program').then((issueTypes) => {
     // const defaultType = find(issueTypes, { typeCode: 'feature' }).id;
@@ -114,11 +116,7 @@ export default {
   },
   epic: {
     props: {
-      filterOption:
-        (input, option) => option.props.children
-          && option.props.children.toLowerCase().indexOf(
-            input.toLowerCase(),
-          ) >= 0,
+      filterOption,
     },
     request: loadEpics,
     render: epic => (
@@ -194,7 +192,7 @@ export default {
     },
     request: () => new Promise(resolve => IssueLinkType.queryAll().then((res) => { resolve(transform(res.list)); })),
     render: link => (
-      <Option key={`${link.linkTypeId}+${link.name}`} value={`${link.linkTypeId}+${link.name}`}>
+      <Option value={`${link.linkTypeId}+${link.isIn}`}>
         {link.name}
       </Option>
     ),
@@ -303,6 +301,19 @@ export default {
         value={version.versionId}
       >
         {version.name}
+      </Option>
+    ),
+  },
+  sprint: {
+    props: {
+      getPopupContainer: triggerNode => triggerNode.parentNode,     
+      filterOption,
+      loadWhenMount: true,
+    },
+    request: () => new Promise(resolve => loadSprints(['sprint_planning', 'started']).then((res) => { resolve(res); })),
+    render: sprint => (
+      <Option key={sprint.sprintId} value={sprint.sprintId}>
+        {sprint.sprintName}
       </Option>
     ),
   },

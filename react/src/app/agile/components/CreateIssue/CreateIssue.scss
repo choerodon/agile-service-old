@@ -1,4 +1,8 @@
-.c7n-createSubIssue {
+.c7n-createIssue {
+  .page-content {
+    padding-left: 0;
+    padding-top: 0;
+  }
 
   input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 1000px #fff inset;
@@ -6,6 +10,10 @@
 
   .clear-p-mw {
     margin-bottom: 20px;
+
+    p {
+      max-width: inherit !important;
+    }
   }
 
   .sign-upload {
@@ -21,6 +29,7 @@
 
   .c7n-upload-list-item {
     display: inline-block;
+
     .icon-close {
       transform: none;
       font-size: 14px;
@@ -31,13 +40,13 @@
     padding-right: 20px;
     max-width: 100%;
   }
+
   .radioStyle {
     display: block;
     height: 30px;
     line-height: 30px;
-  }  
+  }
 }
-
 .is-required {
   .c7n-radio-group-label:after {
     display: inline-block;

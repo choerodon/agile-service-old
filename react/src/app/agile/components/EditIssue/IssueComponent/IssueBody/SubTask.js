@@ -7,7 +7,7 @@ import {
 import { stores } from '@choerodon/boot';
 import { injectIntl } from 'react-intl';
 import { createSubIssue, createIssueField } from '../../../../api/NewIssueApi';
-import CreateSubTask from '../../../CreateSubTask';
+import CreateSubTask from '../../../CreateIssue/CreateSubTask';
 import IssueList from '../../Component/IssueList';
 import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 import './SubTask.scss';
@@ -119,7 +119,7 @@ const { AppState } = stores;
         sprintId,
         issueTypeId: subIssueType && subIssueType.id,
       };
-      createSubIssue(issueId, issue)
+      createSubIssue(issue)
         .then((res) => {
           const dto = {
             schemeCode: 'agile_issue',
@@ -225,7 +225,7 @@ const { AppState } = stores;
         {
           createSubTaskShow ? (
             <CreateSubTask
-              issueId={issueId}
+              parentIssueId={issueId}
               parentSummary={summary}
               visible={createSubTaskShow}
               onCancel={() => VisibleStore.setCreateSubTaskShow(false)}
