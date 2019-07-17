@@ -49,9 +49,6 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     private static final String PIECHART = AGILE + "PieChart";
     private static final String CPMPONENT = "component";
 
-//    @Autowired
-//    private IssueComponentRepository issueComponentRepository;
-
     @Autowired
     private IssueComponentMapper issueComponentMapper;
 

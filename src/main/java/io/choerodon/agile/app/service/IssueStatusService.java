@@ -41,7 +41,7 @@ public interface IssueStatusService {
 
     IssueStatusDTO insertIssueStatus(IssueStatusDTO issueStatusDTO);
 
-    IssueStatusDTO update(IssueStatusDTO issueStatusDTO);
+//    IssueStatusDTO update(IssueStatusDTO issueStatusDTO);
 
     void delete(IssueStatusDTO issueStatusDTO);
 

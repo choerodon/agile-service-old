@@ -27,8 +27,6 @@ public class BoardTeamServiceImpl implements BoardTeamService {
     private static final String ERROR_BOARDTEAM_NOTFOUND = "error.boardTeam.notFound";
     private static final String ERROR_BOARDTEAM_ILLEGAL = "error.boardTeam.illegal";
 
-//    @Autowired
-//    private BoardTeamRepository boardTeamRepository;
     @Autowired
     private BoardTeamMapper boardTeamMapper;
 
@@ -72,7 +70,6 @@ public class BoardTeamServiceImpl implements BoardTeamService {
                 boardTeamDTO.setRank(RankUtil.between(outSetRank, rightRank));
             }
         }
-//        boardTeamRepository.update(boardTeamDTO);
         if (boardTeamMapper.updateByPrimaryKeySelective(boardTeamDTO) != 1) {
             throw new CommonException(ERROR_BOARDTEAM_UPDATE);
         }

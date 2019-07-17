@@ -65,8 +65,6 @@ public class ArtServiceImpl implements ArtService {
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
 
-//    @Autowired
-//    private PiRepository piRepository;
 
     private final ModelMapper modelMapper = new ModelMapper();
 

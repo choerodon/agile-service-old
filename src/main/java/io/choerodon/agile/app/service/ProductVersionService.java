@@ -74,11 +74,11 @@ public interface ProductVersionService {
 
     ProductVersionDTO create(ProductVersionDTO versionDTO);
 
-    Boolean delete(ProductVersionDTO versionDTO);
+//    Boolean delete(ProductVersionDTO versionDTO);
 
     ProductVersionDTO update(ProductVersionDTO versionDTO, List<String> fieldList);
 
-    Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDTO> incompleteIssues, Date date, Long userId);
+//    Boolean batchIssueToDestination(Long projectId, Long targetVersionId, List<VersionIssueDTO> incompleteIssues, Date date, Long userId);
 
     Boolean release(Long projectId, Long versionId, Date releaseDate);
 

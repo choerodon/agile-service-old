@@ -1108,12 +1108,4 @@ public class DemoServiceImpl implements DemoService {
         return demoProjectPayload;
     }
 
-//    @Override
-//    @Saga(code = "demo-project-clean", description = "demo项目清除数据", inputSchemaClass = DemoPayload.class)
-//    public void demoDelete(Long projectId) {
-//        dataLogMapper.deleteDemoData(projectId);
-//        DemoPayload demoPayload = new DemoPayload();
-//        demoPayload.setProjectId(projectId);
-//        sagaClient.startSaga("demo-project-clean", new StartInstanceDTO(JSON.toJSONString(demoPayload), "", "", ResourceLevel.PROJECT.value(), projectId));
-//    }
 }

@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class PiObjectiveServiceImpl implements PiObjectiveService {
 
-//    @Autowired
-//    private PiObjectiveRepository piObjectiveRepository;
-
     @Autowired
     private PiObjectiveMapper piObjectiveMapper;
 

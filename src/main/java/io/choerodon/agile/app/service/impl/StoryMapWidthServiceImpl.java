@@ -20,9 +20,6 @@ import javax.annotation.PostConstruct;
 @Service
 public class StoryMapWidthServiceImpl implements StoryMapWidthService {
 
-//    @Autowired
-//    private StoryMapWidthRepository storyMapWidthRepository;
-
     @Autowired
     private StoryMapWidthValidator storyMapWidthValidator;
 

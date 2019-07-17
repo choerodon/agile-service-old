@@ -32,8 +32,6 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     private BoardFeatureMapper boardFeatureMapper;
     @Autowired
     private BoardDependMapper boardDependMapper;
-//    @Autowired
-//    private BoardFeatureRepository boardFeatureRepository;
     @Autowired
     private ArtMapper artMapper;
     @Autowired
@@ -42,8 +40,6 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     private SprintMapper sprintMapper;
     @Autowired
     private BoardSprintAttrMapper boardSprintAttrMapper;
-//    @Autowired
-//    private BoardTeamRepository boardTeamRepository;
     @Autowired
     private BoardTeamService boardTeamService;
     @Autowired
@@ -79,7 +75,6 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         boardFeatureDTO.setProgramId(projectId);
         checkExist(boardFeatureDTO);
         handleRank(projectId, boardFeatureDTO, createVO.getBefore(), createVO.getOutsetId());
-//        boardFeatureRepository.create(boardFeatureDTO);
         if (boardFeatureMapper.insert(boardFeatureDTO) != 1) {
             throw new CommonException(ERROR_BOARDFEATURE_CREATE);
         }
@@ -101,7 +96,6 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         update.setId(boardFeatureId);
         update.setObjectVersionNumber(objectVersionNumber);
         handleRank(projectId, update, updateVO.getBefore(), updateVO.getOutsetId());
-//        boardFeatureRepository.update(update);
         if (boardFeatureMapper.updateByPrimaryKeySelective(update) != 1) {
             throw new CommonException(ERROR_BOARDFEATURE_UPDATE);
         }
@@ -161,9 +155,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
 
     @Override
     public void deleteById(Long projectId, Long boardFeatureId) {
-//        boardFeatureRepository.checkId(projectId, boardFeatureId);
         checkId(projectId, boardFeatureId);
-//        boardFeatureRepository.delete(boardFeatureId);
         if (boardFeatureMapper.deleteByPrimaryKey(boardFeatureId) != 1) {
             throw new CommonException(ERROR_BOARDFEATURE_DELETE);
         }

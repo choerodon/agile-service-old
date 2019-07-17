@@ -37,9 +37,6 @@ public class WikiRelationServiceImpl implements WikiRelationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WikiRelationServiceImpl.class);
 
-//    @Autowired
-//    private WikiRelationRepository wikiRelationRepository;
-
     @Autowired
     private WikiRelationMapper wikiRelationMapper;
 
@@ -67,7 +64,6 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         List<WikiRelationDTO> wikiRelationDTOList = modelMapper.map(wikiRelationVOList, new TypeToken<WikiRelationDTO>(){}.getType());
         for (WikiRelationDTO wikiRelationDTO : wikiRelationDTOList) {
             if (!checkRepeat(wikiRelationDTO)) {
-//                wikiRelationRepository.create(wikiRelationE);
                 if (wikiRelationMapper.insert(wikiRelationDTO) != 1) {
                     throw new CommonException("error.wikiRelationDTO.insert");
                 }
@@ -101,7 +97,6 @@ public class WikiRelationServiceImpl implements WikiRelationService {
         WikiRelationDTO wikiRelationDTO = new WikiRelationDTO();
         wikiRelationDTO.setProjectId(projectId);
         wikiRelationDTO.setId(id);
-//        wikiRelationRepository.delete(wikiRelationE);
         if (wikiRelationMapper.delete(wikiRelationDTO) != 1) {
             throw new CommonException("error.wikiRelationDTO.delete");
         }

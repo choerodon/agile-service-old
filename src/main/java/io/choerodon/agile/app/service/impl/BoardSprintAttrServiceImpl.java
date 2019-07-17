@@ -19,12 +19,8 @@ import javax.annotation.PostConstruct;
 @Service
 public class BoardSprintAttrServiceImpl implements BoardSprintAttrService {
 
-//    @Autowired
-//    private BoardSprintAttrRepository boardSprintAttrRepository;
-
     @Autowired
     private BoardSprintAttrMapper boardSprintAttrMapper;
-
 
     public static final String UPDATE_ERROR = "error.sprintAttr.update";
     public static final String DELETE_ERROR = "error.sprintAttr.deleteById";

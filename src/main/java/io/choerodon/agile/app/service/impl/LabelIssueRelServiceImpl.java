@@ -7,7 +7,7 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.infra.mapper.LabelIssueRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Service;
 
 
 /**
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
  * @author dinghuang123@gmail.com
  * @since 2018-05-14 21:31:22
  */
-@Component
+@Service
 public class LabelIssueRelServiceImpl implements LabelIssueRelService {
 
     private static final String INSERT_ERROR = "error.LabelIssue.insert";

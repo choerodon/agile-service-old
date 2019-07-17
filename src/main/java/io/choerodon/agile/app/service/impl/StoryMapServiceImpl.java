@@ -31,9 +31,6 @@ public class StoryMapServiceImpl implements StoryMapService {
     @Autowired
     private StoryMapMapper storyMapMapper;
 
-//    @Autowired
-//    private IssueRepository issueRepository;
-
     @Autowired
     private IssueAccessDataService issueAccessDataService;
 

@@ -69,9 +69,6 @@ public class ExcelServiceImpl implements ExcelService {
     @Autowired
     private StateMachineService stateMachineService;
 
-//    @Autowired
-//    private FileOperationHistoryRepository fileOperationHistoryRepository;
-
     @Autowired
     private IssueFeignClient issueFeignClient;
 
@@ -265,7 +262,6 @@ public class ExcelServiceImpl implements ExcelService {
         update.setStatus(status);
         update.setFileUrl(fileOperationHistoryDTO.getFileUrl());
         update.setObjectVersionNumber(fileOperationHistoryDTO.getObjectVersionNumber());
-//        FileOperationHistoryE result = fileOperationHistoryRepository.updateBySeletive(update);
         if (fileOperationHistoryMapper.updateByPrimaryKeySelective(update) != 1) {
             throw new CommonException("error.FileOperationHistoryDTO.update");
         }
@@ -443,7 +439,6 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void batchImport(Long projectId, Long organizationId, Long userId, Workbook workbook) {
         String status = DOING;
-//        FileOperationHistoryE fileOperationHistoryE = fileOperationHistoryRepository.create(new FileOperationHistoryE(projectId, userId, UPLOAD_FILE, 0L, 0L, status));
         FileOperationHistoryDTO fileOperationHistoryDTO = new FileOperationHistoryDTO(projectId, userId, UPLOAD_FILE, 0L, 0L, status);
         if (fileOperationHistoryMapper.insert(fileOperationHistoryDTO) != 1) {
             throw new CommonException("error.FileOperationHistoryDTO.insert");
@@ -454,7 +449,6 @@ public class ExcelServiceImpl implements ExcelService {
                 || workbook.getSheetAt(1) == null
                 || workbook.getSheetAt(1).getSheetName() == null
                 || !IMPORT_TEMPLATE_NAME.equals(workbook.getSheetAt(1).getSheetName())) {
-//            FileOperationHistoryE errorImport = fileOperationHistoryRepository.updateBySeletive(new FileOperationHistoryE(projectId, fileOperationHistoryE.getId(), UPLOAD_FILE, "template_error", fileOperationHistoryE.getObjectVersionNumber()));
             if (fileOperationHistoryMapper.updateByPrimaryKeySelective(new FileOperationHistoryDTO(projectId, res.getId(), UPLOAD_FILE, "template_error", res.getObjectVersionNumber())) != 1) {
                 throw new CommonException("error.FileOperationHistoryDTO.update");
             }
@@ -587,7 +581,6 @@ public class ExcelServiceImpl implements ExcelService {
         fileOperationHistoryDTO.setId(id);
         fileOperationHistoryDTO.setStatus(CANCELED);
         fileOperationHistoryDTO.setObjectVersionNumber(objectVersionNumber);
-//        fileOperationHistoryRepository.updateBySeletive(fileOperationHistoryE);
         if (fileOperationHistoryMapper.updateByPrimaryKeySelective(fileOperationHistoryDTO) != 1) {
             throw new CommonException("error.FileOperationHistoryDTO.update");
         }

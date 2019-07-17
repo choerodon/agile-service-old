@@ -21,9 +21,9 @@ public interface WorkLogService {
 
     List<WorkLogVO> queryWorkLogListByIssueId(Long projectId, Long issueId);
 
-    WorkLogDTO createBase(WorkLogDTO workLogDTO);
+//    WorkLogDTO createBase(WorkLogDTO workLogDTO);
 
     WorkLogDTO updateBase(WorkLogDTO workLogDTO);
 
-    void deleteBase(Long projectId,Long logId);
+//    void deleteBase(Long projectId,Long logId);
 }
