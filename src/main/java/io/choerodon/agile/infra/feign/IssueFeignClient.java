@@ -98,7 +98,7 @@ public interface IssueFeignClient {
     @GetMapping({"/v1/organizations/{organization_id}/instances/query_init_status_ids"})
     ResponseEntity<Map<Long, Long>> queryInitStatusIds(@PathVariable("organization_id") Long organizationId, @RequestParam("state_machine_id") List<Long> stateMachineIds);
 
-    @GetMapping({"/v1/organizations/{organization_id}/state_machine_transforms/query_deploy_transform"})
+    @GetMapping({"/v1/organizations/{organization_id}/state_machine_transform/query_deploy_transform"})
     ResponseEntity<StateMachineTransformDTO> queryDeployTransformForAgile(@PathVariable("organization_id") Long organizationId, @RequestParam("transformId") Long transformId);
 
     @GetMapping("/v1/projects/{project_id}/object_scheme_field/list")
