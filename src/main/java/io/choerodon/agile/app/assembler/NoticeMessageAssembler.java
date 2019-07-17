@@ -24,7 +24,7 @@ public class NoticeMessageAssembler {
     private UserService userService;
 
 
-    public List<MessageVO> messageDOToIDTO(List<MessageDTO> messageDTOList, List<Long> ids) {
+    public List<MessageVO> messageDTOToVO(List<MessageDTO> messageDTOList, List<Long> ids) {
         List<MessageVO> messageVOList = new ArrayList<>(messageDTOList.size());
         Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(ids, true);
         messageDTOList.forEach(messageDTO -> {

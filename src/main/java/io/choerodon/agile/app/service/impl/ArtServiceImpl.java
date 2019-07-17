@@ -179,7 +179,7 @@ public class ArtServiceImpl implements ArtService {
             throw new CommonException("error.art.select");
         }
         artDTO.setCode(projectInfoMapper.selectProjectCodeByProjectId(programId));
-        return artAssembler.artDOTODTO(artDTO);
+        return artAssembler.artDTOToVO(artDTO);
     }
 
     @Override

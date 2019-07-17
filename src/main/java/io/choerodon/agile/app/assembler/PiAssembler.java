@@ -20,7 +20,7 @@ import java.util.Map;
 @Component
 public class PiAssembler {
 
-    public List<SubFeatureVO> subFeatureDOTODTO(List<SubFeatureDTO> subFeatureDOList,
+    public List<SubFeatureVO> subFeatureDTOToVO(List<SubFeatureDTO> subFeatureDOList,
                                                 Map<Long, StatusMapVO> statusMapDTOMap,
                                                 Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<SubFeatureVO> subFeatureVOList = new ArrayList<>();
@@ -34,7 +34,7 @@ public class PiAssembler {
         return subFeatureVOList;
     }
 
-    public List<PiWithFeatureVO> piWithFeatureDOTODTO(List<PiWithFeatureDTO> piWithFeatureDTOList,
+    public List<PiWithFeatureVO> piWithFeatureDTOToVO(List<PiWithFeatureDTO> piWithFeatureDTOList,
                                                       Map<Long, StatusMapVO> statusMapDTOMap,
                                                       Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<PiWithFeatureVO> piWithFeatureVOList = new ArrayList<>();
@@ -43,7 +43,7 @@ public class PiAssembler {
             BeanUtils.copyProperties(piWithFeatureDTO, piWithFeatureVO);
             if (piWithFeatureDTO.getSubFeatureDTOList() != null && !piWithFeatureDTO.getSubFeatureDTOList().isEmpty()) {
                 List<SubFeatureDTO> subFeatureDTOList = piWithFeatureDTO.getSubFeatureDTOList();
-                piWithFeatureVO.setSubFeatureVOList(subFeatureDOTODTO(subFeatureDTOList, statusMapDTOMap, issueTypeDTOMap));
+                piWithFeatureVO.setSubFeatureVOList(subFeatureDTOToVO(subFeatureDTOList, statusMapDTOMap, issueTypeDTOMap));
             } else {
                 piWithFeatureVO.setSubFeatureVOList(new ArrayList<>());
             }

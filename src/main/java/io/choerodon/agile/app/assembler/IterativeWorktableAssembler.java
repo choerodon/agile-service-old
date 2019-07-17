@@ -24,7 +24,7 @@ public class IterativeWorktableAssembler {
     @Autowired
     private UserService userService;
 
-    public List<AssigneeIssueVO> assigneeIssueDOToDTO(List<AssigneeIssueDTO> assigneeIssueDTOList) {
+    public List<AssigneeIssueVO> assigneeIssueDTOToVO(List<AssigneeIssueDTO> assigneeIssueDTOList) {
         List<AssigneeIssueVO> assigneeIssueVOList = new ArrayList<>(assigneeIssueDTOList.size());
         List<Long> assigneeIds = assigneeIssueDTOList.stream().
                 filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).

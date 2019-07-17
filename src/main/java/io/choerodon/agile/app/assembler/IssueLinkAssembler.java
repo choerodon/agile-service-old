@@ -30,10 +30,7 @@ public class IssueLinkAssembler extends AbstractAssembler {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private IssueMapper issueMapper;
-
-    public List<IssueLinkVO> issueLinkDoToDto(Long projectId, List<IssueLinkDTO> issueLinkDTOList) {
+    public List<IssueLinkVO> issueLinkDTOToVO(Long projectId, List<IssueLinkDTO> issueLinkDTOList) {
         List<IssueLinkVO> issueLinkVOList = new ArrayList<>(issueLinkDTOList.size());
         if (!issueLinkDTOList.isEmpty()) {
             Map<Long, IssueTypeVO> testIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);

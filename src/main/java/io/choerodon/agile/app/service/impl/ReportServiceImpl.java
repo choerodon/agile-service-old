@@ -134,18 +134,18 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<IssueTypeDistributionChartVO> queryIssueTypeDistributionChart(Long projectId) {
-        return reportAssembler.toIssueTypeDistributionChartDTO(projectId, reportMapper.queryIssueTypeDistributionChart(projectId));
+        return reportAssembler.toIssueTypeDistributionChartVO(projectId, reportMapper.queryIssueTypeDistributionChart(projectId));
     }
 
     @Override
     public List<IssueTypeDistributionChartVO> queryVersionProgressChart(Long projectId) {
-        return reportAssembler.toIssueTypeVersionDistributionChartDTO(projectId, reportMapper.queryVersionProgressChart(projectId));
+        return reportAssembler.toIssueTypeVersionDistributionChartVO(projectId, reportMapper.queryVersionProgressChart(projectId));
     }
 
     @Override
     public List<IssuePriorityDistributionChartVO> queryIssuePriorityDistributionChart(Long projectId, Long organizationId) {
         List<Long> priorityIds = issueFeignClient.queryByOrganizationIdList(organizationId).getBody().stream().map(PriorityVO::getId).collect(Collectors.toList());
-        return reportAssembler.toIssuePriorityDistributionChartDTO(projectId, reportMapper.queryIssuePriorityDistributionChart(projectId, priorityIds));
+        return reportAssembler.toIssuePriorityDistributionChartVO(projectId, reportMapper.queryIssuePriorityDistributionChart(projectId, priorityIds));
     }
 
     @Override
@@ -993,7 +993,7 @@ public class ReportServiceImpl implements ReportService {
                         (columnChangeVO.getDate().before(cumulativeFlowFilterVO.getEndDate()) || columnChangeVO.getDate().equals(cumulativeFlowFilterVO.getEndDate()))
                                 && (columnChangeVO.getDate().after(cumulativeFlowFilterVO.getStartDate()) || columnChangeVO.getDate().equals(cumulativeFlowFilterVO.getStartDate()))).sorted(Comparator.comparing(ColumnChangeVO::getDate)).collect(Collectors.toList());
         //对传入时间点的数据给与坐标
-        List<CumulativeFlowDiagramVO> cumulativeFlowDiagramVOList = reportAssembler.columnListDoToDto(boardColumnMapper.queryColumnByColumnIds(columnIds));
+        List<CumulativeFlowDiagramVO> cumulativeFlowDiagramVOList = reportAssembler.columnListDTOToVO(boardColumnMapper.queryColumnByColumnIds(columnIds));
         cumulativeFlowDiagramVOList.parallelStream().forEachOrdered(cumulativeFlowDiagramVO -> {
             handleColumnCoordinate(columnChangeVOList, cumulativeFlowDiagramVO, cumulativeFlowFilterVO.getStartDate(), cumulativeFlowFilterVO.getEndDate());
             //过滤日期
@@ -1472,7 +1472,7 @@ public class ReportServiceImpl implements ReportService {
             Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
             Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             List<IssueBurnDownReportDTO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
-            burnDownReportVO.setIncompleteIssues(reportAssembler.issueBurnDownReportDoToDto(incompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
+            burnDownReportVO.setIncompleteIssues(reportAssembler.issueBurnDownReportDTOToVO(incompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
             JSONObject jsonObject = handleSprintListAndStartDate(id, projectId, type);
             List<SprintDTO> sprintDTOList = (List<SprintDTO>) jsonObject.get(SPRINT_DO_LIST);
             if (sprintDTOList != null && !sprintDTOList.isEmpty()) {
@@ -1486,24 +1486,24 @@ public class ReportServiceImpl implements ReportService {
     private void handleBurnDownReportSprintData(List<SprintDTO> sprintDTOList, List<IssueBurnDownReportDTO> completeIssues, BurnDownReportVO burnDownReportVO, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<SprintBurnDownReportVO> sprintBurnDownReportVOS = new ArrayList<>();
         if (sprintDTOList.size() == 1) {
-            SprintBurnDownReportVO sprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(0));
+            SprintBurnDownReportVO sprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDTOToVO(sprintDTOList.get(0));
             List<IssueBurnDownReportDTO> singleCompleteIssues = completeIssues.stream().filter(issueDO ->
                     issueDO.getDoneDate().after(sprintBurnDownReportVO.getStartDate())).collect(Collectors.toList());
-            sprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(singleCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
+            sprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDTOToVO(singleCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
             sprintBurnDownReportVOS.add(sprintBurnDownReportVO);
         } else {
             for (int i = 0; i < sprintDTOList.size() - 1; i++) {
-                SprintBurnDownReportVO sprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i));
+                SprintBurnDownReportVO sprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDTOToVO(sprintDTOList.get(i));
                 Date startDateOne = sprintBurnDownReportVO.getStartDate();
                 Date startDateTwo = sprintDTOList.get(i + 1).getStartDate();
                 List<IssueBurnDownReportDTO> duringSprintCompleteIssues = handleDuringSprintIncompleteIssues(completeIssues, startDateOne, startDateTwo);
-                sprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(duringSprintCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
+                sprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDTOToVO(duringSprintCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
                 sprintBurnDownReportVOS.add(sprintBurnDownReportVO);
                 if (i == sprintDTOList.size() - 2) {
-                    SprintBurnDownReportVO lastSprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDoToDto(sprintDTOList.get(i + 1));
+                    SprintBurnDownReportVO lastSprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDTOToVO(sprintDTOList.get(i + 1));
                     List<IssueBurnDownReportDTO> lastCompleteIssues = completeIssues.stream().filter(issueDO ->
                             issueDO.getDoneDate().after(lastSprintBurnDownReportVO.getStartDate())).collect(Collectors.toList());
-                    lastSprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDoToDto(lastCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
+                    lastSprintBurnDownReportVO.setCompleteIssues(reportAssembler.issueBurnDownReportDTOToVO(lastCompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
                     lastSprintBurnDownReportVO.setEndDate(lastSprintBurnDownReportVO.getEndDate() == null ? new Date() : lastSprintBurnDownReportVO.getEndDate());
                     sprintBurnDownReportVOS.add(lastSprintBurnDownReportVO);
                 }

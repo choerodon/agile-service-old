@@ -37,7 +37,7 @@ public class FeatureCommonAssembler {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
-    public List<FeatureCommonVO> featureCommonDOToDTO(List<FeatureCommonDTO> featureCommonDTOList, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    public List<FeatureCommonVO> featureCommonDTOToVO(List<FeatureCommonDTO> featureCommonDTOList, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<FeatureCommonVO> result = new ArrayList<>();
         List<Long> reporterIds = new ArrayList<>();
         reporterIds.addAll(featureCommonDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(FeatureCommonDTO::getReporterId).collect(Collectors.toSet()));

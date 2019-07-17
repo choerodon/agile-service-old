@@ -21,7 +21,7 @@ import java.util.Map;
 @Component
 public class ReportAssembler extends AbstractAssembler {
 
-    public List<CumulativeFlowDiagramVO> columnListDoToDto(List<ColumnDTO> columnDTOList) {
+    public List<CumulativeFlowDiagramVO> columnListDTOToVO(List<ColumnDTO> columnDTOList) {
         List<CumulativeFlowDiagramVO> cumulativeFlowDiagramVOList = new ArrayList<>(columnDTOList.size());
         columnDTOList.forEach(columnDTO -> {
             CumulativeFlowDiagramVO cumulativeFlowDiagramVO = new CumulativeFlowDiagramVO();
@@ -34,7 +34,7 @@ public class ReportAssembler extends AbstractAssembler {
         return cumulativeFlowDiagramVOList;
     }
 
-    public SprintBurnDownReportVO sprintBurnDownReportDoToDto(SprintDTO sprintDTO) {
+    public SprintBurnDownReportVO sprintBurnDownReportDTOToVO(SprintDTO sprintDTO) {
         SprintBurnDownReportVO sprintBurnDownReportVO = new SprintBurnDownReportVO();
         sprintBurnDownReportVO.setSprintId(sprintDTO.getSprintId());
         sprintBurnDownReportVO.setSprintName(sprintDTO.getSprintName());
@@ -44,7 +44,7 @@ public class ReportAssembler extends AbstractAssembler {
         return sprintBurnDownReportVO;
     }
 
-    public List<IssueBurnDownReportVO> issueBurnDownReportDoToDto(List<IssueBurnDownReportDTO> issueBurnDownReportDTOS, Map<Long, IssueTypeVO> issueTypeDTOMap,
+    public List<IssueBurnDownReportVO> issueBurnDownReportDTOToVO(List<IssueBurnDownReportDTO> issueBurnDownReportDTOS, Map<Long, IssueTypeVO> issueTypeDTOMap,
                                                                   Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         List<IssueBurnDownReportVO> issueBurnDownReportVOS = new ArrayList<>(issueBurnDownReportDTOS.size());
         if (!issueBurnDownReportDTOS.isEmpty()) {
@@ -60,7 +60,7 @@ public class ReportAssembler extends AbstractAssembler {
         return issueBurnDownReportVOS;
     }
 
-    public List<IssueTypeDistributionChartVO> toIssueTypeDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS) {
+    public List<IssueTypeDistributionChartVO> toIssueTypeDistributionChartVO(Long projectId, List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS) {
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<IssueTypeDistributionChartVO> issueTypeDistributionChartVOS = new ArrayList<>(issueTypeDistributionChartDTOS.size());
@@ -74,7 +74,7 @@ public class ReportAssembler extends AbstractAssembler {
         return issueTypeDistributionChartVOS;
     }
 
-    public List<IssueTypeDistributionChartVO> toIssueTypeVersionDistributionChartDTO(Long projectId, List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS) {
+    public List<IssueTypeDistributionChartVO> toIssueTypeVersionDistributionChartVO(Long projectId, List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS) {
         Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<IssueTypeDistributionChartVO> issueTypeDistributionChartVOS = new ArrayList<>(issueTypeDistributionChartDTOS.size());
         issueTypeDistributionChartDTOS.forEach(issueTypeDistributionChartDTO -> {
@@ -85,7 +85,7 @@ public class ReportAssembler extends AbstractAssembler {
         return issueTypeDistributionChartVOS;
     }
 
-    public List<IssuePriorityDistributionChartVO> toIssuePriorityDistributionChartDTO(Long projectId, List<IssuePriorityDistributionChartDTO> issuePriorityDistributionChartDTOS) {
+    public List<IssuePriorityDistributionChartVO> toIssuePriorityDistributionChartVO(Long projectId, List<IssuePriorityDistributionChartDTO> issuePriorityDistributionChartDTOS) {
         Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         List<IssuePriorityDistributionChartVO> issuePriorityDistributionChartVOS = new ArrayList<>(issuePriorityDistributionChartDTOS.size());
         issuePriorityDistributionChartDTOS.forEach(issuePriorityDistributionChartDTO -> {
