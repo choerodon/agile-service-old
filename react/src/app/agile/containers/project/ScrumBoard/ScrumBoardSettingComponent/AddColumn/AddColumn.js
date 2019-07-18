@@ -121,7 +121,7 @@ class AddColumn extends Component {
                   validator: this.checkStatusName.bind(this),
                 }],
               })(
-                <Input label="列名称" placeholder="请输入列名称" />,
+                <Input label="列名称" placeholder="列名称" />,
               )}
             </FormItem>
             <FormItem>
@@ -132,7 +132,7 @@ class AddColumn extends Component {
               })(
                 <Select
                   label="类别"
-                  placeholder="请选择类别"
+                  placeholder="类别"
                   disabled={!!statusType}
                 >
                   {this.renderOptions()}

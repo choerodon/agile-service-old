@@ -121,7 +121,7 @@ class StoryMapStore {
       },
     };
   }
-  
+
   @action setIssueList(issueList) {
     this.issueList = issueList;
   }
@@ -283,8 +283,8 @@ class StoryMapStore {
 
   @action addStoryNumToVersion(versionId) {
     const version = find(this.versionList, { versionId });
-    if (version) {      
-      version.storyNum += 1;   
+    if (version) {
+      version.storyNum += 1;
     }
   }
 
@@ -510,7 +510,7 @@ class StoryMapStore {
     }
   }
 
-  sortEpic(source, destination) {
+  sortEpic(source, destination, sourceIndex, targetIndex) {
     if (!source || !destination || source.issueId === destination.issueId) {
       return;
     }
@@ -525,7 +525,9 @@ class StoryMapStore {
     };
 
     sort(sortVO).then(() => {
-      this.getStoryMap();
+      // this.getStoryMap();
+      const [removed] = this.storyMapData.epicWithFeature.splice(sourceIndex, 1);
+      this.storyMapData.epicWithFeature.splice(targetIndex, 0, removed);
     });
   }
 

@@ -7,7 +7,7 @@
 
   // 选择框的样式，支持单选和多选
   .SelectTheme {
-    min-width: 100px;
+    min-width: 80px;
     border-radius: 3px;
     margin-right: 15px;
     display: flex;
@@ -86,7 +86,7 @@
         margin-top: 4px;
         padding: 0 !important;
 
-        ul>li {
+        ul > li {
           height: 23px;
           margin-bottom: -1px;
         }
@@ -140,9 +140,15 @@
   }
 
   .c7n-input-focused {
-    .hidden-label+.c7n-input-label-wrapper {
-      transition: none;
-      display: none;
+    .hidden-label.c7n-input-label-wrapper {
+      border-color: transparent;
+
+      .c7n-input-label {
+        color: rgba(0, 0, 0, 0.6);
+        transform: none;
+      }
+
+      transform: none;
     }
   }
 
@@ -150,31 +156,15 @@
   .c7n-select-dropdown-filter-input {
     .c7n-input-focused {
       .c7n-input-label-wrapper {
-        transition: none;
-        display: none;
+        border-color: transparent;
+
+        .c7n-input-label {
+          color: rgba(0, 0, 0, 0.6);
+          transform: none;
+        }
+
+        transform: none;
       }
-    }
-  }
-
-  .c7n-input {
-    height: 0.32rem;
-
-    &+.c7n-input-label-wrapper {
-      .c7n-input-label {
-        margin-top: -4px;
-      }
-    }
-  }
-
-  .c7n-select {
-    .c7n-select-selection__rendered {
-      line-height: 0.3rem;
-      height: 0.32rem;
-      min-height: 0.32rem;
-    }
-
-    .c7n-select-label {
-      margin-top: -4px;
     }
   }
 
@@ -189,6 +179,7 @@
 .c7nagile-form {
   .c7n-form-item {
     margin-bottom: 12px;
+    padding-bottom: .08rem;
   }
 }
 

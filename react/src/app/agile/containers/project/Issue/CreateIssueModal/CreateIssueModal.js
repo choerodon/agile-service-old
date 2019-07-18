@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { stores } from '@choerodon/boot';
 import IssueStore from '../../../../stores/project/sprint/IssueStore';
-import CreateIssue from '../../../../components/CreateIssueNew';
+import CreateIssue from '../../../../components/CreateIssue';
 import IssueFilterControler from '../IssueFilterControler';
 
 // const { AppState } = stores;

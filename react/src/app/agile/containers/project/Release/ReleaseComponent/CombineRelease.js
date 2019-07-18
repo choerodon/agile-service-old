@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import {
- Modal, Form, Select, message
+  Modal, Form, Select, message,
 } from 'choerodon-ui';
 import { stores, Content } from '@choerodon/boot';
 import _ from 'lodash';
@@ -10,7 +10,7 @@ import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
 const { AppState } = stores;
 const { Sidebar } = Modal;
 const FormItem = Form.Item;
-const Option = Select.Option;
+const { Option } = Select;
 
 @observer
 class CombineRelease extends Component {
@@ -100,10 +100,10 @@ class CombineRelease extends Component {
           link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/release/merge-version/"
         >
           <p style={{ display: 'flex', alignItems: 'center' }}>
-<span className="c7n-release-icon">!</span>
-一旦版本合并后，您就无法还原。
-</p>
-          <Form style={{ width: '512px' }}>
+            <span className="c7n-release-icon">!</span>
+            一旦版本合并后，您就无法还原。
+          </p>
+          <Form style={{ width: '512px' }} className="c7nagile-form">
             <FormItem>
               {getFieldDecorator('source', {
                 rules: [{
@@ -136,7 +136,7 @@ class CombineRelease extends Component {
                       key={item.versionId}
                       value={String(item.versionId)}
                     >
-{item.name}
+                      {item.name}
 
                     </Option>
                   )) : ''}

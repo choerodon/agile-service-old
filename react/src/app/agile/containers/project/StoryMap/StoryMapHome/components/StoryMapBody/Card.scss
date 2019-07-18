@@ -13,8 +13,18 @@
     margin-bottom: 0;
   }
 
-  .c7n-input-content {
-    // margin-bottom: 0;
+  .c7n-input-wrapper:before {
+    border: none;
+  }
+
+  .c7n-input-focused {
+    .c7n-input-label-wrapper {
+      .c7n-input-label {
+        color: rgba(0, 0, 0, 0.6);
+        transform: none;
+      }
+      transform: none;
+    }
   }
 
   .c7n-input-length-info {

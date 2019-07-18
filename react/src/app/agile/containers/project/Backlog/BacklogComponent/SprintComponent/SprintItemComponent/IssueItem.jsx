@@ -1,13 +1,6 @@
 import React, { Component } from 'react';
-import { Draggable } from 'react-beautiful-dnd';
-import { observer, inject } from 'mobx-react';
+import { observer } from 'mobx-react';
 import classnames from 'classnames';
-import { Tooltip } from 'choerodon-ui';
-import _ from 'lodash';
-import Typetag from '../../../../../../components/TypeTag';
-import UserHead from '../../../../../../components/UserHead';
-import { STATUS } from '../../../../../../common/Constant';
-import SideBorder from '../SideBorder';
 import SprintCount from '../SprintCount';
 import SprintIssue from '../SprintIssue';
 import BacklogStore from '../../../../../../stores/project/backlog/BacklogStore';

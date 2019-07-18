@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 import { Button, Icon, Tooltip } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
-import CreateSubBug from '../../../CreateSubBug';
+import CreateSubBug from '../../../CreateIssue/CreateSubBug';
 import IssueList from '../../Component/IssueList';
 import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 
@@ -100,7 +100,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
         {
           createSubBugShow ? (
             <CreateSubBug
-              issueId={issueId}
+              relateIssueId={issueId}
               parentSummary={summary}
               visible={createSubBugShow}
               onCancel={() => VisibleStore.setCreateSubBugShow(false)}

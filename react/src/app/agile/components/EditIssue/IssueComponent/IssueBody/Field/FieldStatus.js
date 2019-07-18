@@ -122,9 +122,9 @@ const { Text, Edit } = TextEditToggle;
               >
                 {
                   originStatus && originStatus.length
-                    ? originStatus.map(transform => (transform.statusDTO ? (
+                    ? originStatus.map(transform => (transform.statusVO ? (
                       <Option key={transform.id} value={transform.endStatusId}>
-                        {transform.statusDTO.name}
+                        {transform.statusVO.name}
                       </Option>
                     ) : ''))
                     : null

@@ -144,7 +144,7 @@ class EditStatus extends Component {
               })(
                 <Input
                   label="状态名称"
-                  placeholder="请输入状态名称"
+                  placeholder="状态名称"
                   ref={(ref) => { this.statusInput = ref; }}
                   onChange={() => {
                     if (!changeName) {
@@ -166,7 +166,7 @@ class EditStatus extends Component {
               })(
                 <Select
                   label="类别"
-                  placeholder="请选择类别"
+                  placeholder="类别"
                 >
                   {this.renderOptions()}
                   {/* <Option value="todo">todo</Option> */}
