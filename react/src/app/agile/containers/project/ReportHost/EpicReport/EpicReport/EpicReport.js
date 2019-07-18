@@ -56,43 +56,28 @@ class EpicReport extends Component {
   }
 
   getOption() {
+    const UNIT = {
+      总问题数: '个',
+      已完成问题数: '个',
+      未预估问题数: '个',
+      已完成故事点: '点',
+      总计故事点: '点',
+      已完成剩余时间: '小时',
+      总计剩余时间: '小时',
+    };
     const commonOption = {
       tooltip: {
         trigger: 'axis',
-        formatter: (params, ticket, callback) => {
+        formatter: (params) => {
           let content = '';
-          params.forEach((item) => {
-            if (ES.beforeCurrentUnit === 'issue_count') {
-              content = `<div>
-              <span>${params[0].axisValue}</span>
-              <br />
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[0].color}"></div>总问题数：${ES.getChartDataYIssueCountAll[item.dataIndex]} ${ES.getChartDataYIssueCountAll[item.dataIndex] ? ' 个' : ''}</div>
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[1].color}"></div>已完成问题数：${ES.getChartDataYIssueCountCompleted[item.dataIndex]} ${ES.getChartDataYIssueCountCompleted[item.dataIndex] ? ' 个' : ''}</div>
-            </div>`;
-            }
-  
-            if (ES.beforeCurrentUnit === 'story_point') {
-              content = `<div>
-              <span>${params[0].axisValue}</span>
-              <br />
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[0].color}"></div>总问题数：${ES.getChartDataYIssueCountAll[item.dataIndex]} ${ES.getChartDataYIssueCountAll[item.dataIndex] ? ' 个' : ''}</div>
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[1].color}"></div>未预估问题数：${ES.getChartDataYIssueCountUnEstimate[item.dataIndex]} ${ES.getChartDataYIssueCountAll[item.dataIndex] ? ' 个' : ''}</div>
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[2].color}"></div>已完成故事点：${ES.getChartDataYCompleted[item.dataIndex]}${ES.getChartDataYCompleted[item.dataIndex] ? ' 点' : ''}</div>
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[3].color}"></div>总计故事点：${ES.getChartDataYAll[item.dataIndex]}${ES.getChartDataYAll[item.dataIndex] ? ' 点' : ''}</div>
-            </div>`;
-            }
-  
-            if (ES.beforeCurrentUnit === 'remain_time') {
-              content = `<div>
-              <span>${params[0].axisValue}</span>
-              <br />
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[0].color}"></div>总问题数：${ES.getChartDataYIssueCountAll[item.dataIndex]} ${ES.getChartDataYIssueCountAll[item.dataIndex] ? ' 个' : ''}</div>
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[1].color}"></div>未预估问题数：${ES.getChartDataYIssueCountUnEstimate[item.dataIndex]} ${ES.getChartDataYIssueCountAll[item.dataIndex] ? ' 个' : ''}</div>
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[2].color}"></div>已完成剩余时间：${ES.getChartDataYCompleted[item.dataIndex]}${ES.getChartDataYCompleted[item.dataIndex] ? ' 小时' : ''}</div>
-              <div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background:${params[3].color}"></div>总计剩余时间：${ES.getChartDataYAll[item.dataIndex]}${ES.getChartDataYAll[item.dataIndex] ? ' 小时' : ''}</div>
-            </div>`;
-            }
-          });
+          if (!params || !params.length) {
+            content = '';
+          } else {
+            content = `<div>${params[0].axisValue}</div>`;
+            params.forEach((param) => {
+              content += `<div style="font-size: 11px"><div class="c7n-tooltip-icon" style="background: ${param.color}"></div>${param.seriesName}：${param.value}${param.value ? UNIT[param.seriesName] : ''}</div>`;
+            });
+          }
           return content;
         },
       },
