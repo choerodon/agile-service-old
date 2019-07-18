@@ -60,42 +60,26 @@ class EpicReport extends Component {
   }
 
   getOption() {
+    const UNIT = {
+      总问题数: '个',
+      已完成问题数: '个',
+      未预估问题百分比: '%',
+      已完成故事点: '点',
+      总计故事点: '点',
+      已完成剩余时间: '小时',
+      总计剩余时间: '小时',
+    };
     const commonOption = {
       tooltip: {
         trigger: 'axis',
-        formatter: (params, ticket, callback) => {
+        formatter: (params) => {
           let content = '';
-          params.forEach((item) => {
-            if (VS.beforeCurrentUnit === 'issue_count') {
-              content = `<div>
-              <span>${params[0].axisValue}</span>
-              <br />
-              <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[0].color}"></div>总问题数：${VS.getChartDataYIssueCountAll[item.dataIndex]} ${VS.getChartDataYIssueCountAll[item.dataIndex] ? ' 个' : ''}</div>
-              <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[1].color}"></div>已完成问题数：${VS.getChartDataYIssueCountCompleted[item.dataIndex]} ${VS.getChartDataYIssueCountCompleted[item.dataIndex] ? ' 个' : ''}</div>
-            </div>`;
-            }
-  
-            if (VS.beforeCurrentUnit === 'story_point') {
-              content = `<div>
-              <span>${params[0].axisValue}</span>
-              <br />
-              <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[0].color}"></div>未预估问题百分比：${VS.getChartDataYIssueCountUnEstimate[item.dataIndex]}</div>
-              <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[1].color}"></div>已完成故事点：${VS.getChartDataYCompleted[item.dataIndex]}${VS.getChartDataYCompleted[item.dataIndex] ? ' 点' : ''}</div>
-              <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[2].color}"></div>总计故事点：${VS.getChartDataYAll[item.dataIndex]}${VS.getChartDataYAll[item.dataIndex] ? ' 点' : ''}</div>
-            </div>`;
-            }
-  
-            if (VS.beforeCurrentUnit === 'remain_time') {
-              content = `<div>
-              <span>${params[0].axisValue}</span>
-              <br />
-              <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[0].color}"></div>未预估问题百分比：${VS.getChartDataYIssueCountUnEstimate[item.dataIndex]}</div>
-              <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[1].color}"></div>已完成剩余时间：${VS.getChartDataYCompleted[item.dataIndex]}${VS.getChartDataYCompleted[item.dataIndex] ? ' 小时' : ''}</div>
-              <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[2].color}"></div>总计剩余时间：${VS.getChartDataYAll[item.dataIndex]}${VS.getChartDataYAll[item.dataIndex] ? ' 小时' : ''}</div>
-            </div>`;
-            }
-          });
-          
+          if (params && params.length) {
+            content = `<div>${params[0].axisValue}</div>`;
+            params.forEach((param) => {
+              content += `<div style="font-size: 11px"><div style="display:inline-block; width:10px; height:10px; margin-right: 3px; border-radius: 50%; border-radius: 50%; background: ${param.color}"></div>${param.seriesName}：${param.value}${param.value ? UNIT[param.seriesName] : ''}</div>`;
+            });
+          }
           return content;
         },
       },
