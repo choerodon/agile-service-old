@@ -46,7 +46,7 @@ const { Text, Edit } = TextEditToggle;
     this.setState({
       selectLoading: true,
     });
-    getUsers(input).then((res) => {  
+    getUsers(input).then((res) => {
       this.setState({
         originUsers: res.list,
         selectLoading: false,
@@ -135,13 +135,15 @@ const { Text, Edit } = TextEditToggle;
               }
             </Text>
             <Edit>
-              <Select                
+              <Select
                 loading={selectLoading}
                 allowClear
                 filter
                 filterOption={false}
+                dropdownStyle={{ width: 250 }}
+                dropdownMatchSelectWidth={false}
                 onFilterChange={this.onFilterChange.bind(this)}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
+                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}
                 onChange={(value) => {
                   this.setState({ newAssigneeId: value });
                 }}

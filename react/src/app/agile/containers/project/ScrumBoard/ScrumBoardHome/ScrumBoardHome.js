@@ -229,6 +229,7 @@ class ScrumBoardHome extends Component {
           ScrumBoardStore.resetHeaderData(startColumn, destinationColumn, issue.issueTypeVO.typeCode);
         }
         ScrumBoardStore.rewriteObjNumber(data, issueId, issue);
+        // ScrumBoardStore.resetHeaderData(startColumn,destinationColumn)
       }
     });
     ScrumBoardStore.setSwimLaneData(SwimLaneId, startStatus, startStatusIndex, SwimLaneId, destinationStatus, destinationStatusIndex, issue, false);

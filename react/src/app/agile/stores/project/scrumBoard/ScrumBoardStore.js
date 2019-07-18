@@ -763,7 +763,7 @@ class ScrumBoardStore {
       before: destinationStatusIndex === 0,
       outsetIssueId,
       sprintId: this.sprintId,
-      rank: true,
+      rankFlag: true,
     };
     const { id: transformId } = this.stateMachineMap[issueTypeId] ? this.stateMachineMap[issueTypeId][startStatus].find(issue => issue.endStatusId === parseInt(destinationStatus, 10)) : this.stateMachineMap[0][startStatus].find(issue => issue.endStatusId === parseInt(destinationStatus, 10));
     return axios.post(`/agile/v1/projects/${proId}/board/issue/${issueId}/move?transformId=${transformId}`, data);

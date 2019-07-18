@@ -103,7 +103,7 @@ const { Text, Edit } = TextEditToggle;
               <Select
                 dropdownStyle={{ minWidth: 185 }}              
                 loading={selectLoading}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
+                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}
                 onChange={(value) => {
                   this.setState({
                     newPriorityId: value,

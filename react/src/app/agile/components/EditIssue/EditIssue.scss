@@ -60,10 +60,12 @@
   #detail {
     .line-start {
       width: 50%;
+      // overflow: hidden;
     }
 
     .c7n-value-wrapper {
       flex: 1;
+      overflow: hidden;
     }
 
     .c7ntest-TextEditToggle {
@@ -127,6 +129,7 @@
       width: 100%;
       flex: 1;
       overflow-y: scroll;
+      overflow-x: hidden;
     }
   }
 
