@@ -146,7 +146,7 @@ const { Text, Edit } = TextEditToggle;
                   </Text>
                   <Edit>
                     <Select
-                      getPopupContainer={triggerNode => triggerNode.parentNode}                  
+                      getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}                            
                       allowClear
                       loading={selectLoading}
                       onChange={(value) => {
@@ -190,6 +190,8 @@ const { Text, Edit } = TextEditToggle;
                         lineHeight: '20px',
                         padding: '0 8px',
                         display: 'inline-block',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
                       }}
                     >
                       {issueEpicName}
@@ -203,7 +205,7 @@ const { Text, Edit } = TextEditToggle;
               </Text>
               <Edit>
                 <Select
-                  getPopupContainer={triggerNode => triggerNode.parentNode}               
+                  getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}               
                   allowClear
                   loading={selectLoading}
                   onChange={(value) => {

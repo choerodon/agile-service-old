@@ -128,7 +128,7 @@ const { Text, Edit } = TextEditToggle;
             <Edit>
               <Select
                 label="活跃冲刺"
-                getPopupContainer={triggerNode => triggerNode.parentNode}          
+                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}          
                 allowClear
                 loading={selectLoading}
                 onChange={(value) => {

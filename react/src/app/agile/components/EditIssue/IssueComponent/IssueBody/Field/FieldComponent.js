@@ -124,7 +124,7 @@ const { Text, Edit } = TextEditToggle;
                 dropdownMatchSelectWidth={false}
                 loading={selectLoading}
                 mode="multiple"
-                getPopupContainer={triggerNode => triggerNode.parentNode}
+                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}
                 tokenSeparators={[',']}
                 style={{ marginTop: 0, paddingTop: 0 }}             
                 onChange={(value) => {

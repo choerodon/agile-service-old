@@ -141,8 +141,9 @@ const { Text, Edit } = TextEditToggle;
                 allowClear
                 filter
                 filterOption={false}
+                dropdownStyle={{ width: 250 }}
                 onFilterChange={this.onFilterChange.bind(this)}
-                getPopupContainer={triggerNode => triggerNode.parentNode}
+                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}
                 onChange={(value) => {
                   this.setState({ newReporterId: value });
                 }}
