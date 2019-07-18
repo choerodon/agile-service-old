@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
+import { programIssueLink, issueLink } from '../../../common/utils';
 
 @inject('AppState')
 @observer class IssueNumber extends Component {
@@ -12,7 +13,7 @@ import { withRouter } from 'react-router-dom';
 
   handleClickParent = () => {
     const {
-      parentIssueId, resetIssue, reloadIssue,
+      parentIssueId, resetIssue, reloadIssue, 
     } = this.props;
     if (reloadIssue) {
       reloadIssue(parentIssueId);
@@ -24,17 +25,18 @@ import { withRouter } from 'react-router-dom';
 
   handleClickIssueNum = () => {
     const {
-      history, urlParams, backUrl, issueNum, issueId,
+      history, issue,
     } = this.props;
-    history.push(`/agile/issue?type=${urlParams.type}&id=${urlParams.id}&name=${encodeURIComponent(urlParams.name)}&organizationId=${urlParams.organizationId}&paramName=${issueNum}&paramIssueId=${issueId}&paramUrl=${backUrl || 'backlog'}`);
+    const { issueId, typeCode, issueNum } = issue;
+    history.push(typeCode === 'feature' ? programIssueLink(issueId, issueNum) : issueLink(issueId, typeCode, issueNum));
     return false;
   };
 
   render() {
     const {
-      typeCode, parentIssueNum, issueNum, type,
+      typeCode, parentIssueNum, issue, type,
     } = this.props;
-
+    const { issueNum } = issue;
     return (
       <div style={{ fontSize: 16, lineHeight: '28px', fontWeight: 500 }}>
         {

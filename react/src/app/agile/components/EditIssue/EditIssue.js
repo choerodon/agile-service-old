@@ -29,6 +29,9 @@ const { AppState } = stores;
 let loginUserId;
 let hasPermission;
 const store = EditIssueStore;
+const defaultProps = {
+  applyType: 'agile',
+};
 @observer
 class EditIssue extends Component {
   constructor(props) {
@@ -41,7 +44,7 @@ class EditIssue extends Component {
   }
 
   componentDidMount() {
-    const { onRef, issueId } = this.props;
+    const { onRef, issueId, applyType } = this.props;
     if (onRef) {
       onRef(this);
     }
@@ -60,7 +63,7 @@ class EditIssue extends Component {
         projectId: AppState.currentMenuType.id,
         resourceType: 'project',
       }]),
-      loadIssueTypes(),
+      loadIssueTypes(applyType),
     ])
       .then(axios.spread((users, permission, issueTypes) => {
         loginUserId = users.id;
@@ -78,18 +81,18 @@ class EditIssue extends Component {
   }
 
   loadIssueDetail = (paramIssueId) => {
-    const { issueId } = this.props;
+    const { issueId, programId } = this.props;
     const id = paramIssueId || issueId;
     this.setState({
       issueLoading: true,
     }, () => {
-      loadIssue(id).then((res) => {
+      loadIssue(id, programId).then((res) => {
         const param = {
           schemeCode: 'agile_issue',
           context: res.typeCode,
           pageCode: 'agile_issue_edit',
         };        
-        getFieldAndValue(id, param).then((fields) => {
+        getFieldAndValue(id, param, programId).then((fields) => {
           this.setState({
             issueLoading: false,
           });
@@ -99,7 +102,7 @@ class EditIssue extends Component {
       axios.all([
         loadDocs(id),
         loadWorklogs(id),
-        loadDatalogs(id),
+        loadDatalogs(id, programId),
         loadLinkIssues(id),
         // loadBranchs(id),
       ])
@@ -171,6 +174,8 @@ class EditIssue extends Component {
       onUpdate,
       onDeleteIssue,
       onDeleteSubIssue,
+      applyType,
+      disabled,
     } = this.props;
     const {
       issueLoading, 
@@ -190,7 +195,7 @@ class EditIssue extends Component {
       getTransformFromSubIssueShow: transformFromSubIssueShow,
       getRelateStoryShow: relateStoryShow,
     } = VisibleStore;
-    const disabled = IsInProgramStore.isInProgram && typeCode === 'issue_epic' && !hasPermission && createdBy !== AppState.userInfo.id;
+    const rightDisabled = disabled || (IsInProgramStore.isInProgram && typeCode === 'issue_epic' && !hasPermission && createdBy !== AppState.userInfo.id);
     return (
       <div style={{
         position: 'absolute',
@@ -240,14 +245,14 @@ class EditIssue extends Component {
               ) : null
             }
             <IssueSidebar
-              disabled={disabled}
+              disabled={rightDisabled}
               store={store}
               reloadIssue={this.loadIssueDetail}
               onUpdate={onUpdate}
             />
             <div className="c7n-content">
               <IssueHeader
-                disabled={disabled}
+                disabled={rightDisabled}
                 store={store}
                 reloadIssue={this.loadIssueDetail}
                 backUrl={backUrl}
@@ -258,13 +263,15 @@ class EditIssue extends Component {
                 onUpdate={onUpdate}
               />
               <IssueBody
-                disabled={disabled}
+                disabled={rightDisabled}
                 store={store}
                 reloadIssue={this.loadIssueDetail}
                 onUpdate={onUpdate}
                 onDeleteSubIssue={onDeleteSubIssue}
                 loginUserId={loginUserId}
                 hasPermission={hasPermission}
+                applyType={applyType}
+                // programId={programId}
               />
             </div>
             {
@@ -278,6 +285,7 @@ class EditIssue extends Component {
                   visible={copyIssueShow}
                   onCancel={() => VisibleStore.setCopyIssueShow(false)}
                   onOk={this.handleCopyIssue.bind(this)}
+                  applyType={applyType}
                 />
               ) : null
             }
@@ -362,4 +370,5 @@ class EditIssue extends Component {
     );
   }
 }
+EditIssue.defaultProps = defaultProps;
 export default withRouter(EditIssue);

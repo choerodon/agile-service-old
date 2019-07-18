@@ -96,9 +96,11 @@ const { confirm } = Modal;
 
     const getMenu = () => (
       <Menu onClick={this.handleClickMenu}>
+        {!['feature'].includes(typeCode) && (
         <Menu.Item key="0">
           {'登记工作日志'}
         </Menu.Item>
+        )}
         {
           <Menu.Item
             key="1"
@@ -185,8 +187,7 @@ const { confirm } = Modal;
                 backUrl={backUrl}
                 typeCode={typeCode}
                 parentIssueNum={parentIssueNum || relateIssueNum}
-                issueNum={issueNum}
-                issueId={issueId}
+                issue={issue}
                 type={type}
               />
               {/* 隐藏 */}
