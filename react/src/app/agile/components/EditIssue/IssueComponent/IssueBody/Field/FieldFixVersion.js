@@ -36,7 +36,7 @@ const { Text, Edit } = TextEditToggle;
   };
 
   loadIssueVersions = () => {
-    loadVersions(['version_planning', 'released']).then((res) => {
+    loadVersions(['version_planning']).then((res) => {
       this.setState({
         originVersions: res,
         selectLoading: false,
@@ -144,7 +144,7 @@ const { Text, Edit } = TextEditToggle;
             </Text>
             <Edit>
               <Select
-                label="未归档版本"
+                label="未发布版本"
                 mode="multiple"
                 loading={selectLoading}
                 tokenSeparators={[',']}
