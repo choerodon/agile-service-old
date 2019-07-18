@@ -1252,7 +1252,7 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleCreateComponentIssueRel(List<ComponentIssueRelVO> componentIssueRelVOList, Long projectId, Long issueId, ProjectInfoDTO projectInfoDTO, Boolean assigneeCondition) {
         if (componentIssueRelVOList != null && !componentIssueRelVOList.isEmpty()) {
-            handleComponentIssueRelWithHandleAssignee(modelMapper.map(componentIssueRelVOList, new TypeToken<ComponentIssueRelDTO>(){}.getType()), projectId, issueId, projectInfoDTO, assigneeCondition);
+            handleComponentIssueRelWithHandleAssignee(modelMapper.map(componentIssueRelVOList, new TypeToken<List<ComponentIssueRelDTO>>(){}.getType()), projectId, issueId, projectInfoDTO, assigneeCondition);
         }
     }
 
