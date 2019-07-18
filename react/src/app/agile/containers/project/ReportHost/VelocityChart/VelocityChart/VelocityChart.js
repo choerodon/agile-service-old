@@ -75,16 +75,14 @@ class VelocityChart extends Component {
         axisPointer: {
           type: 'shadow',
         },
-        formatter: (params, ticket, callback) => {
+        formatter: (params) => {
           let content = '';
-          params.forEach((item, index) => {
-            content = `<div>
-            <span>${params[0].axisValue}</span>
-            <br />
-            <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[0].color}"></div>预估：${VS.getChartDataYCommitted[item.dataIndex]} ${VS.getChartDataYCommitted[item.dataIndex] && unit ? unit : ''}</div>
-            <div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${params[1].color}"></div>已完成：${VS.getChartDataYCompleted[item.dataIndex]} ${VS.getChartDataYCompleted[item.dataIndex] && unit ? unit : ''}</div>
-          </div>`;
-          });
+          if (params && params.length) {
+            content = `<div>${params[0].axisValue}</div>`;
+            params.forEach((param) => {
+              content += `<div style="font-size: 11px"><div style="display:inline-block; width: 10px; height: 10px; margin-right: 3px; border-radius: 50%; background:${param.color}"></div>${param.seriesName}：${param.value}${param.value ? unit : ''}</div>`;
+            });
+          }
           return content;
         },
       },
