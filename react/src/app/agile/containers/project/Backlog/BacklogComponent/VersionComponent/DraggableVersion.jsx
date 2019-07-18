@@ -78,6 +78,9 @@ class VersionItem extends Component {
         .then((checkRes) => {
           if (checkRes) {
             Choerodon.prompt('版本名称重复');
+            this.setState({
+              editName: false,
+            });
           } else {
             const verisonData = {
               objectVersionNumber,

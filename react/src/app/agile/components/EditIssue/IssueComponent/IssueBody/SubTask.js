@@ -178,6 +178,7 @@ const { AppState } = stores;
           ) : ''
         }
         {this.renderSubIssues()}
+        {!disabled && (
         <div className="c7n-subTask-quickCreate">
           {expand
             ? (
@@ -222,6 +223,7 @@ const { AppState } = stores;
             )
           }
         </div>
+        )}
         {
           createSubTaskShow ? (
             <CreateSubTask

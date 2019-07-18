@@ -68,18 +68,17 @@ import './IssueComponent.scss';
 
   render() {
     const {
-      store, type = 'narrow', disabled,
+      store, type = 'narrow', disabled, applyType,
     } = this.props;
 
-    const issueTypes = store.getIssueTypes ? store.getIssueTypes : [];
+    let issueTypeData = store.getIssueTypes ? store.getIssueTypes : [];
     const issue = store.getIssue;
-    const {
-      issueTypeId, issueTypeVO, typeCode, featureVO = {}, 
-    } = issue;
-    const currentType = issueTypes.find(t => t.id === issueTypeId);
-    let transformIssueTypes = [];
+    const { issueTypeVO = {}, featureVO = {} } = issue;
+    const { typeCode } = issueTypeVO;
+    const { featureType } = featureVO || {};
+    let currentIssueType = issueTypeVO;
     if (typeCode === 'feature') {
-      transformIssueTypes = [
+      issueTypeData = [
         {
           ...issueTypeVO,
           colour: '#29B6F6',
@@ -93,11 +92,10 @@ import './IssueComponent.scss';
           name: '使能',
           id: 'enabler',
         },
-      ].filter(t => t.featureType !== featureVO.featureType);      
-    } else if (currentType) {
-      transformIssueTypes = issueTypes.filter(t => (t.stateMachineId === currentType.stateMachineId
-          && t.typeCode !== typeCode && t.typeCode !== 'sub_task' && t.typeCode !== 'feature'
-      ));
+      ];
+      currentIssueType = featureType === 'business' ? issueTypeData[0] : issueTypeData[1];
+    } else {
+      issueTypeData = issueTypeData.filter(item => item.typeCode !== 'feature');
     }
     const typeList = (
       <Menu
@@ -110,7 +108,7 @@ import './IssueComponent.scss';
         onClick={this.handleChangeType}
       >
         {
-          transformIssueTypes.map(t => (
+          issueTypeData.map(t => (
             <Menu.Item key={t.typeCode} value={t.id} featureType={t.featureType}>
               <TypeTag
                 style={{ margin: 0 }}
@@ -127,23 +125,39 @@ import './IssueComponent.scss';
       <div className="c7n-nav">
         {/* 转换类型 */}
         <div>
-          <Dropdown overlay={typeList} trigger={['click']} disabled={typeCode === 'sub_task' || disabled}>
+          {disabled ? (
             <div
-              className={type === 'narrow' ? 'issue-nav-narrow' : 'issue-nav-wide'}
+              style={{
+                height: 50,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
               <TypeTag
-                data={currentType}
-                featureType={featureVO && featureVO.featureType}
-              />
-              <Icon
-                type="arrow_drop_down"
-                style={{ fontSize: 16 }}
-              />
-            </div>
-          </Dropdown>
+                data={currentIssueType}
+              />                    
+            </div>          
+          ) : (
+            <Dropdown overlay={typeList} trigger={['click']} disabled={typeCode === 'sub_task' || disabled}>
+              <div
+                className={type === 'narrow' ? 'issue-nav-narrow' : 'issue-nav-wide'}
+              >
+                <TypeTag
+                  data={currentIssueType}
+                  featureType={featureVO && featureVO.featureType}
+                />
+                <Icon
+                  type="arrow_drop_down"
+                  style={{ fontSize: 16 }}
+                />
+              </div>
+            </Dropdown>
+          )}
         </div>
         {/* 锚点 */}
-        <IssueNav typeCode={typeCode} />
+        <IssueNav typeCode={typeCode} applyType={applyType} />
       </div>
     );
   }

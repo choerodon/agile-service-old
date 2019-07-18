@@ -11,18 +11,9 @@ import {
 } from './Field';
 import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 
+const hideFields = ['priority', 'component', 'label', 'fixVersion', 'sprint', 'timeTrace', 'assignee'];
 @inject('AppState')
 @observer class IssueField extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
-
-  componentDidMount() {
-
-  }
-
   getFieldComponent = (field) => {
     const { store } = this.props;
     const issue = store.getIssue;
@@ -82,18 +73,16 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
   };
 
   render() {
-    const { store, isWide = false } = this.props;
-    const issue = store.getIssue;
-    let fields = toJS(store.getFields);
+    const { store, applyType } = this.props;
+    const issue = store.getIssue;    
     const { issueId, typeCode } = issue;
-
+    let fields = applyType === 'program' ? toJS(store.getFields).filter(item => hideFields.indexOf(item.fieldCode) === -1) : toJS(store.getFields);
     // 系统字段单独控制是否显示
     if (typeCode === 'sub_task') {
       fields = fields.filter(field => ['component', 'epic'].indexOf(field.fieldCode) === -1);
     } else if (typeCode === 'issue_epic') {
       fields = fields.filter(field => field.fieldCode !== 'epic');
     }
-
     if (!VisibleStore.detailShow) {
       fields = fields.slice(0, 4);
     }

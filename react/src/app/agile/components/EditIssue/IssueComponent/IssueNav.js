@@ -132,9 +132,9 @@ let sign = true;
   render() {
     const { nav } = this.state;
     const {
-      typeCode, intl,
+      typeCode, intl, applyType,
     } = this.props;
-
+    // .filter(item => (applyType === 'program' ? noDisplay.feature.indexOf(item) === -1 : true))
     return (
       <ul className="c7n-nav-ul" style={{ padding: 0 }}>
         {navList.filter(
