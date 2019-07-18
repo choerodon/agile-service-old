@@ -34,16 +34,14 @@ const defaultProps = {
   contentTitle: `在项目“${getProjectName()}”中创建问题`,
   contentDescription: '请在下面输入问题的详细信息，包含详细描述、人员信息、版本信息、进度预估、优先级等等。您可以通过丰富的任务描述帮助相关人员更快更全面的理解任务，同时更好的把控问题进度。',
   contentLink: 'http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/create-issue/',
-  hiddenFields: [],
+  hiddenFields: ['benfitHypothesis', 'acceptanceCritera', 'pi'],
 };
 class CreateIssue extends Component {
   constructor(props) {
     super(props);
     this.state = {
       createLoading: false,
-      loading: true,
-      originLabels: [],
-      originComponents: [],
+      loading: true,      
       originIssueTypes: [],
       defaultTypeId: false,
       newIssueTypeCode: '',
@@ -79,7 +77,7 @@ class CreateIssue extends Component {
     return find(issueTypes, { typeCode: defaultTypeCode });
   }
 
-  handleSave = (data, fileList) => {
+  handleSave = (data, fileList = []) => {
     const { fields } = this.state;
     const {
       onOk, form, request, mode,
@@ -117,7 +115,8 @@ class CreateIssue extends Component {
         createLoading: false,
       });
       onOk(res);
-    }).catch(() => {
+    }).catch((error) => {
+      // console.log(error);
       form.resetFields();
       this.setState({
         createLoading: false,
@@ -174,8 +173,6 @@ class CreateIssue extends Component {
   handleCreateIssue = () => {
     const { form, parentIssueId, relateIssueId } = this.props;
     const {
-      originComponents,
-      originLabels,
       originIssueTypes,
     } = this.state;
     form.validateFieldsAndScroll((err, values) => {
@@ -202,7 +199,8 @@ class CreateIssue extends Component {
           linkIssues,
           fileList,
         } = values;
-        const { typeCode } = originIssueTypes.find(t => t.id === typeId);
+        const { typeCode } = originIssueTypes.find(t => t.id === typeId);  
+        const { originComponents, originLabels } = this;
         const exitComponents = originComponents;
         const componentIssueRelVOList = map(componentIssueRel
           && componentIssueRel.filter(v => v && v.trim()), (component) => {
@@ -228,8 +226,8 @@ class CreateIssue extends Component {
             });
           }
         });
-        const fixVersionIssueRelVOList = map(fixVersionIssueRel
-          && fixVersionIssueRel.filter(v => v && v.trim()), versionId => ({
+        
+        const fixVersionIssueRelVOList = map(fixVersionIssueRel, versionId => ({
           versionId,
           relationType: 'fix',
         }));
@@ -324,10 +322,10 @@ class CreateIssue extends Component {
     switch (field.fieldCode) {
       case 'issueType':
         return (
-          [
+          [ 
             ['sub_task', 'sub_bug', 'feature'].includes(mode)
               ? getFieldDecorator('typeId', {
-                rules: [{ required: true, message: '问题类型为必输项' }],
+                rules: [{ required: true, message: '问题类型为必输项' }], // 不需要展示，但是要有值
                 initialValue: defaultTypeId || '',
               })
               : (
@@ -471,6 +469,7 @@ class CreateIssue extends Component {
                 mode="tags"
                 loadWhenMount
                 type="label"
+                afterLoad={(originLabels) => { this.originLabels = originLabels; }}
               />,
             )}
           </FormItem>
@@ -505,7 +504,7 @@ class CreateIssue extends Component {
         );
       case 'component':
         return (
-          !['sub_task'].includes(newIssueTypeCode) ? null : (
+          ['sub_task'].includes(newIssueTypeCode) ? null : (
             <FormItem label="模块">
               {getFieldDecorator('componentIssueRel', {
                 rules: [{ transform: value => (value ? value.toString() : value) }],
@@ -515,6 +514,7 @@ class CreateIssue extends Component {
                   mode="multiple"
                   type="component"
                   allowClear
+                  afterLoad={(originComponents) => { this.originComponents = originComponents; }}
                 />,
               )}
             </FormItem>

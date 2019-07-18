@@ -24,7 +24,7 @@ class CreateStory extends Component {
 
   handleCreateIssue = () => {
     const { value } = this.state;
-    if (value) {
+    if (value && value.trim()) {
       const { swimLine } = StoryMapStore;
       const {
         onCreate, epic, feature, version,

@@ -50,12 +50,12 @@ class SelectNumber extends Component {
     const { value } = this.state;
     return (
       <Select
+        getPopupContainer={triggerNode => triggerNode.parentNode}
         {...this.props}    
         value={value}
         mode="combobox"        
         tokenSeparators={[',']}        
-        onChange={this.handleChange}
-        getPopupContainer={triggerNode => triggerNode.parentNode}
+        onChange={this.handleChange}        
       >
         {selectValues.map(sp => (
           <Option key={sp.toString()} value={sp}>

@@ -38,7 +38,7 @@ class StoryCell extends Component {
     } = this.props;
     const { storyData, swimLine } = StoryMapStore;
     const { issueId: epicId, featureCommonDTOList, adding } = epic;
-    const targetEpic = storyData[epicId];
+    const targetEpic = storyData[epicId] || {};
     const { collapse } = otherData || {};
     // let epicStorys = [];
     // if (targetEpic && targetEpic.feature && targetEpic.feature.none) {

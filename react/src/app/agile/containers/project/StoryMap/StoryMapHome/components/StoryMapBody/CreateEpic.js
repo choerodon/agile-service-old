@@ -19,7 +19,7 @@ class CreateEpic extends Component {
   handleCreateIssue = () => {
     // console.log(e.target.value);
     const { value } = this.state;
-    if (value !== '') {
+    if (value !== '' && value.trim()) {
       const { onCreate, index } = this.props;
       const epicType = StoryMapStore.getEpicType;
       const defaultPriority = StoryMapStore.getDefaultPriority;
