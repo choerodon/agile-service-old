@@ -68,7 +68,7 @@ import './IssueComponent.scss';
 
   render() {
     const {
-      store, type = 'narrow', disabled,
+      store, type = 'narrow', disabled, applyType,
     } = this.props;
 
     let issueTypeData = store.getIssueTypes ? store.getIssueTypes : [];
@@ -157,7 +157,7 @@ import './IssueComponent.scss';
           )}
         </div>
         {/* 锚点 */}
-        <IssueNav typeCode={typeCode} />
+        <IssueNav typeCode={typeCode} applyType={applyType} />
       </div>
     );
   }

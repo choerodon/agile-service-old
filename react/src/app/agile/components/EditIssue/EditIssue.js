@@ -86,13 +86,13 @@ class EditIssue extends Component {
     this.setState({
       issueLoading: true,
     }, () => {
-      loadIssue(id, programId).then((res) => {
+      loadIssue(id, programId || undefined).then((res) => {
         const param = {
           schemeCode: 'agile_issue',
           context: res.typeCode,
           pageCode: 'agile_issue_edit',
         };        
-        getFieldAndValue(id, param, programId).then((fields) => {
+        getFieldAndValue(id, param, programId || undefined).then((fields) => {
           this.setState({
             issueLoading: false,
           });
@@ -102,7 +102,7 @@ class EditIssue extends Component {
       axios.all([
         loadDocs(id),
         loadWorklogs(id),
-        loadDatalogs(id, programId),
+        loadDatalogs(id, programId || undefined),
         loadLinkIssues(id),
         // loadBranchs(id),
       ])
@@ -249,6 +249,7 @@ class EditIssue extends Component {
               store={store}
               reloadIssue={this.loadIssueDetail}
               onUpdate={onUpdate}
+              applyType={applyType}
             />
             <div className="c7n-content">
               <IssueHeader

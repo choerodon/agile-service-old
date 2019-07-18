@@ -95,7 +95,7 @@ export default class ScrumBoardDataController {
         },
       }]) : [],
       unInterConnectedDataMap: {
-        issueArrLength: combinedIssueArr.filter(issue => !issue.epicId).length,
+        issueArrLength: combinedIssueArr.filter(issue => issue.typeCode !== 'sub_task' && !issue.epicId).length,
         ...this.addParentIdsLabelToFlattenData(
           combinedIssueArr.filter(issue => !issue.epicId),
           parentWithSubs,
