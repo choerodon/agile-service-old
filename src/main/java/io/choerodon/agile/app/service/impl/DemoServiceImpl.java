@@ -279,7 +279,7 @@ public class DemoServiceImpl implements DemoService {
         issueMoveVO.setBoardId(boardRes.getBoardId());
         issueMoveVO.setIssueId(issueId);
         issueMoveVO.setObjectVersionNumber(objectVersionNumber);
-        issueMoveVO.setRank(false);
+        issueMoveVO.setRankFlag(false);
         issueMoveVO.setSprintId(sprintId);
         issueMoveVO.setStatusId(statusId);
         boardService.move(projectId, issueId, transformId, issueMoveVO, true);

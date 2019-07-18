@@ -2,11 +2,10 @@ package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
-import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.BoardValidator;
-import io.choerodon.agile.app.service.*;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.vo.event.StatusPayload;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.common.enums.SchemeApplyType;
 import io.choerodon.agile.infra.common.utils.DateUtil;
@@ -20,7 +19,6 @@ import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.dto.InputDTO;
-
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
@@ -453,7 +451,7 @@ public class BoardServiceImpl implements BoardService {
                 throw new CommonException("error.userSetting.create");
             }
 //            userSettingService.updateOtherBoardNoDefault(boardId, projectId, userId);
-            userSettingMapper.updateOtherBoardNoDefault(boardId,projectId,userId);
+            userSettingMapper.updateOtherBoardNoDefault(boardId, projectId, userId);
         } else if (!query.getDefaultBoard()) {
             query.setDefaultBoard(true);
 //            userSettingService.update(ConvertHelper.convert(query, UserSettingE.class));
@@ -465,7 +463,7 @@ public class BoardServiceImpl implements BoardService {
                 throw new CommonException("error.userSetting.update");
             }
 //            userSettingService.updateOtherBoardNoDefault(boardId, projectId, userId);
-            userSettingMapper.updateOtherBoardNoDefault(boardId,projectId,userId);
+            userSettingMapper.updateOtherBoardNoDefault(boardId, projectId, userId);
         }
     }
 
@@ -520,7 +518,7 @@ public class BoardServiceImpl implements BoardService {
                     piFeatureMapper.deletePfRelationByOptions(projectId, issueId);
                 }
                 if (!piFeatureMapper.selectGivenExistByOptions(projectId, issueId, piId)) {
-                   insertPiFeature(new PiFeatureDTO(issueId, piId, projectId));
+                    insertPiFeature(new PiFeatureDTO(issueId, piId, projectId));
                 }
             }
         }
@@ -544,7 +542,7 @@ public class BoardServiceImpl implements BoardService {
 
     private JSONObject handleIssueMoveRank(Long projectId, IssueMoveVO issueMoveVO) {
         JSONObject jsonObject = new JSONObject();
-        if (issueMoveVO.getRank()) {
+        if (issueMoveVO.getRankFlag()) {
             String rank;
             if (issueMoveVO.getBefore()) {
                 if (issueMoveVO.getOutsetIssueId() == null || Objects.equals(issueMoveVO.getOutsetIssueId(), 0L)) {
@@ -597,7 +595,8 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public List<BoardVO> queryByProjectId(Long projectId) {
         Long userId = DetailsHelper.getUserDetails().getUserId();
-        return modelMapper.map(boardMapper.queryByProjectIdWithUser(userId, projectId), new TypeToken<List<BoardVO>>(){}.getType());
+        return modelMapper.map(boardMapper.queryByProjectIdWithUser(userId, projectId), new TypeToken<List<BoardVO>>() {
+        }.getType());
     }
 
     @Override

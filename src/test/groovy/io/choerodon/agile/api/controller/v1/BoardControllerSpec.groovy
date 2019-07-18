@@ -166,7 +166,7 @@ class BoardControllerSpec extends Specification {
         issueMoveDTO.originColumnId = 1L
         issueMoveDTO.columnId = 2L
         issueMoveDTO.objectVersionNumber = 1L
-        issueMoveDTO.rank = false
+        issueMoveDTO.rankFlag = false
 
         and:
         List<MessageVO> messageDTOList = new ArrayList<>()

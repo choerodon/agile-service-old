@@ -35,15 +35,15 @@ public class IssueMoveVO {
     @ApiModelProperty(value = "与before一起用，以该问题为参照物")
     private Long outsetIssueId;
 
-    @ApiModelProperty(value = "排序字段")
-    private Boolean rank;
+    @ApiModelProperty(value = "是否排序")
+    private Boolean rankFlag;
 
-    public Boolean getRank() {
-        return rank;
+    public Boolean getRankFlag() {
+        return rankFlag;
     }
 
-    public void setRank(Boolean rank) {
-        this.rank = rank;
+    public void setRankFlag(Boolean rankFlag) {
+        this.rankFlag = rankFlag;
     }
 
     public Boolean getBefore() {
