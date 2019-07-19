@@ -51,11 +51,20 @@ const ToolBar = ({ id, onFullScreenClick, hideFullScreen }) => (
     <button type="button" className="ql-list" value="ordered" />
     <button type="button" className="ql-list" value="bullet" />
     <button type="button" className="ql-image" />
-    <button type="button" className="ql-link" />
+    <button type="button" className="ql-link" /> 
+    <select className="ql-color">
+      {/* <option value="red" />
+      <option value="green" />
+      <option value="blue" />
+      <option value="orange" />
+      <option value="violet" />
+      <option value="#d0d1d2" />
+      <option selected /> */}
+    </select> 
 
     {!hideFullScreen && (
       <button type="button" className="ql-fullScreen" style={{ outline: 'none' }} onClick={onFullScreenClick}>
-        <Icon type="zoom_out_map" style={{ marginTop: -2 }} />
+        <Icon type="zoom_out_map" style={{ marginTop: -5 }} />
       </button>
     )}
   </div>
