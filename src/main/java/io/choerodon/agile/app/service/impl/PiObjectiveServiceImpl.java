@@ -124,7 +124,7 @@ public class PiObjectiveServiceImpl implements PiObjectiveService {
     public List<PiObjectiveVO> queryPiObjectiveListByProject(Long projectId, Long piId) {
         List<PiObjectiveDTO> piObjectiveDTOList = piObjectiveMapper.selectPiObjectiveListByProject(projectId, piId);
         if (piObjectiveDTOList != null && !piObjectiveDTOList.isEmpty()) {
-            return modelMapper.map(piObjectiveDTOList, new TypeToken<PiObjectiveVO>(){}.getType());
+            return modelMapper.map(piObjectiveDTOList, new TypeToken<List<PiObjectiveVO>>(){}.getType());
         } else {
             return new ArrayList<>();
         }
