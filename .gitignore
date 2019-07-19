@@ -34,6 +34,7 @@ init-local-database.sh
 lib
 node_modules
 package-lock.json
+yarn.lock
 **/lib/dist/
 **/lib/assets/
 **/lib/fonts/
