@@ -124,7 +124,7 @@ public class DataLogAspect {
     private static final String FIELD_TIMESPENT = "timespent";
     private static final String FIELD_WORKLOGID = "WorklogId";
     private static final String ERROR_UPDATE = "error.LogDataAspect.update";
-    private static final String AGILE = "Agile:";
+    private static final String AGILE = "Agile::";
     private static final String VERSION_CHART = AGILE + "VersionChart";
     private static final String PIECHART = AGILE + "PieChart";
     private static final String COMPONENT = "component";
