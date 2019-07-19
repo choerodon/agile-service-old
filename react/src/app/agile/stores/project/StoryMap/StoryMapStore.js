@@ -68,6 +68,7 @@ class StoryMapStore {
         statusList: [],
       },
     };
+    this.versionList = [];
   }
 
   getStoryMap = () => {
@@ -86,8 +87,7 @@ class StoryMapStore {
       this.issueTypes = issueTypes;
       this.prioritys = prioritys;
       this.initVersionList(versionList);
-      this.initStoryData(newStoryMapData);
-      this.setStoryMapData(newStoryMapData);
+      this.initStoryData(newStoryMapData);      
       this.setLoading(false);
     });
   }
@@ -159,9 +159,6 @@ class StoryMapStore {
     this.loading = loading;
   }
 
-  @action setStoryMapData(storyMapData) {
-    this.storyMapData = storyMapData;
-  }
 
   @action switchSwimLine(swimLine) {
     this.swimLine = swimLine;
@@ -209,9 +206,10 @@ class StoryMapStore {
     });
   }
 
-  @action initStoryData({
-    epicWithFeature, storyList, storyMapWidth,
-  }) {
+  @action initStoryData(storyMapData) {
+    const {
+      epicWithFeature, storyList, storyMapWidth,
+    } = storyMapData;
     const storyData = {};
     epicWithFeature.forEach((epic) => {
       const { issueId: epicId } = epic;
@@ -245,6 +243,7 @@ class StoryMapStore {
     });
     // console.log(storyData);
     this.storyData = storyData;
+    this.storyMapData = storyMapData;
   }
 
   @action addStoryToStoryData(story, storyData = this.storyData) {

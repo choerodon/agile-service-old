@@ -171,7 +171,9 @@ class CreateIssue extends Component {
   }
 
   handleCreateIssue = () => {
-    const { form, parentIssueId, relateIssueId } = this.props;
+    const {
+      form, parentIssueId, relateIssueId, applyType, 
+    } = this.props;
     const {
       originIssueTypes,
     } = this.state;
@@ -234,7 +236,7 @@ class CreateIssue extends Component {
         const issueLinkCreateVOList = this.getIssueLinks(linkTypes || [], linkIssues);
 
         const extra = {
-          programId: getProjectId(),
+          ...applyType === 'program' ? { programId: getProjectId() } : {},
           projectId: getProjectId(),
           issueTypeId: typeId,
           typeCode,
@@ -298,7 +300,7 @@ class CreateIssue extends Component {
   getIssueTypes = () => {
     const { originIssueTypes } = this.state;
     return IsInProgramStore.isInProgram
-      ? originIssueTypes.filter(type => (!['issue_epic', 'feature', 'sub_task'].includes(type.typeCode)))
+      ? originIssueTypes.filter(type => (!['feature', 'sub_task'].includes(type.typeCode)))
       : originIssueTypes.filter(type => (!['feature', 'sub_task'].includes(type.typeCode)));
   }
 

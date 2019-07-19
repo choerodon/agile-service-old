@@ -1,60 +1,68 @@
-.react-quill-editor {
-  .quill {
-    height: calc(100% - 42px) !important;
-  }
+.c7n-quill-editor {
+  .react-quill-editor {
+    display: flex;
+    flex-direction: column;
 
-  img {
-    max-width: 400px !important;
-  }
-
-  .ql-snow .ql-picker.ql-expanded .ql-picker-options {
-    right: 0;
-  }
-
-  /* link start */
-  .ql-snow .ql-tooltip {
-    &[data-mode=link]::before {
-      content: "输入链接:";
+    .quill {
+      height: auto !important;
+      flex: 1;
+      overflow: hidden;
     }
 
-    &::before {
-      content: "访问链接:";
+    img {
+      max-width: 400px !important;
     }
 
-    &.ql-editing a.ql-action::after {
-      content: '保存';
+    .ql-snow .ql-picker.ql-expanded .ql-picker-options {
+      right: 0;
     }
 
-    & a {
-      &.ql-action::after {
-        content: '编辑';
+    /* link start */
+    .ql-snow .ql-tooltip {
+      &[data-mode=link]::before {
+        content: "输入链接:";
       }
 
-      &.ql-remove::before {
-        content: '移除链接';
+      &::before {
+        content: "访问链接:";
+      }
+
+      &.ql-editing a.ql-action::after {
+        content: '保存';
+      }
+
+      & a {
+        &.ql-action::after {
+          content: '编辑';
+        }
+
+        &.ql-remove::before {
+          content: '移除链接';
+        }
       }
     }
-  }
 
-  .ql-toolbar.ql-snow {
-    border-bottom: none;
-    .ql-formats {
-      margin-right: 0;
-    }
-  }
+    .ql-toolbar.ql-snow {
+      border-bottom: none;
 
-  /* link end */
-  &-read {
-    .ql-editor >* {
-      cursor: auto;
+      .ql-formats {
+        margin-right: 0;
+      }
     }
 
-    .ql-toolbar {
-      display: none;
-    }
+    /* link end */
+    &-read {
+      .ql-editor > * {
+        cursor: auto;
+      }
 
-    .ql-container {
-      border: none;
+      .ql-toolbar {
+        display: none;
+      }
+
+      .ql-container {
+        border: none;
+      }
     }
   }
 }
