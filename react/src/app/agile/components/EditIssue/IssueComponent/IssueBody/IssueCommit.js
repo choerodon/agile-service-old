@@ -51,7 +51,7 @@ import { createCommit } from '../../../../api/NewIssueApi';
   }
 
   renderCommits() {
-    const { store } = this.props;
+    const { store, loginUserId, hasPermission } = this.props;
     const issue = store.getIssue;
     const { issueCommentVOList = [] } = issue;
 
@@ -89,6 +89,8 @@ import { createCommit } from '../../../../api/NewIssueApi';
               comment={comment}
               onDeleteComment={reloadIssue}
               onUpdateComment={reloadIssue}
+              loginUserId={loginUserId}
+              hasPermission={hasPermission}
             />
           ))
         }

@@ -63,10 +63,9 @@ class Comment extends Component {
   };
 
   render() {
-    const { comment } = this.props;
+    const { comment, loginUserId, hasPermission } = this.props;
     const { editComment, editCommentId, expand } = this.state;
-
-
+    const canEditOrDelete = (comment && comment.userId === loginUserId) || hasPermission;
     const deltaEdit = text2Delta(editComment);
     return (
       <div
@@ -129,28 +128,42 @@ class Comment extends Component {
             <Icon
               role="none"
               type="mode_edit mlr-3 pointer"
+              style={{ cursor: canEditOrDelete ? 'pointer' : 'auto', color: canEditOrDelete ? '#000' : 'rgba(0, 0, 0, 0.25)' }}
               onClick={() => {
-                this.setState({
-                  editCommentId: comment.commentId,
-                  editComment: comment.commentText,
-                  expand: true,
-                });
+                if (canEditOrDelete) {
+                  this.setState({
+                    editCommentId: comment.commentId,
+                    editComment: comment.commentText,
+                    expand: true,
+                  });
+                } 
               }}
             />
-            <Popconfirm
-              title="确认要删除该评论吗?"
-              placement="left"
-              onConfirm={() => this.handleDeleteCommit(comment.commentId)}
-              onCancel={this.cancel}
-              okText="删除"
-              cancelText="取消"
-              okType="danger"
-            >
-              <Icon
-                role="none"
-                type="delete_forever mlr-3 pointer"
-              />
-            </Popconfirm>
+            {
+              canEditOrDelete ? (
+                <Popconfirm
+                  title="确认要删除该评论吗?"
+                  placement="left"
+                  onConfirm={() => this.handleDeleteCommit(comment.commentId)}
+                  onCancel={this.cancel}
+                  okText="删除"
+                  cancelText="取消"
+                  okType="danger"
+                >
+                  <Icon
+                    role="none"
+                    type="delete_forever mlr-3 pointer"
+                  />
+                </Popconfirm>
+              ) : (
+                <Icon
+                  role="none"
+                  type="delete_forever mlr-3 pointer"
+                  style={{ cursor: 'auto', color: 'rgba(0, 0, 0, 0.25)' }}
+                />
+              )
+            }
+            
           </div>
         </div>
         {
