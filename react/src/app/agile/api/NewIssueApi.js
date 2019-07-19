@@ -162,7 +162,7 @@ export function updateStatus(transformId, issueId, objVerNum, applyType = 'agile
   return axios.put(`/agile/v1/projects/${proId}/issues/update_status?applyType=${applyType}&transformId=${transformId}&issueId=${issueId}&objectVersionNumber=${objVerNum}`);
 }
 
-export function createSubIssue(obj, projectId = AppState.currentMenuType.id) {
+export function createSubIssue(obj, applyType, projectId = AppState.currentMenuType.id) {
   return axios.post(`/agile/v1/projects/${projectId}/issues/sub_issue`, obj);
 }
 

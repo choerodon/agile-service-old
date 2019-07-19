@@ -295,7 +295,7 @@ export default {
       filterOption: false,
       loadWhenMount: true,
     },
-    request: () => new Promise(resolve => loadVersions(['version_planning', 'released']).then((res) => { resolve(res); })),
+    request: () => new Promise(resolve => loadVersions(['version_planning']).then((res) => { resolve(res); })),
     render: version => (
       <Option
         key={version.versionId}
