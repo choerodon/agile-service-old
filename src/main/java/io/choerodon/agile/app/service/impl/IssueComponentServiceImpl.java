@@ -3,6 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.dto.*;
 import io.choerodon.agile.api.validator.IssueComponentValidator;
 import io.choerodon.agile.domain.agile.entity.ComponentIssueRelE;
+import io.choerodon.agile.domain.agile.rule.IssueRule;
 import io.choerodon.agile.infra.common.utils.PageUtil;
 import io.choerodon.agile.infra.repository.ComponentIssueRelRepository;
 import io.choerodon.agile.infra.repository.UserRepository;
@@ -58,6 +59,9 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private IssueRule issueRule;
+
     private static final String MANAGER = "manager";
 
     @Override
@@ -107,7 +111,9 @@ public class IssueComponentServiceImpl implements IssueComponentService {
             relate.setProjectId(projectId);
             relate.setIssueId(componentIssue.getIssueId());
             relate.setComponentId(relateComponentId);
-            componentIssueRelRepository.create(relate);
+            if (issueRule.existComponentIssueRel(relate)) {
+                componentIssueRelRepository.create(relate);
+            }
         }
     }
 
