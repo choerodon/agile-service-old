@@ -1,5 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
+import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueComponentValidator;
 import io.choerodon.agile.infra.common.utils.PageUtil;
@@ -64,6 +65,9 @@ public class IssueComponentServiceImpl implements IssueComponentService {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private IssueValidator issueValidator;
+
 
     private static final String MANAGER = "manager";
 
@@ -121,7 +125,9 @@ public class IssueComponentServiceImpl implements IssueComponentService {
             relate.setProjectId(projectId);
             relate.setIssueId(componentIssue.getIssueId());
             relate.setComponentId(relateComponentId);
-            componentIssueRelService.create(relate);
+            if (issueValidator.existComponentIssueRel(relate)) {
+                componentIssueRelService.create(relate);
+            }
         }
     }
 
