@@ -168,7 +168,7 @@ class IssueFilterControler {
    * 之后再次调用时，根据当前的 mode 生成相应的对象
    * @returns {Function}
    */
-  initArgsFilter() {
+  initArgsFilter = () => {
     const filter = Object.keys(this.cache.get('paramFilter')).length ? this.cache.get('paramFilter') : this.cache.get('filter');
     return (modes, data) => {
       switch (modes) {
@@ -258,7 +258,7 @@ class IssueFilterControler {
    * @param orderVO => Object => 排序对象
    * @returns Object => ajax 请求时所需要的排序对象
    */
-  setOrderVO(orderVO) {
+  setOrderVO = (orderVO) => {
     const { column } = orderVO;
     let { order = '' } = orderVO;
     if (order) {
@@ -277,7 +277,7 @@ class IssueFilterControler {
    * @param moreChecked => Array => 快速搜索 ID
    * @param userID => 当前项目中自己的 ID，与 onlyMeChecked 配合使用
    */
-  quickSearchFilterUpdate(onlyMeChecked, onlyStoryChecked, moreChecked, userID) {
+  quickSearchFilterUpdate = (onlyMeChecked, onlyStoryChecked, moreChecked, userID) => {
     const setArg = this.initArgsFilter();
     setArg(
       'advArgs',
@@ -293,7 +293,7 @@ class IssueFilterControler {
     );
   }
 
-  myFilterUpdate(otherArgs, contents, searchArgs) {
+  myFilterUpdate = (otherArgs, contents, searchArgs) => {
     const setArg = this.initArgsFilter();
     setArg('otherArgs', otherArgs);
     setArg('contents', { contents });

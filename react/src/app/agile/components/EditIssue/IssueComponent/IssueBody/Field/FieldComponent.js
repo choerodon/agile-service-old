@@ -98,7 +98,7 @@ const { Text, Edit } = TextEditToggle;
           </span>
         </div>
         <div className="c7n-value-wrapper">
-          <TextEditToggle
+          <TextEditToggle            
             disabled={disabled}
             formKey="component"
             onSubmit={this.updateIssueComponents}
@@ -126,7 +126,7 @@ const { Text, Edit } = TextEditToggle;
                 mode="multiple"
                 getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}
                 tokenSeparators={[',']}
-                style={{ marginTop: 0, paddingTop: 0 }}             
+                style={{ marginTop: 0, paddingTop: 0 }}
                 onChange={(value) => {
                   const newComponents = value.filter(v => v && v.trim()).map((item) => {
                     if (_.find(originComponents, { name: item })) {

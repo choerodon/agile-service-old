@@ -109,7 +109,7 @@ class Issue extends Component {
     });
   };
 
-  openExport=() => {
+  openExport = () => {
     IssueStore.setExportModalVisible(true);
   };
 
@@ -197,7 +197,7 @@ class Issue extends Component {
             <span>刷新</span>
           </Button>
         </Header>
-        <Content className="c7n-Issue">
+        <Content className="c7n-Issue" style={{ overflowX: 'hidden' }}>
           <ExportIssue />
           <div style={{ height: 48 }}>
             <div className="c7n-Issue-search">

@@ -37,7 +37,7 @@ class EditIssue extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      issueLoading: false,     
+      issueLoading: false,
     };
     this.container = React.createRef();
     this.line = React.createRef();
@@ -91,7 +91,7 @@ class EditIssue extends Component {
           schemeCode: 'agile_issue',
           context: res.typeCode,
           pageCode: 'agile_issue_edit',
-        };        
+        };
         getFieldAndValue(id, param, programId || undefined).then((fields) => {
           this.setState({
             issueLoading: false,
@@ -148,12 +148,12 @@ class EditIssue extends Component {
     this.loadIssueDetail();
   }
 
-  handleResizeEnd = ({ width }) => { 
+  handleResizeEnd = ({ width }) => {
     localStorage.setItem('agile.EditIssue.width', `${width}px`);
   }
 
-  setQuery=(width = this.container.current.clientWidth) => {
-    if (width <= 600) {      
+  setQuery = (width = this.container.current.clientWidth) => {
+    if (width <= 600) {
       this.container.current.setAttribute('max-width', '600px');
     } else {
       this.container.current.removeAttribute('max-width');
@@ -164,10 +164,10 @@ class EditIssue extends Component {
     this.setQuery(width);
     // console.log(width, parseInt(width / 100) * 100);
   }, 150)
-  
+
 
   render() {
-    const {     
+    const {
       backUrl,
       onCancel,
       style,
@@ -178,7 +178,7 @@ class EditIssue extends Component {
       disabled,
     } = this.props;
     const {
-      issueLoading, 
+      issueLoading,
     } = this.state;
     const issue = store.getIssue;
     const {
@@ -206,7 +206,7 @@ class EditIssue extends Component {
         overflow: 'hidden',
       }}
       >
-        <ResizeAble
+        <ResizeAble          
           modes={['left']}
           size={{
             // maxHeight: 500,
@@ -264,6 +264,7 @@ class EditIssue extends Component {
                 onUpdate={onUpdate}
               />
               <IssueBody
+                key={issueId}
                 disabled={rightDisabled}
                 store={store}
                 reloadIssue={this.loadIssueDetail}
@@ -272,7 +273,7 @@ class EditIssue extends Component {
                 loginUserId={loginUserId}
                 hasPermission={hasPermission}
                 applyType={applyType}
-                // programId={programId}
+              // programId={programId}
               />
             </div>
             {

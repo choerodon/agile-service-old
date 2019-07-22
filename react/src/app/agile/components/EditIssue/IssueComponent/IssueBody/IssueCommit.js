@@ -18,14 +18,12 @@ import { createCommit } from '../../../../api/NewIssueApi';
     };
   }
 
-  componentDidMount() {
-  }
-
   newCommit = (commit) => {
-    const { reloadIssue } = this.props;
+    const { reloadIssue, store } = this.props;
+    const { issueId } = store.getIssue;
     createCommit(commit).then(() => {
       if (reloadIssue) {
-        reloadIssue();
+        reloadIssue(issueId);
       }
       this.setState({
         addCommit: false,
@@ -51,12 +49,12 @@ import { createCommit } from '../../../../api/NewIssueApi';
   }
 
   renderCommits() {
-    const { store, loginUserId, hasPermission } = this.props;
+    const {
+      store, loginUserId, hasPermission, reloadIssue, 
+    } = this.props;
     const issue = store.getIssue;
-    const { issueCommentVOList = [] } = issue;
-
+    const { issueCommentVOList = [], issueId } = issue;
     const { addCommitDes, addCommit } = this.state;
-    const { reloadIssue } = this.props;
     const delta = text2Delta(addCommitDes);
     return (
       <div>
@@ -87,8 +85,8 @@ import { createCommit } from '../../../../api/NewIssueApi';
             <Comment
               key={comment.commentId}
               comment={comment}
-              onDeleteComment={reloadIssue}
-              onUpdateComment={reloadIssue}
+              onDeleteComment={() => { reloadIssue(issueId); }}
+              onUpdateComment={() => { reloadIssue(issueId); }}
               loginUserId={loginUserId}
               hasPermission={hasPermission}
             />
@@ -112,13 +110,13 @@ import { createCommit } from '../../../../api/NewIssueApi';
           }}
           />
           {!disabled && (
-          <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-            <Tooltip title="添加评论" getPopupContainer={triggerNode => triggerNode.parentNode}>
-              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addCommit: true })}>
-                <Icon type="playlist_add icon" />
-              </Button>
-            </Tooltip>
-          </div>
+            <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
+              <Tooltip title="添加评论" getPopupContainer={triggerNode => triggerNode.parentNode}>
+                <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addCommit: true })}>
+                  <Icon type="playlist_add icon" />
+                </Button>
+              </Tooltip>
+            </div>
           )}
         </div>
         {this.renderCommits()}
