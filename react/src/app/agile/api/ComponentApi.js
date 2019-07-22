@@ -13,7 +13,7 @@ const { AppState } = stores;
 //   .post(`/agile/v1/projects/${AppState.currentMenuType.id}/component?no_issue_test=true`);
 // }
 
-export function loadComponents(pagination, filters, componentId) {
+export function loadComponents(pagination = { current: 1, pageSize: 999 }, filters, componentId) {
   const { current, pageSize } = pagination;
   const page = current;
   const size = pageSize;

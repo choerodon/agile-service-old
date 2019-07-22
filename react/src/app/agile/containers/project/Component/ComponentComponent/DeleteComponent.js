@@ -84,7 +84,7 @@ class DeleteComponent extends Component {
   };
 
   renderDelete() {
-    const { radio, relatedComponentId } = this.state;   
+    const { radio, relatedComponentId, originComponents } = this.state;   
     return (
       <Fragment>
         <RadioGroup label="" onChange={this.onRadioChange} value={this.state.radio}>
@@ -103,14 +103,14 @@ class DeleteComponent extends Component {
             value={relatedComponentId}
             onChange={this.handleRelatedComponentChange.bind(this)}
             onFocus={() => {
-              loadComponents(this.state.filters, this.state.component.componentId).then((res) => {
+              loadComponents({ current: 1, pageSize: 999},this.state.filters, this.state.component.componentId).then((res) => {
                 this.setState({
-                  originComponents: res.content,
+                  originComponents: res.list,
                 });
               });
             }}
           >
-            {this.state.originComponents.map(component => (
+            { originComponents && originComponents.map(component => (
               <Option key={component.componentId} value={component.componentId}>
                 {component.name}
               </Option>
