@@ -2209,7 +2209,9 @@ public class IssueServiceImpl implements IssueService {
             BeanUtils.copyProperties(componentIssueRelDO, componentIssueRelDTO);
             componentIssueRelDTO.setIssueId(issueId);
             componentIssueRelDTO.setObjectVersionNumber(null);
-            componentIssueRelService.create(componentIssueRelDTO);
+            if (issueValidator.existComponentIssueRel(componentIssueRelDTO)) {
+                componentIssueRelService.create(componentIssueRelDTO);
+            }
         });
     }
 
