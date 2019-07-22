@@ -29,7 +29,14 @@ export default class SwimLaneHeader extends Component {
       const subTaskLength = parentIssue.subIssueData.filter(issue => issue.typeCode === 'sub_task').length;
       const shouldShowDot = bugLength && subTaskLength;
       return (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div
+          style={{ display: 'flex', alignItems: 'center', width: '100%' }}
+          role="none"
+          onClick={(e) => {
+            e.stopPropagation();
+            ScrumBoardStore.setClickedIssue(parentIssue);
+          }}
+        >
           {switchMap.get(mode)(parentIssue)}
           <span className="c7n-parentIssue-count" style={{ whiteSpace: 'nowrap' }}>{`  (${subTaskLength ? `${subTaskLength} 子任务` : ''}${shouldShowDot ? ', ' : ''}${bugLength ? `${bugLength} 缺陷` : ''})`}</span>
         </div>
@@ -60,11 +67,6 @@ export default class SwimLaneHeader extends Component {
         />
         <span
           style={{ cursor: 'pointer', minWidth: 70, marginRight: 10 }}
-          role="none"
-          onClick={(e) => {
-            e.stopPropagation();
-            ScrumBoardStore.setClickedIssue(parentIssue);
-          }}
         >
           {`#${issueNum}`}
         </span>
