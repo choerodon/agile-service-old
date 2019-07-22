@@ -143,7 +143,7 @@ import './IssueComponent.scss';
           </Dropdown>
         </div>
         {/* 锚点 */}
-        <IssueNav typeCode={typeCode} />
+        <IssueNav typeCode={typeCode} store={store} />
       </div>
     );
   }

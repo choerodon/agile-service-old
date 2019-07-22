@@ -132,26 +132,29 @@ let sign = true;
   render() {
     const { nav } = this.state;
     const {
-      typeCode, intl,
+      typeCode, intl, store,
     } = this.props;
-
+    const linkIssues = store.getLinkIssues.filter(i => i.applyType === 'test');    
     return (
       <ul className="c7n-nav-ul" style={{ padding: 0 }}>
         {navList.filter(
           item => (noDisplay[typeCode] ? noDisplay[typeCode].indexOf(item) === -1 : true),
         ).map(navItem => (
-          <Tooltip placement="right" title={intl.formatMessage({ id: `issue.${navItem}` })} key={navItem}>
-            <li id={`${navItem}-nav`} className={`c7n-li ${nav === navItem ? 'c7n-li-active' : ''}`}>
-              <Icon
-                type={`${navIcon[navItem] && navIcon[navItem].icon} c7n-icon-li`}
-                role="none"
-                onClick={() => {
-                  this.setState({ nav: navItem });
-                  this.scrollToAnchor(navItem);
-                }}
-              />
-            </li>
-          </Tooltip>
+          (linkIssues && linkIssues.length === 0 && navItem === 'link_test') ? null      
+            : (
+              <Tooltip placement="right" title={intl.formatMessage({ id: `issue.${navItem}` })} key={navItem}>
+                <li id={`${navItem}-nav`} className={`c7n-li ${nav === navItem ? 'c7n-li-active' : ''}`}>
+                  <Icon
+                    type={`${navIcon[navItem] && navIcon[navItem].icon} c7n-icon-li`}
+                    role="none"
+                    onClick={() => {
+                      this.setState({ nav: navItem });
+                      this.scrollToAnchor(navItem);
+                    }}
+                  />
+                </li>
+              </Tooltip>
+            )
         ))
         }
       </ul>
