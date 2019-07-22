@@ -581,5 +581,5 @@ public interface IssueMapper extends Mapper<IssueDO> {
 
     IssueNumDO queryIssueByIssueNum (@Param("projectId") Long projectId, @Param("issueNum") String issueNum);
 
-    void updateSubBugRelateIssueId(@Param("issueId") Long issueId);
+    void updateSubBugRelateIssueId(@Param("projectId") Long projectId, @Param("issueId") Long issueId);
 }

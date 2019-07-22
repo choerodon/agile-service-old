@@ -3625,7 +3625,7 @@
     <update id="updateSubBugRelateIssueId">
         update agile_issue
         set relate_issue_id = null
-        where ai.relate_issue_id = #{issueId}
+        where project_id = #{projectId} and relate_issue_id = #{issueId}
     </update>
 
 </mapper>
