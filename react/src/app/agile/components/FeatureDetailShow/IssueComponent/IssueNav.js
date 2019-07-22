@@ -103,9 +103,10 @@ let sign = true;
       if (anchorElement) {
         sign = false;
         anchorElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start',
-          inline: 'end',
+          behavior: 'smooth', 
+          block: 'nearest', 
+          inline: 'start',
+
         });
         setTimeout(() => {
           sign = true;
