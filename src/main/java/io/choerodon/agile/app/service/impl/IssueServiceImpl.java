@@ -1298,6 +1298,13 @@ public class IssueServiceImpl implements IssueService {
         if (originType.equals(SUB_TASK)) {
             issueE.setParentIssueId(null);
         }
+        if (originType.equals("bug") && (issueE.getRelateIssueId() != null && !Objects.equals(issueE.getRelateIssueId(), 0L))) {
+            issueE.setRelateIssueId(null);
+        }
+        if ((originType.equals("story") || originType.equals("task"))
+                && (!Objects.equals(issueUpdateTypeDTO.getTypeCode(), "story") && !Objects.equals(issueUpdateTypeDTO.getTypeCode(), "task"))) {
+            issueMapper.updateSubBugRelateIssueId(issueE.getIssueId());
+        }
         if (STORY_TYPE.equals(issueE.getTypeCode()) && issueE.getStoryPoints() != null) {
             issueE.setStoryPoints(null);
         }
