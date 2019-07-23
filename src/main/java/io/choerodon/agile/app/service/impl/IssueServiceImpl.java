@@ -196,6 +196,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String PARENT_ISSUE_ID = "parentIssueId";
     private static final String EPIC_SEQUENCE = "epicSequence";
     private static final String ISSUE_TYPE_ID = "issueTypeId";
+    private static final String RELATE_ISSUE_ID = "relateIssueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String STORY_TYPE = "story";
     private static final String ASSIGNEE = "assignee";
@@ -1298,6 +1299,13 @@ public class IssueServiceImpl implements IssueService {
         if (originType.equals(SUB_TASK)) {
             issueE.setParentIssueId(null);
         }
+        if (originType.equals("bug") && (issueE.getRelateIssueId() != null && !Objects.equals(issueE.getRelateIssueId(), 0L))) {
+            issueE.setRelateIssueId(null);
+        }
+        if ((originType.equals("story") || originType.equals("task"))
+                && (!Objects.equals(issueUpdateTypeDTO.getTypeCode(), "story") && !Objects.equals(issueUpdateTypeDTO.getTypeCode(), "task"))) {
+            issueMapper.updateSubBugRelateIssueId(issueE.getProjectId(), issueE.getIssueId());
+        }
         if (STORY_TYPE.equals(issueE.getTypeCode()) && issueE.getStoryPoints() != null) {
             issueE.setStoryPoints(null);
         }
@@ -1325,7 +1333,7 @@ public class IssueServiceImpl implements IssueService {
             issueE.setTypeCode(issueUpdateTypeDTO.getTypeCode());
         }
         issueE.setIssueTypeId(issueUpdateTypeDTO.getIssueTypeId());
-        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID});
+        issueRepository.update(issueE, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID, RELATE_ISSUE_ID});
         return queryIssue(issueE.getProjectId(), issueE.getIssueId(), organizationId);
     }
 
