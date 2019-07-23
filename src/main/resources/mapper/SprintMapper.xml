@@ -73,7 +73,7 @@
     </resultMap>
 
     <select id="queryAssigneeIdsByIssueIds" resultType="java.lang.Long">
-        SELECT distinct
+        SELECT
         ai.assignee_id
         FROM agile_issue ai
         where ai.assignee_id is not null and ai.assignee_id != 0
@@ -83,6 +83,19 @@
                  separator="," close=")">
             #{issueId}
         </foreach>
+        UNION ALL
+        SELECT
+        ai.assignee_id
+        FROM agile_issue ai
+        WHERE ai.assignee_id is not null and ai.assignee_id != 0
+        AND ai.project_id = #{projectId}
+        AND ai.type_code = 'sub_task'
+        AND ai.parent_issue_id IN
+        <foreach collection="issueIds" item="issueId" open="("
+                 separator="," close=")">
+            #{issueId}
+        </foreach>
+
     </select>
 
     <select id="queryBacklogIssues" resultMap="issueSearch">
@@ -366,19 +379,36 @@
     </sql>
 
     <select id="queryBacklogSprintAssigneeIds" resultType="java.lang.Long">
-        SELECT DISTINCT
+        SELECT
             ai.assignee_id
         FROM
             agile_issue ai
         WHERE
             ai.project_id = #{projectId}
             AND ai.issue_id IN (
+                SELECT
+                    aisr.issue_id
+                FROM
+                    agile_issue_sprint_rel aisr
+                WHERE
+                    aisr.sprint_id IN ( SELECT asp.sprint_id FROM agile_sprint asp WHERE asp.project_id = #{projectId} AND asp.status_code != 'closed' )
+            )
+            AND ai.assignee_id IS NOT NULL
+        UNION ALL
         SELECT
-            aisr.issue_id
+            ai.assignee_id
         FROM
-            agile_issue_sprint_rel aisr
+            agile_issue ai
         WHERE
-            aisr.sprint_id IN ( SELECT asp.sprint_id FROM agile_sprint asp WHERE asp.project_id = #{projectId} AND asp.status_code != 'closed' )
+            ai.project_id = #{projectId}
+            AND ai.type_code = 'sub_task'
+            AND ai.parent_issue_id IN (
+                SELECT
+                    aisr.issue_id
+                FROM
+                    agile_issue_sprint_rel aisr
+                WHERE
+                    aisr.sprint_id IN ( SELECT asp.sprint_id FROM agile_sprint asp WHERE asp.project_id = #{projectId} AND asp.status_code != 'closed' )
             )
             AND ai.assignee_id IS NOT NULL
     </select>
