@@ -28,7 +28,9 @@ class PriorityTag extends Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (nextProps.priority
       && this.props.priority
-      && nextProps.priority.id === this.props.priority.id) {
+      && nextProps.priority.id === this.props.priority.id
+      && nextProps.priority.name === this.props.priority.name
+    ) {
       return false;
     }
     return true;
