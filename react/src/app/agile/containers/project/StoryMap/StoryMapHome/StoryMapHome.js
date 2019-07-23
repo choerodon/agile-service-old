@@ -108,7 +108,7 @@ const StoryMapHome = observer(() => {
             刷新
         </Button>
         <SwitchSwimLine />
-        <Button onClick={toggleFullScreen} icon={isFullScreen ? 'exit_full_screen' : 'zoom_out_map'}>
+        <Button onClick={toggleFullScreen} icon={isFullScreen ? 'fullscreen_exit' : 'zoom_out_map'}>
           {isFullScreen ? '退出全屏' : '全屏'}
         </Button>
         {!StoryMapStore.isFullScreen && (
