@@ -7,9 +7,11 @@ import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.common.utils.SendEmailUtil;
 import io.choerodon.agile.infra.dataobject.FeedbackAttachmentDTO;
 import io.choerodon.agile.infra.dataobject.FeedbackCommentDTO;
+import io.choerodon.agile.infra.dataobject.FeedbackDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.agile.infra.mapper.FeedbackAttachmentMapper;
 import io.choerodon.agile.infra.mapper.FeedbackCommentMapper;
+import io.choerodon.agile.infra.mapper.FeedbackMapper;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,14 +45,18 @@ public class FeedbackCommentServiceImpl implements FeedbackCommentService {
     @Autowired
     private IFeedbackCommentService iFeedbackCommentService;
 
+    @Autowired
+    private FeedbackMapper feedbackMapper;
+
     @Override
     public FeedbackCommentDTO createFeedbackComment(Long projectId, FeedbackCommentDTO feedbackCommentDTO) {
         feedbackCommentValidator.checkFeedbackCommentCreate(feedbackCommentDTO);
         CustomUserDetails customUserDetails = DetailsHelper.getUserDetails();
         feedbackCommentDTO.setUserId(customUserDetails.getUserId());
         FeedbackCommentDTO result = iFeedbackCommentService.createBase(feedbackCommentDTO);
-        if (feedbackCommentDTO.getBeRepliedId() != null && !feedbackCommentDTO.getWithin()) {
-            sendEmailUtil.feedbackCommentReplied(feedbackCommentDTO.getBeRepliedId(), feedbackCommentDTO.getContent());
+        if (feedbackCommentDTO.getBeRepliedId() != null && !feedbackCommentDTO.getWithin() && feedbackCommentDTO.getBeRepliedId() == null) {
+            FeedbackDTO feedbackDTO = feedbackMapper.selectByPrimaryKey(feedbackCommentDTO.getFeedbackId());
+            sendEmailUtil.feedbackCommentReplied(feedbackDTO.getEmail(), feedbackCommentDTO.getContent());
         }
         return result;
     }

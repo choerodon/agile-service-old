@@ -70,7 +70,7 @@ public class SendEmailUtil {
     }
 
     @Async
-    public void feedbackCommentReplied(Long userId, String content) {
+    public void feedbackCommentReplied(String emailAddress, String content) {
         NoticeSendDTO noticeSendDTO = new NoticeSendDTO();
         noticeSendDTO.setCode("feedback-replied");
         // 设置内容
@@ -81,7 +81,7 @@ public class SendEmailUtil {
         // 设置发送的目标用户
         List<NoticeSendDTO.User> userList = new ArrayList<>();
         NoticeSendDTO.User user = new NoticeSendDTO.User();
-        user.setId(userId);
+        user.setEmail(emailAddress);
         userList.add(user);
         noticeSendDTO.setTargetUsers(userList);
         try {
