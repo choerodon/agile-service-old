@@ -22,10 +22,12 @@ import { createCommit } from '../../../../api/NewIssueApi';
   }
 
   newCommit = (commit) => {
-    const { reloadIssue } = this.props;
+    const { reloadIssue, store } = this.props;
+    const issue = store.getIssue;
+    const { issueId } = issue;
     createCommit(commit).then(() => {
       if (reloadIssue) {
-        reloadIssue();
+        reloadIssue(issueId);
       }
       this.setState({
         addCommit: false,
@@ -53,11 +55,12 @@ import { createCommit } from '../../../../api/NewIssueApi';
   renderCommits() {
     const { store } = this.props;
     const issue = store.getIssue;
-    const { issueCommentDTOList = [] } = issue;
+    const { issueCommentDTOList = [], issueId } = issue;
 
     const { addCommitDes, addCommit } = this.state;
     const { reloadIssue } = this.props;
     const delta = text2Delta(addCommitDes);
+    
     return (
       <div>
         {
@@ -87,8 +90,8 @@ import { createCommit } from '../../../../api/NewIssueApi';
             <Comment
               key={comment.commentId}
               comment={comment}
-              onDeleteComment={reloadIssue}
-              onUpdateComment={reloadIssue}
+              onDeleteComment={() => { reloadIssue(issueId); }}
+              onUpdateComment={() => { reloadIssue(issueId); }}
             />
           ))
         }
