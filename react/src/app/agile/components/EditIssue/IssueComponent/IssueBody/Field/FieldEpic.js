@@ -146,7 +146,7 @@ const { Text, Edit } = TextEditToggle;
                   </Text>
                   <Edit>
                     <Select
-                      getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}                            
+                      getPopupContainer={() => document.getElementById('detail')}                            
                       allowClear
                       loading={selectLoading}
                       onChange={(value) => {
@@ -205,7 +205,7 @@ const { Text, Edit } = TextEditToggle;
               </Text>
               <Edit>
                 <Select
-                  getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}               
+                  getPopupContainer={() => document.getElementById('detail')}               
                   allowClear
                   loading={selectLoading}
                   onChange={(value) => {

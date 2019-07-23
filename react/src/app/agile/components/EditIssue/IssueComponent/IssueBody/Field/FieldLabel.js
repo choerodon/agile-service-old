@@ -138,7 +138,7 @@ const { Text, Edit } = TextEditToggle;
                 mode="tags"
                 loading={selectLoading}
                 tokenSeparators={[',']}
-                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}       
+                getPopupContainer={() => document.getElementById('detail')}       
                 onChange={(value) => {
                   this.setState({
                     newLabelIssueRelVOList: value.map(

@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import React, { useContext } from 'react';
+import { Tabs } from 'choerodon-ui';
 import IssueDetail from './IssueDetail';
 import IssueDes from './IssueDes';
 import IssueAttachment from './IssueAttachment';
@@ -12,57 +12,58 @@ import SubBug from './SubBug';
 import IssueLink from './IssueLink';
 import IssueBranch from './IssueBranch';
 import TestLink from './TestLink';
+import EditIssueContext from '../../stores';
+import './IssueBody.less';
 
-@inject('AppState', 'HeaderStore')
-@observer class IssueBody extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
+const { TabPane } = Tabs;
 
-  render() {
-    const {
-      store,
-    } = this.props;
-    const issue = store.getIssue;
-    const { issueTypeVO = {} } = issue;
+const IssueBody = (props) => {
+  const { store } = props;
+  const { prefixCls } = useContext(EditIssueContext);
+  const issue = store.getIssue;
+  const { issueTypeVO = {} } = issue;
 
-    return (
-      <div className="c7n-content-bottom" id="scroll-area" style={{ position: 'relative' }}>
-        <section className="c7n-body-editIssue">
-          <div className="c7n-content-editIssue">
-            <IssueDetail {...this.props} />
-            <IssueDes {...this.props} />
-            <IssueAttachment {...this.props} />
-            {issueTypeVO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeVO.typeCode) === -1
-              ? <IssueDoc {...this.props} /> : ''
-            }
-            {issueTypeVO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeVO.typeCode) === -1
-              ? <SubTask {...this.props} /> : ''
-            }
-            {issueTypeVO.typeCode && ['feature'].indexOf(issueTypeVO.typeCode) === -1
-              ? <IssueWorkLog {...this.props} /> : ''
-            }
-            {issueTypeVO.typeCode && ['story', 'task'].indexOf(issueTypeVO.typeCode) !== -1
-              ? <SubBug {...this.props} /> : ''
-            }
-            {issueTypeVO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeVO.typeCode) === -1
-              ? <TestLink {...this.props} /> : ''
-            }
-            {issueTypeVO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeVO.typeCode) === -1
-              ? <IssueLink {...this.props} /> : ''
-            }
-            <IssueCommit {...this.props} />
-            <IssueLog {...this.props} />
-            {issueTypeVO.typeCode && ['feature'].indexOf(issueTypeVO.typeCode) === -1
-              ? <IssueBranch {...this.props} /> : ''
-            }
-          </div>
-        </section>
-      </div>
-    );
-  }
-}
+  return (
+    <section className={`${prefixCls}-body`} id="scroll-area" style={{ position: 'relative' }}>
+      <Tabs defaultActiveKey="1">
+        <TabPane tab="详情" key="1">
+          <IssueDetail {...props} />
+          <IssueDes {...props} />
+          <IssueAttachment {...props} />
+          {issueTypeVO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeVO.typeCode) === -1
+            ? <IssueDoc {...props} /> : ''
+          }
+          {issueTypeVO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeVO.typeCode) === -1
+            ? <SubTask {...props} /> : ''
+          }
+
+          {issueTypeVO.typeCode && ['story', 'task'].indexOf(issueTypeVO.typeCode) !== -1
+            ? <SubBug {...props} /> : ''
+          }
+          {issueTypeVO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeVO.typeCode) === -1
+            ? <TestLink {...props} /> : ''
+          }
+          {issueTypeVO.typeCode && ['feature', 'sub_task'].indexOf(issueTypeVO.typeCode) === -1
+            ? <IssueLink {...props} /> : ''
+          }
+        </TabPane>
+        <TabPane tab="评论" key="2">
+          <IssueCommit {...props} />
+        </TabPane>
+        <TabPane tab="记录" key="3">
+          {issueTypeVO.typeCode && ['feature'].indexOf(issueTypeVO.typeCode) === -1
+            ? <IssueWorkLog {...props} /> : ''
+          }
+          <IssueLog {...props} />
+        </TabPane>
+        <TabPane tab="开发" key="4">
+          {issueTypeVO.typeCode && ['feature'].indexOf(issueTypeVO.typeCode) === -1
+            ? <IssueBranch {...props} /> : ''
+          }
+        </TabPane>
+      </Tabs>
+    </section>
+  );
+};
 
 export default IssueBody;

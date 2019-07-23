@@ -136,7 +136,7 @@ const { Text, Edit } = TextEditToggle;
                 value={this.transToArr(influenceVersions, 'name', 'array')}
                 mode="multiple"
                 loading={selectLoading}
-                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}
+                getPopupContainer={() => document.getElementById('detail')}
                 tokenSeparators={[',']}
                 style={{ width: '100%', marginTop: 0, paddingTop: 0 }}
                 onChange={(value) => {

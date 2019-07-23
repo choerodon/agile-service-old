@@ -8,15 +8,6 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 
 @inject('AppState')
 @observer class IssueCommit extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
-
-  componentDidMount() {
-  }
-
   render() {
     const detailShow = VisibleStore.getDetailShow;
     return (

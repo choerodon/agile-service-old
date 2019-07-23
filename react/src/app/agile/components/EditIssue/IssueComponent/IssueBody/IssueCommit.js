@@ -1,85 +1,42 @@
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
-import { Icon, Button, Tooltip } from 'choerodon-ui';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import React, { useState } from 'react';
 import WYSIWYGEditor from '../../../WYSIWYGEditor';
 import Comment from '../../Component/Comment';
 import { text2Delta, beforeTextUpload } from '../../../../common/utils';
 import { createCommit } from '../../../../api/NewIssueApi';
 
-@inject('AppState')
-@observer class IssueCommit extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      addCommit: false,
-      addCommitDes: '',
-    };
-  }
-
-  newCommit = (commit) => {
-    const { reloadIssue, store } = this.props;
+const IssueCommit = ({
+  disabled, reloadIssue, store, loginUserId, hasPermission,
+}) => {
+  const [addCommit, setAddCommit] = useState(false);
+  const [addCommitDes, setAddCommitDes] = useState('');
+  const delta = text2Delta(addCommitDes);
+  const newCommit = (commit) => {
     const { issueId } = store.getIssue;
     createCommit(commit).then(() => {
       if (reloadIssue) {
         reloadIssue(issueId);
       }
-      this.setState({
-        addCommit: false,
-        addCommitDes: '',
-      });
+      setAddCommit(false);
+      setAddCommitDes('');
     });
   };
 
-  handleCreateCommit() {
-    const { store } = this.props;
+  const handleCreateCommit = () => {
     const issue = store.getIssue;
     const { issueId } = issue;
-    const { addCommitDes } = this.state;
     if (addCommitDes) {
-      beforeTextUpload(addCommitDes, { issueId, commentText: '' }, this.newCommit, 'commentText');
+      beforeTextUpload(addCommitDes, { issueId, commentText: '' }, newCommit, 'commentText');
     } else {
-      // this.newCommit({ issueId, commentText: '' });
-      this.setState({
-        addCommit: false,
-        addCommitDes: '',
-      });
+      setAddCommit(false);
+      setAddCommitDes('');
     }
-  }
+  };
 
-  renderCommits() {
-    const {
-      store, loginUserId, hasPermission, reloadIssue, 
-    } = this.props;
+  const renderCommits = () => {
     const issue = store.getIssue;
     const { issueCommentVOList = [], issueId } = issue;
-    const { addCommitDes, addCommit } = this.state;
-    const delta = text2Delta(addCommitDes);
     return (
-      <div>
-        {
-          addCommit && (
-            <div className="line-start mt-10" style={{ width: '100%' }}>
-              <WYSIWYGEditor
-                autoFocus
-                bottomBar
-                value={delta}
-                style={{ height: 200, width: '100%' }}
-                onChange={(value) => {
-                  this.setState({ addCommitDes: value });
-                }}
-                handleDelete={() => {
-                  this.setState({
-                    addCommit: false,
-                    addCommitDes: '',
-                  });
-                }}
-                handleSave={() => this.handleCreateCommit()}
-              />
-            </div>
-          )
-        }
+      <div style={{ marginBottom: 15 }}>
         {
           issueCommentVOList.map(comment => (
             <Comment
@@ -94,35 +51,56 @@ import { createCommit } from '../../../../api/NewIssueApi';
         }
       </div>
     );
-  }
+  };
 
-  render() {
-    const { disabled } = this.props;
-    return (
-      <div id="commit">
-        <div className="c7n-title-wrapper">
-          <div className="c7n-title-left">
-            <Icon type="sms_outline c7n-icon-title" />
-            <FormattedMessage id="issue.commit" />
-          </div>
-          <div style={{
-            flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-          }}
-          />
-          {!disabled && (
-            <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
-              <Tooltip title="添加评论" getPopupContainer={triggerNode => triggerNode.parentNode}>
-                <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ addCommit: true })}>
-                  <Icon type="playlist_add icon" />
-                </Button>
-              </Tooltip>
-            </div>
-          )}
+
+  return (
+    <div id="commit" style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+      {renderCommits()}
+      {!disabled && (
+        <div style={{ marginTop: 'auto', marginBottom: 20 }}>
+          {
+            addCommit ? (
+              <div className="line-start mt-10" style={{ width: '100%' }}>
+                <WYSIWYGEditor
+                  autoFocus
+                  bottomBar
+                  value={delta}
+                  style={{ height: 200, width: '100%' }}
+                  onChange={(value) => {
+                    setAddCommitDes(value);
+                  }}
+                  handleDelete={() => {
+                    setAddCommit(false);
+                    setAddCommitDes('');
+                  }}
+                  handleSave={handleCreateCommit}
+                />
+              </div>
+            ) : (
+              <div
+                role="none"
+                onClick={() => setAddCommit(true)}
+                style={{
+                  background: 'rgba(0,0,0,0.03)',
+                  border: '1px solid rgba(0,0,0,0.20)',
+                  borderRadius: '5px',
+                  height: 36,
+                  lineHeight: '32px',
+                  width: '100%',
+                  color: 'rgba(0,0,0,0.65)',
+                  paddingLeft: 10,
+                  cursor: 'pointer',
+                }}
+              >
+                  点击添加评论…
+              </div>
+            )
+          }
         </div>
-        {this.renderCommits()}
-      </div>
-    );
-  }
-}
+      )}
+    </div>
+  );
+};
 
-export default withRouter(injectIntl(IssueCommit));
+export default IssueCommit;

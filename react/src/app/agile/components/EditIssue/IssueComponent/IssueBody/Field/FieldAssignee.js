@@ -143,7 +143,7 @@ const { Text, Edit } = TextEditToggle;
                 dropdownStyle={{ width: 250 }}
                 dropdownMatchSelectWidth={false}
                 onFilterChange={this.onFilterChange.bind(this)}
-                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}
+                getPopupContainer={() => document.getElementById('detail')}
                 onChange={(value) => {
                   this.setState({ newAssigneeId: value });
                 }}
