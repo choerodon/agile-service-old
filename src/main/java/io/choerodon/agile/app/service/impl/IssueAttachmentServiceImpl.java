@@ -119,7 +119,7 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
             issueAttachmentDTOList.forEach(attachment -> {
                 IssueAttachmentVO issueAttachmentVO = new IssueAttachmentVO();
                 BeanUtils.copyProperties(attachment, issueAttachmentVO);
-                issueAttachmentVO.setUrl(attachmentUrl + attachment.getUrl());
+                issueAttachmentVO.setUrl(attachmentUrl + "/" + BACKETNAME + "/" + attachment.getUrl());
                 result.add(issueAttachmentVO);
             });
         }
@@ -136,7 +136,7 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
         String url = null;
         try {
             url = URLDecoder.decode(issueAttachmentDTO.getUrl(), "UTF-8");
-            fileFeignClient.deleteFile(BACKETNAME, attachmentUrl + url);
+            fileFeignClient.deleteFile(BACKETNAME, attachmentUrl + "/" + BACKETNAME + "/" + url);
         } catch (Exception e) {
             LOGGER.error("error.attachment.delete", e);
         }
@@ -156,7 +156,7 @@ public class IssueAttachmentServiceImpl implements IssueAttachmentService {
             if (response == null || response.getStatusCode() != HttpStatus.OK) {
                 throw new CommonException("error.attachment.upload");
             }
-            result.add(attachmentUrl + dealUrl(response.getBody()));
+            result.add(attachmentUrl + "/" + BACKETNAME + "/" + dealUrl(response.getBody()));
         }
         return result;
     }

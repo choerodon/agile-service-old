@@ -2,11 +2,13 @@ package io.choerodon.agile.infra.feign.fallback;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.infra.dataobject.ApplicationDTO;
 import io.choerodon.agile.infra.dataobject.UserDTO;
 import io.choerodon.agile.infra.feign.UserFeignClient;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -69,5 +71,15 @@ public class UserFeignClientFallback implements UserFeignClient {
     @Override
     public ResponseEntity<PageInfo<UserWithRoleVO>> pagingQueryUsersWithProjectLevelRoles(int page, int size, Long sourceId, @Valid RoleAssignmentSearchVO roleAssignmentSearchVO, boolean doPage) {
         throw new CommonException("error.usersWithRoles.get");
+    }
+
+    @Override
+    public ResponseEntity<ApplicationDTO> getApplicationByToken(@RequestBody ApplicationDTO applicationDTO) {
+        throw new CommonException("error.application.get");
+    }
+
+    @Override
+    public ResponseEntity<ApplicationDTO> queryByApplicationId(Long organizationId, Long id, Boolean withDescendants) {
+        throw new CommonException("error.applicationInfo.get");
     }
 }

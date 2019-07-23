@@ -18,4 +18,7 @@ public interface NotifyFeignClient {
                        @PathVariable("id") String id,
                        @RequestBody String message);
 
+    @PostMapping
+    void postEmail(@RequestBody NoticeSendDTO dto);
+
 }
