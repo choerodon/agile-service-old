@@ -35,4 +35,10 @@ databaseChangeLog(logicalFilePath: 'script/db/agile_project_info.groovy') {
         }
     }
 
+    changeSet(id: '2019-07-23-agile-project-info-add-column', author: 'fuqianghuang01@gmail.com') {
+        addColumn(tableName: 'agile_project_info') {
+            column(name: "feedback_max_num", type: "BIGINT UNSIGNED", defaultValue: "0", remarks: 'feedback编号最大值')
+        }
+    }
+
 }
