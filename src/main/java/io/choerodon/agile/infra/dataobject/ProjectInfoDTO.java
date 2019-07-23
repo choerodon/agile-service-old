@@ -25,6 +25,8 @@ public class ProjectInfoDTO extends BaseDTO {
 
     private Long issueMaxNum;
 
+    private Long feedbackMaxNum;
+
     /**
      * 默认经办人
      */
@@ -94,6 +96,14 @@ public class ProjectInfoDTO extends BaseDTO {
 
     public void setDefaultPriorityCode(String defaultPriorityCode) {
         this.defaultPriorityCode = defaultPriorityCode;
+    }
+
+    public void setFeedbackMaxNum(Long feedbackMaxNum) {
+        this.feedbackMaxNum = feedbackMaxNum;
+    }
+
+    public Long getFeedbackMaxNum() {
+        return feedbackMaxNum;
     }
 
     @Override

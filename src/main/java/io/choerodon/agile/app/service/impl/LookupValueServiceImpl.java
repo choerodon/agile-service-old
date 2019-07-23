@@ -5,6 +5,7 @@ import io.choerodon.agile.api.vo.LookupTypeWithValuesVO;
 import io.choerodon.agile.api.vo.LookupValueVO;
 import io.choerodon.agile.app.service.LookupValueService;
 import io.choerodon.agile.infra.dataobject.LookupTypeWithValuesDTO;
+import io.choerodon.agile.infra.dataobject.LookupValueDTO;
 import io.choerodon.agile.infra.mapper.LookupValueMapper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 敏捷开发code键值
@@ -47,5 +50,13 @@ public class LookupValueServiceImpl implements LookupValueService {
         LookupTypeWithValuesVO result = modelMapper.map(typeWithValues, LookupTypeWithValuesVO.class);
         result.setLookupValues(modelMapper.map(typeWithValues.getLookupValues(), new TypeToken<LookupValueVO>(){}.getType()));
         return result;
+    }
+
+    @Override
+    public Map<String, String> queryMapByTypeCode(String typeCode) {
+        LookupValueDTO lookupValueDTO = new LookupValueDTO();
+        lookupValueDTO.setTypeCode(typeCode);
+        List<LookupValueDTO> lookupValueDTOList = lookupValueMapper.select(lookupValueDTO);
+        return lookupValueDTOList.stream().collect(Collectors.toMap(LookupValueDTO::getValueCode, LookupValueDTO::getName));
     }
 }

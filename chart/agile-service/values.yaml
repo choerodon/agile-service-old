@@ -56,7 +56,7 @@ env:
     WORKH_ENABLED: true
     WORKH_CRON: 59 59 23 15 12 *
     # minio地址，地址中agile-service为minio bucket
-    SERVICES_ATTACHMENT_URL: http://minio.example.choerodon.io/agile-service/
+    SERVICES_ATTACHMENT_URL: http://minio.example.choerodon.io
 #    PRO_API_HOST: gateway.example.com.cn
 #    PRO_AGILE_HOST: http://minio.example.com/agile-service/
 #    PRO_CLIENT_ID: agile

@@ -57,7 +57,7 @@ class DataLogControllerSpec extends Specification {
 
         when:
         HttpEntity<DataLogCreateVO> dataLogDTOHttpEntity = new HttpEntity<>(createDTO)
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/data_log",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/feedback_data_log",
                 HttpMethod.POST,
                 dataLogDTOHttpEntity,
                 DataLogVO.class,
@@ -77,7 +77,7 @@ class DataLogControllerSpec extends Specification {
         userRepository.queryUsersMap(*_) >> userMessageDOMap
 
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/data_log?issueId={issueId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/feedback_data_log?issueId={issueId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,

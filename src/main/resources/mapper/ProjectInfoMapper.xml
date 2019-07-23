@@ -27,4 +27,9 @@
         where project_id = #{projectId}
     </select>
 
+    <update id="updateFeedbackMaxNum">
+        update agile_project_info
+        set feedback_max_num = #{feedbackMaxNum}
+        where project_id = #{projectId}
+    </update>
 </mapper>

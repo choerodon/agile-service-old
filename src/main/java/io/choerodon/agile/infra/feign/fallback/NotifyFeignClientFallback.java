@@ -21,4 +21,9 @@ public class NotifyFeignClientFallback implements NotifyFeignClient {
     public void postWebSocket(String code, String id, String message) {
         throw new CommonException(FEIGN_WS_ERROR);
     }
+
+    @Override
+    public void postEmail(NoticeSendDTO dto) {
+        throw new CommonException(FEIGN_ERROR);
+    }
 }

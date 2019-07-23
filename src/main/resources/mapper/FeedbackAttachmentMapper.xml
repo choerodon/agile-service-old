@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.FeedbackAttachmentMapper">
+
+    <select id="selectByFeedbackId" resultType="io.choerodon.agile.infra.dataobject.FeedbackAttachmentDTO">
+        select *
+        from feedback_attachment
+        where project_id = #{projectId} and feedback_id = #{feedbackId}
+        <if test="type == 'feedback'">
+            and comment_id is null
+        </if>
+        <if test="type == 'comment'">
+            and comment_id is not null
+        </if>
+        order by id desc
+    </select>
+
+
+</mapper>
+
+

@@ -2,6 +2,7 @@ package io.choerodon.agile.infra.feign;
 
 import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.infra.dataobject.ApplicationDTO;
 import io.choerodon.agile.infra.dataobject.UserDTO;
 import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -87,5 +88,13 @@ public interface UserFeignClient {
             @PathVariable(name = "project_id") Long sourceId,
             @RequestBody(required = false) @Valid RoleAssignmentSearchVO roleAssignmentSearchVO,
             @RequestParam(name = "doPage") boolean doPage);
+
+    @PostMapping(value = "/v1/applications/token")
+    ResponseEntity<ApplicationDTO> getApplicationByToken(@RequestBody ApplicationDTO applicationDTO);
+
+    @GetMapping("/v1/organizations/{organization_id}/applications/{id}")
+    ResponseEntity<ApplicationDTO> queryByApplicationId(@PathVariable("organization_id") Long organizationId,
+                                                        @PathVariable("id") Long id,
+                                                        @RequestParam(defaultValue = "true", name = "with_descendants") Boolean withDescendants);
 }
 

@@ -2,6 +2,8 @@ package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.LookupTypeWithValuesVO;
 
+import java.util.Map;
+
 /**
  * 敏捷开发code键值
  *
@@ -13,5 +15,7 @@ public interface LookupValueService {
     LookupTypeWithValuesVO queryLookupValueByCode(Long projectId, String typeCode);
 
     LookupTypeWithValuesVO queryConstraintLookupValue(Long projectId);
+
+    Map<String, String> queryMapByTypeCode(String typeCode);
 
 }
