@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.FieldValueMapper">
+
+    <resultMap id="fieldValueMap" type="io.choerodon.agile.infra.dataobject.FieldValueDTO">
+        <id property="id" column="id"/>
+        <id property="instanceId" column="instance_id"/>
+        <id property="fieldId" column="field_id"/>
+        <id property="fieldType" column="field_type"/>
+        <id property="optionId" column="option_id"/>
+        <id property="optionValue" column="option_value"/>
+        <id property="stringValue" column="string_value"/>
+        <id property="numberValue" column="number_value"/>
+        <id property="textValue" column="text_value"/>
+        <id property="dateValue" column="date_value"/>
+        <id property="projectId" column="project_id"/>
+        <id property="schemeCode" column="scheme_code"/>
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="queryList" resultMap="fieldValueMap">
+        SELECT fv.*,
+        fo.value as option_value,
+        f.field_type
+        FROM fd_field_value fv
+        LEFT JOIN fd_field_option fo ON fo.id = fv.option_id
+        LEFT JOIN fd_object_scheme_field f ON f.id = fv.field_id
+        WHERE 1 = 1
+        <if test="projectId != null">
+            AND fv.project_id = #{projectId}
+        </if>
+        <if test="instanceId != null">
+            AND fv.instance_id = #{instanceId}
+        </if>
+        <if test="schemeCode != null">
+            AND fv.scheme_code = #{schemeCode}
+        </if>
+        <if test="fieldId != null">
+            AND fv.field_id = #{fieldId}
+        </if>
+    </select>
+
+    <insert id="batchInsert">
+        INSERT IGNORE INTO fd_field_value
+        (instance_id,project_id,scheme_code, field_id,option_id, string_value, number_value, text_value, date_value)
+        values
+        <foreach collection="fieldValues" item="fieldValue" index="index"
+                 separator=",">
+            (#{instanceId}, #{projectId}, #{schemeCode}, #{fieldValue.fieldId},
+            #{fieldValue.optionId}, #{fieldValue.stringValue}, #{fieldValue.numberValue}, #{fieldValue.textValue},
+            #{fieldValue.dateValue})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByOptionIds">
+        DELETE
+        FROM fd_field_value
+        WHERE option_id IN
+        <foreach collection="optionIds" item="optionId" index="index" open="(" close=")" separator=",">
+            #{optionId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteList">
+        DELETE
+        FROM fd_field_value
+        WHERE 1 = 1
+        <if test="projectId != null">
+            AND project_id = #{projectId}
+        </if>
+        <if test="instanceId != null">
+            AND instance_id = #{instanceId}
+        </if>
+        <if test="schemeCode != null">
+            AND scheme_code = #{schemeCode}
+        </if>
+        <if test="fieldId != null">
+            AND field_id = #{fieldId}
+        </if>
+    </delete>
+
+    <select id="sortIssueIdsByFieldValue" resultType="java.lang.Long">
+        SELECT fv.instance_id
+        FROM fd_field_value fv
+        WHERE fv.field_id = #{fieldId}
+        <if test='sortSql != null and sortSql != ""'>
+            ORDER BY ${sortSql}
+        </if>
+    </select>
+</mapper>

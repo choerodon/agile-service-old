@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.ObjectSchemeFieldMapper">
+
+    <resultMap id="objectSchemeFieldMap" type="io.choerodon.agile.infra.dataobject.ObjectSchemeFieldDTO">
+        <id property="id" column="id"/>
+        <id property="code" column="code"/>
+        <id property="name" column="name"/>
+        <id property="description" column="description"/>
+        <id property="fieldType" column="field_type"/>
+        <id property="defaultValue" column="default_value"/>
+        <id property="extraConfig" column="extra_config"/>
+        <id property="system" column="is_system"/>
+        <id property="required" column="is_required"/>
+        <id property="context" column="context"/>
+        <id property="schemeCode" column="scheme_code"/>
+        <id property="fieldTypeName" column="field_type_name"/>
+        <id property="projectId" column="project_id"/>
+        <id property="organizationId" column="organization_id"/>
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="listQuery" resultMap="objectSchemeFieldMap">
+        SELECT osf.*,
+        flv.name as field_type_name
+        FROM fd_object_scheme_field osf
+        LEFT JOIN lookup_value flv ON flv.value_code = osf.field_type and flv.type_code = 'field_type'
+        WHERE (osf.is_system = 1 OR (
+        osf.organization_id = #{organizationId}
+        AND osf.project_id is null
+        <if test="projectId != null">
+            OR osf.project_id = #{projectId}
+        </if>
+        ))
+        <if test="searchVO.context != null">
+            AND osf.context = #{searchVO.context}
+        </if>
+        <if test="searchVO.schemeCode != null">
+            AND osf.scheme_code = #{searchVO.schemeCode}
+        </if>
+        <if test="searchVO.name != null">
+            AND osf.name = #{searchVO.name}
+        </if>
+        <if test="searchVO.code != null">
+            AND osf.code = #{searchVO.code}
+        </if>
+    </select>
+
+    <select id="queryById" resultMap="objectSchemeFieldMap">
+        SELECT osf.*,
+        flv.name as field_type_name
+        FROM fd_object_scheme_field osf
+        LEFT JOIN lookup_value flv ON flv.value_code = osf.field_type AND flv.type_code = 'field_type'
+        WHERE osf.id = #{fieldId}
+    </select>
+
+    <select id="queryByFieldCode" resultMap="objectSchemeFieldMap">
+        SELECT
+        osf.*,
+        flv.NAME AS field_type_name
+        FROM
+        fd_object_scheme_field osf
+        LEFT JOIN lookup_value flv ON flv.value_code = osf.field_type
+        AND flv.type_code = 'field_type'
+        WHERE
+        (
+        osf.is_system = 0
+        AND ( osf.organization_id = #{organizationId}
+        AND osf.project_id IS NULL
+        <if test="projectId != null">
+            OR osf.project_id = #{projectId}
+        </if>))
+        AND osf.code = #{fieldCode}
+    </select>
+</mapper>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.StateMachineNodeDraftMapper">
+
+    <resultMap id="nodeWithState" type="io.choerodon.agile.infra.dataobject.StateMachineNodeDraftDTO">
+        <id property="id" column="id"/>
+        <result property="stateMachineId" column="state_machine_id"/>
+        <result property="statusId" column="status_id"/>
+        <result property="positionX" column="position_x"/>
+        <result property="positionY" column="position_y"/>
+        <result property="width" column="width"/>
+        <result property="height" column="height"/>
+        <result property="type" column="type"/>
+        <result property="allStatusTransformId" column="all_status_transform_id"/>
+        <result property="creationDate" column="creation_date"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="lastUpdateDate" column="last_update_date"/>
+        <result property="lastUpdatedBy" column="last_updated_by"/>
+        <result property="objectVersionNumber" column="object_version_number"/>
+        <association property="status" javaType="io.choerodon.agile.infra.dataobject.StatusDTO">
+            <id property="id" column="s_id"/>
+            <result property="name" column="s_name"/>
+            <result property="description" column="s_description"/>
+            <result property="type" column="s_type"/>
+            <result property="organizationId" column="s_organization_id"/>
+            <result property="creationDate" column="s_creation_date"/>
+            <result property="createdBy" column="s_created_by"/>
+            <result property="lastUpdateDate" column="s_last_update_date"/>
+            <result property="lastUpdatedBy" column="s_last_updated_by"/>
+            <result property="objectVersionNumber" column="s_object_version_number"/>
+        </association>
+    </resultMap>
+
+    <select id="queryById" resultType="io.choerodon.agile.infra.dataobject.StateMachineNodeDraftDTO">
+        SELECT *
+        FROM fd_state_machine_node_draft
+        WHERE organization_id = #{organizationId}
+        and id = #{id}
+    </select>
+
+    <select id="getNodeById" resultMap="nodeWithState">
+        SELECT
+        SMN.*,
+        STATE.id as s_id,
+        STATE.name as s_name,
+        STATE.description as s_description,
+        STATE.type as s_type,
+        STATE.organization_id as s_organization_id,
+        STATE.creation_date as s_creation_date,
+        STATE.created_by as s_created_by,
+        STATE.last_update_date as s_last_update_date,
+        STATE.last_updated_by as s_last_updated_by,
+        STATE.object_version_number as s_object_version_number
+        FROM fd_state_machine_node_draft SMN
+        LEFT JOIN fd_status STATE ON STATE.id = SMN.status_id
+        WHERE SMN.id = #{nodeId}
+    </select>
+
+    <select id="selectByStateMachineId" resultMap="nodeWithState">
+        SELECT
+        SMN.*,
+        STATE.id as s_id,
+        STATE.name as s_name,
+        STATE.description as s_description,
+        STATE.type as s_type,
+        STATE.organization_id as s_organization_id,
+        STATE.creation_date as s_creation_date,
+        STATE.created_by as s_created_by,
+        STATE.last_update_date as s_last_update_date,
+        STATE.last_updated_by as s_last_updated_by,
+        STATE.object_version_number as s_object_version_number
+        FROM fd_state_machine_node_draft SMN
+        LEFT JOIN fd_status STATE ON STATE.id = SMN.status_id
+        WHERE SMN.state_machine_id = #{stateMachineId}
+    </select>
+
+    <select id="checkStateDelete" resultType="java.lang.Long">
+        SELECT
+            count( SMN.id )
+        FROM
+            fd_state_machine_node_draft SMN
+            LEFT JOIN fd_state_machine SM ON SMN.state_machine_id = SM.id
+        WHERE
+            SMN.status_id = #{statusId}
+            AND SM.organization_id = #{organizationId}
+    </select>
+
+    <update id="updateAllStatusTransformId">
+        UPDATE fd_state_machine_node_draft
+        SET all_status_transform_id = #{allStatusTransformId}
+        WHERE organization_id = #{organizationId}
+        AND id = #{id}
+    </update>
+
+    <select id="selectMaxPositionY" resultType="io.choerodon.agile.infra.dataobject.StateMachineNodeDraftDTO">
+        SELECT *
+        FROM fd_state_machine_node_draft
+        WHERE position_y = (
+            SELECT max(position_y)
+            FROM fd_state_machine_node_draft
+            WHERE state_machine_id = #{stateMachineId}
+        )
+        LIMIT 1
+    </select>
+
+</mapper>

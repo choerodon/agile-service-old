@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="io.choerodon.agile.infra.mapper.IssueTypeMapper">
+
+    <!--<select id="fulltextSearch" resultType="io.choerodon.issue.domain.IssueType">-->
+    <!--SELECT * FROM issue_type-->
+    <!--WHERE 1=1-->
+    <!--<if test="issueType.organizationId != null">-->
+    <!--AND organization_id = #{issueType.organizationId}-->
+    <!--</if>-->
+    <!--<if test="issueType.name != null">-->
+    <!--AND name LIKE concat('%',#{issueType.name},'%')-->
+    <!--</if>-->
+    <!--<if test="issueType.description != null">-->
+    <!--AND description LIKE concat('%',#{issueType.description},'%')-->
+    <!--</if>-->
+    <!--<if test="param != null">-->
+    <!--AND ( name LIKE concat('%',#{param},'%')-->
+    <!--OR description LIKE concat('%',#{param},'%')-->
+    <!--)-->
+    <!--</if>-->
+    <!--</select>-->
+
+    <select id="queryByOrgId" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDTO">
+        SELECT
+        t.*
+        FROM fd_issue_type t
+        WHERE t.organization_id = #{organizationId}
+    </select>
+
+    <select id="queryBySchemeId" resultType="io.choerodon.agile.infra.dataobject.IssueTypeDTO">
+        SELECT
+        t.*,
+        c.sequence
+        FROM fd_issue_type t
+        LEFT JOIN fd_issue_type_scheme_config c on c.issue_type_id = t.id
+        WHERE 1=1
+        <if test="organizationId != null">
+            AND t.organization_id = #{organizationId}
+        </if>
+        <if test="schemeId != null">
+            AND c.scheme_id = #{schemeId}
+        </if>
+        order by c.sequence
+    </select>
+
+    <select id="selectIssueTypeIds" resultType="java.lang.Long">
+        select
+        it.id
+        from fd_issue_type it
+        where it.organization_id = #{organizationId}
+        <if test="issueTypeSearchVO.name != null">
+            AND it.name LIKE concat('%',#{issueTypeSearchVO.name},'%')
+        </if>
+        <if test="issueTypeSearchVO.description != null">
+            AND it.description LIKE concat('%',#{issueTypeSearchVO.description},'%')
+        </if>
+        <if test="issueTypeSearchVO.param != null">
+            AND (it.name LIKE concat('%',#{issueTypeSearchVO.param},'%')
+            OR it.description LIKE concat('%',#{issueTypeSearchVO.param},'%')
+            )
+        </if>
+    </select>
+
+    <resultMap id="issueTypeListMap" type="io.choerodon.agile.infra.dataobject.IssueTypeWithInfoDTO">
+        <id property="id" column="it_id"/>
+        <id property="name" column="it_name"/>
+        <id property="description" column="it_description"/>
+        <id property="icon" column="it_icon"/>
+        <id property="colour" column="it_colour"/>
+        <id property="organizationId" column="it_organization_id"/>
+        <id property="initialize" column="it_is_initialize"/>
+        <id property="objectVersionNumber" column="it_object_version_number"/>
+        <collection property="issueTypeSchemeRelationList" autoMapping="true"
+                    ofType="io.choerodon.agile.infra.dataobject.IssueTypeSchemeRelationDTO">
+            <id property="issueTypeSchemeId" column="itscits_scheme_id"/>
+            <id property="issueTypeSchemeName" column="itscits_name"/>
+        </collection>
+    </resultMap>
+
+    <select id="queryIssueTypeList" resultMap="issueTypeListMap">
+        select
+        it.id as it_id,
+        it.name as it_name,
+        it.description as it_description,
+        it.icon as it_icon,
+        it.colour as it_colour,
+        it.organization_id as it_organization_id,
+        it.type_code as it_type_code,
+        it.is_initialize as it_is_initialize,
+        it.object_version_number as it_object_version_number,
+        itscits.scheme_id as itscits_scheme_id,
+        itscits.name as itscits_name
+        from fd_issue_type it
+        left join
+        (
+        select
+        itsc.issue_type_id,
+        itsc.scheme_id,
+        its.name
+        from fd_issue_type_scheme_config itsc, fd_issue_type_scheme its
+        where itsc.scheme_id = its.id
+        ) itscits on it.id = itscits.issue_type_id
+        where organization_id = #{organizationId}
+        and it.id in
+        <foreach collection="issueTypeIds" item="issueTypeId"
+                 open="(" close=")" separator=",">
+            #{issueTypeId}
+        </foreach>
+        order by it.id desc
+    </select>
+
+</mapper>

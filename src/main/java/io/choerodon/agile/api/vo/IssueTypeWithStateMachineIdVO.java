@@ -1,23 +1,36 @@
 package io.choerodon.agile.api.vo;
 
 import com.google.common.base.MoreObjects;
+import io.swagger.annotations.ApiModelProperty;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author shinan.chen
  * @date 2018/10/29
  */
 public class IssueTypeWithStateMachineIdVO {
+    @ApiModelProperty(value = "问题类型id")
     private Long id;
-
+    @ApiModelProperty(value = "名称")
+    @NotNull(message = "error.name.null")
     private String name;
+    @ApiModelProperty(value = "图标")
     private String icon;
+    @ApiModelProperty(value = "描述")
     private String description;
+    @ApiModelProperty(value = "组织id")
     private Long organizationId;
+    @ApiModelProperty(value = "颜色")
     private String colour;
+    @ApiModelProperty(value = "类型编码")
     private String typeCode;
+    @ApiModelProperty(value = "状态机id")
     private Long stateMachineId;
-    private Long initStatusId;
+    @ApiModelProperty(value = "是否初始化")
     private Boolean initialize;
+    @ApiModelProperty(value = "初始状态id")
+    private Long initStatusId;
 
     public Long getInitStatusId() {
         return initStatusId;

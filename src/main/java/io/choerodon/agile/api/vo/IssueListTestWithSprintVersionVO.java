@@ -6,7 +6,7 @@ import java.util.List;
 
 import io.swagger.annotations.ApiModelProperty;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 
 public class IssueListTestWithSprintVersionVO {
 

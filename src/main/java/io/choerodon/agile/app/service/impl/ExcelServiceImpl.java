@@ -4,13 +4,17 @@ import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.ExcelService;
 import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.app.service.StateMachineService;
-import io.choerodon.agile.infra.common.utils.*;
+import io.choerodon.agile.app.service.StateMachineClientService;
+import io.choerodon.agile.infra.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.FileFeignClient;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.utils.CatalogExcelUtil;
+import io.choerodon.agile.infra.utils.ExcelUtil;
+import io.choerodon.agile.infra.utils.NumberUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.apache.poi.ss.usermodel.*;
@@ -67,7 +71,7 @@ public class ExcelServiceImpl implements ExcelService {
     private static final String IMPORT_TEMPLATE_NAME = "导入模板";
 
     @Autowired
-    private StateMachineService stateMachineService;
+    private StateMachineClientService stateMachineClientService;
 
     @Autowired
     private IssueFeignClient issueFeignClient;
@@ -548,7 +552,7 @@ public class ExcelServiceImpl implements ExcelService {
             Boolean ok = setIssueCreateInfo(issueCreateVO, projectId, row, issueTypeMap, priorityMap, versionMap, userId, componentMap, sprintMap);
             IssueVO result = null;
             if (ok) {
-                result = stateMachineService.createIssue(issueCreateVO, APPLY_TYPE_AGILE);
+                result = stateMachineClientService.createIssue(issueCreateVO, APPLY_TYPE_AGILE);
             }
             if (result == null) {
                 failCount++;

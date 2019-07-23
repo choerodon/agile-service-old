@@ -5,9 +5,9 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.*
 import io.choerodon.agile.app.eventhandler.AgileEventHandler
 import io.choerodon.agile.app.service.IssueService
-import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.infra.common.enums.SchemeApplyType
-import io.choerodon.agile.infra.common.utils.SiteMsgUtil
+import io.choerodon.agile.app.service.impl.StateMachineClientServiceImpl
+import io.choerodon.agile.infra.enums.SchemeApplyType
+import io.choerodon.agile.infra.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
@@ -61,7 +61,7 @@ class IssueControllerSpec extends Specification {
     IssueService issueService
 
     @Autowired
-    StateMachineServiceImpl stateMachineService
+    StateMachineClientServiceImpl stateMachineService
 
     @Autowired
     IssueController issueController

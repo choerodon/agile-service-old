@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.app.service.IWorkLogService;
-import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.WorkLogDTO;
 import io.choerodon.agile.infra.mapper.WorkLogMapper;
 import io.choerodon.core.exception.CommonException;

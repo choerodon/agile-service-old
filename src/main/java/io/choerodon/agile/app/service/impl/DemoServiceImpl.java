@@ -9,7 +9,7 @@ import io.choerodon.agile.infra.dataobject.BoardDTO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.feign.SagaClient;
@@ -44,10 +44,10 @@ public class DemoServiceImpl implements DemoService {
     private IssueService issueService;
 
     @Autowired
-    private StateMachineService stateMachineService;
+    private StateMachineClientService stateMachineClientService;
 
     @Autowired
-    private UserFeignClient userFeignClient;
+    private IamFeignClient iamFeignClient;
 
     @Autowired
     private IssueStatusService issueStatusService;
@@ -105,7 +105,7 @@ public class DemoServiceImpl implements DemoService {
         issueCreateVO.setPriorityCode("priority-" + defaultPriority.getId());
         issueCreateVO.setTypeCode(agileIssueTypeMap.get("issue_epic").getTypeCode());
         issueCreateVO.setReporterId(reporterId);
-        return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
+        return stateMachineClientService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
     private IssueVO createStory(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap, Long sprintId, BigDecimal storyPoint, Long epicId, Long reporterId) {
@@ -120,7 +120,7 @@ public class DemoServiceImpl implements DemoService {
         issueCreateVO.setStoryPoints(storyPoint);
         issueCreateVO.setEpicId(epicId);
         issueCreateVO.setReporterId(reporterId);
-        return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
+        return stateMachineClientService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
     private IssueVO createTask(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap, Long sprintId, Long reporterId) {
@@ -133,7 +133,7 @@ public class DemoServiceImpl implements DemoService {
         issueCreateVO.setTypeCode(agileIssueTypeMap.get("task").getTypeCode());
         issueCreateVO.setSprintId(sprintId);
         issueCreateVO.setReporterId(reporterId);
-        return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
+        return stateMachineClientService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
     private IssueVO createBug(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap, Long sprintId, Long reporterId) {
@@ -146,7 +146,7 @@ public class DemoServiceImpl implements DemoService {
         issueCreateVO.setTypeCode(agileIssueTypeMap.get("bug").getTypeCode());
         issueCreateVO.setSprintId(sprintId);
         issueCreateVO.setReporterId(reporterId);
-        return stateMachineService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
+        return stateMachineClientService.createIssue(issueCreateVO, AGILE_APPLYTYPE);
     }
 
     private IssueVO createTest(Long projectId, String summary, PriorityVO defaultPriority, Map<String, IssueTypeWithStateMachineIdVO> testIssueTypeMap) {
@@ -157,7 +157,7 @@ public class DemoServiceImpl implements DemoService {
         issueCreateVO.setPriorityId(defaultPriority.getId());
         issueCreateVO.setPriorityCode("priority-" + defaultPriority.getId());
         issueCreateVO.setTypeCode(testIssueTypeMap.get("issue_test").getTypeCode());
-        return stateMachineService.createIssue(issueCreateVO, TEST_APPLYTYPE);
+        return stateMachineClientService.createIssue(issueCreateVO, TEST_APPLYTYPE);
     }
 
     private IssueSubVO createSubTask(Long projectId, String summary, PriorityVO defaultPriority, Long sprintId, Long parentIssueId, Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap, Long reporterId) {
@@ -170,7 +170,7 @@ public class DemoServiceImpl implements DemoService {
         issueSubCreateVO.setParentIssueId(parentIssueId);
         issueSubCreateVO.setIssueTypeId(agileIssueTypeMap.get("sub_task").getId());
         issueSubCreateVO.setReporterId(reporterId);
-        return stateMachineService.createSubIssue(issueSubCreateVO);
+        return stateMachineClientService.createSubIssue(issueSubCreateVO);
     }
 
     private Date getSpecifyTimeByOneTime(Date date, int amount) {
@@ -441,7 +441,7 @@ public class DemoServiceImpl implements DemoService {
         Long userId2 = demoProjectPayload.getUserA().getId();
 
         // 查询项目信息
-        ProjectVO projectVO = userFeignClient.queryProject(projectId).getBody();
+        ProjectVO projectVO = iamFeignClient.queryProject(projectId).getBody();
         Long organizationId = projectVO.getOrganizationId();
 
         // 创建第一个冲刺

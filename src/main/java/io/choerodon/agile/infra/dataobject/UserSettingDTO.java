@@ -1,6 +1,6 @@
 package io.choerodon.agile.infra.dataobject;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.entity.BaseDTO;
 

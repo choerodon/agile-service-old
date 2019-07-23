@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.vo.event;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 
 /**
  * @author dinghuang123@gmail.com

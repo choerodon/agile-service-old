@@ -3,7 +3,7 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.vo.BoardTeamVO;
 import io.choerodon.agile.api.vo.BoardTeamUpdateVO;
 import io.choerodon.agile.app.service.BoardTeamService;
-import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.BoardTeamDTO;
 import io.choerodon.agile.infra.mapper.BoardTeamMapper;
 import io.choerodon.core.exception.CommonException;

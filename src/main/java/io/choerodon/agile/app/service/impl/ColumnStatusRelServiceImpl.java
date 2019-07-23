@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.app.service.ColumnStatusRelService;
-import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.infra.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDTO;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import io.choerodon.core.exception.CommonException;

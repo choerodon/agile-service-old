@@ -1,7 +1,7 @@
 package io.choerodon.agile.api.vo;
 
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 
 import java.io.Serializable;
 

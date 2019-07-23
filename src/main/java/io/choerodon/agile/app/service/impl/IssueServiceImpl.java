@@ -16,13 +16,14 @@ import io.choerodon.agile.api.validator.SprintValidator;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.api.vo.event.IssuePayload;
-import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
-import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.common.utils.*;
+import io.choerodon.agile.infra.aspect.DataLogRedisUtil;
+import io.choerodon.agile.infra.enums.ObjectSchemeCode;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.dataobject.ObjectSchemeFieldDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.utils.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
@@ -145,7 +146,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private InstanceFeignClient instanceFeignClient;
     @Autowired
-    private StateMachineService stateMachineService;
+    private StateMachineClientService stateMachineClientService;
     @Autowired
     private DataLogRedisUtil dataLogRedisUtil;
     @Autowired
@@ -606,7 +607,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueVO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
-        stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType, new InputDTO(issueId, "updateStatus", null));
+        stateMachineClientService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType, new InputDTO(issueId, "updateStatus", null));
         if ("agile".equals(applyType)) {
             IssueConvertDTO issueConvertDTO = new IssueConvertDTO();
             issueConvertDTO.setIssueId(issueId);
@@ -1654,7 +1655,7 @@ public class IssueServiceImpl implements IssueService {
             IssueTypeVO issueTypeVO = issueFeignClient.queryIssueTypeById(ConvertUtil.getOrganizationId(projectId), issueDetailDTO.getIssueTypeId()).getBody();
             if (issueTypeVO.getTypeCode().equals(SUB_TASK)) {
                 IssueSubCreateVO issueSubCreateVO = issueAssembler.issueDtoToIssueSubCreateDto(issueDetailDTO);
-                IssueSubVO newIssue = stateMachineService.createSubIssue(issueSubCreateVO);
+                IssueSubVO newIssue = stateMachineClientService.createSubIssue(issueSubCreateVO);
                 newIssueId = newIssue.getIssueId();
                 objectVersionNumber = newIssue.getObjectVersionNumber();
             } else {
@@ -1677,7 +1678,7 @@ public class IssueServiceImpl implements IssueService {
                 if ("program".equals(applyType)) {
                     issueCreateVO.setProgramId(projectId);
                 }
-                IssueVO newIssue = stateMachineService.createIssue(issueCreateVO, applyType);
+                IssueVO newIssue = stateMachineClientService.createIssue(issueCreateVO, applyType);
                 newIssueId = newIssue.getIssueId();
                 objectVersionNumber = newIssue.getObjectVersionNumber();
             }
@@ -1723,7 +1724,7 @@ public class IssueServiceImpl implements IssueService {
     private void copySubIssue(IssueDTO issueDTO, Long newIssueId, Long projectId) {
         IssueDetailDTO subIssueDetailDTO = issueMapper.queryIssueDetail(issueDTO.getProjectId(), issueDTO.getIssueId());
         IssueSubCreateVO issueSubCreateVO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDTO, newIssueId);
-        IssueSubVO newSubIssue = stateMachineService.createSubIssue(issueSubCreateVO);
+        IssueSubVO newSubIssue = stateMachineClientService.createSubIssue(issueSubCreateVO);
         //复制剩余工作量并记录日志
         if (issueDTO.getRemainingTime() != null) {
             IssueUpdateVO subIssueUpdateVO = new IssueUpdateVO();

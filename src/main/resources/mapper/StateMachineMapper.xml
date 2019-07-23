@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.StateMachineMapper">
+
+    <select id="queryById" resultType="io.choerodon.agile.infra.dataobject.StateMachineDTO">
+        SELECT *
+        FROM fd_state_machine
+        WHERE organization_id = #{organizationId}
+        and id = #{id}
+    </select>
+
+    <select id="fulltextSearch" resultType="io.choerodon.agile.infra.dataobject.StateMachineDTO">
+        SELECT * FROM fd_state_machine
+        WHERE 1=1
+        <if test="stateMachine.organizationId != null">
+            AND organization_id = #{stateMachine.organizationId}
+        </if>
+        <if test="stateMachine.name != null">
+            AND name LIKE concat('%',#{stateMachine.name},'%')
+        </if>
+        <if test="stateMachine.description != null">
+            AND description LIKE concat('%',#{stateMachine.description},'%')
+        </if>
+        <if test="param != null">
+            AND ( name LIKE concat('%',#{param},'%')
+            OR description LIKE concat('%',#{param},'%')
+            )
+        </if>
+    </select>
+
+    <select id="getStatusBySmId" resultType="io.choerodon.agile.api.vo.event.StatusPayload">
+        select s.id as status_id, s.name as status_name, s.type, #{projectId} as project_id
+        from fd_state_machine_node smn
+        left join fd_status s on smn.status_id = s.id
+        where smn.state_machine_id = #{stateMachineId} and smn.status_id != 0
+    </select>
+
+    <select id="queryByIds" resultType="io.choerodon.agile.infra.dataobject.StateMachineDTO">
+        SELECT * FROM fd_state_machine sm
+        WHERE 1=1
+        <if test="organizationId != null">
+            AND sm.organization_id = #{organizationId}
+        </if>
+        <if test="stateMachineIds != null and stateMachineIds.size()>0">
+            AND sm.id IN
+            <foreach item="item" index="index" collection="stateMachineIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

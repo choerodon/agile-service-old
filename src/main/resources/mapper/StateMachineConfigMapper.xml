@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.StateMachineConfigMapper">
+
+    <select id="queryById" resultType="io.choerodon.agile.infra.dataobject.StateMachineConfigDTO">
+        SELECT *
+        FROM fd_state_machine_config
+        WHERE organization_id = #{organizationId}
+        and id = #{id}
+    </select>
+
+    <select id="queryWithCodeInfo" resultType="io.choerodon.agile.infra.dataobject.StateMachineConfigDTO">
+        SELECT smc.*,
+        cc.name code_name,
+        cc.description code_description
+        FROM fd_state_machine_config smc
+        LEFT JOIN fd_config_code cc on cc.code = smc.code
+        WHERE smc.organization_id = #{organizationId}
+        and smc.transform_id = #{transformId}
+        <if test="type != null">
+            and smc.type = #{type}
+        </if>
+    </select>
+
+    <select id="queryWithCodeInfoByTransformIds" resultType="io.choerodon.agile.infra.dataobject.StateMachineConfigDTO">
+        SELECT smc.*,
+        cc.name code_name,
+        cc.description code_description
+        FROM fd_state_machine_config smc
+        LEFT JOIN fd_config_code cc on cc.code = smc.code
+        WHERE smc.organization_id = #{organizationId}
+        and smc.type = #{type}
+        AND smc.transform_id IN
+        <foreach item="item" index="index" collection="transformIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

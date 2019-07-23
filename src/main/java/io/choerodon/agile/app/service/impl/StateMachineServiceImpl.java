@@ -1,323 +1,312 @@
 package io.choerodon.agile.app.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.api.validator.IssueValidator;
-import io.choerodon.agile.app.assembler.IssueAssembler;
-import io.choerodon.agile.app.service.IssueAccessDataService;
-import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.app.service.RankService;
-import io.choerodon.agile.app.service.StateMachineService;
+import io.choerodon.agile.api.vo.event.*;
+import io.choerodon.agile.app.service.*;
+import io.choerodon.agile.infra.cache.InstanceCache;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.api.vo.event.CreateIssuePayload;
-import io.choerodon.agile.api.vo.event.CreateSubIssuePayload;
-import io.choerodon.agile.api.vo.event.ProjectConfig;
-import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.common.utils.EnumUtil;
-import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
-import io.choerodon.agile.infra.mapper.IssueMapper;
-import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
-import io.choerodon.agile.infra.mapper.RankMapper;
-import io.choerodon.agile.app.service.FeatureService;
-import io.choerodon.agile.app.service.PiFeatureService;
+import io.choerodon.agile.infra.enums.*;
+import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.utils.PageUtil;
+import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.statemachine.annotation.Condition;
-import io.choerodon.statemachine.annotation.PostAction;
-import io.choerodon.statemachine.annotation.UpdateStatus;
-import io.choerodon.statemachine.annotation.Validator;
-import io.choerodon.statemachine.client.StateMachineClient;
-import io.choerodon.statemachine.dto.ExecuteResult;
-import io.choerodon.statemachine.dto.InputDTO;
-import io.choerodon.statemachine.dto.StateMachineConfigDTO;
-import io.choerodon.statemachine.feign.InstanceFeignClient;
+import io.choerodon.mybatis.entity.Criteria;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
+import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparingLong;
+import static java.util.stream.Collectors.*;
+
 /**
  * @author shinan.chen
- * @date 2018/10/30
+ * @date 2018/9/25
  */
 @Service
 public class StateMachineServiceImpl implements StateMachineService {
 
     private static final Logger logger = LoggerFactory.getLogger(StateMachineServiceImpl.class);
-    private static final String AGILE_SERVICE = "agile-service";
-    private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.issueStateMachine.notFound";
-    private static final String ERROR_ISSUE_NOT_FOUND = "error.issue.notFound";
-    private static final String ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM = "error.instanceFeignClient.executeTransform";
-    private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
-    private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
-    private static final String RANK = "rank";
-    private static final String STATUS_ID = "statusId";
-    private static final String STAY_DATE = "stayDate";
-    private static final String UPDATE_STATUS = "updateStatus";
-    private static final String UPDATE_STATUS_MOVE = "updateStatusMove";
-    private static final String ISSUE_FEATURE = "feature";
+    private static final String ERROR_STATEMACHINENODE_CREATE = "error.stateMachineNode.create";
+    private static final String STATUS = "status";
 
+    @Value("${spring.application.name:default}")
+    private String serverCode;
+    @Autowired
+    private StateMachineSchemeService schemeService;
+    @Autowired
+    private StateMachineSchemeConfigService stateMachineSchemeConfigService;
+    @Autowired
+    private ProjectConfigMapper projectConfigMapper;
+    @Autowired
+    private StateMachineSchemeConfigMapper configMapper;
+    @Autowired
+    private StateMachineMapper stateMachineMapper;
+    @Autowired
+    private StateMachineNodeMapper nodeDeployMapper;
+    @Autowired
+    private StateMachineNodeDraftMapper nodeDraftMapper;
+    @Autowired
+    private StateMachineNodeService nodeService;
+    @Autowired
+    private StateMachineTransformMapper transformDeployMapper;
+    @Autowired
+    private StateMachineTransformDraftMapper transformDraftMapper;
+    @Autowired
+    private StateMachineConfigMapper configDeployMapper;
+    @Autowired
+    private StateMachineConfigDraftMapper configDraftMapper;
+    @Autowired
+    private StatusService statusService;
+    @Autowired
+    private SagaServiceImpl sagaService;
+    @Autowired
+    private InstanceCache instanceCache;
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
-    private IssueService issueService;
-    @Autowired
-    private IssueAssembler issueAssembler;
-    @Autowired
-    private InstanceFeignClient instanceFeignClient;
-    @Autowired
-    private IssueFeignClient issueFeignClient;
-    @Autowired
-    private IssueAccessDataService issueAccessDataService;
-    @Autowired
-    private ProjectInfoMapper projectInfoMapper;
-    @Autowired
-    private StateMachineClient stateMachineClient;
-    @Autowired
-    private FeatureService featureService;
-    @Autowired
-    private PiFeatureService piFeatureService;
-    @Autowired
-    private UserFeignClient userFeignClient;
-    @Autowired
-    private RankMapper rankMapper;
-    @Autowired
-    private RankService rankService;
-    @Autowired
-    private IssueValidator issueValidator;
+    private ModelMapper modelMapper;
 
-    private ModelMapper modelMapper = new ModelMapper();
+    @Override
+    public PageInfo<StateMachineListVO> pageQuery(Long organizationId, PageRequest pageRequest, String name, String description, String param) {
+        StateMachineDTO stateMachine = new StateMachineDTO();
+        stateMachine.setName(name);
+        stateMachine.setDescription(description);
+        stateMachine.setOrganizationId(organizationId);
 
-    @PostConstruct
-    public void init() {
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        PageInfo<StateMachineDTO> page = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(), PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(
+                () -> stateMachineMapper.fulltextSearch(stateMachine, param));
+        List<StateMachineListVO> stateMachineVOS = modelMapper.map(page.getList(), new TypeToken<List<StateMachineListVO>>() {
+        }.getType());
+        for (StateMachineListVO stateMachineVO : stateMachineVOS) {
+            List<StateMachineSchemeVO> list = schemeService.querySchemeByStateMachineId(organizationId, stateMachineVO.getId());
+            //列表去重
+            List<StateMachineSchemeVO> unique = list.stream().collect(
+                    collectingAndThen(
+                            toCollection(() -> new TreeSet<>(comparingLong(StateMachineSchemeVO::getId))), ArrayList::new)
+            );
+            stateMachineVO.setStateMachineSchemeVOS(unique);
+        }
+        return PageUtil.buildPageInfoWithPageInfoList(page, stateMachineVOS);
     }
 
-    private void insertRank(Long projectId, Long issueId, String type, RankVO rankVO) {
-        List<RankDTO> rankDTOList = new ArrayList<>();
-        String rank = null;
-        if (rankVO == null) {
-            String minRank = rankMapper.selectMinRank(projectId, type);
-            rank = (minRank == null ? RankUtil.mid() : RankUtil.genPre(minRank));
+    @Override
+    public StateMachineVO create(Long organizationId, StateMachineVO stateMachineVO) {
+        if (checkName(organizationId, stateMachineVO.getName())) {
+            throw new CommonException("error.stateMachineName.exist");
+        }
+        stateMachineVO.setId(null);
+        stateMachineVO.setStatus(StateMachineStatus.CREATE);
+        stateMachineVO.setOrganizationId(organizationId);
+        stateMachineVO.setDefault(false);
+        StateMachineDTO stateMachine = modelMapper.map(stateMachineVO, StateMachineDTO.class);
+        int isInsert = stateMachineMapper.insertSelective(stateMachine);
+        if (isInsert != 1) {
+            throw new CommonException("error.stateMachine.create");
+        }
+
+        //创建默认开始节点
+        StateMachineNodeDraftDTO startNode = new StateMachineNodeDraftDTO();
+        startNode.setStateMachineId(stateMachine.getId());
+        startNode.setOrganizationId(organizationId);
+        startNode.setStatusId(0L);
+        startNode.setPositionX(InitNode.START.getPositionX());
+        startNode.setPositionY(InitNode.START.getPositionY());
+        startNode.setWidth(InitNode.START.getWidth());
+        startNode.setHeight(InitNode.START.getHeight());
+        startNode.setType(NodeType.START);
+        int isStartNodeInsert = nodeDraftMapper.insert(startNode);
+        if (isStartNodeInsert != 1) {
+            throw new CommonException(ERROR_STATEMACHINENODE_CREATE);
+        }
+
+        //创建默认的初始节点
+        StateMachineNodeDraftDTO initNode = new StateMachineNodeDraftDTO();
+        initNode.setStateMachineId(stateMachine.getId());
+        //获取第一个状态
+        List<StatusVO> statusVOS = statusService.queryAllStatus(organizationId);
+        initNode.setStatusId(statusVOS.isEmpty() ? 0L : statusVOS.get(0).getId());
+        initNode.setPositionX(InitNode.INIT.getPositionX());
+        initNode.setPositionY(InitNode.INIT.getPositionY());
+        initNode.setWidth(InitNode.INIT.getWidth());
+        initNode.setHeight(InitNode.INIT.getHeight());
+        initNode.setType(NodeType.INIT);
+        initNode.setOrganizationId(organizationId);
+        int isNodeInsert = nodeDraftMapper.insert(initNode);
+        if (isNodeInsert != 1) {
+            throw new CommonException(ERROR_STATEMACHINENODE_CREATE);
+        }
+
+        //创建默认的转换
+        StateMachineTransformDraftDTO transform = new StateMachineTransformDraftDTO();
+        transform.setName("初始化");
+        transform.setStateMachineId(stateMachine.getId());
+        transform.setStartNodeId(startNode.getId());
+        transform.setEndNodeId(initNode.getId());
+        transform.setType(TransformType.INIT);
+        transform.setConditionStrategy(TransformConditionStrategy.ALL);
+        transform.setOrganizationId(organizationId);
+        int isTransformInsert = transformDraftMapper.insert(transform);
+        if (isTransformInsert != 1) {
+            throw new CommonException("error.stateMachineTransform.create");
+        }
+        return queryStateMachineWithConfigById(organizationId, stateMachine.getId(), true);
+    }
+
+    @Override
+    public StateMachineVO update(Long organizationId, Long stateMachineId, StateMachineVO stateMachineVO) {
+        if (stateMachineVO.getName() != null && checkNameUpdate(organizationId, stateMachineId, stateMachineVO.getName())) {
+            throw new CommonException("error.stateMachineName.exist");
+        }
+        StateMachineDTO stateMachine = modelMapper.map(stateMachineVO, StateMachineDTO.class);
+        stateMachine.setId(stateMachineId);
+        stateMachine.setOrganizationId(organizationId);
+        int isUpdate = stateMachineMapper.updateByPrimaryKeySelective(stateMachine);
+        if (isUpdate != 1) {
+            throw new CommonException("error.stateMachine.update");
+        }
+        stateMachine = stateMachineMapper.queryById(organizationId, stateMachine.getId());
+        return modelMapper.map(stateMachine, StateMachineVO.class);
+    }
+
+    @Override
+    public Boolean deploy(Long organizationId, Long stateMachineId, Boolean isStartSaga) {
+        if (stateMachineId == null) {
+            throw new CommonException("error.stateMachineId.null");
+        }
+        StateMachineDTO stateMachine = stateMachineMapper.queryById(organizationId, stateMachineId);
+        if (stateMachine == null) {
+            throw new CommonException("error.stateMachine.null");
+        }
+        if (StateMachineStatus.ACTIVE.equals(stateMachine.getStatus())) {
+            throw new CommonException("error.stateMachine.status.deployed");
+        }
+        String oldStatus = stateMachine.getStatus();
+        //是否同步状态到其他服务:前置处理
+        Map<String, List<StatusDTO>> changeMap = null;
+        if (isStartSaga && !oldStatus.equals(StateMachineStatus.CREATE)) {
+            changeMap = new HashMap<>(3);
+            deployHandleChange(changeMap, stateMachineId);
+            //校验删除的节点状态是否有使用的issue
+            Boolean result = deployCheckDelete(organizationId, changeMap, stateMachineId);
+            if (!result) {
+                return false;
+            }
+        }
+        stateMachine.setStatus(StateMachineStatus.ACTIVE);
+        Criteria criteria = new Criteria();
+        criteria.update(STATUS);
+        int stateMachineDeploy = stateMachineMapper.updateByPrimaryKeyOptions(stateMachine, criteria);
+        if (stateMachineDeploy != 1) {
+            throw new CommonException("error.stateMachine.deploy");
+        }
+        handleDeployData(organizationId, stateMachineId);
+
+        //清理内存中的旧状态机构建器与实例
+        instanceCache.cleanStateMachine(stateMachineId);
+
+        //是否同步状态到其他服务:发saga
+        if (isStartSaga && !oldStatus.equals(StateMachineStatus.CREATE)) {
+            sagaService.deployStateMachine(organizationId, stateMachineId, changeMap);
+        }
+        return true;
+    }
+
+    @Override
+    public void delete(Long organizationId, Long stateMachineId) {
+        //有关联则无法删除，判断已发布的
+        if (!stateMachineSchemeConfigService.querySchemeIdsByStateMachineId(false, organizationId, stateMachineId).isEmpty()) {
+            throw new CommonException("error.stateMachine.delete");
+        }
+        //删除草稿的已关联当前状态机【todo】
+        StateMachineDTO stateMachine = stateMachineMapper.queryById(organizationId, stateMachineId);
+        if (stateMachine == null) {
+            throw new CommonException("error.stateMachine.delete.noFound");
+        }
+        if (stateMachine.getDefault()) {
+            throw new CommonException("error.stateMachine.defaultForbiddenDelete");
+        }
+        int isDelete = stateMachineMapper.deleteByPrimaryKey(stateMachineId);
+        if (isDelete != 1) {
+            throw new CommonException("error.stateMachine.delete");
+        }
+        //删除节点
+        StateMachineNodeDraftDTO node = new StateMachineNodeDraftDTO();
+        node.setStateMachineId(stateMachineId);
+        node.setOrganizationId(organizationId);
+        nodeDraftMapper.delete(node);
+        //删除转换
+        StateMachineTransformDraftDTO transform = new StateMachineTransformDraftDTO();
+        transform.setStateMachineId(stateMachineId);
+        transform.setOrganizationId(organizationId);
+        transformDraftMapper.delete(transform);
+        //删除配置
+        StateMachineConfigDraftDTO config = new StateMachineConfigDraftDTO();
+        config.setStateMachineId(stateMachineId);
+        config.setOrganizationId(organizationId);
+        configDraftMapper.delete(config);
+        //删除发布节点
+        StateMachineNodeDTO nodeDeploy = new StateMachineNodeDTO();
+        nodeDeploy.setStateMachineId(stateMachineId);
+        nodeDeploy.setOrganizationId(organizationId);
+        nodeDeployMapper.delete(nodeDeploy);
+        //删除发布转换
+        StateMachineTransformDTO transformDeploy = new StateMachineTransformDTO();
+        transformDeploy.setStateMachineId(stateMachineId);
+        transformDeploy.setOrganizationId(organizationId);
+        transformDeployMapper.delete(transformDeploy);
+        //删除发布配置
+        StateMachineConfigDTO configDeploy = new StateMachineConfigDTO();
+        configDeploy.setStateMachineId(stateMachineId);
+        configDeploy.setOrganizationId(organizationId);
+        configDeployMapper.delete(configDeploy);
+    }
+
+    @Override
+    public StateMachineVO queryStateMachineById(Long organizationId, Long stateMachineId) {
+        StateMachineDTO stateMachine = stateMachineMapper.queryById(organizationId, stateMachineId);
+        return stateMachine != null ? modelMapper.map(stateMachine, StateMachineVO.class) : null;
+    }
+
+    @Override
+    public Map<String, Object> checkDelete(Long organizationId, Long stateMachineId) {
+        Map<String, Object> map = new HashMap<>();
+        StateMachineVO stateMachineVO = queryStateMachineById(organizationId, stateMachineId);
+        if (stateMachineVO == null) {
+            map.put(CloopmCommonString.CAN_DELETE, false);
+            map.put("reason", "noFound");
+            return map;
+        }
+        List<Long> schemeIds = stateMachineSchemeConfigService.querySchemeIdsByStateMachineId(false, organizationId, stateMachineId);
+        if (schemeIds.isEmpty()) {
+            map.put(CloopmCommonString.CAN_DELETE, true);
         } else {
-            RankDTO referenceRank = rankService.getReferenceRank(projectId, rankVO.getType(), rankVO.getReferenceIssueId());
-            if (rankVO.getBefore()) {
-                String leftRank = rankMapper.selectLeftRank(projectId, rankVO.getType(), referenceRank.getRank());
-                rank = (leftRank == null ? RankUtil.genPre(referenceRank.getRank()) : RankUtil.between(leftRank, referenceRank.getRank()));
-            } else {
-                String rightRank = rankMapper.selectRightRank(projectId, rankVO.getType(), referenceRank.getRank());
-                rank = (rightRank == null ? RankUtil.genNext(referenceRank.getRank()) : RankUtil.between(referenceRank.getRank(), rightRank));
-            }
+            map.put(CloopmCommonString.CAN_DELETE, false);
+            map.put("schemeUsed", schemeIds.size());
         }
-        RankDTO rankDTO = new RankDTO();
-        rankDTO.setIssueId(issueId);
-        rankDTO.setRank(rank);
-        rankDTOList.add(rankDTO);
-        rankMapper.batchInsertRank(projectId, type, rankDTOList);
-    }
-
-    private void initRank(IssueCreateVO issueCreateVO, Long issueId, String type) {
-        if (issueCreateVO.getProgramId() != null) {
-            List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(issueCreateVO.getProgramId()), issueCreateVO.getProgramId(), true).getBody();
-            if (projectRelationshipVOList == null || projectRelationshipVOList.isEmpty()) {
-                return;
-            }
-            for (ProjectRelationshipVO projectRelationshipVO : projectRelationshipVOList) {
-                insertRank(projectRelationshipVO.getProjectId(), issueId, type, issueCreateVO.getRankVO());
-            }
-        } else if (issueCreateVO.getProjectId() != null) {
-            insertRank(issueCreateVO.getProjectId(), issueId, type, issueCreateVO.getRankVO());
-        }
-    }
-
-
-    /**
-     * 创建issue，用于敏捷和测试
-     *
-     * @param issueCreateVO
-     * @param applyType
-     * @return
-     */
-    @Override
-    public IssueVO createIssue(IssueCreateVO issueCreateVO, String applyType) {
-        issueValidator.checkIssueCreate(issueCreateVO, applyType);
-        IssueConvertDTO issueConvertDTO = issueAssembler.toTarget(issueCreateVO, IssueConvertDTO.class);
-        Long projectId = issueConvertDTO.getProjectId();
-        Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issueConvertDTO.getIssueTypeId()).getBody();
-        if (stateMachineId == null) {
-            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
-        }
-        //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
-        if (initStatusId == null) {
-            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
-        }
-        //获取项目信息
-        ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
-        projectInfoDTO.setProjectId(projectId);
-        ProjectInfoDTO projectInfo = modelMapper.map(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoDTO.class);
-        if (projectInfo == null) {
-            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
-        }
-        //创建issue
-        issueConvertDTO.setApplyType(applyType);
-        issueService.handleInitIssue(issueConvertDTO, initStatusId, projectInfo);
-        Long issueId = issueAccessDataService.create(issueConvertDTO).getIssueId();
-        // 创建史诗，初始化排序
-        if ("issue_epic".equals(issueCreateVO.getTypeCode())) {
-            initRank(issueCreateVO, issueId, "epic");
-        }
-
-        // if issueType is feature, create extends table
-        if (ISSUE_FEATURE.equals(issueCreateVO.getTypeCode())) {
-            FeatureVO featureVO = issueCreateVO.getFeatureVO();
-            featureVO.setIssueId(issueId);
-            featureVO.setProjectId(issueCreateVO.getProjectId());
-            if (issueCreateVO.getProgramId() != null) {
-                featureVO.setProgramId(issueCreateVO.getProgramId());
-            }
-            featureService.create(modelMapper.map(featureVO, FeatureDTO.class));
-            if (issueCreateVO.getPiId() != null && issueCreateVO.getPiId() != 0L) {
-                piFeatureService.create(new PiFeatureDTO(issueId, issueCreateVO.getPiId(), projectId));
-            }
-            initRank(issueCreateVO, issueId, "feature");
-        }
-
-        CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateVO, issueConvertDTO, projectInfo);
-        InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createIssuePayload));
-        //通过状态机客户端创建实例, 反射验证/条件/后置动作
-        stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
-        issueService.afterCreateIssue(issueId, issueConvertDTO, issueCreateVO, projectInfo);
-        return issueService.queryIssueCreate(issueCreateVO.getProjectId(), issueId);
-    }
-
-    /**
-     * 创建subIssue，用于敏捷
-     *
-     * @param issueSubCreateVO
-     * @return
-     */
-    @Override
-    public IssueSubVO createSubIssue(IssueSubCreateVO issueSubCreateVO) {
-        IssueConvertDTO subIssueConvertDTO = issueAssembler.toTarget(issueSubCreateVO, IssueConvertDTO.class);
-        Long projectId = subIssueConvertDTO.getProjectId();
-        Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, SchemeApplyType.AGILE, subIssueConvertDTO.getIssueTypeId()).getBody();
-        if (stateMachineId == null) {
-            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
-        }
-        //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
-        if (initStatusId == null) {
-            throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
-        }
-        //获取项目信息
-        ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
-        projectInfoDTO.setProjectId(subIssueConvertDTO.getProjectId());
-        ProjectInfoDTO projectInfo = modelMapper.map(projectInfoMapper.selectOne(projectInfoDTO), ProjectInfoDTO.class);
-        if (projectInfo == null) {
-            throw new CommonException(ERROR_PROJECT_INFO_NOT_FOUND);
-        }
-        //创建issue
-        subIssueConvertDTO.setApplyType(SchemeApplyType.AGILE);
-        //初始化subIssue
-        issueService.handleInitSubIssue(subIssueConvertDTO, initStatusId, projectInfo);
-        Long issueId = issueAccessDataService.create(subIssueConvertDTO).getIssueId();
-
-        CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateVO, subIssueConvertDTO, projectInfo);
-        InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createSubIssuePayload));
-        //通过状态机客户端创建实例, 反射验证/条件/后置动作
-        stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
-        issueService.afterCreateSubIssue(issueId, subIssueConvertDTO, issueSubCreateVO, projectInfo);
-        return issueService.queryIssueSubByCreate(subIssueConvertDTO.getProjectId(), issueId);
-    }
-
-    /**
-     * 执行转换要开启新事务，否则转换后查询不到最新的数据
-     */
-    @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
-    public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType, InputDTO inputDTO) {
-        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
-            throw new CommonException("error.applyType.illegal");
-        }
-        Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        IssueDTO issue = issueMapper.selectByPrimaryKey(issueId);
-        if (issue == null) {
-            throw new CommonException(ERROR_ISSUE_NOT_FOUND);
-        }
-        //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issue.getIssueTypeId()).getBody();
-        if (stateMachineId == null) {
-            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
-        }
-        Long currentStatusId = issue.getStatusId();
-        //执行状态转换
-        ResponseEntity<ExecuteResult> responseEntity = instanceFeignClient.executeTransform(organizationId, AGILE_SERVICE, stateMachineId, currentStatusId, transformId, inputDTO);
-        if (!responseEntity.getBody().getSuccess()) {
-            throw new CommonException(ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM);
-        }
-        return responseEntity.getBody();
-    }
-
-    /**
-     * 专用于demo的状态转换，demo创建数据不走状态机
-     *
-     * @param projectId
-     * @param issueId
-     * @param transformId
-     * @param objectVersionNumber
-     * @param applyType
-     * @param inputDTO
-     * @return
-     */
-    @Override
-    public ExecuteResult executeTransformForDemo(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType, InputDTO inputDTO) {
-        if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
-            throw new CommonException("error.applyType.illegal");
-        }
-        Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        IssueDTO issue = issueMapper.selectByPrimaryKey(issueId);
-        if (issue == null) {
-            throw new CommonException(ERROR_ISSUE_NOT_FOUND);
-        }
-        //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issue.getIssueTypeId()).getBody();
-        if (stateMachineId == null) {
-            throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
-        }
-        Long targetStatusId = issueFeignClient.queryDeployTransformForAgile(organizationId, transformId).getBody().getEndStatusId();
-        if (UPDATE_STATUS.equals(inputDTO.getInvokeCode())) {
-            updateStatus(issueId, targetStatusId, inputDTO.getInput());
-        } else if (UPDATE_STATUS_MOVE.equals(inputDTO.getInvokeCode())) {
-            updateStatusMove(issueId, targetStatusId, inputDTO.getInput());
-        }
-        return new ExecuteResult();
+        return map;
     }
 
     @Override
-    public Map<String, Object> checkDeleteNode(Long organizationId, Long statusId, List<ProjectConfig> projectConfigs) {
+    public Map<String, Object> checkDeleteNode(Long organizationId, Long stateMachineId, Long statusId) {
+        //找到与状态机关联的状态机方案
+        List<Long> schemeIds = stateMachineSchemeConfigService.querySchemeIdsByStateMachineId(false, organizationId, stateMachineId);
+        List<ProjectConfigDTO> projectConfigs = new ArrayList<>();
+        schemeIds.forEach(schemeId ->
+                //获取当前方案配置的项目列表
+                projectConfigs.addAll(projectConfigMapper.queryConfigsBySchemeId(SchemeType.STATE_MACHINE, schemeId))
+        );
         Map<String, Object> result = new HashMap<>(2);
         Long count = 0L;
-        for (ProjectConfig projectConfig : projectConfigs) {
+        for (ProjectConfigDTO projectConfig : projectConfigs) {
             Long projectId = projectConfig.getProjectId();
             String applyType = projectConfig.getApplyType();
             count = count + issueMapper.querySizeByApplyTypeAndStatusId(projectId, applyType, statusId);
@@ -332,8 +321,535 @@ public class StateMachineServiceImpl implements StateMachineService {
     }
 
     @Override
+    public void notActiveStateMachine(Long organizationId, List<Long> stateMachineIds) {
+        List<Long> notActiveStateMachineIds = new ArrayList<>();
+        if (!stateMachineIds.isEmpty()) {
+            //校验去掉仍然有关联方案的状态机
+            List<StateMachineSchemeConfigDTO> configs = configMapper.queryByStateMachineIds(organizationId, stateMachineIds);
+            Map<Long, List<StateMachineSchemeConfigDTO>> configMap = configs.stream().collect(Collectors.groupingBy(StateMachineSchemeConfigDTO::getStateMachineId));
+            stateMachineIds.forEach(stateMachineId -> {
+                List<StateMachineSchemeConfigDTO> configList = configMap.get(stateMachineId);
+                if (configList == null || configList.isEmpty()) {
+                    notActiveStateMachineIds.add(stateMachineId);
+                }
+            });
+            //使活跃的状态机变更为未活跃
+            logger.info("notActiveStateMachine: {}", stateMachineIds);
+            if (!stateMachineIds.isEmpty()) {
+                notActiveStateMachines(organizationId, notActiveStateMachineIds);
+            }
+        }
+    }
+
+    /**
+     * 【内部调用】发布状态机时对增加与减少的状态进行处理，影响到的项目是否需要增加与减少相应的状态
+     *
+     * @param organizationId
+     * @param stateMachineId
+     * @param changeStatus
+     * @return
+     */
+    @Override
+    public DeployStateMachinePayload handleStateMachineChangeStatusByStateMachineId(Long organizationId, Long stateMachineId, ChangeStatus changeStatus) {
+        //找到与状态机关联的状态机方案
+        List<Long> schemeIds = stateMachineSchemeConfigService.querySchemeIdsByStateMachineId(false, organizationId, stateMachineId);
+        return handleStateMachineChangeStatusBySchemeIds(organizationId, stateMachineId, null, schemeIds, changeStatus);
+    }
+
+    @Override
+    public DeployStateMachinePayload handleStateMachineChangeStatusBySchemeIds(Long organizationId, Long ignoreStateMachineId, Long ignoreSchemeId, List<Long> schemeIds, ChangeStatus changeStatus) {
+        if (schemeIds == null || schemeIds.isEmpty()) {
+            return null;
+        }
+        DeployStateMachinePayload deployStateMachinePayload = new DeployStateMachinePayload();
+        List<RemoveStatusWithProject> removeStatusWithProjects = new ArrayList<>();
+        List<AddStatusWithProject> addStatusWithProjects = new ArrayList<>();
+        List<Long> deleteStatusIds = changeStatus.getDeleteStatusIds();
+        List<Long> addStatusIds = changeStatus.getAddStatusIds();
+
+        //获取所有状态机及状态机的状态列表
+        List<StateMachineWithStatusVO> stateMachineWithStatusVOS = queryAllWithStatus(organizationId);
+        Map<Long, List<StatusVO>> stateMachineWithStatusVOSMap = stateMachineWithStatusVOS.stream().collect(Collectors.toMap(StateMachineWithStatusVO::getId, StateMachineWithStatusVO::getStatusVOS));
+        //查出组织下所有状态机方案配置
+        List<StateMachineSchemeConfigDTO> schemeConfigs = configMapper.queryByOrgId(organizationId);
+        Map<Long, List<StateMachineSchemeConfigDTO>> schemeConfigsMap = schemeConfigs.stream().collect(Collectors.groupingBy(StateMachineSchemeConfigDTO::getSchemeId));
+
+        //根据方案列表查出每个项目关联的状态机
+        List<ProjectConfigDTO> projectConfigs = projectConfigMapper.handleRemoveStatus(schemeIds, SchemeType.STATE_MACHINE);
+        Map<Long, List<ProjectConfigDTO>> projectMap = projectConfigs.stream().collect(Collectors.groupingBy(ProjectConfigDTO::getProjectId));
+        projectMap.entrySet().forEach(entry -> {
+            Long projectId = entry.getKey();
+            List<ProjectConfigDTO> projectConfigsList = entry.getValue();
+            List<StatusVO> statuses = new ArrayList<>();
+            projectConfigsList.forEach(projectConfig -> {
+                Long schemeId = projectConfig.getSchemeId();
+                //忽略当前修改的状态机方案，要判断当前项目下其他方案下的状态机是否有当前要判断的状态
+                if (!schemeId.equals(ignoreSchemeId)) {
+                    schemeConfigsMap.get(schemeId).forEach(schemeConfig -> {
+                        Long smId = schemeConfig.getStateMachineId();
+                        //忽略当前修改的状态机，要判断当前项目下其他状态机是否有当前要判断的状态
+                        if (!smId.equals(ignoreStateMachineId)) {
+                            List<StatusVO> statusVOS = stateMachineWithStatusVOSMap.get(smId);
+                            statuses.addAll(statusVOS);
+                        }
+                    });
+                }
+            });
+            List<Long> statusIds = statuses.stream().map(StatusVO::getId).distinct().collect(Collectors.toList());
+            //取当前项目真正减少的状态
+            List<Long> confirmDeleteStatusIds = deleteStatusIds.stream().filter(x -> !statusIds.contains(x)).collect(toList());
+            //取当前项目真正增加的状态
+            List<Long> confirmAddStatusIds = addStatusIds.stream().filter(x -> !statusIds.contains(x)).collect(toList());
+
+            if (!confirmDeleteStatusIds.isEmpty()) {
+                RemoveStatusWithProject removeStatusWithProject = new RemoveStatusWithProject();
+                removeStatusWithProject.setProjectId(projectId);
+                removeStatusWithProject.setDeleteStatusIds(confirmDeleteStatusIds);
+                removeStatusWithProjects.add(removeStatusWithProject);
+            }
+            if (!confirmAddStatusIds.isEmpty()) {
+                AddStatusWithProject addStatusWithProject = new AddStatusWithProject();
+                addStatusWithProject.setProjectId(projectId);
+                addStatusWithProject.setAddStatusIds(confirmAddStatusIds);
+                addStatusWithProjects.add(addStatusWithProject);
+            }
+        });
+        deployStateMachinePayload.setRemoveStatusWithProjects(removeStatusWithProjects);
+        deployStateMachinePayload.setAddStatusWithProjects(addStatusWithProjects);
+        return deployStateMachinePayload;
+    }
+
+
+    private Boolean checkNameUpdate(Long organizationId, Long stateMachineId, String name) {
+        StateMachineDTO stateMachine = new StateMachineDTO();
+        stateMachine.setOrganizationId(organizationId);
+        stateMachine.setName(name);
+        StateMachineDTO res = stateMachineMapper.selectOne(stateMachine);
+        return res != null && !stateMachineId.equals(res.getId());
+    }
+
+
+    private void handleDeployData(Long organizationId, Long stateMachineId) {
+        //删除上一版本的节点
+        StateMachineNodeDTO nodeDeploy = new StateMachineNodeDTO();
+        nodeDeploy.setStateMachineId(stateMachineId);
+        nodeDeploy.setOrganizationId(organizationId);
+        nodeDeployMapper.delete(nodeDeploy);
+        //删除上一版本的转换
+        StateMachineTransformDTO transformDeploy = new StateMachineTransformDTO();
+        transformDeploy.setStateMachineId(stateMachineId);
+        transformDeploy.setOrganizationId(organizationId);
+        transformDeployMapper.delete(transformDeploy);
+        //删除上一版本的配置
+        StateMachineConfigDTO configDeploy = new StateMachineConfigDTO();
+        configDeploy.setStateMachineId(stateMachineId);
+        configDeploy.setOrganizationId(organizationId);
+        configDeployMapper.delete(configDeploy);
+        //写入发布的节点
+        StateMachineNodeDraftDTO node = new StateMachineNodeDraftDTO();
+        node.setStateMachineId(stateMachineId);
+        node.setOrganizationId(organizationId);
+        List<StateMachineNodeDraftDTO> nodes = nodeDraftMapper.select(node);
+        if (nodes != null && !nodes.isEmpty()) {
+            List<StateMachineNodeDTO> nodeDeploys = modelMapper.map(nodes, new TypeToken<List<StateMachineNodeDTO>>() {
+            }.getType());
+            nodeDeploys.forEach(n -> nodeDeployMapper.insert(n));
+        }
+        //写入发布的转换
+        StateMachineTransformDraftDTO transform = new StateMachineTransformDraftDTO();
+        transform.setStateMachineId(stateMachineId);
+        transform.setOrganizationId(organizationId);
+        List<StateMachineTransformDraftDTO> transforms = transformDraftMapper.select(transform);
+        if (transforms != null && !transforms.isEmpty()) {
+            List<StateMachineTransformDTO> transformDeploys = modelMapper.map(transforms, new TypeToken<List<StateMachineTransformDTO>>() {
+            }.getType());
+            transformDeploys.forEach(t -> transformDeployMapper.insert(t));
+        }
+        //写入发布的配置
+        StateMachineConfigDraftDTO config = new StateMachineConfigDraftDTO();
+        config.setStateMachineId(stateMachineId);
+        config.setOrganizationId(organizationId);
+        List<StateMachineConfigDraftDTO> configs = configDraftMapper.select(config);
+        if (configs != null && !configs.isEmpty()) {
+            List<StateMachineConfigDTO> configDeploys = modelMapper.map(configs, new TypeToken<List<StateMachineConfigDTO>>() {
+            }.getType());
+            configDeploys.forEach(c -> configDeployMapper.insert(c));
+        }
+    }
+
+    /**
+     * 处理发布状态机时，节点状态的变化
+     *
+     * @param stateMachineId
+     */
+    private void deployHandleChange(Map<String, List<StatusDTO>> changeMap, Long stateMachineId) {
+        //获取旧节点
+        List<StateMachineNodeDTO> nodeDeploys = nodeDeployMapper.selectByStateMachineId(stateMachineId);
+        Map<Long, StatusDTO> deployMap = nodeDeploys.stream().filter(x -> x.getStatus() != null).collect(Collectors.toMap(StateMachineNodeDTO::getId, StateMachineNodeDTO::getStatus));
+        List<Long> oldIds = nodeDeploys.stream().map(StateMachineNodeDTO::getId).collect(Collectors.toList());
+        //获取新节点
+        List<StateMachineNodeDraftDTO> nodeDrafts = nodeDraftMapper.selectByStateMachineId(stateMachineId);
+        Map<Long, StatusDTO> draftMap = nodeDrafts.stream().filter(x -> x.getStatus() != null).collect(Collectors.toMap(StateMachineNodeDraftDTO::getId, StateMachineNodeDraftDTO::getStatus));
+        List<Long> newIds = nodeDrafts.stream().map(StateMachineNodeDraftDTO::getId).collect(Collectors.toList());
+        //新增的节点
+        List<Long> addIds = new ArrayList<>(newIds);
+        addIds.removeAll(oldIds);
+        List<StatusDTO> addStatuses = new ArrayList<>(addIds.size());
+        addIds.forEach(addId -> addStatuses.add(draftMap.get(addId)));
+        //删除的节点
+        List<Long> deleteIds = new ArrayList<>(oldIds);
+        deleteIds.removeAll(newIds);
+        List<StatusDTO> deleteStatuses = new ArrayList<>(deleteIds.size());
+        deleteIds.forEach(deleteId -> deleteStatuses.add(deployMap.get(deleteId)));
+
+        changeMap.put("addList", addStatuses);
+        changeMap.put("deleteList", deleteStatuses);
+    }
+
+    /**
+     * 处理发布状态机时，
+     *
+     * @param stateMachineId
+     */
+    private Boolean deployCheckDelete(Long organizationId, Map<String, List<StatusDTO>> changeMap, Long stateMachineId) {
+        List<StatusDTO> deleteStatuses = changeMap.get("deleteList");
+        for (StatusDTO status : deleteStatuses) {
+            Map<String, Object> result = nodeService.checkDelete(organizationId, stateMachineId, status.getId());
+            Boolean canDelete = (Boolean) result.get("canDelete");
+            if (!canDelete) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public StateMachineVO queryStateMachineWithConfigById(Long organizationId, Long stateMachineId, Boolean isDraft) {
+        StateMachineDTO stateMachine = stateMachineMapper.queryById(organizationId, stateMachineId);
+        if (stateMachine == null) {
+            throw new CommonException("error.stateMachine.notFound");
+        }
+
+        //查询草稿时，若为活跃状态，则更新为草稿
+        if (isDraft) {
+            updateStateMachineStatus(organizationId, stateMachineId);
+        }
+
+        List<StateMachineNodeVO> nodeVOS = nodeService.queryByStateMachineId(organizationId, stateMachineId, isDraft);
+        List<StateMachineTransformVO> transformVOS;
+        if (isDraft) {
+            //获取转换
+            StateMachineTransformDraftDTO select = new StateMachineTransformDraftDTO();
+            select.setStateMachineId(stateMachineId);
+            select.setOrganizationId(organizationId);
+            List<StateMachineTransformDraftDTO> transforms = transformDraftMapper.select(select);
+            transformVOS = modelMapper.map(transforms, new TypeToken<List<StateMachineTransformVO>>() {
+            }.getType());
+        } else {
+            StateMachineTransformDTO select = new StateMachineTransformDTO();
+            select.setStateMachineId(stateMachineId);
+            select.setOrganizationId(organizationId);
+            List<StateMachineTransformDTO> transforms = transformDeployMapper.select(select);
+            transformVOS = modelMapper.map(transforms, new TypeToken<List<StateMachineTransformVO>>() {
+            }.getType());
+        }
+
+        StateMachineVO stateMachineVO = modelMapper.map(stateMachine, StateMachineVO.class);
+        stateMachineVO.setNodeVOS(nodeVOS);
+        stateMachineVO.setTransformVOS(transformVOS);
+
+        //获取转换中的配置
+        for (StateMachineTransformVO transformVO : transformVOS) {
+            List<StateMachineConfigVO> configVOS;
+            if (isDraft) {
+                StateMachineConfigDraftDTO config = new StateMachineConfigDraftDTO();
+                config.setTransformId(transformVO.getId());
+                config.setOrganizationId(organizationId);
+                List<StateMachineConfigDraftDTO> configs = configDraftMapper.select(config);
+                configVOS = modelMapper.map(configs, new TypeToken<List<StateMachineConfigVO>>() {
+                }.getType());
+            } else {
+                StateMachineConfigDTO config = new StateMachineConfigDTO();
+                config.setTransformId(transformVO.getId());
+                config.setOrganizationId(organizationId);
+                List<StateMachineConfigDTO> configs = configDeployMapper.select(config);
+                configVOS = modelMapper.map(configs, new TypeToken<List<StateMachineConfigVO>>() {
+                }.getType());
+            }
+            if (configVOS != null && !configVOS.isEmpty()) {
+                Map<String, List<StateMachineConfigVO>> map = configVOS.stream().collect(Collectors.groupingBy(StateMachineConfigVO::getType));
+                transformVO.setConditions(Optional.ofNullable(map.get(ConfigType.CONDITION)).orElse(Collections.emptyList()));
+                transformVO.setValidators(Optional.ofNullable(map.get(ConfigType.VALIDATOR)).orElse(Collections.emptyList()));
+                transformVO.setTriggers(Optional.ofNullable(map.get(ConfigType.TRIGGER)).orElse(Collections.emptyList()));
+                transformVO.setPostpositions(Optional.ofNullable(map.get(ConfigType.ACTION)).orElse(Collections.emptyList()));
+            }
+        }
+        return stateMachineVO;
+    }
+
+    @Override
+    public StateMachineDTO queryDeployForInstance(Long organizationId, Long stateMachineId) {
+        StateMachineDTO stateMachine = stateMachineMapper.queryById(organizationId, stateMachineId);
+        if (stateMachine == null) {
+            throw new CommonException("error.stateMachine.notExist");
+        }
+        if (stateMachine.getStatus().equals(StateMachineStatus.CREATE)) {
+            throw new CommonException("error.buildInstance.stateMachine.inActive");
+        }
+        //获取原件节点
+        List<StateMachineNodeDTO> nodeDeploys = nodeDeployMapper.selectByStateMachineId(stateMachineId);
+        if (nodeDeploys != null && !nodeDeploys.isEmpty()) {
+            List<StateMachineNodeDTO> nodes = modelMapper.map(nodeDeploys, new TypeToken<List<StateMachineNodeDTO>>() {
+            }.getType());
+            stateMachine.setNodes(nodes);
+        }
+        //获取原件转换
+        StateMachineTransformDTO transformDeploy = new StateMachineTransformDTO();
+        transformDeploy.setStateMachineId(stateMachineId);
+        List<StateMachineTransformDTO> transformDeploys = transformDeployMapper.select(transformDeploy);
+        if (transformDeploys != null && !transformDeploys.isEmpty()) {
+            List<StateMachineTransformDTO> transforms = modelMapper.map(transformDeploys, new TypeToken<List<StateMachineTransformDTO>>() {
+            }.getType());
+            stateMachine.setTransforms(transforms);
+        }
+        return stateMachine;
+    }
+
+    @Override
+    public StateMachineVO deleteDraft(Long organizationId, Long stateMachineId) {
+        StateMachineDTO stateMachine = stateMachineMapper.queryById(organizationId, stateMachineId);
+        if (stateMachine == null) {
+            throw new CommonException("error.stateMachine.deleteDraft.noFound");
+        }
+        stateMachine.setStatus(StateMachineStatus.ACTIVE);
+        Criteria criteria = new Criteria();
+        criteria.update(STATUS);
+        int stateMachineDeploy = stateMachineMapper.updateByPrimaryKeyOptions(stateMachine, criteria);
+        if (stateMachineDeploy != 1) {
+            throw new CommonException("error.stateMachine.deleteDraft");
+        }
+        //删除草稿节点
+        StateMachineNodeDraftDTO node = new StateMachineNodeDraftDTO();
+        node.setStateMachineId(stateMachineId);
+        node.setOrganizationId(organizationId);
+        nodeDraftMapper.delete(node);
+        //删除草稿转换
+        StateMachineTransformDraftDTO transform = new StateMachineTransformDraftDTO();
+        transform.setStateMachineId(stateMachineId);
+        transform.setOrganizationId(organizationId);
+        transformDraftMapper.delete(transform);
+        //删除草稿配置
+        StateMachineConfigDraftDTO config = new StateMachineConfigDraftDTO();
+        config.setStateMachineId(stateMachineId);
+        config.setOrganizationId(organizationId);
+        configDraftMapper.delete(config);
+        //写入活跃的节点到草稿中，id一致
+        deleteDraftHandleNode(organizationId, stateMachineId);
+
+        //写入活跃的转换到草稿中，id一致
+        deleteDraftHandleTransform(organizationId, stateMachineId);
+
+        //写入活跃的配置到草稿中，id一致
+        deleteDraftHandleConfig(stateMachineId);
+
+        return queryStateMachineWithConfigById(organizationId, stateMachine.getId(), false);
+    }
+
+    private void deleteDraftHandleNode(Long organizationId, Long stateMachineId) {
+        StateMachineNodeDTO nodeDeploy = new StateMachineNodeDTO();
+        nodeDeploy.setStateMachineId(stateMachineId);
+        nodeDeploy.setOrganizationId(organizationId);
+        List<StateMachineNodeDTO> nodeDeploys = nodeDeployMapper.select(nodeDeploy);
+        if (nodeDeploys != null && !nodeDeploys.isEmpty()) {
+            List<StateMachineNodeDraftDTO> nodes = modelMapper.map(nodeDeploys, new TypeToken<List<StateMachineNodeDraftDTO>>() {
+            }.getType());
+            for (StateMachineNodeDraftDTO insertNode : nodes) {
+                int nodeInsert = nodeDraftMapper.insert(insertNode);
+                if (nodeInsert != 1) {
+                    throw new CommonException(ERROR_STATEMACHINENODE_CREATE);
+                }
+            }
+        }
+    }
+
+    private void deleteDraftHandleTransform(Long organizationId, Long stateMachineId) {
+        StateMachineTransformDTO transformDeploy = new StateMachineTransformDTO();
+        transformDeploy.setStateMachineId(stateMachineId);
+        transformDeploy.setOrganizationId(organizationId);
+        List<StateMachineTransformDTO> transformDeploys = transformDeployMapper.select(transformDeploy);
+        if (transformDeploys != null && !transformDeploys.isEmpty()) {
+            List<StateMachineTransformDraftDTO> transformInserts = modelMapper.map(transformDeploys, new TypeToken<List<StateMachineTransformDraftDTO>>() {
+            }.getType());
+            for (StateMachineTransformDraftDTO insertTransform : transformInserts) {
+                int transformInsert = transformDraftMapper.insert(insertTransform);
+                if (transformInsert != 1) {
+                    throw new CommonException("error.stateMachineTransform.create");
+                }
+            }
+        }
+    }
+
+    private void deleteDraftHandleConfig(Long stateMachineId) {
+        StateMachineConfigDTO configDeploy = new StateMachineConfigDTO();
+        configDeploy.setStateMachineId(stateMachineId);
+        List<StateMachineConfigDTO> configDeploys = configDeployMapper.select(configDeploy);
+        if (configDeploys != null && !configDeploys.isEmpty()) {
+            List<StateMachineConfigDraftDTO> configs = modelMapper.map(configDeploys, new TypeToken<List<StateMachineConfigDraftDTO>>() {
+            }.getType());
+            for (StateMachineConfigDraftDTO insertConfig : configs) {
+                int configInsert = configDraftMapper.insert(insertConfig);
+                if (configInsert != 1) {
+                    throw new CommonException("error.stateMachineCreate.create");
+                }
+            }
+        }
+    }
+
+    @Override
+    public StateMachineVO queryDefaultStateMachine(Long organizationId) {
+        StateMachineDTO defaultStateMachine = new StateMachineDTO();
+        defaultStateMachine.setOrganizationId(organizationId);
+        defaultStateMachine.setDefault(true);
+        StateMachineDTO stateMachine = stateMachineMapper.selectOne(defaultStateMachine);
+        return stateMachine != null ? modelMapper.map(stateMachine, StateMachineVO.class) : null;
+    }
+
+    @Override
+    public List<StateMachineVO> queryAll(Long organizationId) {
+        StateMachineDTO stateMachine = new StateMachineDTO();
+        stateMachine.setOrganizationId(organizationId);
+        List<StateMachineDTO> list = stateMachineMapper.select(stateMachine);
+        return modelMapper.map(list, new TypeToken<List<StateMachineVO>>() {
+        }.getType());
+    }
+
+    @Override
+    public void updateStateMachineStatus(Long organizationId, Long stateMachineId) {
+        if (stateMachineId == null) {
+            throw new CommonException("error.updateStateMachineStatus.stateMachineId.notNull");
+        }
+        StateMachineDTO stateMachine = stateMachineMapper.queryById(organizationId, stateMachineId);
+        if (stateMachine != null && stateMachine.getStatus().equals(StateMachineStatus.ACTIVE)) {
+            stateMachine.setStatus(StateMachineStatus.DRAFT);
+            Criteria criteria = new Criteria();
+            criteria.update(STATUS);
+            int stateMachineUpdate = stateMachineMapper.updateByPrimaryKeyOptions(stateMachine, criteria);
+            if (stateMachineUpdate != 1) {
+                throw new CommonException("error.stateMachine.update");
+            }
+        }
+    }
+
+    @Override
+    public Boolean checkName(Long organizationId, String name) {
+        StateMachineDTO stateMachine = new StateMachineDTO();
+        stateMachine.setOrganizationId(organizationId);
+        stateMachine.setName(name);
+        StateMachineDTO res = stateMachineMapper.selectOne(stateMachine);
+        return res != null;
+    }
+
+    @Override
+    public Boolean activeStateMachines(Long organizationId, List<Long> stateMachineIds) {
+        if (!stateMachineIds.isEmpty()) {
+            List<StateMachineDTO> stateMachines = stateMachineMapper.queryByIds(organizationId, stateMachineIds);
+            for (StateMachineDTO stateMachine : stateMachines) {
+                //若是新建状态机，则发布变成活跃
+                if (stateMachine.getStatus().equals(StateMachineStatus.CREATE)) {
+                    deploy(organizationId, stateMachine.getId(), false);
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean notActiveStateMachines(Long organizationId, List<Long> stateMachineIds) {
+        if (!stateMachineIds.isEmpty()) {
+            List<StateMachineDTO> stateMachines = stateMachineMapper.queryByIds(organizationId, stateMachineIds);
+            for (StateMachineDTO stateMachine : stateMachines) {
+                if (stateMachine.getId() == null) {
+                    throw new CommonException("error.stateMachineId.null");
+                }
+                //更新状态机状态为create
+                Long stateMachineId = stateMachine.getId();
+                stateMachine.setStatus(StateMachineStatus.CREATE);
+                Criteria criteria = new Criteria();
+                criteria.update(STATUS);
+                stateMachineMapper.updateByPrimaryKeyOptions(stateMachine, criteria);
+                //删除发布节点
+                StateMachineNodeDTO node = new StateMachineNodeDTO();
+                node.setStateMachineId(stateMachineId);
+                node.setOrganizationId(organizationId);
+                nodeDeployMapper.delete(node);
+                //删除发布转换
+                StateMachineTransformDTO transform = new StateMachineTransformDTO();
+                transform.setStateMachineId(stateMachineId);
+                transform.setOrganizationId(organizationId);
+                transformDeployMapper.delete(transform);
+                //删除发布配置
+                StateMachineConfigDTO config = new StateMachineConfigDTO();
+                config.setStateMachineId(stateMachineId);
+                config.setOrganizationId(organizationId);
+                configDeployMapper.delete(config);
+                //清理状态机实例
+                instanceCache.cleanStateMachine(stateMachineId);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public List<StateMachineWithStatusVO> queryAllWithStatus(Long organizationId) {
+        //查询出所有状态机，新建的查草稿，活跃的查发布
+        StateMachineDTO select = new StateMachineDTO();
+        select.setOrganizationId(organizationId);
+        List<StateMachineDTO> stateMachines = stateMachineMapper.select(select);
+        List<StateMachineWithStatusVO> stateMachineWithStatusVOS = modelMapper.map(stateMachines, new TypeToken<List<StateMachineWithStatusVO>>() {
+        }.getType());
+        //查询出所有状态
+        List<StatusVO> statusVOS = statusService.queryAllStatus(organizationId);
+        Map<Long, StatusVO> statusMap = statusVOS.stream().collect(Collectors.toMap(StatusVO::getId, x -> x));
+        stateMachineWithStatusVOS.forEach(stateMachine -> {
+            List<StatusVO> status = new ArrayList<>();
+            if (stateMachine.getStatus().equals(StateMachineStatus.CREATE)) {
+                List<StateMachineNodeDraftDTO> nodeDrafts = nodeDraftMapper.selectByStateMachineId(stateMachine.getId());
+                nodeDrafts.stream().filter(x -> !x.getType().equals(NodeType.START)).forEach(nodeDraft -> {
+                    StatusVO statusVO = statusMap.get(nodeDraft.getStatusId());
+                    if (statusVO != null) {
+                        status.add(statusVO);
+                    } else {
+                        logger.warn("warn nodeDraftId:{} notFound", nodeDraft.getId());
+                    }
+                });
+            } else {
+                List<StateMachineNodeDTO> nodeDeploys = nodeDeployMapper.selectByStateMachineId(stateMachine.getId());
+                nodeDeploys.stream().filter(x -> !x.getType().equals(NodeType.START)).forEach(nodeDeploy -> {
+                    StatusVO statusVO = statusMap.get(nodeDeploy.getStatusId());
+                    if (statusVO != null) {
+                        status.add(statusVO);
+                    } else {
+                        logger.warn("warn nodeDraftId:{} notFound", nodeDeploy.getId());
+                    }
+                });
+            }
+            stateMachine.setStatusVOS(status);
+        });
+        return stateMachineWithStatusVOS;
+    }
+
+    @Override
+    public List<StateMachineVO> queryByOrgId(Long organizationId) {
+        StateMachineDTO select = new StateMachineDTO();
+        select.setOrganizationId(organizationId);
+        List<StateMachineDTO> stateMachines = stateMachineMapper.select(select);
+        return modelMapper.map(stateMachines, new TypeToken<List<StateMachineVO>>() {
+        }.getType());
+    }
+
+    @Override
     public Map<Long, Long> checkStateMachineSchemeChange(Long organizationId, StateMachineSchemeDeployCheckIssue deployCheckIssue) {
-        List<ProjectConfig> projectConfigs = deployCheckIssue.getProjectConfigs();
+        List<ProjectConfigDTO> projectConfigs = deployCheckIssue.getProjectConfigs();
         List<Long> issueTypeIds = deployCheckIssue.getIssueTypeIds();
         Map<Long, Long> result = new HashMap<>(issueTypeIds.size());
         if (!issueTypeIds.isEmpty()) {
@@ -352,81 +868,4 @@ public class StateMachineServiceImpl implements StateMachineService {
 
         return result;
     }
-
-    @Condition(code = "just_reporter", name = "仅允许报告人", description = "只有该报告人才能执行转换")
-    public Boolean justReporter(Long instanceId, StateMachineConfigDTO configDTO) {
-        IssueDTO issue = issueMapper.selectByPrimaryKey(instanceId);
-        Long currentUserId = DetailsHelper.getUserDetails().getUserId();
-        return issue != null && issue.getReporterId() != null && issue.getReporterId().equals(currentUserId);
-    }
-
-    @Condition(code = "just_admin", name = "仅允许管理员", description = "只有该管理员才能执行转换")
-    public Boolean justAdmin(Long instanceId, StateMachineConfigDTO configDTO) {
-        //todo
-        return true;
-    }
-
-    @Validator(code = "permission_validator", name = "权限校验", description = "校验操作的用户权限")
-    public Boolean permissionValidator(Long instanceId, StateMachineConfigDTO configDTO) {
-        //todo
-        return true;
-    }
-
-    @Validator(code = "time_validator", name = "时间校验", description = "根据时间校验权限")
-    public Boolean timeValidator(Long instanceId, StateMachineConfigDTO configDTO) {
-        //todo
-        return true;
-    }
-
-    @PostAction(code = "assign_current_user", name = "分派给当前用户", description = "分派给当前用户")
-    public void assignCurrentUser(Long instanceId, StateMachineConfigDTO configDTO) {
-        //todo
-    }
-
-    @PostAction(code = "create_change_log", name = "创建日志", description = "创建日志")
-    public void createChangeLog(Long instanceId, StateMachineConfigDTO configDTO) {
-        //todo
-    }
-
-    @UpdateStatus(code = UPDATE_STATUS)
-    public void updateStatus(Long instanceId, Long targetStatusId, String input) {
-        IssueDTO issue = issueMapper.selectByPrimaryKey(instanceId);
-        if (issue == null) {
-            throw new CommonException("error.updateStatus.instanceId.notFound");
-        }
-        if (targetStatusId == null) {
-            throw new CommonException("error.updateStatus.targetStateId.null");
-        }
-        if (!issue.getStatusId().equals(targetStatusId)) {
-            IssueUpdateVO issueUpdateVO = issueAssembler.toTarget(issue, IssueUpdateVO.class);
-            issueUpdateVO.setStatusId(targetStatusId);
-            issueService.handleUpdateIssue(issueUpdateVO, Collections.singletonList(STATUS_ID), issue.getProjectId());
-            logger.info("状态更新成功");
-        }
-    }
-
-    @UpdateStatus(code = UPDATE_STATUS_MOVE)
-    public void updateStatusMove(Long instanceId, Long targetStatusId, String input) {
-        IssueDTO issue = issueMapper.selectByPrimaryKey(instanceId);
-        if (issue == null) {
-            throw new CommonException("error.updateStatus.instanceId.notFound");
-        }
-        if (targetStatusId == null) {
-            throw new CommonException("error.updateStatus.targetStateId.null");
-        }
-        IssueUpdateVO issueUpdateVO = issueAssembler.toTarget(issue, IssueUpdateVO.class);
-        if (input != null && !Objects.equals(input, "null")) {
-            JSONObject jsonObject = JSON.parseObject(input, JSONObject.class);
-            issueUpdateVO.setRank(jsonObject.getString(RANK));
-        }
-        if (!issue.getStatusId().equals(targetStatusId)) {
-            issueUpdateVO.setStatusId(targetStatusId);
-            issueUpdateVO.setStayDate(new Date());
-            issueService.handleUpdateIssue(issueUpdateVO, Arrays.asList(STATUS_ID, RANK, STAY_DATE), issue.getProjectId());
-            logger.info("状态更新成功");
-        } else {
-            issueService.handleUpdateIssue(issueUpdateVO, Collections.singletonList(RANK), issue.getProjectId());
-        }
-    }
-
 }

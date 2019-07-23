@@ -7,7 +7,7 @@ import java.util.List;
 import io.choerodon.agile.api.vo.IssueTypeVO;
 import io.choerodon.agile.api.vo.PriorityVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 
 /**
  * @author dinghuang123@gmail.com

@@ -9,7 +9,7 @@ import io.choerodon.agile.api.vo.event.OrganizationCreateEventPayload
 import io.choerodon.agile.api.vo.event.ProjectCreateAgilePayload
 import io.choerodon.agile.api.vo.event.ProjectEvent
 import io.choerodon.agile.api.vo.event.StatusPayload
-import io.choerodon.agile.infra.common.utils.SiteMsgUtil
+import io.choerodon.agile.infra.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.feign.FileFeignClient
 import io.choerodon.agile.infra.mapper.*

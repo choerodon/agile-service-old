@@ -3,11 +3,11 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.BoardFeatureService;
 import io.choerodon.agile.app.service.BoardTeamService;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
-import io.choerodon.agile.infra.common.utils.RankUtil;
+import io.choerodon.agile.infra.utils.ConvertUtil;
+import io.choerodon.agile.infra.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
@@ -43,7 +43,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     @Autowired
     private BoardTeamService boardTeamService;
     @Autowired
-    private UserFeignClient userFeignClient;
+    private IamFeignClient iamFeignClient;
     @Autowired
     private IssueFeignClient issueFeignClient;
 
@@ -194,7 +194,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
         programBoardInfo.setFilterSprintList(modelMapper.map(sprints, new TypeToken<List<SprintVO>>() {
         }.getType()));
         //获取团队信息
-        List<ProjectRelationshipVO> projectRelationships = userFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
+        List<ProjectRelationshipVO> projectRelationships = iamFeignClient.getProjUnderGroup(organizationId, programId, true).getBody();
         List<TeamProjectVO> filterTeamList = new ArrayList<>(projectRelationships.size());
         for (ProjectRelationshipVO rel : projectRelationships) {
             TeamProjectVO teamProjectVO = new TeamProjectVO();

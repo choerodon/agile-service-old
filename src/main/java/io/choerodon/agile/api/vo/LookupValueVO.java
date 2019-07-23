@@ -1,30 +1,22 @@
 package io.choerodon.agile.api.vo;
 
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 敏捷开发code键值
- *
- * @author dinghuang123@gmail.com
- * @since 2018-05-15 09:40:27
+ * Created by HuangFuqiang@choerodon.io on 2018/09/27.
+ * Email: fuqianghuang01@gmail.com
  */
 public class LookupValueVO {
-
-    @ApiModelProperty(value = "快码值")
+    @ApiModelProperty(value = "值编码")
     private String valueCode;
-
-    @ApiModelProperty(value = "快码类型")
+    @ApiModelProperty(value = "类型编码")
     private String typeCode;
-
-    @ApiModelProperty(value = "快码名称")
+    @ApiModelProperty(value = "名称")
     private String name;
-
     @ApiModelProperty(value = "描述")
     private String description;
-
-    @ApiModelProperty(value = "版本号")
+    @ApiModelProperty(value = "乐观锁")
     private Long objectVersionNumber;
 
     public String getValueCode() {
@@ -66,10 +58,4 @@ public class LookupValueVO {
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
     }
-
-    @Override
-    public String toString() {
-        return StringUtil.getToString(this);
-    }
-
 }

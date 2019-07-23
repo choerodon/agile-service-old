@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 
 /**

@@ -7,7 +7,7 @@ import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.PageHelper;
 
 import io.choerodon.agile.api.vo.IssueLinkTypeVO;
-import io.choerodon.agile.infra.common.utils.PageUtil;
+import io.choerodon.agile.infra.utils.PageUtil;
 import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import io.choerodon.agile.infra.mapper.IssueLinkMapper;

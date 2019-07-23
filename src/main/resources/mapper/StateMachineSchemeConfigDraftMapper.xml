@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="io.choerodon.agile.infra.mapper.StateMachineSchemeConfigDraftMapper">
+
+    <select id="selectDefault" resultType="io.choerodon.agile.infra.dataobject.StateMachineSchemeConfigDraftDTO">
+        SELECT
+        smscd.*
+        FROM
+        fd_state_machine_scheme_config_draft smscd
+        WHERE
+        smscd.organization_id = #{organizationId}
+        AND smscd.scheme_id = #{schemeId}
+        AND smscd.is_default = 1
+    </select>
+
+</mapper>

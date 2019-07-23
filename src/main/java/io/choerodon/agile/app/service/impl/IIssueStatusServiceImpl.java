@@ -1,11 +1,9 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.app.service.IIssueStatusService;
-import io.choerodon.agile.infra.common.annotation.DataLog;
-import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
-import io.choerodon.agile.infra.dataobject.IssueStatus;
+import io.choerodon.agile.infra.annotation.DataLog;
+import io.choerodon.agile.infra.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.dataobject.IssueStatusDTO;
-import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;

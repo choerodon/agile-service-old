@@ -17,7 +17,7 @@ import io.choerodon.agile.api.validator.IterativeWorktableValidator;
 import io.choerodon.agile.app.assembler.IterativeWorktableAssembler;
 import io.choerodon.agile.app.service.IterativeWorktableService;
 import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.common.utils.DateUtil;
+import io.choerodon.agile.infra.utils.DateUtil;
 import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
 import io.choerodon.agile.infra.mapper.SprintMapper;
 

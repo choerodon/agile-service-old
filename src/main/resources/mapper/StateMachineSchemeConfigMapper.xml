@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="io.choerodon.agile.infra.mapper.StateMachineSchemeConfigMapper">
+
+    <select id="selectDefault" resultType="io.choerodon.agile.infra.dataobject.StateMachineSchemeConfigDTO">
+        SELECT
+        smsc.*
+        FROM
+        fd_state_machine_scheme_config smsc
+        WHERE
+        smsc.organization_id = #{organizationId}
+        AND smsc.scheme_id = #{schemeId}
+        AND smsc.is_default = 1
+    </select>
+
+    <select id="queryByStateMachineIds" resultType="io.choerodon.agile.infra.dataobject.StateMachineSchemeConfigDTO">
+        SELECT
+        smsc.*
+        FROM
+        fd_state_machine_scheme_config smsc
+        WHERE
+        smsc.organization_id = #{organizationId}
+        AND smsc.state_machine_id IN
+        <foreach item="item" index="index" collection="stateMachineIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryByOrgId" resultType="io.choerodon.agile.infra.dataobject.StateMachineSchemeConfigDTO">
+        SELECT
+        smsc.*
+        FROM
+        fd_state_machine_scheme_config smsc
+        WHERE
+        smsc.organization_id = #{organizationId}
+    </select>
+
+</mapper>

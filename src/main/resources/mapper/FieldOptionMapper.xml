@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.FieldOptionMapper">
+
+    <resultMap id="fieldOptionMap" type="io.choerodon.agile.infra.dataobject.FieldOptionDTO">
+        <id property="id" column="id"/>
+        <id property="fieldId" column="field_id"/>
+        <id property="value" column="value"/>
+        <id property="parentId" column="parent_id"/>
+        <id property="sequence" column="sequence"/>
+        <id property="enabled" column="is_enabled"/>
+        <id property="organizationId" column="organization_id"/>
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="selectByFieldId" resultMap="fieldOptionMap">
+    SELECT * FROM fd_field_option
+    WHERE organization_id = #{organizationId}
+    AND field_id = #{fieldId}
+    order by sequence ASC
+    </select>
+
+    <select id="selectByFieldIds" resultMap="fieldOptionMap">
+        SELECT * FROM fd_field_option
+        WHERE organization_id = #{organizationId}
+        AND field_id IN
+        <foreach collection="fieldIds" item="fieldId" index="index" open="(" close=")" separator=",">
+            #{fieldId}
+        </foreach>
+        order by sequence ASC
+    </select>
+
+    <select id="selectByOptionIds" resultMap="fieldOptionMap">
+        SELECT * FROM fd_field_option
+        WHERE organization_id = #{organizationId}
+        AND id IN
+        <foreach collection="optionIds" item="optionId" index="index" open="(" close=")" separator=",">
+            #{optionId}
+        </foreach>
+    </select>
+
+</mapper>

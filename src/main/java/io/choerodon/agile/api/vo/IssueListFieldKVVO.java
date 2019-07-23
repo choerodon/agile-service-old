@@ -7,7 +7,7 @@ import java.util.Map;
 
 import io.swagger.annotations.ApiModelProperty;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 
 /**
  * Created by WangZhe@choerodon.io on 2019-06-28.

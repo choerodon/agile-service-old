@@ -16,9 +16,9 @@ import springfox.documentation.annotations.ApiIgnore;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.app.service.StateMachineService;
+import io.choerodon.agile.app.service.StateMachineClientService;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
-import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
+import io.choerodon.agile.infra.utils.VerifyUpdateUtil;
 import io.choerodon.agile.infra.dataobject.IssueComponentDetailDTO;
 import com.github.pagehelper.PageInfo;
 import io.choerodon.core.exception.CommonException;
@@ -49,7 +49,7 @@ public class IssueController {
     @Autowired
     private IssueValidator issueValidator;
     @Autowired
-    private StateMachineService stateMachineService;
+    private StateMachineClientService stateMachineClientService;
 
     public IssueController(IssueService issueService) {
         this.issueService = issueService;
@@ -65,7 +65,7 @@ public class IssueController {
                                                @ApiParam(value = "创建issue对象", required = true)
                                                 @RequestBody IssueCreateVO issueCreateVO) {
         issueValidator.verifyCreateData(issueCreateVO, projectId, applyType);
-        return Optional.ofNullable(stateMachineService.createIssue(issueCreateVO, applyType))
+        return Optional.ofNullable(stateMachineClientService.createIssue(issueCreateVO, applyType))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.Issue.createIssue"));
     }
@@ -90,7 +90,7 @@ public class IssueController {
                                                      @ApiParam(value = "创建issue子任务对象", required = true)
                                                       @RequestBody IssueSubCreateVO issueSubCreateVO) {
         issueValidator.verifySubCreateData(issueSubCreateVO, projectId);
-        return Optional.ofNullable(stateMachineService.createSubIssue(issueSubCreateVO))
+        return Optional.ofNullable(stateMachineClientService.createSubIssue(issueSubCreateVO))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
                 .orElseThrow(() -> new CommonException("error.Issue.createSubIssue"));
     }

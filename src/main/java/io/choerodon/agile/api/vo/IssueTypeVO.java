@@ -1,41 +1,42 @@
 package io.choerodon.agile.api.vo;
 
+import com.google.common.base.MoreObjects;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.io.Serializable;
+import javax.validation.constraints.NotNull;
 
 /**
- * Created by HuangFuqiang@choerodon.io on 2018/10/27.
- * Email: fuqianghuang01@gmail.com
+ * @author shinan.chen
+ * @date 2018/8/8
  */
-public class IssueTypeVO implements Serializable {
-
-    @ApiModelProperty(value = "主键id")
+public class IssueTypeVO {
+    @ApiModelProperty(value = "问题类型id")
     private Long id;
-
-    @ApiModelProperty(value = "问题类型名称")
+    @ApiModelProperty(value = "名称")
+    @NotNull(message = "error.name.null")
     private String name;
-
-    @ApiModelProperty(value = "问题类型图标")
+    @ApiModelProperty(value = "图标")
     private String icon;
-
     @ApiModelProperty(value = "描述")
     private String description;
-
     @ApiModelProperty(value = "组织id")
     private Long organizationId;
-
-    @ApiModelProperty(value = "问题类型颜色")
+    @ApiModelProperty(value = "颜色")
     private String colour;
-
-    @ApiModelProperty(value = "问题类型code")
+    @ApiModelProperty(value = "类型编码")
     private String typeCode;
-
     @ApiModelProperty(value = "是否初始化")
     private Boolean initialize;
-
-    @ApiModelProperty(value = "版本号")
+    @ApiModelProperty(value = "乐观锁")
     private Long objectVersionNumber;
+
+    /**
+     * 用于做状态机方案的配置时
+     */
+    @ApiModelProperty(value = "状态机名称")
+    private String stateMachineName;
+    @ApiModelProperty(value = "状态机id")
+    private Long stateMachineId;
 
     public Long getId() {
         return id;
@@ -53,14 +54,6 @@ public class IssueTypeVO implements Serializable {
         this.name = name;
     }
 
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -75,6 +68,30 @@ public class IssueTypeVO implements Serializable {
 
     public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public Long getObjectVersionNumber() {
+        return objectVersionNumber;
+    }
+
+    public void setObjectVersionNumber(Long objectVersionNumber) {
+        this.objectVersionNumber = objectVersionNumber;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
+    public String getStateMachineName() {
+        return stateMachineName;
+    }
+
+    public void setStateMachineName(String stateMachineName) {
+        this.stateMachineName = stateMachineName;
     }
 
     public String getColour() {
@@ -101,11 +118,28 @@ public class IssueTypeVO implements Serializable {
         this.initialize = initialize;
     }
 
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
+    public Long getStateMachineId() {
+        return stateMachineId;
     }
 
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
+    public void setStateMachineId(Long stateMachineId) {
+        this.stateMachineId = stateMachineId;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("name", name)
+                .add("icon", icon)
+                .add("description", description)
+                .add("organizationId", organizationId)
+                .add("colour", colour)
+                .add("typeCode", typeCode)
+                .add("initialize", initialize)
+                .add("objectVersionNumber", objectVersionNumber)
+                .add("stateMachineName", stateMachineName)
+                .add("stateMachineId", stateMachineId)
+                .toString();
     }
 }

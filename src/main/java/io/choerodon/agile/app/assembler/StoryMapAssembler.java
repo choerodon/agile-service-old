@@ -4,7 +4,7 @@ import io.choerodon.agile.api.vo.IssueTypeVO;
 import io.choerodon.agile.api.vo.StatusMapVO;
 import io.choerodon.agile.api.vo.StoryMapStoryVO;
 import io.choerodon.agile.api.vo.StoryMapVersionVO;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.StoryMapStoryDTO;
 import org.springframework.stereotype.Component;
 

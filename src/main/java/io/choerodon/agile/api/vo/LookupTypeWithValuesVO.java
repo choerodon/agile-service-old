@@ -9,20 +9,15 @@ import java.util.List;
  * Email: fuqianghuang01@gmail.com
  */
 public class LookupTypeWithValuesVO {
-
-    @ApiModelProperty(value = "快码类型code")
+    @ApiModelProperty(value = "类型编码")
     private String typeCode;
-
-    @ApiModelProperty(value = "快码类型名称")
+    @ApiModelProperty(value = "名称")
     private String name;
-
     @ApiModelProperty(value = "描述")
     private String description;
-
-    @ApiModelProperty(value = "版本号")
+    @ApiModelProperty(value = "乐观锁")
     private Long objectVersionNumber;
-
-    @ApiModelProperty(value = "快码类型下的快码数据列表")
+    @ApiModelProperty(value = "值列表")
     private List<LookupValueVO> lookupValues;
 
     public String getTypeCode() {

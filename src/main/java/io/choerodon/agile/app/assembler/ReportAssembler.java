@@ -1,8 +1,8 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
+import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.dataobject.ColumnDTO;
 import io.choerodon.agile.infra.dataobject.IssueBurnDownReportDTO;

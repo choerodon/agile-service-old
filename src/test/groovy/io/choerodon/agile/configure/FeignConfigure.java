@@ -6,7 +6,7 @@ import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl;
 import io.choerodon.agile.infra.feign.*;
 import io.choerodon.agile.infra.feign.fallback.IssueFeignClientFallback;
 import io.choerodon.agile.infra.feign.fallback.NotifyFeignClientFallback;
-import io.choerodon.agile.infra.feign.fallback.UserFeignClientFallback;
+import io.choerodon.agile.infra.feign.fallback.IamFeignClientFallback;
 import io.choerodon.asgard.saga.dto.SagaInstanceDTO;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
@@ -40,13 +40,13 @@ import java.util.stream.Collectors;
 public class FeignConfigure {
     @Bean
     @Primary
-    UserFeignClient userFeignClient() {
-        UserFeignClient userFeignClient = Mockito.mock(UserFeignClientFallback.class);
+    IamFeignClient userFeignClient() {
+        IamFeignClient iamFeignClient = Mockito.mock(IamFeignClientFallback.class);
         ProjectVO projectVO = new ProjectVO();
         projectVO.setId(1L);
         projectVO.setName("test");
         projectVO.setOrganizationId(1L);
-        Mockito.when(userFeignClient.queryProject(Matchers.anyLong())).thenReturn(new ResponseEntity<>(projectVO, HttpStatus.OK));
+        Mockito.when(iamFeignClient.queryProject(Matchers.anyLong())).thenReturn(new ResponseEntity<>(projectVO, HttpStatus.OK));
         List<ProjectRelationshipVO> rel = new ArrayList<>(2);
         ProjectRelationshipVO rel1 = new ProjectRelationshipVO();
         rel1.setProjectId(2L);
@@ -66,8 +66,8 @@ public class FeignConfigure {
         rel2.setProjName("敏捷项目2");
         rel.add(rel1);
         rel.add(rel2);
-        Mockito.when(userFeignClient.getProjUnderGroup(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(new ResponseEntity<>(rel, HttpStatus.OK));
-        return userFeignClient;
+        Mockito.when(iamFeignClient.getProjUnderGroup(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(new ResponseEntity<>(rel, HttpStatus.OK));
+        return iamFeignClient;
     }
 
     @Bean

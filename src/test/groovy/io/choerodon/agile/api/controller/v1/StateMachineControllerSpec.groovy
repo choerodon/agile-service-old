@@ -5,7 +5,7 @@ import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.IssueCreateVO
 import io.choerodon.agile.api.vo.IssueVO
 import io.choerodon.agile.api.vo.ProjectVO
-import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
+import io.choerodon.agile.app.service.impl.StateMachineClientServiceImpl
 import io.choerodon.agile.api.vo.event.ProjectConfig
 import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue
 import io.choerodon.agile.infra.dataobject.UserDTO
@@ -41,7 +41,7 @@ class StateMachineControllerSpec extends Specification {
     @Autowired
     TestRestTemplate restTemplate
     @Autowired
-    StateMachineServiceImpl stateMachineService
+    StateMachineClientServiceImpl stateMachineService
     @Autowired
     IssueMapper issueMapper
     @Autowired

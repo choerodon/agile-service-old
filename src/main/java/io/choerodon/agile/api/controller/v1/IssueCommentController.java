@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueCommentValidator;
 import io.choerodon.agile.app.service.IssueCommentService;
-import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
+import io.choerodon.agile.infra.utils.VerifyUpdateUtil;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.exception.CommonException;

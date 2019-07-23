@@ -17,9 +17,9 @@ import io.choerodon.agile.api.vo.SprintUpdateVO
 import io.choerodon.agile.api.vo.TimeZoneWorkCalendarRefDetailVO
 import io.choerodon.agile.api.vo.WorkCalendarRefVO
 import io.choerodon.agile.app.eventhandler.AgileEventHandler
-import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
+import io.choerodon.agile.app.service.impl.StateMachineClientServiceImpl
 import io.choerodon.agile.app.service.UserService
-import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
+import io.choerodon.agile.infra.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.dataobject.SprintDTO
 import io.choerodon.agile.infra.mapper.DataLogMapper
 import io.choerodon.agile.infra.mapper.IssueMapper
@@ -67,7 +67,7 @@ class SprintControllerSpec extends Specification {
     AgileEventHandler agileEventHandler
 
     @Autowired
-    StateMachineServiceImpl stateMachineService
+    StateMachineClientServiceImpl stateMachineService
 
     @Autowired
     IssueMapper issueMapper

@@ -6,12 +6,12 @@ import io.choerodon.agile.api.validator.BoardValidator;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.app.service.*;
-import io.choerodon.agile.infra.common.annotation.DataLog;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.common.utils.DateUtil;
-import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.common.utils.SendMsgUtil;
+import io.choerodon.agile.infra.annotation.DataLog;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
+import io.choerodon.agile.infra.utils.DateUtil;
+import io.choerodon.agile.infra.utils.RankUtil;
+import io.choerodon.agile.infra.utils.RedisUtil;
+import io.choerodon.agile.infra.utils.SendMsgUtil;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.*;
@@ -91,7 +91,7 @@ public class BoardServiceImpl implements BoardService {
     private IssueFeignClient issueFeignClient;
 
     @Autowired
-    private StateMachineService stateMachineService;
+    private StateMachineClientService stateMachineClientService;
 
     @Autowired
     private SprintMapper sprintMapper;
@@ -489,10 +489,10 @@ public class BoardServiceImpl implements BoardService {
     public IssueMoveVO move(Long projectId, Long issueId, Long transformId, IssueMoveVO issueMoveVO, Boolean isDemo) {
         //执行状态机转换
         if (isDemo) {
-            stateMachineService.executeTransformForDemo(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
+            stateMachineClientService.executeTransformForDemo(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
                     SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveVO))));
         } else {
-            stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
+            stateMachineClientService.executeTransform(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
                     SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveVO))));
         }
         IssueDTO issueDTO = issueMapper.selectByPrimaryKey(issueId);
@@ -504,7 +504,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public FeatureMoveVO moveByProgram(Long projectId, Long issueId, Long transformId, FeatureMoveVO featureMoveVO) {
         IssueDTO issueDTO = issueMapper.selectByPrimaryKey(issueId);
-        stateMachineService.executeTransform(projectId, issueId, transformId, featureMoveVO.getObjectVersionNumber(),
+        stateMachineClientService.executeTransform(projectId, issueId, transformId, featureMoveVO.getObjectVersionNumber(),
                 SchemeApplyType.PROGRAM, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleFeatureMoveRank(projectId, issueDTO))));
         issueDTO = issueMapper.selectByPrimaryKey(issueId);
         // deal pi of feature

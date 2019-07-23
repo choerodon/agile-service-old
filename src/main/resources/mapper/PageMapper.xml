@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.PageMapper">
+
+    <resultMap id="pageMap" type="io.choerodon.agile.infra.dataobject.PageDTO">
+        <id property="id" column="id"/>
+        <id property="name" column="name"/>
+        <id property="description" column="description"/>
+        <id property="schemeCode" column="scheme_code"/>
+        <id property="schemeName" column="scheme_name"/>
+        <id property="pageCode" column="page_code"/>
+        <id property="organizationId" column="organization_id"/>
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="fulltextSearch" resultMap="pageMap">
+        SELECT p.*,
+        os.name AS scheme_name
+        FROM fd_page p
+        LEFT JOIN fd_object_scheme os ON p.scheme_code = os.scheme_code
+        WHERE (p.is_system = 1 OR p.organization_id = #{organizationId})
+        <if test="searchVO.name != null">
+            AND p.name LIKE concat('%',#{searchVO.name},'%')
+        </if>
+        <if test="searchVO.description != null">
+            AND p.description LIKE concat('%',#{searchVO.description},'%')
+        </if>
+        <if test="searchVO.schemeCode != null">
+            AND p.scheme_code = #{searchVO.schemeCode}
+        </if>
+        <if test="searchVO.pageCode != null">
+            AND p.page_code = #{searchVO.pageCode}
+        </if>
+        <if test="searchVO.param != null">
+            AND ( p.name LIKE concat('%',#{searchVO.param},'%')
+            OR p.description LIKE concat('%',#{searchVO.param},'%')
+            )
+        </if>
+    </select>
+
+</mapper>

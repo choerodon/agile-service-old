@@ -11,15 +11,16 @@ import io.choerodon.agile.app.service.SprintService;
 import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
 import io.choerodon.agile.infra.dataobject.BatchRemovePiDTO;
 import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
-import io.choerodon.agile.infra.common.utils.*;
+import io.choerodon.agile.infra.utils.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
 import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 
 import com.github.pagehelper.PageInfo;
 
+import io.choerodon.agile.infra.utils.*;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -76,7 +77,7 @@ public class PiServiceImpl implements PiService {
     private PiValidator piValidator;
 
     @Autowired
-    private UserFeignClient userFeignClient;
+    private IamFeignClient iamFeignClient;
 
     @Autowired
     private SprintService sprintService;
@@ -327,7 +328,7 @@ public class PiServiceImpl implements PiService {
         sprintDTO.setProjectId(programId);
         sprintDTO.setPiId(piId);
         List<SprintDTO> sprintDTOList = sprintMapper.select(sprintDTO);
-        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        List<ProjectRelationshipVO> projectRelationshipVOList = iamFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         for (ProjectRelationshipVO projectRelationshipVO : projectRelationshipVOList) {
             Long projectId = projectRelationshipVO.getProjectId();
             for (SprintDTO sprint : sprintDTOList) {
@@ -424,7 +425,7 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public void completeProjectsSprints(Long programId, Long piId, Boolean onlySelectEnable) {
-        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, onlySelectEnable).getBody();
+        List<ProjectRelationshipVO> projectRelationshipVOList = iamFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, onlySelectEnable).getBody();
         if (projectRelationshipVOList == null || projectRelationshipVOList.isEmpty()) {
             return;
         }
@@ -445,7 +446,7 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public void completeSprintsWithSelect(Long programId, Long piId, Long nextPiId, Long artId) {
-        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        List<ProjectRelationshipVO> projectRelationshipVOList = iamFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         if (projectRelationshipVOList == null || projectRelationshipVOList.isEmpty()) {
             return;
         }

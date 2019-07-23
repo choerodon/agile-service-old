@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="io.choerodon.agile.infra.mapper.ProjectConfigMapper">
+    <select id="queryByProjectId" resultType="io.choerodon.agile.infra.dataobject.ProjectConfigDTO">
+        SELECT *
+        FROM fd_project_config
+        WHERE project_id = #{projectId}
+    </select>
+
+    <select id="queryBySchemeIds" resultType="io.choerodon.agile.infra.dataobject.ProjectConfigDTO">
+        SELECT *
+        FROM fd_project_config
+        WHERE scheme_type = #{schemeType}
+        <if test="schemeIds != null and schemeIds.size()>0">
+            AND scheme_id IN
+            <foreach item="item" index="index" collection="schemeIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="handleRemoveStatus" resultType="io.choerodon.agile.infra.dataobject.ProjectConfigDTO">
+        SELECT *
+        FROM fd_project_config
+        WHERE scheme_type = #{schemeType}
+        AND project_id IN(
+        SELECT pc.project_id
+        FROM fd_project_config pc
+        WHERE pc.scheme_type = #{schemeType}
+        <if test="schemeIds != null and schemeIds.size()>0">
+            AND pc.scheme_id IN
+            <foreach item="item" index="index" collection="schemeIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        )
+    </select>
+
+    <select id="queryBySchemeTypeAndApplyType" resultType="io.choerodon.agile.infra.dataobject.ProjectConfigDTO">
+        SELECT *
+        FROM fd_project_config
+        WHERE project_id = #{projectId}
+        AND scheme_type = #{schemeType}
+        AND apply_type = #{applyType}
+    </select>
+
+    <select id="queryByProjectIds" resultType="io.choerodon.agile.infra.dataobject.ProjectConfigDTO">
+        SELECT *
+        FROM fd_project_config
+        WHERE 1 = 1
+        <if test="projectIds != null and projectIds.size()>0">
+            AND project_id IN
+            <foreach item="item" index="index" collection="projectIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="queryConfigsBySchemeId" resultType="io.choerodon.agile.infra.dataobject.ProjectConfigDTO">
+        SELECT *
+        FROM fd_project_config
+        WHERE scheme_id = #{schemeId}
+        AND scheme_type = #{schemeType}
+    </select>
+
+</mapper>
