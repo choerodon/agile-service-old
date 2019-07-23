@@ -47,6 +47,7 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
         projectInfoDTO.setIssueMaxNum(0L);
         projectInfoDTO.setProjectCode(projectEvent.getProjectCode());
         projectInfoDTO.setProjectId(projectEvent.getProjectId());
+        projectInfoDTO.setFeedbackMaxNum(0L);
         int result = projectInfoMapper.insert(projectInfoDTO);
         if (result != 1) {
             throw new CommonException("error.projectInfo.initializationProjectInfo");
