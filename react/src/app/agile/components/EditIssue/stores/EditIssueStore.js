@@ -1,11 +1,4 @@
-import axios from 'axios';
-import {
-  observable, action, computed, toJS, reaction,
-} from 'mobx';
-import { store, stores } from '@choerodon/boot';
-
-const { AppState } = stores;
-
+import { observable, action, computed } from 'mobx';
 
 class EditIssueStore {
   // issue
@@ -42,7 +35,7 @@ class EditIssueStore {
 
   @observable linkIssues = [];
 
-  @observable branches = {};
+  @observable branch = {};
 
   @action setIssueTypes(issueTypes) {
     this.issueTypes = issueTypes;
@@ -88,16 +81,16 @@ class EditIssueStore {
     this.branches = data;
   }
 
-  @computed get getBranches() {
-    return this.branches;
+  @computed get getBranch() {
+    return this.branch;
   }
 
-  @action initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branches) {
+  @action initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branch) {
     this.doc = doc;
     this.workLogs = workLogs;
     this.dataLogs = dataLogs;
     this.linkIssues = linkIssues || [];
-    this.branches = branches || [];
+    this.branch = branch || {};
   }
 }
 export default new EditIssueStore();

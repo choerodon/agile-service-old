@@ -18,7 +18,6 @@ import TransformSubIssue from '../TransformSubIssue';
 import TransformFromSubIssue from '../TransformFromSubIssue';
 import Assignee from '../Assignee';
 import ChangeParent from '../ChangeParent';
-import IssueSidebar from './IssueComponent/IssueSidebar';
 import IssueHeader from './IssueComponent/IssueHeader';
 import IssueBody from './IssueComponent/IssueBody/IssueBody';
 import VisibleStore from '../../stores/common/visible/VisibleStore';
@@ -29,7 +28,6 @@ const { AppState } = stores;
 
 let loginUserId;
 let hasPermission;
-// const store = EditIssueStore;
 const defaultProps = {
   applyType: 'agile',
 };
@@ -71,7 +69,7 @@ const EditIssue = observer(() => {
       loadWorklogs(id),
       loadDatalogs(id, programId || undefined),
       loadLinkIssues(id),
-      // loadBranchs(id),
+      loadBranchs(id),
     ])
       .then(axios.spread((doc, workLogs, dataLogs, linkIssues, branches) => {
         store.initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branches);
@@ -212,13 +210,6 @@ const EditIssue = observer(() => {
               </div>
             ) : null
           }
-          {/* <IssueSidebar
-            disabled={rightDisabled}
-            store={store}
-            reloadIssue={loadIssueDetail}
-            onUpdate={onUpdate}
-            applyType={applyType}
-          /> */}
           <div className="c7n-content">
             <IssueHeader
               disabled={rightDisabled}

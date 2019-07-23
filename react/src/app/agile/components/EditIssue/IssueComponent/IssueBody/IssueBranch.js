@@ -154,8 +154,8 @@ const STATUS_SHOW = {
     const {
       store, reloadIssue, disabled,
     } = this.props;
-    const branchs = store.getBranches;
-    const { commitUpdateTime, totalMergeRequest } = branchs;
+    const branch = store.getBranch;
+    const { commitUpdateTime, totalMergeRequest } = branch;
     const { issueId, issueNum, typeCode } = store.getIssue;
     const createBranchShow = VisibleStore.getCreateBranchShow;
 
