@@ -35,15 +35,15 @@ const STATUS_SHOW = {
     const {
       store,
     } = this.props;
-    const branchs = store.getBranches;
+    const branch = store.getBranch;
     const {
       totalCommit, commitUpdateTime, totalMergeRequest,
       mergeRequestStatus, mergeRequestUpdateTime,
-    } = branchs;
+    } = branch;
     return (
       <div>
         {
-          branchs.branchCount ? (
+          branch.branchCount ? (
             <div>
               {
                 [].length === 0 ? (
