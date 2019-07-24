@@ -1,6 +1,6 @@
 /* eslint-disable react/sort-comp */
 import React, {
-  useContext, useState, useEffect, useImperativeHandle, forwardRef,
+  useContext, useState, useEffect, useImperativeHandle, 
 } from 'react';
 import { observer } from 'mobx-react-lite';
 import { stores, axios } from '@choerodon/boot';
@@ -20,7 +20,6 @@ import Assignee from '../Assignee';
 import ChangeParent from '../ChangeParent';
 import IssueHeader from './IssueComponent/IssueHeader';
 import IssueBody from './IssueComponent/IssueBody/IssueBody';
-import VisibleStore from '../../stores/common/visible/VisibleStore';
 import EditIssueContext from './stores';
 import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
 // 项目加入群之后，不关联自己的史诗和特性，只能关联项目群的，不能改关联的史诗
@@ -112,7 +111,7 @@ const EditIssue = observer(() => {
   }, [currentIssueId]);
 
   const handleCopyIssue = () => {
-    VisibleStore.setCopyIssueShow(false);
+    store.setCopyIssueShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -120,7 +119,7 @@ const EditIssue = observer(() => {
   };
 
   const handleRelateStory = () => {
-    VisibleStore.setRelateStoryShow(false);
+    store.setRelateStoryShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -128,7 +127,7 @@ const EditIssue = observer(() => {
   };
 
   const handleTransformSubIssue = () => {
-    VisibleStore.setTransformSubIssueShow(false);
+    store.setTransformSubIssueShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -136,7 +135,7 @@ const EditIssue = observer(() => {
   };
 
   const handleTransformFromSubIssue = () => {
-    VisibleStore.setTransformFromSubIssueShow(false);
+    store.setTransformFromSubIssueShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -167,7 +166,7 @@ const EditIssue = observer(() => {
     getTransformSubIssueShow: transformSubIssueShow,
     getTransformFromSubIssueShow: transformFromSubIssueShow,
     getRelateStoryShow: relateStoryShow,
-  } = VisibleStore;
+  } = store;
   const rightDisabled = disabled || (IsInProgramStore.isInProgram && typeCode === 'issue_epic' && !hasPermission && createdBy !== AppState.userInfo.id);
   return (
     <div style={{
@@ -248,7 +247,7 @@ const EditIssue = observer(() => {
                 issueLink={linkIssues}
                 issueSummary={summary}
                 visible={copyIssueShow}
-                onCancel={() => VisibleStore.setCopyIssueShow(false)}
+                onCancel={() => store.setCopyIssueShow(false)}
                 onOk={handleCopyIssue.bind(this)}
                 applyType={applyType}
               />
@@ -259,7 +258,7 @@ const EditIssue = observer(() => {
               <RelateStory
                 issue={issue}
                 visible={relateStoryShow}
-                onCancel={() => VisibleStore.setRelateStoryShow(false)}
+                onCancel={() => store.setRelateStoryShow(false)}
                 onOk={handleRelateStory.bind(this)}
               />
             ) : null
@@ -271,7 +270,7 @@ const EditIssue = observer(() => {
                 issueId={issueId}
                 issueNum={issueNum}
                 ovn={objectVersionNumber}
-                onCancel={() => VisibleStore.setTransformSubIssueShow(false)}
+                onCancel={() => store.setTransformSubIssueShow(false)}
                 onOk={handleTransformSubIssue.bind(this)}
                 store={store}
               />
@@ -284,7 +283,7 @@ const EditIssue = observer(() => {
                 issueId={issueId}
                 issueNum={issueNum}
                 ovn={objectVersionNumber}
-                onCancel={() => VisibleStore.setTransformFromSubIssueShow(false)}
+                onCancel={() => store.setTransformFromSubIssueShow(false)}
                 onOk={handleTransformFromSubIssue.bind(this)}
                 store={store}
               />
@@ -300,14 +299,14 @@ const EditIssue = observer(() => {
                 assigneeId={assigneeId}
                 objectVersionNumber={objectVersionNumber}
                 onOk={() => {
-                  VisibleStore.setAssigneeShow(false);
+                  store.setAssigneeShow(false);
                   if (onUpdate) {
                     onUpdate();
                   }
                   loadIssueDetail(issueId);
                 }}
                 onCancel={() => {
-                  VisibleStore.setAssigneeShow(false);
+                  store.setAssigneeShow(false);
                 }}
               />
             ) : null
@@ -320,11 +319,11 @@ const EditIssue = observer(() => {
                 visible={changeParentShow}
                 objectVersionNumber={objectVersionNumber}
                 onOk={() => {
-                  VisibleStore.setChangeParentShow(false);
+                  store.setChangeParentShow(false);
                   loadIssueDetail(issueId);
                 }}
                 onCancel={() => {
-                  VisibleStore.setChangeParentShow(false);
+                  store.setChangeParentShow(false);
                 }}
               />
             ) : null

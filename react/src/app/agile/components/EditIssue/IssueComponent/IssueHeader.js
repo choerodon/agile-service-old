@@ -8,7 +8,6 @@ import { FieldStoryPoint, FieldSummary } from './IssueBody/Field';
 import IssueType from './IssueType';
 import { deleteIssue } from '../../../api/NewIssueApi';
 import './IssueComponent.scss';
-import VisibleStore from '../../../stores/common/visible/VisibleStore';
 import EditIssueContext from '../stores';
 import './IssueHeader.less';
 
@@ -52,27 +51,27 @@ const IssueHeader = (props) => {
   const handleClickMenu = (e) => {
     const issue = store.getIssue;
     if (e.key === '0') {
-      VisibleStore.setWorkLogShow(true);
+      store.setWorkLogShow(true);
     } else if (e.key === '1') {
       handleDeleteIssue(issue.issueId);
     } else if (e.key === '2') {
-      VisibleStore.setCreateSubTaskShow(true);
+      store.setCreateSubTaskShow(true);
     } else if (e.key === '3') {
-      VisibleStore.setCopyIssueShow(true);
+      store.setCopyIssueShow(true);
     } else if (e.key === '4') {
-      VisibleStore.setTransformSubIssueShow(true);
+      store.setTransformSubIssueShow(true);
     } else if (e.key === '5') {
-      VisibleStore.setTransformFromSubIssueShow(true);
+      store.setTransformFromSubIssueShow(true);
     } else if (e.key === '6') {
-      VisibleStore.setCreateBranchShow(true);
+      store.setCreateBranchShow(true);
     } else if (e.key === '7') {
-      VisibleStore.setAssigneeShow(true);
+      store.setAssigneeShow(true);
     } else if (e.key === '8') {
-      VisibleStore.setChangeParentShow(true);
+      store.setChangeParentShow(true);
     } else if (e.key === '9') {
-      VisibleStore.setCreateSubBugShow(true);
+      store.setCreateSubBugShow(true);
     } else if (e.key === '10') {
-      VisibleStore.setRelateStoryShow(true);
+      store.setRelateStoryShow(true);
     }
   };
 

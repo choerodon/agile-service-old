@@ -5,7 +5,6 @@ import { Button, Icon, Tooltip } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
 import CreateSubBug from '../../../CreateIssue/CreateSubBug';
 import IssueList from '../../Component/IssueList';
-import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 
 @inject('AppState')
 @observer class SubBug extends Component {
@@ -61,8 +60,8 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
   };
 
   handleCreateSubIssue = () => {
-    const { onUpdate, reloadIssue } = this.props;
-    VisibleStore.setCreateSubBugShow(false);
+    const { onUpdate, reloadIssue, store } = this.props;
+    store.setCreateSubBugShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -74,7 +73,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
   render() {
     const { store, disabled } = this.props;
     const { issueId, summary } = store.getIssue;
-    const { getCreateSubBugShow: createSubBugShow } = VisibleStore;
+    const { getCreateSubBugShow: createSubBugShow } = store;
     return (
       <div id="bug">
         <div className="c7n-title-wrapper">
@@ -89,7 +88,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
           {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建缺陷" getPopupContainer={triggerNode => triggerNode.parentNode}>
-              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubBugShow(true)}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => store.setCreateSubBugShow(true)}>
                 <Icon type="playlist_add icon" />
               </Button>
             </Tooltip>
@@ -103,7 +102,7 @@ import VisibleStore from '../../../../stores/common/visible/VisibleStore';
               relateIssueId={issueId}
               parentSummary={summary}
               visible={createSubBugShow}
-              onCancel={() => VisibleStore.setCreateSubBugShow(false)}
+              onCancel={() => store.setCreateSubBugShow(false)}
               onOk={this.handleCreateSubIssue}
               store={store}
             />

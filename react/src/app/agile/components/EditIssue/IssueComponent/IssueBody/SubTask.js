@@ -9,7 +9,6 @@ import { injectIntl } from 'react-intl';
 import { createSubIssue, createIssueField } from '../../../../api/NewIssueApi';
 import CreateSubTask from '../../../CreateIssue/CreateSubTask';
 import IssueList from '../../Component/IssueList';
-import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 import './SubTask.scss';
 
 const { AppState } = stores;
@@ -74,8 +73,8 @@ const { AppState } = stores;
   };
 
   handleCreateSubIssue = () => {
-    const { onUpdate, reloadIssue } = this.props;
-    VisibleStore.setCreateSubTaskShow(false);
+    const { onUpdate, reloadIssue, store } = this.props;
+    store.setCreateSubTaskShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -147,7 +146,7 @@ const { AppState } = stores;
     const { expand } = this.state;
     const { store, disabled } = this.props;
     const { issueId, summary } = store.getIssue;
-    const { getCreateSubTaskShow: createSubTaskShow } = VisibleStore;
+    const { getCreateSubTaskShow: createSubTaskShow } = store;
     const { subIssueVOList = [] } = store.getIssue;
     return (
       <div id="sub_task">
@@ -163,7 +162,7 @@ const { AppState } = stores;
           {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建子任务" getPopupContainer={triggerNode => triggerNode.parentNode}>
-              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateSubTaskShow(true)}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => store.setCreateSubTaskShow(true)}>
                 <Icon type="playlist_add icon" />
               </Button>
             </Tooltip>
@@ -230,7 +229,7 @@ const { AppState } = stores;
               parentIssueId={issueId}
               parentSummary={summary}
               visible={createSubTaskShow}
-              onCancel={() => VisibleStore.setCreateSubTaskShow(false)}
+              onCancel={() => store.setCreateSubTaskShow(false)}
               onOk={this.handleCreateSubIssue}
               store={store}
             />

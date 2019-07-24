@@ -8,7 +8,6 @@ import { FormattedMessage } from 'react-intl';
 import CreateBranch from '../../../CreateBranch';
 import Commits from '../../../Commits';
 import MergeRequest from '../../../MergeRequest';
-import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 
 const STATUS_SHOW = {
   opened: '开放',
@@ -25,7 +24,7 @@ const IssueBranch = observer(({ store, reloadIssue, disabled }) => {
     mergeRequestStatus, mergeRequestUpdateTime, 
   } = branch;
   const { issueId, issueNum, typeCode } = store.getIssue;
-  const createBranchShow = VisibleStore.getCreateBranchShow;
+  const createBranchShow = store.getCreateBranchShow;
 
   const renderBranchs = () => (
     <div>
@@ -145,7 +144,7 @@ const IssueBranch = observer(({ store, reloadIssue, disabled }) => {
         {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建分支" getPopupContainer={triggerNode => triggerNode.parentNode}>
-              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateBranchShow(true)}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => store.setCreateBranchShow(true)}>
                 <Icon type="playlist_add icon" />
               </Button>
             </Tooltip>
@@ -160,12 +159,12 @@ const IssueBranch = observer(({ store, reloadIssue, disabled }) => {
               typeCode={typeCode}
               issueNum={issueNum}
               onOk={() => {
-                VisibleStore.setCreateBranchShow(false);
+                store.setCreateBranchShow(false);
                 if (reloadIssue) {
                   reloadIssue(issueId);
                 }
               }}
-              onCancel={() => VisibleStore.setCreateBranchShow(false)}
+              onCancel={() => store.setCreateBranchShow(false)}
               visible={createBranchShow}
             />
           ) : null

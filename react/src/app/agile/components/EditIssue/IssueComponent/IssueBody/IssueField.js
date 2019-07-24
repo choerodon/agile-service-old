@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { toJS } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
@@ -9,7 +9,6 @@ import {
   FieldEpic, FieldDateTime, FieldComponent, FieldTimeTrace, FieldStoryPoint,
   FieldSummary, FieldInput,
 } from './Field';
-import VisibleStore from '../../../../stores/common/visible/VisibleStore';
 
 const hideFields = ['priority', 'component', 'label', 'fixVersion', 'sprint', 'timeTrace', 'assignee'];
 @inject('AppState')
@@ -83,7 +82,7 @@ const hideFields = ['priority', 'component', 'label', 'fixVersion', 'sprint', 't
     } else if (typeCode === 'issue_epic') {
       fields = fields.filter(field => field.fieldCode !== 'epic');
     }
-    if (!VisibleStore.detailShow) {
+    if (!store.detailShow) {
       fields = fields.slice(0, 4);
     }
 
