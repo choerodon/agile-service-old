@@ -167,7 +167,8 @@ const EditIssue = observer(() => {
     getTransformFromSubIssueShow: transformFromSubIssueShow,
     getRelateStoryShow: relateStoryShow,
   } = store;
-  const rightDisabled = disabled || (IsInProgramStore.isInProgram && typeCode === 'issue_epic' && !hasPermission && createdBy !== AppState.userInfo.id);
+  const rightDisabled = disabled || (IsInProgramStore.isInProgram && typeCode === 'issue_epic');
+  const HasPermission = (hasPermission || createdBy === AppState.userInfo.id);
   return (
     <div style={{
       position: 'absolute',
@@ -221,7 +222,7 @@ const EditIssue = observer(() => {
               backUrl={backUrl}
               onCancel={onCancel}
               loginUserId={loginUserId}
-              hasPermission={hasPermission}
+              hasPermission={HasPermission}
               onDeleteIssue={onDeleteIssue}
               onUpdate={onUpdate}
             />
@@ -233,7 +234,7 @@ const EditIssue = observer(() => {
               onUpdate={onUpdate}
               onDeleteSubIssue={onDeleteSubIssue}
               loginUserId={loginUserId}
-              hasPermission={hasPermission}
+              hasPermission={HasPermission}
               applyType={applyType}
             // programId={programId}
             />

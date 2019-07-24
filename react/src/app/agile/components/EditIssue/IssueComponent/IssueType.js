@@ -1,13 +1,12 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { Dropdown, Icon, Menu } from 'choerodon-ui';
-import IssueNav from './IssueNav';
+import { Dropdown, Menu } from 'choerodon-ui';
 import TypeTag from '../../TypeTag';
 import { updateIssueType, updateIssue } from '../../../api/NewIssueApi';
 import './IssueComponent.scss';
 
 const IssueType = observer(({
-  store, reloadIssue, onUpdate, disabled, applyType,
+  store, reloadIssue, onUpdate, disabled, 
 }) => {
   const handleChangeType = (type) => {
     const issue = store.getIssue;
