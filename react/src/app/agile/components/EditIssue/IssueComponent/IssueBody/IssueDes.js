@@ -1,68 +1,46 @@
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import React, {
+  useState, useEffect, useContext,
+} from 'react';
 import { Icon, Button, Tooltip } from 'choerodon-ui';
-import { injectIntl } from 'react-intl';
+
 import WYSIWYGEditor from '../../../WYSIWYGEditor';
 import { text2Delta, delta2Html, returnBeforeTextUpload } from '../../../../common/utils';
 import { IssueDescription } from '../../../CommonComponent';
 import FullEditor from '../../../FullEditor';
 import { updateIssue } from '../../../../api/NewIssueApi';
+import EditIssueContext from '../../stores';
 
-@inject('AppState')
-@observer class IssueCommit extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      editDesShow: false,
-      description: '',
-      editDes: '',
-      edit: false,
-    };
-  }
+const IssueDes = ({ reloadIssue }) => {
+  const [editDesShow, setEditDesShow] = useState(false);
+  const [fullEdit, setFullEdit] = useState(false);
+  const [editDes, setEditDes] = useState('');
+  const { store, disabled } = useContext(EditIssueContext);
+  const { description } = store.getIssue;
+  useEffect(() => {    
+    setEditDes(description);
+    setEditDesShow(false);
+  }, [description]);
 
-  componentDidMount() {
-    const { store } = this.props;
-    const { description } = store.getIssue;
-    this.setState({
-      editDes: description,
-      description,
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { store } = nextProps;
-    const { description } = store.getIssue;
-    this.setState({
-      description,
-      editDes: description,
-      editDesShow: false,
-    });
-  }
-
-  updateIssueDes = () => {
-    const { editDes } = this.state;
-    const { store, reloadIssue } = this.props;
+  const updateIssueDes = (value) => {
     const { issueId, objectVersionNumber } = store.getIssue;
     const obj = {
       issueId,
       objectVersionNumber,
     };
-    if (editDes) {
-      returnBeforeTextUpload(editDes, obj, updateIssue, 'description')
+    const newValue = value || editDes;  
+    if (newValue) {
+      returnBeforeTextUpload(newValue, obj, updateIssue, 'description')
         .then(() => {
           if (reloadIssue) {
             reloadIssue(issueId);
           }
         });
     }
-    this.setState({
-      editDesShow: false,
-    });
+    setEditDesShow(false);   
+    setFullEdit(false); 
   };
 
-  renderDes() {
-    const { editDesShow, editDes, description } = this.state;
+  const renderDes = () => {
     if (editDesShow === undefined) {
       return null;
     }
@@ -80,7 +58,7 @@ import { updateIssue } from '../../../../api/NewIssueApi';
               marginBottom: 25,
             }}
             >
-              <WYSIWYGEditor               
+              <WYSIWYGEditor
                 autoFocus
                 bottomBar
                 value={text2Delta(editDes)}
@@ -88,20 +66,15 @@ import { updateIssue } from '../../../../api/NewIssueApi';
                   height: '100%', width: '100%',
                 }}
                 onChange={(value) => {
-                  this.setState({ editDes: value });
+                  setEditDes(value);                 
                 }}
                 handleDelete={() => {
-                  this.setState({
-                    editDesShow: false,
-                    editDes: description,
-                  });
+                  setEditDesShow(false);
+                  setEditDes(description);                  
                 }}
                 handleSave={() => {
-                  this.setState({
-                    editDesShow: false,
-                    description: editDes || '',
-                  });
-                  this.updateIssueDes();
+                  setEditDesShow(false);                             
+                  updateIssueDes();
                 }}
               />
             </div>
@@ -116,41 +89,33 @@ import { updateIssue } from '../../../../api/NewIssueApi';
             className="mt-10 c7n-description"
             role="none"
           >
-            <IssueDescription data={delta} />          
+            <IssueDescription data={delta} />
           </div>
         </div>
       );
     }
-  }
+  };
 
-  render() {
-    const { edit, description, editDes } = this.state;
-    const { disabled } = this.props;
-    const callback = (value) => {
-      this.setState({
-        description: value,
-        editDes: value,
-        edit: false,
-      }, () => {
-        this.updateIssueDes();
-      });
-    };
 
-    return (
-      <div id="des">
-        <div className="c7n-title-wrapper">
-          <div className="c7n-title-left">
-            <Icon type="subject c7n-icon-title" />
-            <span>描述</span>
-          </div>
-          <div style={{
-            flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-          }}
-          />
-          {!disabled && (
+  const callback = (value) => { 
+    updateIssueDes(value);   
+  };
+
+  return (
+    <div id="des">
+      <div className="c7n-title-wrapper">
+        <div className="c7n-title-left">
+          <Icon type="subject c7n-icon-title" />
+          <span>描述</span>
+        </div>
+        <div style={{
+          flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
+        }}
+        />
+        {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px', position: 'relative' }}>
             <Tooltip title="全屏编辑" getPopupContainer={triggerNode => triggerNode.parentNode}>
-              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => this.setState({ edit: true })}>
+              <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => setFullEdit(true)}>
                 <Icon type="zoom_out_map icon" style={{ marginRight: 2 }} />
               </Button>
             </Tooltip>
@@ -160,38 +125,34 @@ import { updateIssue } from '../../../../api/NewIssueApi';
                 className="leftBtn"
                 funcType="flat"
                 onClick={() => {
-                  this.setState({
-                    editDesShow: true,
-                    editDes: description,
-                  });
+                  setEditDesShow(true);
+                  setEditDes(description);
                 }}
               >
                 <Icon
-                  className="c7n-des-edit"
-                // style={{ position: 'absolute', top: 8, right: -20 }}
+                  className="c7n-des-fullEdit"
                   role="none"
                   type="mode_edit icon"
                 />
               </Button>
             </Tooltip>
           </div>
-          )}
-        </div>
-        {this.renderDes()}
-        {
-          edit ? (
-            <FullEditor
-              autoFocus
-              initValue={text2Delta(editDes)}
-              visible={edit}
-              onCancel={() => this.setState({ edit: false })}
-              onOk={callback}
-            />
-          ) : null
-        }
+        )}
       </div>
-    );
-  }
-}
+      {renderDes()}
+      {
+        fullEdit ? (
+          <FullEditor
+            autoFocus
+            initValue={text2Delta(editDes)}
+            visible={fullEdit}
+            onCancel={() => setFullEdit(false)}
+            onOk={callback}
+          />
+        ) : null
+      }
+    </div>
+  );
+};
 
-export default withRouter(injectIntl(IssueCommit));
+export default IssueDes;

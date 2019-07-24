@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Dropdown, Menu } from 'choerodon-ui';
 import TypeTag from '../../TypeTag';
 import { updateIssueType, updateIssue } from '../../../api/NewIssueApi';
+import EditIssueContext from '../stores';
 import './IssueComponent.scss';
 
 const IssueType = observer(({
-  store, reloadIssue, onUpdate, disabled, 
+  reloadIssue, onUpdate, 
 }) => {
+  const { store, disabled } = useContext(EditIssueContext);
   const handleChangeType = (type) => {
     const issue = store.getIssue;
     const {
