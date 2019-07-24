@@ -25,7 +25,8 @@ class AddComponent extends Component {
       selectLoading: false,
       createLoading: false,
       page: 1,
-      canLoadMore: true
+      canLoadMore: true,
+      input: ''
     };
   }
 
@@ -35,31 +36,35 @@ class AddComponent extends Component {
       this.setState({
         selectLoading: true,
       });
-      getUsers(input, this.state.page).then((res) => {
+      getUsers(input, undefined, this.state.page).then((res) => {
         this.setState({
-          originUsers: [...this.state.originUsers, ...res.list.filter(u => u.enabled)],
+          input,
+          originUsers: res.list.filter(u => u.enabled),
           selectLoading: false,
+          // page: 1,
+          canLoadMore: res.hasNextPage
         });
       });
       sign = true;
     } else {
-      this.debounceFilterIssues(input);
+      this.debounceFilterIssues(input, undefined, this.state.page);
     }
   }
 
   debounceFilterIssues = _.debounce((input) => {
-    if (this.state.canLoadMore) {
+    this.setState({
+      selectLoading: true,
+      page: 1
+    });
+    getUsers(input, undefined, this.state.page).then((res) => {
       this.setState({
-        selectLoading: true,
+        input,
+        page: 1,
+        originUsers: res.list.filter(u => u.enabled),
+        selectLoading: false,
+        canLoadMore: res.hasNextPage
       });
-      getUsers(input, this.state.page).then((res) => {
-        this.setState({
-          originUsers: [...this.state.originUsers, ...res.list.filter(u => u.enabled)],
-          selectLoading: false,
-          canLoadMore: res.hasNextPage
-        });
-      });
-    }
+    });
   }, 500);
 
   getFirst(str) {
@@ -75,7 +80,7 @@ class AddComponent extends Component {
     return str[0];
   }
 
-  handleOk(e) {
+  handleOk = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
@@ -121,18 +126,25 @@ class AddComponent extends Component {
     }
   };
 
-  loadMoreUsers(e) {
+  loadMoreUsers = (e) => {
     e.preventDefault();
+    const { page, input, originUsers } = this.state;
     this.setState({
-      page: this.state.page + 1
+      selectLoading: true,
     });
-    if (this.state.canLoadMore) {
-      this.debounceFilterIssues();
-    }
+    getUsers(input, undefined, page + 1).then((res) => {
+      this.setState({
+        originUsers: [...originUsers, ...res.list.filter(u => u.enabled)],
+        selectLoading: false,
+        canLoadMore: res.hasNextPage,
+        page: this.state.page + 1
+      });
+    });
   }
 
   render() {
     const { getFieldDecorator, getFieldsValue } = this.props.form;
+    const { canLoadMore } = this.state;
     return (
       <Sidebar
         className="c7n-component-component"
@@ -141,8 +153,8 @@ class AddComponent extends Component {
         cancelText="取消"
         visible={this.props.visible || false}
         confirmLoading={this.state.createLoading}
-        onOk={this.handleOk.bind(this)}
-        onCancel={this.props.onCancel.bind(this)}
+        onOk={this.handleOk}
+        onCancel={this.props.onCancel}
       >
         <Content
           style={{
@@ -199,31 +211,36 @@ class AddComponent extends Component {
                     allowClear
                     filter
                     onFilterChange={this.onFilterChange.bind(this)}
+                    getPopupContainer={(trigger) => (trigger.parentNode)}
                   >
-                    {this.state.originUsers.map(user => (
-                      <Option key={JSON.stringify(user)} value={JSON.stringify(user)}>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
-                          <UserHead
-                            user={{
-                              id: user.id,
-                              loginName: user.loginName,
-                              realName: user.realName,
-                              avatar: user.imageUrl,
-                            }}
-                          />
-                        </div>
+                    {
+                      this.state.originUsers.map(user => (
+                        <Option key={JSON.stringify(user)} value={JSON.stringify(user)}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
+                            <UserHead
+                              user={{
+                                id: user.id,
+                                loginName: user.loginName,
+                                realName: user.realName,
+                                avatar: user.imageUrl,
+                              }}
+                            />
+                          </div>
+                        </Option>
+                      ))
+                    }
+                    {
+                      canLoadMore && <Option key='loadMore' disabled className='loadMore-option'>
+                        <Button type="primary" onClick={this.loadMoreUsers}>加载更多</Button>
                       </Option>
-                    ))}
-                    <Option key='loadMore' disabled>
-                      <Button type="primary" onClick={this.loadMoreUsers.bind(this)} className={`${this.state.canLoadMore? '': 'hidden'}`}>加载更多</Button>
-                    </Option>
-                  </Select>,
+                    }
+                  </Select> ,
                 )}
               </FormItem>
             )}
           </Form>
         </Content>
-      </Sidebar>
+      </Sidebar >
     );
   }
 }
