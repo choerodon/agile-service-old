@@ -9,7 +9,7 @@ import {
 } from 'choerodon-ui';
 import { COLOR } from '../../../../common/Constant';
 import { loadPriorities } from '../../../../api/NewIssueApi';
-import { getUsers, getUser, getPageUser } from '../../../../api/CommonApi';
+import { getUsers, getUser } from '../../../../api/CommonApi';
 import UserHead from '../../../../components/UserHead';
 
 const { AppState } = stores;
@@ -24,13 +24,13 @@ class ProjectSetting extends Component {
     this.state = {
       origin: {},
       loading: false,
-      // couldUpdate: false,
       originUsers: [],
-      num: 40,
       code: undefined,
       strategy: undefined,
       assignee: undefined,
       hasNextPage: false,
+      page: 1,
+      input: '',
     };
   }
 
@@ -86,15 +86,20 @@ class ProjectSetting extends Component {
   }
 
   onFilterChange(input) {
+    this.setState({
+      page: 1,
+      // originUsers: [],
+    });
     if (!sign) {
       this.setState({
         selectLoading: true,
       });
-      getUsers(input).then((res) => {
+      getUsers(input, undefined, this.state.page).then((res) => {
         this.setState({
           originUsers: res.list.filter(u => u.enabled),
           selectLoading: false,
           hasNextPage: res.hasNextPage,
+          input,
         });
       });
       sign = true;
@@ -107,10 +112,13 @@ class ProjectSetting extends Component {
     this.setState({
       selectLoading: true,
     });
-    getUsers(input).then((res) => {
+    getUsers(input, undefined, this.state.page).then((res) => {
       this.setState({
         originUsers: res.list.filter(u => u.enabled),
         selectLoading: false,
+        page: 1,
+        hasNextPage: res.hasNextPage,
+        input,
       });
     });
   }, 500);
@@ -186,19 +194,20 @@ class ProjectSetting extends Component {
     });
   };
 
-  loadMoreUser = () => {
-    const { num } = this.state;
+  loadMore = () => {
+    const { page, originUsers, input } = this.state;
     this.setState({
-      num: num + 20,
+      selectLoading: true,
     });
-    getPageUser(this.state.num).then((res) => {
+    getUsers(input, undefined, page + 1).then((res) => {
       this.setState({
-        originUsers: res.list.filter(u => u.enabled),
+        originUsers: [...originUsers, ...res.list.filter(u => u.enabled)],
         selectLoading: false,
+        page: page + 1,
         hasNextPage: res.hasNextPage,
       });
     });
-  };
+  }
 
   render() {
     const { getFieldDecorator, isModifiedFields, getFieldValue } = this.props.form;
@@ -281,10 +290,10 @@ class ProjectSetting extends Component {
                         </div>
                       </Option>
                     ))}
-                    <Option key="loadMore" disabled style={{ display: this.state.hasNextPage ? '' : 'none' }}>
+                    <Option key="loadMore" disabled style={{ display: this.state.hasNextPage ? '' : 'none', cursor: 'auto' }}>
                       <Button
                         style={{ width: '100%', textAlign: 'left' }}
-                        onClick={this.loadMoreUser.bind(this)}
+                        onClick={this.loadMore}
                       >
                         加载更多
                       </Button>
