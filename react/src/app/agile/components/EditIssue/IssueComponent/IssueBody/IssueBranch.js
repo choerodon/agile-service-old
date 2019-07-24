@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import React, { useState } from 'react';
 import TimeAgo from 'timeago-react';
 import {
   Button, Icon, Popover, Tooltip, 
 } from 'choerodon-ui';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { observer } from 'mobx-react-lite';
+import { FormattedMessage } from 'react-intl';
 import CreateBranch from '../../../CreateBranch';
 import Commits from '../../../Commits';
 import MergeRequest from '../../../MergeRequest';
@@ -16,33 +15,21 @@ const STATUS_SHOW = {
   merged: '已合并',
   closed: '关闭',
 };
+const IssueBranch = observer(({ store, reloadIssue, disabled }) => {
+  const [commitShow, setCommitShow] = useState(false);
+  const [mergeRequestShow, setMergeRequestShow] = useState(false);
 
-@inject('AppState')
-@observer class IssueBranch extends Component {
-  constructor(props) {
-    super(props);
-    this.sign = false;
-    this.state = {
-      commitShow: false,
-      mergeRequestShow: false,
-    };
-  }
+  const branch = store.getBranch;
+  const {
+    totalCommit, commitUpdateTime, totalMergeRequest,
+    mergeRequestStatus, mergeRequestUpdateTime, 
+  } = branch;
+  const { issueId, issueNum, typeCode } = store.getIssue;
+  const createBranchShow = VisibleStore.getCreateBranchShow;
 
-  componentDidMount() {
-  }
-
-  renderBranchs() {
-    const {
-      store,
-    } = this.props;
-    const branch = store.getBranch;
-    const {
-      totalCommit, commitUpdateTime, totalMergeRequest,
-      mergeRequestStatus, mergeRequestUpdateTime,
-    } = branch;
-    return (
-      <div>
-        {
+  const renderBranchs = () => (
+    <div>
+      {
           branch.branchCount ? (
             <div>
               {
@@ -56,9 +43,7 @@ const STATUS_SHOW = {
                         style={{ color: '#3f51b5', cursor: 'pointer' }}
                         role="none"
                         onClick={() => {
-                          this.setState({
-                            commitShow: true,
-                          });
+                          setCommitShow(true);
                         }}
                       >
                         {totalCommit || '0'}
@@ -98,9 +83,7 @@ const STATUS_SHOW = {
                         style={{ color: '#3f51b5', cursor: 'pointer' }}
                         role="none"
                         onClick={() => {
-                          this.setState({
-                            mergeRequestShow: true,
-                          });
+                          setMergeRequestShow(true);
                         }}
                       >
                         {totalMergeRequest}
@@ -145,32 +128,21 @@ const STATUS_SHOW = {
             </div>
           )
         }
-      </div>
-    );
-  }
+    </div>
+  );
 
-  render() {
-    const { mergeRequestShow, commitShow } = this.state;
-    const {
-      store, reloadIssue, disabled,
-    } = this.props;
-    const branch = store.getBranch;
-    const { commitUpdateTime, totalMergeRequest } = branch;
-    const { issueId, issueNum, typeCode } = store.getIssue;
-    const createBranchShow = VisibleStore.getCreateBranchShow;
-
-    return (
-      <div id="branch">
-        <div className="c7n-title-wrapper">
-          <div className="c7n-title-left">
-            <Icon type="branch c7n-icon-title" />
-            <FormattedMessage id="issue.branch" />
-          </div>
-          <div style={{
-            flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-          }}
-          />
-          {!disabled && (
+  return (
+    <div id="branch">
+      <div className="c7n-title-wrapper">
+        <div className="c7n-title-left">
+          <Icon type="branch c7n-icon-title" />
+          <FormattedMessage id="issue.branch" />
+        </div>
+        <div style={{
+          flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
+        }}
+        />
+        {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建分支" getPopupContainer={triggerNode => triggerNode.parentNode}>
               <Button style={{ padding: '0 6px' }} className="leftBtn" funcType="flat" onClick={() => VisibleStore.setCreateBranchShow(true)}>
@@ -178,10 +150,10 @@ const STATUS_SHOW = {
               </Button>
             </Tooltip>
           </div>
-          )}
-        </div>
-        {this.renderBranchs()}
-        {
+        )}
+      </div>
+      {renderBranchs()}
+      {
           createBranchShow ? (
             <CreateBranch
               issueId={issueId}
@@ -198,35 +170,34 @@ const STATUS_SHOW = {
             />
           ) : null
         }
-        {
+      {
           commitShow ? (
             <Commits
               issueId={issueId}
               issueNum={issueNum}
               time={commitUpdateTime}
               onCancel={() => {
-                this.setState({ commitShow: false });
+                setCommitShow(false);
               }}
               visible={commitShow}
             />
           ) : null
         }
-        {
+      {
           mergeRequestShow ? (
             <MergeRequest
               issueId={issueId}
               issueNum={issueNum}
               num={totalMergeRequest}
               onCancel={() => {
-                this.setState({ mergeRequestShow: false });
+                setMergeRequestShow(false);
               }}
               visible={mergeRequestShow}
             />
           ) : null
         }
-      </div>
-    );
-  }
-}
+    </div>
+  );
+});
 
-export default withRouter(injectIntl(IssueBranch));
+export default IssueBranch;

@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import { observer } from 'mobx-react';
 import { Icon, Button, Tooltip } from 'choerodon-ui';
 import _ from 'lodash';
-import { injectIntl } from 'react-intl';
 import CreateLinkTask from '../../../CreateLinkTask';
 import LinkList from '../../Component/LinkList';
 
-@inject('AppState')
+
 @observer class IssueLink extends Component {
   constructor(props) {
     super(props);
@@ -112,4 +110,4 @@ import LinkList from '../../Component/LinkList';
   }
 }
 
-export default withRouter(injectIntl(IssueLink));
+export default IssueLink;
