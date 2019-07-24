@@ -1,38 +1,28 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
-
-import io.choerodon.agile.api.vo.*;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.validator.ProductVersionValidator;
-import io.choerodon.agile.app.assembler.*;
-import io.choerodon.agile.app.service.IProductVersionService;
-import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.app.service.ProductVersionService;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.vo.event.VersionPayload;
-import io.choerodon.agile.infra.utils.PageUtil;
-import io.choerodon.agile.infra.utils.RedisUtil;
+import io.choerodon.agile.app.assembler.*;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.dataobject.IssueCountDTO;
 import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
-import io.choerodon.agile.app.service.VersionIssueRelService;
-import io.choerodon.agile.infra.enums.SchemeApplyType;
 import io.choerodon.agile.infra.dataobject.VersionIssueDTO;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;
+import io.choerodon.agile.infra.utils.PageUtil;
+import io.choerodon.agile.infra.utils.RedisUtil;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
-
-import com.github.pagehelper.PageInfo;
-
+import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-
-import com.github.pagehelper.PageHelper;
-
-import io.choerodon.base.domain.PageRequest;
-
 import io.choerodon.mybatis.entity.Criteria;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -84,9 +74,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     private ProductVersionMapper productVersionMapper;
 
     @Autowired
-    private IssueFeignClient issueFeignClient;
-
-    @Autowired
     private IssueService issueService;
 
     @Autowired
@@ -97,7 +84,14 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Autowired
     private IProductVersionService iProductVersionService;
-
+    @Autowired
+    private PriorityService priorityService;
+    @Autowired
+    private IssueTypeService issueTypeService;
+    @Autowired
+    private ProjectConfigService projectConfigService;
+    @Autowired
+    private StatusService statusService;
 
     private static final String VERSION_PLANNING = "version_planning";
     private static final String NOT_EQUAL_ERROR = "error.projectId.notEqual";
@@ -238,8 +232,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         List<ProductVersionDataVO> productVersions = versionDataAssembler.toTargetList(productVersionMapper.queryVersionByProjectId(projectId), ProductVersionDataVO.class);
         if (!productVersions.isEmpty()) {
             List<Long> productVersionIds = productVersions.stream().map(ProductVersionDataVO::getVersionId).collect(toList());
-            Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
-                    .stream().collect(Collectors.groupingBy(StatusMapVO::getType, Collectors.mapping(StatusMapVO::getId, Collectors.toList())));
+            Map<String, List<Long>> statusMap = projectConfigService.queryStatusByProjectId(projectId, SchemeApplyType.AGILE)
+                    .stream().collect(Collectors.groupingBy(StatusVO::getType, Collectors.mapping(StatusVO::getId, Collectors.toList())));
             List<Long> done = statusMap.get(CATEGORY_DONE_CODE);
             Boolean condition = done != null && !done.isEmpty();
             Map<Long, Integer> doneIssueCountMap = condition ? productVersionMapper.queryIssueCount(projectId, productVersionIds, done).stream().collect(toMap(IssueCountDTO::getId, IssueCountDTO::getIssueCount)) : null;
@@ -259,9 +253,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     @Override
     public ProductVersionStatisticsVO queryVersionStatisticsByVersionId(Long projectId, Long versionId) {
         ProductVersionStatisticsVO productVersionStatisticsVO = versionStatisticsAssembler.toTarget(productVersionMapper.queryVersionStatisticsByVersionId(projectId, versionId), ProductVersionStatisticsVO.class);
-        List<StatusMapVO> statusMapVOS = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody();
-        Map<String, List<Long>> statusIdMap = statusMapVOS.stream().collect(Collectors.groupingBy(StatusMapVO::getType, Collectors.mapping(StatusMapVO::getId, Collectors.toList())));
-        Map<String, List<StatusMapVO>> statusMap = statusMapVOS.stream().collect(Collectors.groupingBy(StatusMapVO::getType));
+        List<StatusVO> statusMapVOS = projectConfigService.queryStatusByProjectId(projectId, SchemeApplyType.AGILE);
+        Map<String, List<Long>> statusIdMap = statusMapVOS.stream().collect(Collectors.groupingBy(StatusVO::getType, Collectors.mapping(StatusVO::getId, Collectors.toList())));
+        Map<String, List<StatusVO>> statusMap = statusMapVOS.stream().collect(Collectors.groupingBy(StatusVO::getType));
         productVersionStatisticsVO.setTodoIssueCount(statusIdMap.get(CATEGORY_TODO_CODE) != null && !statusIdMap.get(CATEGORY_TODO_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusIdMap.get(CATEGORY_TODO_CODE), projectId, versionId) : 0);
         productVersionStatisticsVO.setDoingIssueCount(statusIdMap.get(CATEGORY_DOING_CODE) != null && !statusIdMap.get(CATEGORY_DOING_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusIdMap.get(CATEGORY_DOING_CODE), projectId, versionId) : 0);
         productVersionStatisticsVO.setDoneIssueCount(statusIdMap.get(CATEGORY_DONE_CODE) != null && !statusIdMap.get(CATEGORY_DONE_CODE).isEmpty() ? productVersionMapper.queryStatusIssueCount(statusIdMap.get(CATEGORY_DONE_CODE), projectId, versionId) : 0);
@@ -277,9 +271,9 @@ public class ProductVersionServiceImpl implements ProductVersionService {
         //处理用户搜索
         Boolean condition = issueService.handleSearchUser(searchVO, projectId);
         if (condition) {
-            Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
-            Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+            Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
+            Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
             List<Long> filterStatusIds = new ArrayList<>();
             if (statusCode != null) {
                 for (Long key : statusMapDTOMap.keySet()) {
@@ -354,7 +348,8 @@ public class ProductVersionServiceImpl implements ProductVersionService {
 
     @Override
     public List<ProductVersionVO> listByProjectId(Long projectId) {
-        return modelMapper.map(productVersionMapper.listByProjectId(projectId), new TypeToken<List<ProductVersionVO>>(){}.getType());
+        return modelMapper.map(productVersionMapper.listByProjectId(projectId), new TypeToken<List<ProductVersionVO>>() {
+        }.getType());
     }
 
     @Override
@@ -496,9 +491,6 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     }
 
 
-
-
-
     @Override
     public ProductVersionDTO create(ProductVersionDTO versionDTO) {
         if (versionMapper.insertSelective(versionDTO) != 1) {
@@ -521,7 +513,7 @@ public class ProductVersionServiceImpl implements ProductVersionService {
     public ProductVersionDTO update(ProductVersionDTO versionDTO, List<String> fieldList) {
         Criteria criteria = new Criteria();
         criteria.update(fieldList.toArray(new String[0]));
-        if (versionMapper.updateByPrimaryKeyOptions(versionDTO,criteria) != 1) {
+        if (versionMapper.updateByPrimaryKeyOptions(versionDTO, criteria) != 1) {
             throw new CommonException(UPDATE_ERROR);
         }
         redisUtil.deleteRedisCache(new String[]{PIECHART + versionDTO.getProjectId() + ':' + FIX_VERSION + "*"});

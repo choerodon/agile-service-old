@@ -1,10 +1,6 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.IssueTypeVO;
-import io.choerodon.agile.api.vo.IssueTypeWithStateMachineIdVO;
-import io.choerodon.agile.api.vo.ProjectConfigDetailVO;
-import io.choerodon.agile.api.vo.StatusVO;
-import io.choerodon.agile.api.vo.event.TransformVO;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.dataobject.ProjectConfigDTO;
 
 import java.util.List;

@@ -1,18 +1,14 @@
 package io.choerodon.agile.api.controller.v1;
 
+import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.app.service.PriorityService;
+import io.choerodon.agile.app.service.ProjectConfigService;
+import io.choerodon.agile.infra.utils.ProjectUtil;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.base.BaseController;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.InitRoleCode;
-import io.choerodon.agile.api.vo.IssueTypeVO;
-import io.choerodon.agile.api.vo.IssueTypeWithStateMachineIdVO;
-import io.choerodon.agile.api.vo.PriorityVO;
-import io.choerodon.agile.api.vo.StatusVO;
-import io.choerodon.agile.api.vo.event.TransformVO;
-import io.choerodon.agile.app.service.PriorityService;
-import io.choerodon.agile.app.service.ProjectConfigService;
-import io.choerodon.agile.infra.utils.ProjectUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,16 +115,6 @@ public class SchemeController extends BaseController {
     }
 
     @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
-    @ApiOperation(value = "【敏捷】移除状态")
-    @DeleteMapping(value = "/schemes/remove_status_for_agile")
-    public ResponseEntity removeStatusForAgile(@PathVariable("project_id") Long projectId,
-                                               @RequestParam("status_id") Long statusId,
-                                               @RequestParam String applyType) {
-        projectConfigService.removeStatusForAgile(projectId, statusId, applyType);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @Permission(type = ResourceType.PROJECT, roles = {InitRoleCode.PROJECT_MEMBER, InitRoleCode.PROJECT_OWNER})
     @ApiOperation(value = "【敏捷】校验是否能删除状态")
     @GetMapping(value = "/schemes/check_remove_status_for_agile")
     public ResponseEntity<Boolean> checkRemoveStatusForAgile(@PathVariable("project_id") Long projectId,
@@ -141,7 +127,7 @@ public class SchemeController extends BaseController {
     @ApiOperation(value = "根据项目id查询组织默认优先级")
     @GetMapping("/priority/default")
     public ResponseEntity<PriorityVO> queryDefaultByOrganizationId(@ApiParam(value = "项目id", required = true)
-                                                                    @PathVariable("project_id") Long projectId) {
+                                                                   @PathVariable("project_id") Long projectId) {
         Long organizationId = projectUtil.getOrganizationId(projectId);
         return Optional.ofNullable(priorityService.queryDefaultByOrganizationId(organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
@@ -152,7 +138,7 @@ public class SchemeController extends BaseController {
     @ApiOperation(value = "根据项目id查询组织优先级列表")
     @GetMapping("/priority/list_by_org")
     public ResponseEntity<List<PriorityVO>> queryByOrganizationIdList(@ApiParam(value = "项目id", required = true)
-                                                                       @PathVariable("project_id") Long projectId) {
+                                                                      @PathVariable("project_id") Long projectId) {
         Long organizationId = projectUtil.getOrganizationId(projectId);
         return Optional.ofNullable(priorityService.queryByOrganizationIdList(organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))

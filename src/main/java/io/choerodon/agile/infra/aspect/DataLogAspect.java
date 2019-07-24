@@ -1,15 +1,13 @@
 package io.choerodon.agile.infra.aspect;
 
 import io.choerodon.agile.api.vo.PriorityVO;
-import io.choerodon.agile.api.vo.StatusMapVO;
-import io.choerodon.agile.app.service.DataLogService;
-import io.choerodon.agile.app.service.UserService;
+import io.choerodon.agile.api.vo.StatusVO;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.annotation.DataLog;
+import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.utils.RedisUtil;
-import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -160,13 +158,17 @@ public class DataLogAspect {
     @Autowired
     private RedisUtil redisUtil;
     @Autowired
-    private IssueFeignClient issueFeignClient;
+    private PriorityService priorityService;
     @Autowired
     private DataLogRedisUtil dataLogRedisUtil;
     @Autowired
     private WorkLogMapper workLogMapper;
     @Autowired
     private PiMapper piMapper;
+    @Autowired
+    private IssueTypeService issueTypeService;
+    @Autowired
+    private StatusService statusService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -362,10 +364,10 @@ public class DataLogAspect {
         Long updateStatusId = (Long) args[1];
         List<IssueDTO> issueDTOList = (List<IssueDTO>) args[2];
         if (programId != null && updateStatusId != null && issueDTOList != null && !issueDTOList.isEmpty()) {
-            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(ConvertUtil.getOrganizationId(programId)).getBody();
-            StatusMapVO newStatus = statusMapDTOMap.get(updateStatusId);
+            Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(ConvertUtil.getOrganizationId(programId));
+            StatusVO newStatus = statusMapDTOMap.get(updateStatusId);
             for (IssueDTO issueDTO : issueDTOList) {
-                StatusMapVO oldStatus = statusMapDTOMap.get(issueDTO.getStatusId());
+                StatusVO oldStatus = statusMapDTOMap.get(issueDTO.getStatusId());
                 createDataLog(programId, issueDTO.getIssueId(), FIELD_STATUS, oldStatus.getName(), newStatus.getName(), oldStatus.getId().toString(), newStatus.getId().toString());
             }
         }
@@ -379,8 +381,8 @@ public class DataLogAspect {
         Long newStatusId = (Long) args[4];
         Long userId = (Long) args[5];
         if (projectId != null && Objects.nonNull(applyType) && issueTypeId != null && oldStatusId != null && newStatusId != null && !oldStatusId.equals(newStatusId)) {
-            StatusMapVO oldStatus = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), oldStatusId).getBody();
-            StatusMapVO newStatus = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), newStatusId).getBody();
+            StatusVO oldStatus = statusService.queryStatusById(ConvertUtil.getOrganizationId(projectId), oldStatusId);
+            StatusVO newStatus = statusService.queryStatusById(ConvertUtil.getOrganizationId(projectId), newStatusId);
             IssueStatusDTO oldStatusDO = issueStatusMapper.selectByStatusId(projectId, oldStatusId);
             IssueStatusDTO newStatusDO = issueStatusMapper.selectByStatusId(projectId, newStatusId);
             List<IssueDTO> issueDTOS = issueMapper.queryIssueWithCompleteInfoByStatusId(projectId, applyType, issueTypeId, oldStatusId);
@@ -401,7 +403,7 @@ public class DataLogAspect {
         Long userId = (Long) args[3];
         List<Long> projectIds = (List) args[4];
         if (priorityId != null && Objects.nonNull(changePriorityId) && projectIds != null && !projectIds.isEmpty()) {
-            List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+            List<PriorityVO> priorityVOList = priorityService.queryByOrganizationIdList(organizationId);
             Map<Long, PriorityVO> priorityMap = priorityVOList.stream().collect(Collectors.toMap(PriorityVO::getId, Function.identity()));
             List<IssueDTO> issueDTOS = issueMapper.queryIssuesByPriorityId(priorityId, projectIds);
             if (issueDTOS != null && !issueDTOS.isEmpty()) {
@@ -554,11 +556,11 @@ public class DataLogAspect {
             IssueDTO query = new IssueDTO();
             query.setStatusId(issueStatus.getStatusId());
             query.setProjectId(projectId);
-            StatusMapVO statusMapVO = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(projectId), issueStatus.getStatusId()).getBody();
+            StatusVO StatusVO = statusService.queryStatusById(ConvertUtil.getOrganizationId(projectId), issueStatus.getStatusId());
             List<IssueDTO> issueDTOS = issueMapper.select(query);
             if (issueDTOS != null && !issueDTOS.isEmpty()) {
                 Long userId = DetailsHelper.getUserDetails().getUserId();
-                dataLogMapper.batchCreateStatusLogByIssueDOS(projectId, issueDTOS, userId, statusMapVO, issueStatus.getCompleted());
+                dataLogMapper.batchCreateStatusLogByIssueDOS(projectId, issueDTOS, userId, StatusVO, issueStatus.getCompleted());
                 dataLogRedisUtil.handleBatchDeleteRedisCache(issueDTOS, projectId);
             }
 
@@ -1148,9 +1150,9 @@ public class DataLogAspect {
                 IssueStatusDTO issueStatusDTO = issueStatusMapper.selectByStatusId(issueConvertDTO.getProjectId(), issueConvertDTO.getStatusId());
                 Boolean condition = (issueStatusDTO.getCompleted() != null && issueStatusDTO.getCompleted());
                 if (condition) {
-                    StatusMapVO statusMapVO = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(issueConvertDTO.getProjectId()), issueConvertDTO.getStatusId()).getBody();
+                    StatusVO StatusVO = statusService.queryStatusById(ConvertUtil.getOrganizationId(issueConvertDTO.getProjectId()), issueConvertDTO.getStatusId());
                     createDataLog(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId(), FIELD_RESOLUTION, null,
-                            statusMapVO.getName(), null, issueStatusDTO.getStatusId().toString());
+                            StatusVO.getName(), null, issueStatusDTO.getStatusId().toString());
                 }
                 if (issueConvertDTO.getEpicId() != null && !issueConvertDTO.getEpicId().equals(0L)) {
                     //选择EPIC要生成日志
@@ -1261,8 +1263,8 @@ public class DataLogAspect {
 
     private void handleType(List<String> field, IssueDTO originIssueDTO, IssueConvertDTO issueConvertDTO) {
         if (field.contains(TYPE_CODE) && !Objects.equals(originIssueDTO.getTypeCode(), issueConvertDTO.getTypeCode())) {
-            String originTypeName = issueFeignClient.queryIssueTypeById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getIssueTypeId()).getBody().getName();
-            String currentTypeName = issueFeignClient.queryIssueTypeById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getIssueTypeId()).getBody().getName();
+            String originTypeName = issueTypeService.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getIssueTypeId()).getName();
+            String currentTypeName = issueTypeService.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getIssueTypeId()).getName();
             createDataLog(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), FIELD_ISSUETYPE, originTypeName, currentTypeName,
                     originIssueDTO.getIssueTypeId().toString(), issueConvertDTO.getIssueTypeId().toString());
             dataLogRedisUtil.deleteByHandleType(issueConvertDTO, originIssueDTO);
@@ -1283,16 +1285,16 @@ public class DataLogAspect {
 
     private void handleStatus(List<String> field, IssueDTO originIssueDTO, IssueConvertDTO issueConvertDTO) {
         if (field.contains(STATUS_ID) && !Objects.equals(originIssueDTO.getStatusId(), issueConvertDTO.getStatusId())) {
-            StatusMapVO originStatusMapVO = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getStatusId()).getBody();
-            StatusMapVO currentStatusMapVO = issueFeignClient.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getStatusId()).getBody();
+            StatusVO originStatusVO = statusService.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getStatusId());
+            StatusVO currentStatusVO = statusService.queryStatusById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getStatusId());
             IssueStatusDTO originStatus = issueStatusMapper.selectByStatusId(originIssueDTO.getProjectId(), originIssueDTO.getStatusId());
             IssueStatusDTO currentStatus = issueStatusMapper.selectByStatusId(originIssueDTO.getProjectId(), issueConvertDTO.getStatusId());
-            createDataLog(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), FIELD_STATUS, originStatusMapVO.getName(),
-                    currentStatusMapVO.getName(), originIssueDTO.getStatusId().toString(), issueConvertDTO.getStatusId().toString());
+            createDataLog(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), FIELD_STATUS, originStatusVO.getName(),
+                    currentStatusVO.getName(), originIssueDTO.getStatusId().toString(), issueConvertDTO.getStatusId().toString());
             Boolean condition = (originStatus.getCompleted() != null && originStatus.getCompleted()) || (currentStatus.getCompleted() != null && currentStatus.getCompleted());
             if (condition) {
                 //生成解决问题日志
-                dataLogResolution(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), originStatus, currentStatus, originStatusMapVO, currentStatusMapVO);
+                dataLogResolution(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(), originStatus, currentStatus, originStatusVO, currentStatusVO);
             }
             //删除缓存
             dataLogRedisUtil.deleteByHandleStatus(issueConvertDTO, originIssueDTO, condition);
@@ -1397,8 +1399,8 @@ public class DataLogAspect {
 
     private void handlePriority(List<String> field, IssueDTO originIssueDTO, IssueConvertDTO issueConvertDTO) {
         if (field.contains(PRIORITY_CODE_FIELD) && !Objects.equals(originIssueDTO.getPriorityId(), issueConvertDTO.getPriorityId())) {
-            PriorityVO originPriorityVO = issueFeignClient.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getPriorityId()).getBody();
-            PriorityVO currentPriorityVO = issueFeignClient.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getPriorityId()).getBody();
+            PriorityVO originPriorityVO = priorityService.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), originIssueDTO.getPriorityId());
+            PriorityVO currentPriorityVO = priorityService.queryById(ConvertUtil.getOrganizationId(originIssueDTO.getProjectId()), issueConvertDTO.getPriorityId());
             createDataLog(originIssueDTO.getProjectId(), originIssueDTO.getIssueId(),
                     FIELD_PRIORITY, originPriorityVO.getName()
                     , currentPriorityVO.getName(), originIssueDTO.getProjectId().toString(), issueConvertDTO.getPriorityId().toString());
@@ -1452,7 +1454,7 @@ public class DataLogAspect {
         }
     }
 
-    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDTO originStatus, IssueStatusDTO currentStatus, StatusMapVO originStatusMapVO, StatusMapVO currentStatusMapVO) {
+    private void dataLogResolution(Long projectId, Long issueId, IssueStatusDTO originStatus, IssueStatusDTO currentStatus, StatusVO originStatusVO, StatusVO currentStatusVO) {
         Boolean condition = (originStatus.getCompleted() == null || !originStatus.getCompleted()) || (currentStatus.getCompleted() == null || !currentStatus.getCompleted());
         if (condition) {
             String oldValue = null;
@@ -1461,10 +1463,10 @@ public class DataLogAspect {
             String newString = null;
             if (originStatus.getCompleted() != null && originStatus.getCompleted()) {
                 oldValue = originStatus.getStatusId().toString();
-                oldString = originStatusMapVO.getName();
+                oldString = originStatusVO.getName();
             } else if (currentStatus.getCompleted()) {
                 newValue = currentStatus.getStatusId().toString();
-                newString = currentStatusMapVO.getName();
+                newString = currentStatusVO.getName();
             }
             createDataLog(projectId, issueId, FIELD_RESOLUTION, oldString, newString, oldValue, newValue);
             redisUtil.deleteRedisCache(new String[]{PIECHART + projectId + ':' + FIELD_RESOLUTION + "*"});

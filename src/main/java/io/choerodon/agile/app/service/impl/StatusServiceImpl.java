@@ -2,9 +2,10 @@ package io.choerodon.agile.app.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.choerodon.base.domain.PageRequest;
-import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.api.vo.StatusCheckVO;
+import io.choerodon.agile.api.vo.StatusSearchVO;
+import io.choerodon.agile.api.vo.StatusVO;
+import io.choerodon.agile.api.vo.StatusWithInfoVO;
 import io.choerodon.agile.app.service.StateMachineNodeService;
 import io.choerodon.agile.app.service.StatusService;
 import io.choerodon.agile.infra.cache.InstanceCache;
@@ -17,6 +18,8 @@ import io.choerodon.agile.infra.exception.RemoveStatusException;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.infra.utils.EnumUtil;
 import io.choerodon.agile.infra.utils.PageUtil;
+import io.choerodon.base.domain.PageRequest;
+import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,12 +134,12 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Override
-    public StatusInfoVO queryStatusById(Long organizationId, Long stateId) {
+    public StatusVO queryStatusById(Long organizationId, Long stateId) {
         StatusDTO status = statusMapper.queryById(organizationId, stateId);
         if (status == null) {
             throw new CommonException("error.queryStatusById.notExist");
         }
-        return modelMapper.map(status, StatusInfoVO.class);
+        return modelMapper.map(status, StatusVO.class);
     }
 
     @Override
@@ -149,15 +152,15 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Override
-    public Map<Long, StatusMapVO> queryAllStatusMap(Long organizationId) {
+    public Map<Long, StatusVO> queryAllStatusMap(Long organizationId) {
         StatusDTO status = new StatusDTO();
         status.setOrganizationId(organizationId);
         List<StatusDTO> statuses = statusMapper.select(status);
-        Map<Long, StatusMapVO> statusMap = new HashMap<>();
+        Map<Long, StatusVO> statusMap = new HashMap<>();
         for (StatusDTO sta : statuses) {
-            StatusMapVO statusMapVO = modelMapper.map(sta, new TypeToken<StatusMapVO>() {
+            StatusVO statusVO = modelMapper.map(sta, new TypeToken<StatusVO>() {
             }.getType());
-            statusMap.put(statusMapVO.getId(), statusMapVO);
+            statusMap.put(statusVO.getId(), statusVO);
         }
         return statusMap;
     }

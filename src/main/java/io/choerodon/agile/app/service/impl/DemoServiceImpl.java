@@ -1,18 +1,16 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.api.vo.event.DemoPayload;
 import io.choerodon.agile.api.vo.event.OrganizationRegisterEventPayload;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.dataobject.BoardColumnDTO;
 import io.choerodon.agile.infra.dataobject.BoardDTO;
 import io.choerodon.agile.infra.dataobject.IssueLinkTypeDTO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.asgard.saga.annotation.Saga;
-import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,9 +34,6 @@ public class DemoServiceImpl implements DemoService {
 
     @Autowired
     private ProductVersionService productVersionService;
-
-    @Autowired
-    private IssueFeignClient issueFeignClient;
 
     @Autowired
     private IssueService issueService;
@@ -80,14 +75,14 @@ public class DemoServiceImpl implements DemoService {
     private ProjectInfoMapper projectInfoMapper;
 
     @Autowired
-    private SagaClient sagaClient;
-
-    @Autowired
     private IssueLinkTypeMapper issueLinkTypeMapper;
 
     @Autowired
     private IssueLinkService issueLinkService;
-
+    @Autowired
+    private ProjectConfigService projectConfigService;
+    @Autowired
+    private PriorityService priorityService;
 
     private void setIssueTypeMap(Map<String, IssueTypeWithStateMachineIdVO> issueTypeMap, List<IssueTypeWithStateMachineIdVO> issueTypes) {
         for (IssueTypeWithStateMachineIdVO issueTypeWithStateMachineIdVO : issueTypes) {
@@ -420,6 +415,7 @@ public class DemoServiceImpl implements DemoService {
 
     /**
      * 日期相加减
+     *
      * @param cur
      * @return
      */
@@ -477,17 +473,17 @@ public class DemoServiceImpl implements DemoService {
 
 
         // 查询issue type类型
-        List<IssueTypeWithStateMachineIdVO> agileIssueTypes = issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(projectId, AGILE_APPLYTYPE).getBody();
+        List<IssueTypeWithStateMachineIdVO> agileIssueTypes = projectConfigService.queryIssueTypesWithStateMachineIdByProjectId(projectId, AGILE_APPLYTYPE);
         Map<String, IssueTypeWithStateMachineIdVO> agileIssueTypeMap = new HashMap<>();
         setIssueTypeMap(agileIssueTypeMap, agileIssueTypes);
 
         // 查询测试的issue type类型
-        List<IssueTypeWithStateMachineIdVO> testIssueTypes = issueFeignClient.queryIssueTypesWithStateMachineIdByProjectId(projectId, TEST_APPLYTYPE).getBody();
+        List<IssueTypeWithStateMachineIdVO> testIssueTypes = projectConfigService.queryIssueTypesWithStateMachineIdByProjectId(projectId, TEST_APPLYTYPE);
         Map<String, IssueTypeWithStateMachineIdVO> testIssueTypeMap = new HashMap<>();
         setIssueTypeMap(testIssueTypeMap, testIssueTypes);
 
         // 查询优先级列表
-        PriorityVO defaultPriority = issueFeignClient.queryDefaultByOrganizationId(organizationId).getBody();
+        PriorityVO defaultPriority = priorityService.queryDefaultByOrganizationId(organizationId);
 
 
         // 创建史诗
@@ -559,7 +555,7 @@ public class DemoServiceImpl implements DemoService {
         IssueVO test4 = createTest(projectId, "通过商品详情快速下单", defaultPriority, testIssueTypeMap);
 
         // 更新优先级
-        List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
+        List<PriorityVO> priorityVOList = priorityService.queryByOrganizationIdList(organizationId);
         Map<String, Long> priorityMap = new HashMap<>();
         setPriorityMap(priorityVOList, priorityMap);
         updatePriority(projectId, task3.getIssueId(), priorityMap.get("高"), 1L);
@@ -663,7 +659,7 @@ public class DemoServiceImpl implements DemoService {
             statusMap.put(issueStatusVO.getCategoryCode(), issueStatusVO.getStatusId());
         }
         Long currentStatusId1 = story1.getStatusId();
-        List<TransformVO> transformVOList1 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId1, story1.getIssueId(), story1.getIssueTypeId(), "agile").getBody();
+        List<TransformVO> transformVOList1 = projectConfigService.queryTransformsByProjectId(projectId, currentStatusId1, story1.getIssueId(), story1.getIssueTypeId(), "agile");
         Map<String, Long> transformMap1 = new HashMap<>();
         setTransformMap(transformMap1, transformVOList1);
         Long completeTransformId1 = transformMap1.get("全部转换到已完成");
@@ -671,14 +667,14 @@ public class DemoServiceImpl implements DemoService {
 
 
         Long currentStatusId2 = task1.getStatusId();
-        List<TransformVO> transformVOList2 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId2, task1.getIssueId(), task1.getIssueTypeId(), "agile").getBody();
+        List<TransformVO> transformVOList2 = projectConfigService.queryTransformsByProjectId(projectId, currentStatusId2, task1.getIssueId(), task1.getIssueTypeId(), "agile");
         Map<String, Long> transformMap2 = new HashMap<>();
         setTransformMap(transformMap2, transformVOList2);
         Long completeTransformId2 = transformMap2.get("全部转换到已完成");
         Long doingTransformId2 = transformMap2.get("全部转换到处理中");
 
         Long currentStatusId4 = bug1.getStatusId();
-        List<TransformVO> transformVOList4 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId4, bug1.getIssueId(), bug1.getIssueTypeId(), "agile").getBody();
+        List<TransformVO> transformVOList4 = projectConfigService.queryTransformsByProjectId(projectId, currentStatusId4, bug1.getIssueId(), bug1.getIssueTypeId(), "agile");
         Map<String, Long> transformMap4 = new HashMap<>();
         setTransformMap(transformMap4, transformVOList4);
         Long completeTransformId4 = transformMap4.get("全部转换到已完成");
@@ -686,7 +682,7 @@ public class DemoServiceImpl implements DemoService {
 
 
         Long currentStatusId3 = subtask1.getStatusId();
-        List<TransformVO> transformVOList3 = issueFeignClient.queryTransformsByProjectId(projectId, currentStatusId3, subtask1.getIssueId(), subtask1.getIssueTypeId(), "agile").getBody();
+        List<TransformVO> transformVOList3 = projectConfigService.queryTransformsByProjectId(projectId, currentStatusId3, subtask1.getIssueId(), subtask1.getIssueTypeId(), "agile");
         Map<String, Long> transformMap3 = new HashMap<>();
         setTransformMap(transformMap3, transformVOList3);
         Long completeTransformId3 = transformMap3.get("全部转换到已完成");
@@ -718,46 +714,46 @@ public class DemoServiceImpl implements DemoService {
         completeIssue(projectId, subtask15.getIssueId(), doingTransformId3, subtask15.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
         completeIssue(projectId, bug1.getIssueId(), doingTransformId4, bug1.getObjectVersionNumber(), sprintId1, statusMap.get("doing"));
 
-        completeIssue(projectId, story1.getIssueId(), completeTransformId1, story1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, story2.getIssueId(), completeTransformId1, story2.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, story3.getIssueId(), completeTransformId1, story3.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, story4.getIssueId(), completeTransformId1, story4.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, story5.getIssueId(), completeTransformId1, story5.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, task1.getIssueId(), completeTransformId2, task1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, task3.getIssueId(), completeTransformId2, task3.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask1.getIssueId(), completeTransformId3, subtask1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask2.getIssueId(), completeTransformId3, subtask2.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask3.getIssueId(), completeTransformId3, subtask3.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask4.getIssueId(), completeTransformId3, subtask4.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask5.getIssueId(), completeTransformId3, subtask5.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask6.getIssueId(), completeTransformId3, subtask6.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask7.getIssueId(), completeTransformId3, subtask7.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask8.getIssueId(), completeTransformId3, subtask8.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask9.getIssueId(), completeTransformId3, subtask9.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask10.getIssueId(), completeTransformId3, subtask10.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask11.getIssueId(), completeTransformId3, subtask11.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask12.getIssueId(), completeTransformId3, subtask12.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask13.getIssueId(), completeTransformId3, subtask13.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask14.getIssueId(), completeTransformId3, subtask14.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, subtask15.getIssueId(), completeTransformId3, subtask15.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
-        completeIssue(projectId, bug1.getIssueId(), completeTransformId4, bug1.getObjectVersionNumber()+1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story1.getIssueId(), completeTransformId1, story1.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story2.getIssueId(), completeTransformId1, story2.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story3.getIssueId(), completeTransformId1, story3.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story4.getIssueId(), completeTransformId1, story4.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, story5.getIssueId(), completeTransformId1, story5.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, task1.getIssueId(), completeTransformId2, task1.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, task3.getIssueId(), completeTransformId2, task3.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask1.getIssueId(), completeTransformId3, subtask1.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask2.getIssueId(), completeTransformId3, subtask2.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask3.getIssueId(), completeTransformId3, subtask3.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask4.getIssueId(), completeTransformId3, subtask4.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask5.getIssueId(), completeTransformId3, subtask5.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask6.getIssueId(), completeTransformId3, subtask6.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask7.getIssueId(), completeTransformId3, subtask7.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask8.getIssueId(), completeTransformId3, subtask8.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask9.getIssueId(), completeTransformId3, subtask9.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask10.getIssueId(), completeTransformId3, subtask10.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask11.getIssueId(), completeTransformId3, subtask11.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask12.getIssueId(), completeTransformId3, subtask12.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask13.getIssueId(), completeTransformId3, subtask13.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask14.getIssueId(), completeTransformId3, subtask14.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, subtask15.getIssueId(), completeTransformId3, subtask15.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
+        completeIssue(projectId, bug1.getIssueId(), completeTransformId4, bug1.getObjectVersionNumber() + 1, sprintId1, statusMap.get("done"));
 
         // 完成冲刺2的任务
         completeIssue(projectId, subtask16.getIssueId(), doingTransformId3, subtask16.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
-        completeIssue(projectId, subtask16.getIssueId(), completeTransformId3, subtask16.getObjectVersionNumber()+1, sprintId2, statusMap.get("done"));
+        completeIssue(projectId, subtask16.getIssueId(), completeTransformId3, subtask16.getObjectVersionNumber() + 1, sprintId2, statusMap.get("done"));
 
         completeIssue(projectId, subtask17.getIssueId(), doingTransformId3, subtask17.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
-        completeIssue(projectId, subtask17.getIssueId(), completeTransformId3, subtask17.getObjectVersionNumber()+1, sprintId2, statusMap.get("done"));
+        completeIssue(projectId, subtask17.getIssueId(), completeTransformId3, subtask17.getObjectVersionNumber() + 1, sprintId2, statusMap.get("done"));
 
         completeIssue(projectId, story6.getIssueId(), doingTransformId1, story6.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
-        completeIssue(projectId, story6.getIssueId(), completeTransformId1, story6.getObjectVersionNumber()+1, sprintId2, statusMap.get("done"));
+        completeIssue(projectId, story6.getIssueId(), completeTransformId1, story6.getObjectVersionNumber() + 1, sprintId2, statusMap.get("done"));
 
         completeIssue(projectId, subtask21.getIssueId(), doingTransformId3, subtask21.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask18.getIssueId(), doingTransformId3, subtask18.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
         completeIssue(projectId, subtask19.getIssueId(), doingTransformId3, subtask19.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
 
         completeIssue(projectId, task2.getIssueId(), doingTransformId2, task2.getObjectVersionNumber(), sprintId2, statusMap.get("doing"));
-        completeIssue(projectId, task2.getIssueId(), completeTransformId2, task2.getObjectVersionNumber()+1, sprintId2, statusMap.get("done"));
+        completeIssue(projectId, task2.getIssueId(), completeTransformId2, task2.getObjectVersionNumber() + 1, sprintId2, statusMap.get("done"));
 
 
         // 创建模块与关联模块
@@ -1082,7 +1078,6 @@ public class DemoServiceImpl implements DemoService {
         issueMapper.updateDemoCreaterBySpecify(projectId, subtask19.getIssueId(), userId1);
         issueMapper.updateDemoCreaterBySpecify(projectId, subtask20.getIssueId(), userId1);
         issueMapper.updateDemoCreaterBySpecify(projectId, subtask21.getIssueId(), userId1);
-
 
 
         // 开启冲刺2

@@ -56,7 +56,7 @@ public interface StateMachineService {
      * @param stateMachineId 状态机id
      * @return 发布状态机对象
      */
-    Boolean deploy(Long organizationId, Long stateMachineId, Boolean isStartSaga);
+    Boolean deploy(Long organizationId, Long stateMachineId, Boolean isChangeStatus);
 
     /**
      * 删除状态机

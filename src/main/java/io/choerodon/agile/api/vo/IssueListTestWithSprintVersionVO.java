@@ -59,7 +59,7 @@ public class IssueListTestWithSprintVersionVO {
     private PriorityVO priorityVO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeVO issueTypeVO;
@@ -81,7 +81,7 @@ public class IssueListTestWithSprintVersionVO {
         this.addIssue = issueListTestVO.getAddIssue();
         this.remainingTime = issueListTestVO.getRemainingTime();
         this.priorityVO = issueListTestVO.getPriorityVO();
-        this.statusMapVO = issueListTestVO.getStatusMapVO();
+        this.statusMapVO = issueListTestVO.getStatusVO();
         this.issueTypeVO = issueListTestVO.getIssueTypeVO();
         this.lastUpdateDate = issueListTestVO.getLastUpdateDate();
     }
@@ -223,11 +223,11 @@ public class IssueListTestWithSprintVersionVO {
         return priorityVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 

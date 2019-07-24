@@ -62,10 +62,6 @@ public interface InitService {
      */
     Long initPRStateMachine(Long organizationId, ProjectEvent projectEvent);
 
-    void sendSagaToAgileByCreateProject(ProjectEvent projectEvent, Long stateMachineId);
-
-    void sendSagaToAgileByCreateProgram(ProjectEvent projectEvent, Long stateMachineId);
-
     void createStateMachineDetail(Long organizationId, Long stateMachineId, String applyType);
 }
 

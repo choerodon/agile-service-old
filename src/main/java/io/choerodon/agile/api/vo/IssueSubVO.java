@@ -104,7 +104,7 @@ public class IssueSubVO {
     private IssueTypeVO issueTypeVO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     @ApiModelProperty(value = "问题类型id")
     private Long issueTypeId;
@@ -183,11 +183,11 @@ public class IssueSubVO {
         this.issueTypeVO = issueTypeVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 

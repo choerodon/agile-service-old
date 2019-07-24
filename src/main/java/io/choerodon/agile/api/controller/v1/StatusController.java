@@ -90,7 +90,7 @@ public class StatusController extends BaseController {
     @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "根据id查询状态对象")
     @GetMapping(value = "/organizations/{organization_id}/status/{status_id}")
-    public ResponseEntity<StatusInfoVO> queryStatusById(@PathVariable("organization_id") Long organizationId,
+    public ResponseEntity<StatusVO> queryStatusById(@PathVariable("organization_id") Long organizationId,
                                                         @PathVariable("status_id") Long statusId) {
         return new ResponseEntity<>(statusService.queryStatusById(organizationId, statusId), HttpStatus.OK);
     }
@@ -113,7 +113,7 @@ public class StatusController extends BaseController {
     @Permission(type = ResourceType.ORGANIZATION)
     @ApiOperation(value = "查询组织下的所有状态,返回map")
     @GetMapping(value = "/organizations/{organization_id}/status/list_map")
-    public ResponseEntity<Map<Long, StatusMapVO>> queryAllStatusMap(
+    public ResponseEntity<Map<Long, StatusVO>> queryAllStatusMap(
             @ApiParam(value = "组织id", required = true)
             @PathVariable("organization_id") Long organizationId) {
         return new ResponseEntity<>(statusService.queryAllStatusMap(organizationId), HttpStatus.OK);
@@ -139,15 +139,5 @@ public class StatusController extends BaseController {
         return Optional.ofNullable(statusService.checkName(organizationId, name))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.statusName.check"));
-    }
-
-    @Permission(type = ResourceType.ORGANIZATION)
-    @ApiOperation(value = "根据ids批量查询状态")
-    @PostMapping(value = "/status/batch")
-    public ResponseEntity<Map<Long, StatusDTO>> batchStatusGet(@ApiParam(value = "状态ids", required = true)
-                                                               @RequestBody List<Long> ids) {
-        return Optional.ofNullable(statusService.batchStatusGet(ids))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.status.get"));
     }
 }

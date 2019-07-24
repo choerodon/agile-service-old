@@ -106,14 +106,4 @@ public class StateMachineTransformController extends BaseController {
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.transformName.check"));
     }
-
-    @Permission(type = ResourceType.ORGANIZATION, roles = {InitRoleCode.ORGANIZATION_ADMINISTRATOR, InitRoleCode.ORGANIZATION_MEMBER})
-    @ApiOperation(value = "敏捷获取转换")
-    @GetMapping(value = "/query_deploy_transform")
-    public ResponseEntity<StateMachineTransformDTO> queryDeployTransformForAgile(@PathVariable("organization_id") Long organizationId,
-                                                                                 @RequestParam("transformId") Long transformId) {
-        return Optional.ofNullable(transformService.queryDeployTransformForAgile(organizationId, transformId))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .orElseThrow(() -> new CommonException("error.stateMachineTransform.queryDeployTransformForAgile"));
-    }
 }

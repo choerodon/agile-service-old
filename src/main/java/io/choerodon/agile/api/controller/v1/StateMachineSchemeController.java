@@ -137,12 +137,4 @@ public class StateMachineSchemeController {
                                                             @PathVariable("scheme_id") Long stateMachineId) {
         return new ResponseEntity<>(configService.deleteDraft(organizationId, stateMachineId), HttpStatus.NO_CONTENT);
     }
-
-    @Permission(type = ResourceType.ORGANIZATION)
-    @ApiOperation(value = "【内部调用】更新状态机方案发布进度")
-    @PutMapping(value = "/update_deploy_progress/{scheme_id}")
-    public ResponseEntity<Boolean> updateDeployProgress(@PathVariable("organization_id") Long organizationId, @PathVariable("scheme_id") Long schemeId,
-                                                        @RequestParam("deployProgress") Integer deployProgress) {
-        return new ResponseEntity<>(schemeService.updateDeployProgress(organizationId, schemeId, deployProgress), HttpStatus.OK);
-    }
 }

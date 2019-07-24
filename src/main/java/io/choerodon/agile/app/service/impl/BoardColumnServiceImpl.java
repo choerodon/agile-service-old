@@ -1,23 +1,25 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.BoardColumnValidator;
+import io.choerodon.agile.api.vo.BoardColumnVO;
+import io.choerodon.agile.api.vo.ColumnSortVO;
+import io.choerodon.agile.api.vo.ColumnWithMaxMinNumVO;
+import io.choerodon.agile.api.vo.StatusVO;
 import io.choerodon.agile.api.vo.event.RemoveStatusWithProject;
+import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.app.service.BoardColumnService;
 import io.choerodon.agile.app.service.ColumnStatusRelService;
 import io.choerodon.agile.app.service.IssueStatusService;
-import io.choerodon.agile.api.vo.event.StatusPayload;
+import io.choerodon.agile.app.service.ProjectConfigService;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.utils.ConvertUtil;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.BoardColumnMapper;
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
 import io.choerodon.agile.infra.mapper.IssueStatusMapper;
+import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,13 +64,10 @@ public class BoardColumnServiceImpl implements BoardColumnService {
 
     @Autowired
     private IssueStatusMapper issueStatusMapper;
-
-    @Autowired
-    private IssueFeignClient issueFeignClient;
-
     @Autowired
     private IssueStatusService issueStatusService;
-
+    @Autowired
+    private ProjectConfigService projectConfigService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -158,12 +157,12 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         if (!APPLY_TYPE_PROGRAM.equals(applyType)) {
             createCheck(boardColumnVO);
         }
-        StatusInfoVO statusInfoVO = new StatusInfoVO();
-        statusInfoVO.setType(categoryCode);
-        statusInfoVO.setName(boardColumnVO.getName());
-        ResponseEntity<StatusInfoVO> responseEntity = issueFeignClient.createStatusForAgile(projectId, applyType, statusInfoVO);
-        if (responseEntity.getStatusCode().value() == 200 && responseEntity.getBody() != null && responseEntity.getBody().getId() != null) {
-            Long statusId = responseEntity.getBody().getId();
+        StatusVO statusVO = new StatusVO();
+        statusVO.setType(categoryCode);
+        statusVO.setName(boardColumnVO.getName());
+        statusVO = projectConfigService.createStatusForAgile(projectId, applyType, statusVO);
+        if (statusVO != null && statusVO.getId() != null) {
+            Long statusId = statusVO.getId();
             Boolean checkStatus = checkColumnStatusExist(projectId, statusId);
             setColumnColor(boardColumnVO, checkStatus);
 //            BoardColumnE boardColumnE = boardColumnRepository.create(ConvertHelper.convert(boardColumnVO, BoardColumnE.class));
@@ -410,7 +409,7 @@ public class BoardColumnServiceImpl implements BoardColumnService {
         List<ColumnWithStatusRelDTO> columnWithStatusRelDTOList = boardColumnMapper.queryColumnStatusRelByProjectId(boardResult.getProjectId());
         Long projectId = boardResult.getProjectId();
         Long boardId = boardResult.getBoardId();
-        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         for (ColumnWithStatusRelDTO columnWithStatusRelDTO : columnWithStatusRelDTOList) {
             columnWithStatusRelDTO.setCategoryCode(statusMapDTOMap.get(columnWithStatusRelDTO.getStatusId()).getType());
         }

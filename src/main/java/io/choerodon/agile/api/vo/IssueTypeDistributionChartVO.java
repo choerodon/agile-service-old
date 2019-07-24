@@ -16,7 +16,7 @@ public class IssueTypeDistributionChartVO {
     private IssueTypeVO issueTypeVO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     public IssueTypeVO getIssueTypeVO() {
         return issueTypeVO;
@@ -26,11 +26,11 @@ public class IssueTypeDistributionChartVO {
         this.issueTypeVO = issueTypeVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 

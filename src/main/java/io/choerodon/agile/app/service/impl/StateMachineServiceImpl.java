@@ -12,6 +12,7 @@ import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.infra.utils.PageUtil;
 import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.entity.Criteria;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -67,11 +68,15 @@ public class StateMachineServiceImpl implements StateMachineService {
     @Autowired
     private StatusService statusService;
     @Autowired
-    private SagaServiceImpl sagaService;
-    @Autowired
     private InstanceCache instanceCache;
     @Autowired
     private IssueMapper issueMapper;
+    @Autowired
+    private StateMachineService stateMachineService;
+    @Autowired
+    private IssueStatusService issueStatusService;
+    @Autowired
+    private BoardColumnService boardColumnService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -178,7 +183,7 @@ public class StateMachineServiceImpl implements StateMachineService {
     }
 
     @Override
-    public Boolean deploy(Long organizationId, Long stateMachineId, Boolean isStartSaga) {
+    public Boolean deploy(Long organizationId, Long stateMachineId, Boolean isChangeStatus) {
         if (stateMachineId == null) {
             throw new CommonException("error.stateMachineId.null");
         }
@@ -190,9 +195,9 @@ public class StateMachineServiceImpl implements StateMachineService {
             throw new CommonException("error.stateMachine.status.deployed");
         }
         String oldStatus = stateMachine.getStatus();
-        //是否同步状态到其他服务:前置处理
+        //是否有状态的改动
         Map<String, List<StatusDTO>> changeMap = null;
-        if (isStartSaga && !oldStatus.equals(StateMachineStatus.CREATE)) {
+        if (isChangeStatus && !oldStatus.equals(StateMachineStatus.CREATE)) {
             changeMap = new HashMap<>(3);
             deployHandleChange(changeMap, stateMachineId);
             //校验删除的节点状态是否有使用的issue
@@ -213,11 +218,48 @@ public class StateMachineServiceImpl implements StateMachineService {
         //清理内存中的旧状态机构建器与实例
         instanceCache.cleanStateMachine(stateMachineId);
 
-        //是否同步状态到其他服务:发saga
-        if (isStartSaga && !oldStatus.equals(StateMachineStatus.CREATE)) {
-            sagaService.deployStateMachine(organizationId, stateMachineId, changeMap);
+        //是否有状态的改动
+        if (isChangeStatus && !oldStatus.equals(StateMachineStatus.CREATE)) {
+            this.deployStateMachine(organizationId, stateMachineId, changeMap);
         }
         return true;
+    }
+
+    private void deployStateMachine(Long organizationId, Long stateMachineId, Map<String, List<StatusDTO>> changeMap) {
+        //新增的状态
+        List<StatusDTO> addList = changeMap.get("addList");
+        List<StatusVO> addListVO = modelMapper.map(addList, new TypeToken<List<StatusVO>>() {
+        }.getType());
+        Map<Long, StatusVO> statusMap = addListVO.stream().collect(Collectors.toMap(StatusVO::getId, x -> x));
+        //移除的状态
+        List<StatusDTO> deleteList = changeMap.get("deleteList");
+        List<Long> addStatusIds = addListVO.stream().map(StatusVO::getId).collect(Collectors.toList());
+        List<Long> deleteStatusIds = deleteList.stream().map(StatusDTO::getId).collect(Collectors.toList());
+        ChangeStatus changeStatus = new ChangeStatus(addStatusIds, deleteStatusIds);
+        DeployStateMachinePayload deployStateMachinePayload = stateMachineService.handleStateMachineChangeStatusByStateMachineId(organizationId, stateMachineId, changeStatus);
+        deployStateMachinePayload.setUserId(DetailsHelper.getUserDetails().getUserId());
+        //新增的状态赋予实体
+        deployStateMachinePayload.getAddStatusWithProjects().forEach(addStatusWithProject -> {
+            List<StatusVO> statuses = new ArrayList<>(addStatusWithProject.getAddStatusIds().size());
+            addStatusWithProject.getAddStatusIds().forEach(addStatusId -> {
+                StatusVO status = statusMap.get(addStatusId);
+                if (status != null) {
+                    statuses.add(status);
+                }
+            });
+            addStatusWithProject.setAddStatuses(statuses);
+        });
+        List<RemoveStatusWithProject> removeStatusWithProjects = deployStateMachinePayload.getRemoveStatusWithProjects();
+        List<AddStatusWithProject> addStatusWithProjects = deployStateMachinePayload.getAddStatusWithProjects();
+        //删除项目下的状态及与列的关联
+        if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
+            boardColumnService.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
+        }
+        //增加项目下的状态
+        if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
+            issueStatusService.batchCreateStatusByProjectIds(addStatusWithProjects, deployStateMachinePayload.getUserId());
+        }
+        logger.info("deploy-state-machine addStatusIds: {}, deleteStatusIds: {}", changeStatus.getAddStatusIds(), changeStatus.getDeleteStatusIds());
     }
 
     @Override

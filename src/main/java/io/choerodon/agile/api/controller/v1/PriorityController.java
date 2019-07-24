@@ -1,12 +1,12 @@
 package io.choerodon.agile.api.controller.v1;
 
-import io.choerodon.base.annotation.Permission;
-import io.choerodon.base.enums.ResourceType;
-import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.validator.PriorityValidator;
 import io.choerodon.agile.api.vo.PriorityVO;
 import io.choerodon.agile.app.service.PriorityService;
 import io.choerodon.agile.infra.utils.ParamUtils;
+import io.choerodon.base.annotation.Permission;
+import io.choerodon.base.enums.ResourceType;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.swagger.annotation.CustomPageRequest;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -119,18 +119,6 @@ public class PriorityController {
         return Optional.ofNullable(priorityService.queryByOrganizationIdList(organizationId))
                 .map(result -> new ResponseEntity<>(result, HttpStatus.OK))
                 .orElseThrow(() -> new CommonException("error.priorityList.get"));
-    }
-
-    @Permission(type = ResourceType.ORGANIZATION)
-    @ApiOperation(value = "根据id查询优先级")
-    @GetMapping("/{id}")
-    public ResponseEntity<PriorityVO> queryById(@ApiParam(value = "组织id", required = true)
-                                                @PathVariable("organization_id") Long organizationId,
-                                                @ApiParam(value = "id", required = true)
-                                                @PathVariable Long id) {
-        return Optional.ofNullable(priorityService.queryById(organizationId, id))
-                .map(result -> new ResponseEntity<>(result, HttpStatus.CREATED))
-                .orElseThrow(() -> new CommonException("error.priority.get"));
     }
 
     @Permission(type = ResourceType.ORGANIZATION)

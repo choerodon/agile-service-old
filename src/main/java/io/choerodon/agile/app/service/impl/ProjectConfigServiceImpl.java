@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.api.vo.event.TransformInfo;
-import io.choerodon.agile.api.vo.event.TransformVO;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.dataobject.IssueTypeDTO;
 import io.choerodon.agile.infra.dataobject.ProjectConfigDTO;

@@ -2,23 +2,20 @@ package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.app.service.ExcelService;
-import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.app.service.StateMachineClientService;
-import io.choerodon.agile.infra.utils.*;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.infra.feign.FileFeignClient;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.agile.infra.utils.CatalogExcelUtil;
-import io.choerodon.agile.infra.utils.ExcelUtil;
-import io.choerodon.agile.infra.utils.NumberUtil;
-import io.choerodon.agile.infra.utils.StringUtil;
+import io.choerodon.agile.infra.utils.*;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
@@ -44,7 +41,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExcelServiceImpl.class);
 
-    private static final String[] FIELDS_NAME = {"概要", "描述", "优先级", "问题类型","故事点", "剩余时间", "修复版本", "史诗名称", "模块", "冲刺"};
+    private static final String[] FIELDS_NAME = {"概要", "描述", "优先级", "问题类型", "故事点", "剩余时间", "修复版本", "史诗名称", "模块", "冲刺"};
     private static final String[] FIELDS = {"summary", "description", "priorityName", "typeName", "storyPoints", "remainTime", "version", "epicName", "component", "sprint"};
     private static final String BACKETNAME = "agile-service";
     private static final String SUB_TASK = "sub_task";
@@ -74,9 +71,6 @@ public class ExcelServiceImpl implements ExcelService {
     private StateMachineClientService stateMachineClientService;
 
     @Autowired
-    private IssueFeignClient issueFeignClient;
-
-    @Autowired
     private NotifyFeignClient notifyFeignClient;
 
     @Autowired
@@ -99,6 +93,10 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Autowired
     private SprintMapper sprintMapper;
+    @Autowired
+    private ProjectConfigService projectConfigService;
+    @Autowired
+    private PriorityService priorityService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -109,14 +107,14 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public void download(Long projectId, Long organizationId, HttpServletRequest request, HttpServletResponse response) {
-        List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-        List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
+        List<PriorityVO> priorityVOList = priorityService.queryByOrganizationIdList(organizationId);
+        List<IssueTypeVO> issueTypeVOList = projectConfigService.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE);
         List<ProductVersionCommonDTO> productVersionCommonDTOList = productVersionMapper.listByProjectId(projectId);
         List<IssueComponentDTO> issueComponentDTOList = issueComponentMapper.selectByProjectId(projectId);
         List<SprintDTO> sprintDTOList = sprintMapper.selectNotDoneByProjectId(projectId);
         List<String> priorityList = new ArrayList<>();
         for (PriorityVO priorityVO : priorityVOList) {
-            if (priorityVO.getEnable()){
+            if (priorityVO.getEnable()) {
                 priorityList.add(priorityVO.getName());
             }
         }
@@ -179,7 +177,7 @@ public class ExcelServiceImpl implements ExcelService {
             throw new CommonException("error.summary.null");
         }
         String description = null;
-        if (!(row.getCell(1)==null || row.getCell(1).toString().equals("") || row.getCell(1).getCellType() ==XSSFCell.CELL_TYPE_BLANK)){
+        if (!(row.getCell(1) == null || row.getCell(1).toString().equals("") || row.getCell(1).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
             description = row.getCell(1).toString();
         }
         String priorityName = row.getCell(2).toString();
@@ -191,27 +189,27 @@ public class ExcelServiceImpl implements ExcelService {
             return false;
         }
         BigDecimal storyPoint = null;
-        if(!(row.getCell(4)==null || row.getCell(4).toString().equals("") || row.getCell(4).getCellType() ==XSSFCell.CELL_TYPE_BLANK) && "故事".equals(typeName)) {
+        if (!(row.getCell(4) == null || row.getCell(4).toString().equals("") || row.getCell(4).getCellType() == XSSFCell.CELL_TYPE_BLANK) && "故事".equals(typeName)) {
             storyPoint = new BigDecimal(row.getCell(4).toString());
         }
         BigDecimal remainTime = null;
-        if(!(row.getCell(5)==null || row.getCell(5).toString().equals("") || row.getCell(5).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+        if (!(row.getCell(5) == null || row.getCell(5).toString().equals("") || row.getCell(5).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
             remainTime = new BigDecimal(row.getCell(5).toString());
         }
         String versionName = null;
-        if(!(row.getCell(6)==null || row.getCell(6).toString().equals("") || row.getCell(6).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+        if (!(row.getCell(6) == null || row.getCell(6).toString().equals("") || row.getCell(6).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
             versionName = row.getCell(6).toString();
         }
         String epicName = null;
-        if(!(row.getCell(7)==null || row.getCell(7).toString().equals("") || row.getCell(7).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+        if (!(row.getCell(7) == null || row.getCell(7).toString().equals("") || row.getCell(7).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
             epicName = row.getCell(7).toString();
         }
         String componentName = null;
-        if(!(row.getCell(8)==null || row.getCell(8).toString().equals("") || row.getCell(8).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+        if (!(row.getCell(8) == null || row.getCell(8).toString().equals("") || row.getCell(8).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
             componentName = row.getCell(8).toString();
         }
         String sprintName = null;
-        if(!(row.getCell(9)==null || row.getCell(9).toString().equals("") || row.getCell(9).getCellType() ==XSSFCell.CELL_TYPE_BLANK)) {
+        if (!(row.getCell(9) == null || row.getCell(9).toString().equals("") || row.getCell(9).getCellType() == XSSFCell.CELL_TYPE_BLANK)) {
             sprintName = row.getCell(9).toString();
         }
         List<VersionIssueRelVO> versionIssueRelVOList = null;
@@ -274,8 +272,8 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     private void setIssueTypeAndPriorityMap(Long organizationId, Long projectId, Map<String, IssueTypeVO> issueTypeMap, Map<String, Long> priorityMap, List<String> issueTypeList, List<String> priorityList) {
-        List<PriorityVO> priorityVOList = issueFeignClient.queryByOrganizationIdList(organizationId).getBody();
-        List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE).getBody();
+        List<PriorityVO> priorityVOList = priorityService.queryByOrganizationIdList(organizationId);
+        List<IssueTypeVO> issueTypeVOList = projectConfigService.queryIssueTypesByProjectId(projectId, APPLY_TYPE_AGILE);
         for (PriorityVO priorityVO : priorityVOList) {
             if (priorityVO.getEnable()) {
                 priorityMap.put(priorityVO.getName(), priorityVO.getId());
@@ -297,7 +295,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private String uploadErrorExcel(Workbook errorWorkbook) {
         // 上传错误的excel
-        ResponseEntity<String> response =  fileFeignClient.uploadFile(BACKETNAME, FILE_NAME, new MultipartExcelUtil(MULTIPART_NAME, ORIGINAL_FILE_NAME, errorWorkbook));
+        ResponseEntity<String> response = fileFeignClient.uploadFile(BACKETNAME, FILE_NAME, new MultipartExcelUtil(MULTIPART_NAME, ORIGINAL_FILE_NAME, errorWorkbook));
         if (response == null || response.getStatusCode() != HttpStatus.OK) {
             throw new CommonException("error.errorWorkbook.upload");
         }
@@ -315,15 +313,15 @@ public class ExcelServiceImpl implements ExcelService {
     private Map<Integer, String> checkRule(Long projectId, Row row, List<String> issueTypeList, List<String> priorityList, List<String> versionList, Map<String, IssueTypeVO> issueTypeMap, List<String> componentList, List<String> sprintList) {
         Map<Integer, String> errorMessage = new HashMap<>();
         // check summary
-        if (row.getCell(0)==null || row.getCell(0).toString().equals("") || row.getCell(0).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
+        if (row.getCell(0) == null || row.getCell(0).toString().equals("") || row.getCell(0).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
             errorMessage.put(0, "概要不能为空");
-        } else if (row.getCell(0).toString().length() > 44){
+        } else if (row.getCell(0).toString().length() > 44) {
             errorMessage.put(0, "概要过长");
         }
         // check priority
         if (row.getCell(2) == null || row.getCell(2).toString().equals("") || row.getCell(2).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
             errorMessage.put(2, "优先级不能为空");
-        } else if (!priorityList.contains(row.getCell(2).toString())){
+        } else if (!priorityList.contains(row.getCell(2).toString())) {
             errorMessage.put(2, "优先级输入错误");
         }
         // check issue type
@@ -340,13 +338,13 @@ public class ExcelServiceImpl implements ExcelService {
             } else if (!NumberUtil.isNumeric(storyPointStr)) {
                 errorMessage.put(4, "请输入数字");
             } else {
-                if (NumberUtil.isInteger(storyPointStr)  || NumberUtil.canParseInteger(storyPointStr)) {
+                if (NumberUtil.isInteger(storyPointStr) || NumberUtil.canParseInteger(storyPointStr)) {
                     if (storyPointStr.trim().length() > 3) {
                         errorMessage.put(4, "最大支持3位整数");
-                    } else if (storyPointStr.trim().length() > 1 && "0".equals(storyPointStr.trim().substring(0,0))){
+                    } else if (storyPointStr.trim().length() > 1 && "0".equals(storyPointStr.trim().substring(0, 0))) {
                         errorMessage.put(4, "请输入正确的整数");
                     }
-                } else if (!"0.5".equals(storyPointStr)){
+                } else if (!"0.5".equals(storyPointStr)) {
                     errorMessage.put(4, "小数只支持0.5");
                 }
             }
@@ -362,10 +360,10 @@ public class ExcelServiceImpl implements ExcelService {
                 if (NumberUtil.isInteger(remainTime) || NumberUtil.canParseInteger(remainTime)) {
                     if (remainTime.trim().length() > 3) {
                         errorMessage.put(5, "最大支持3位整数");
-                    } else if (remainTime.trim().length() > 1 && "0".equals(remainTime.trim().substring(0,0))){
+                    } else if (remainTime.trim().length() > 1 && "0".equals(remainTime.trim().substring(0, 0))) {
                         errorMessage.put(5, "请输入正确的整数");
                     }
-                } else if (!"0.5".equals(remainTime)){
+                } else if (!"0.5".equals(remainTime)) {
                     errorMessage.put(5, "小数只支持0.5");
                 }
             }
@@ -380,7 +378,7 @@ public class ExcelServiceImpl implements ExcelService {
         if (!(row.getCell(3) == null || row.getCell(3).toString().equals("") || row.getCell(3).getCellType() == XSSFCell.CELL_TYPE_BLANK)
                 && issueTypeList.contains(row.getCell(3).toString())
                 && ISSUE_EPIC.equals(issueTypeMap.get(row.getCell(3).toString()).getTypeCode())) {
-            if (row.getCell(7)==null || row.getCell(7).toString().equals("") || row.getCell(7).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
+            if (row.getCell(7) == null || row.getCell(7).toString().equals("") || row.getCell(7).getCellType() == XSSFCell.CELL_TYPE_BLANK) {
                 errorMessage.put(7, "史诗名称不能为空");
             } else {
                 String epicName = row.getCell(7).toString().trim();
@@ -434,7 +432,7 @@ public class ExcelServiceImpl implements ExcelService {
                     (row.getCell(9) == null || row.getCell(9).toString().equals("") || row.getCell(9).getCellType() == XSSFCell.CELL_TYPE_BLANK))) {
                 continue;
             }
-            count ++;
+            count++;
         }
         return count;
     }

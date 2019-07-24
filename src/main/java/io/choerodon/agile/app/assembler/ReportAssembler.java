@@ -45,14 +45,14 @@ public class ReportAssembler extends AbstractAssembler {
     }
 
     public List<IssueBurnDownReportVO> issueBurnDownReportDTOToVO(List<IssueBurnDownReportDTO> issueBurnDownReportDTOS, Map<Long, IssueTypeVO> issueTypeDTOMap,
-                                                                  Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
+                                                                  Map<Long, StatusVO> statusMapDTOMap, Map<Long, PriorityVO> priorityDTOMap) {
         List<IssueBurnDownReportVO> issueBurnDownReportVOS = new ArrayList<>(issueBurnDownReportDTOS.size());
         if (!issueBurnDownReportDTOS.isEmpty()) {
             issueBurnDownReportDTOS.forEach(issueBurnDownReportDTO -> {
                 IssueBurnDownReportVO issueBurnDownReportVO = new IssueBurnDownReportVO();
                 BeanUtils.copyProperties(issueBurnDownReportDTO, issueBurnDownReportVO);
                 issueBurnDownReportVO.setPriorityVO(priorityDTOMap.get(issueBurnDownReportDTO.getPriorityId()));
-                issueBurnDownReportVO.setStatusMapVO(statusMapDTOMap.get(issueBurnDownReportDTO.getStatusId()));
+                issueBurnDownReportVO.setStatusVO(statusMapDTOMap.get(issueBurnDownReportDTO.getStatusId()));
                 issueBurnDownReportVO.setIssueTypeVO(issueTypeDTOMap.get(issueBurnDownReportDTO.getIssueTypeId()));
                 issueBurnDownReportVOS.add(issueBurnDownReportVO);
             });
@@ -62,24 +62,24 @@ public class ReportAssembler extends AbstractAssembler {
 
     public List<IssueTypeDistributionChartVO> toIssueTypeDistributionChartVO(Long projectId, List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS) {
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
-        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<IssueTypeDistributionChartVO> issueTypeDistributionChartVOS = new ArrayList<>(issueTypeDistributionChartDTOS.size());
         issueTypeDistributionChartDTOS.forEach(issueTypeDistributionChartDTO -> {
             IssueTypeDistributionChartVO issueTypeDistributionChartVO = toTarget(issueTypeDistributionChartDTO, IssueTypeDistributionChartVO.class);
             issueTypeDistributionChartVO.setIssueTypeVO(issueTypeDTOMap.get(issueTypeDistributionChartDTO.getIssueTypeId()));
             issueTypeDistributionChartVO.setName(issueTypeDTOMap.get(issueTypeDistributionChartDTO.getIssueTypeId()).getName());
-            issueTypeDistributionChartVO.setStatusMapVO(statusMapDTOMap.get(issueTypeDistributionChartDTO.getStatusId()));
+            issueTypeDistributionChartVO.setStatusVO(statusMapDTOMap.get(issueTypeDistributionChartDTO.getStatusId()));
             issueTypeDistributionChartVOS.add(issueTypeDistributionChartVO);
         });
         return issueTypeDistributionChartVOS;
     }
 
     public List<IssueTypeDistributionChartVO> toIssueTypeVersionDistributionChartVO(Long projectId, List<IssueTypeDistributionChartDTO> issueTypeDistributionChartDTOS) {
-        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<IssueTypeDistributionChartVO> issueTypeDistributionChartVOS = new ArrayList<>(issueTypeDistributionChartDTOS.size());
         issueTypeDistributionChartDTOS.forEach(issueTypeDistributionChartDTO -> {
             IssueTypeDistributionChartVO issueTypeDistributionChartVO = toTarget(issueTypeDistributionChartDTO, IssueTypeDistributionChartVO.class);
-            issueTypeDistributionChartVO.setStatusMapVO(statusMapDTOMap.get(issueTypeDistributionChartDTO.getStatusId()));
+            issueTypeDistributionChartVO.setStatusVO(statusMapDTOMap.get(issueTypeDistributionChartDTO.getStatusId()));
             issueTypeDistributionChartVOS.add(issueTypeDistributionChartVO);
         });
         return issueTypeDistributionChartVOS;

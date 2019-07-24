@@ -1,27 +1,26 @@
 package io.choerodon.agile.app.service.impl;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
+import io.choerodon.agile.api.validator.IterativeWorktableValidator;
+import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.app.assembler.IterativeWorktableAssembler;
+import io.choerodon.agile.app.service.IterativeWorktableService;
+import io.choerodon.agile.app.service.PriorityService;
+import io.choerodon.agile.app.service.StatusService;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
+import io.choerodon.agile.infra.mapper.SprintMapper;
 import io.choerodon.agile.infra.mapper.WorkCalendarRefMapper;
+import io.choerodon.agile.infra.utils.DateUtil;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.api.validator.IterativeWorktableValidator;
-import io.choerodon.agile.app.assembler.IterativeWorktableAssembler;
-import io.choerodon.agile.app.service.IterativeWorktableService;
-import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.utils.DateUtil;
-import io.choerodon.agile.infra.mapper.IterativeWorktableMapper;
-import io.choerodon.agile.infra.mapper.SprintMapper;
-
 import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/9/4.
@@ -51,7 +50,9 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     private WorkCalendarRefMapper workCalendarRefMapper;
 
     @Autowired
-    private IssueFeignClient issueFeignClient;
+    private PriorityService priorityService;
+    @Autowired
+    private StatusService statusService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -65,8 +66,8 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
         IterativeWorktableValidator.checkSprintExist(sprintDTO);
         List<PriorityDistributeDTO> priorityDistributeDTOList = iterativeWorktableMapper.queryPriorityDistribute(projectId, sprintId);
-        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         for (PriorityDistributeDTO priorityDistributeDTO : priorityDistributeDTOList) {
             priorityDistributeDTO.setPriorityVO(priorityMap.get(priorityDistributeDTO.getPriorityId()));
             priorityDistributeDTO.setCategoryCode(statusMapDTOMap.get(priorityDistributeDTO.getStatusId()).getType());
@@ -107,11 +108,12 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
         SprintDTO sprintDTO = sprintMapper.selectByPrimaryKey(sprintId);
         IterativeWorktableValidator.checkSprintExist(sprintDTO);
         List<StatusCategoryDTO> statusCategoryDTOList = iterativeWorktableMapper.queryStatusCategoryDistribute(projectId, sprintId);
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         for (StatusCategoryDTO statusCategoryDTO : statusCategoryDTOList) {
             statusCategoryDTO.setCategoryCode(statusMapDTOMap.get(statusCategoryDTO.getStatusId()).getType());
         }
-        return modelMapper.map(statusCategoryDTOList, new TypeToken<List<StatusCategoryVO>>(){}.getType());
+        return modelMapper.map(statusCategoryDTOList, new TypeToken<List<StatusCategoryVO>>() {
+        }.getType());
     }
 
     @Override
@@ -145,7 +147,8 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
     @Override
     public List<AssigneeDistributeVO> queryAssigneeDistribute(Long projectId, Long sprintId) {
         Integer total = iterativeWorktableMapper.queryAssigneeAll(projectId, sprintId);
-        List<AssigneeDistributeVO> assigneeDistributeVOList = modelMapper.map(iterativeWorktableMapper.queryAssigneeDistribute(projectId, sprintId, total), new TypeToken<List<AssigneeDistributeVO>>(){}.getType());
+        List<AssigneeDistributeVO> assigneeDistributeVOList = modelMapper.map(iterativeWorktableMapper.queryAssigneeDistribute(projectId, sprintId, total), new TypeToken<List<AssigneeDistributeVO>>() {
+        }.getType());
         if (assigneeDistributeVOList != null && !assigneeDistributeVOList.isEmpty()) {
             List<Long> userIds = assigneeDistributeVOList.stream().filter(assigneeDistributeVO ->
                     assigneeDistributeVO.getAssigneeId() != null).map(assigneeDistributeVO -> (assigneeDistributeVO.getAssigneeId())).collect(Collectors.toList());
@@ -163,7 +166,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
 
     @Override
     public List<IssueTypeDistributeVO> queryIssueTypeDistribute(Long projectId, Long sprintId, Long organizationId) {
-        Map<Long, StatusMapVO> statusMapVOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusVO> statusMapVOMap = statusService.queryAllStatusMap(organizationId);
         List<IssueTypeDistributeDTO> issueTypeDistributeDTOList = iterativeWorktableMapper.queryIssueTypeDistribute(projectId, sprintId);
         for (IssueTypeDistributeDTO issueTypeDistributeDTO : issueTypeDistributeDTOList) {
             List<IssueStatus> issueStatuses = issueTypeDistributeDTO.getIssueStatus();
@@ -171,6 +174,7 @@ public class IterativeWorktableServiceImpl implements IterativeWorktableService 
                 issueStatus.setCategoryCode(statusMapVOMap.get(issueStatus.getStatusId()).getType());
             }
         }
-        return modelMapper.map(issueTypeDistributeDTOList, new TypeToken<List<IssueTypeDistributeVO>>(){}.getType());
+        return modelMapper.map(issueTypeDistributeDTOList, new TypeToken<List<IssueTypeDistributeVO>>() {
+        }.getType());
     }
 }

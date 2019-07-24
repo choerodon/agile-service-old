@@ -1,10 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.api.vo.event.ChangeStatus;
-import io.choerodon.agile.api.vo.event.StateMachineSchemeChangeItem;
-import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue;
-import io.choerodon.agile.api.vo.event.StateMachineSchemeStatusChangeItem;
+import io.choerodon.agile.api.vo.event.*;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.annotation.ChangeSchemeStatus;
 import io.choerodon.agile.infra.dataobject.ProjectConfigDTO;
@@ -19,17 +16,17 @@ import io.choerodon.agile.infra.mapper.StateMachineSchemeConfigDraftMapper;
 import io.choerodon.agile.infra.mapper.StateMachineSchemeConfigMapper;
 import io.choerodon.agile.infra.mapper.StateMachineSchemeMapper;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.mybatis.entity.Criteria;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +36,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(rollbackFor = Exception.class)
 public class StateMachineSchemeConfigServiceImpl implements StateMachineSchemeConfigService {
-
+    public static final Logger logger = LoggerFactory.getLogger(StateMachineSchemeConfigServiceImpl.class);
     @Autowired
     private StateMachineSchemeConfigMapper configMapper;
     @Autowired
@@ -53,11 +50,17 @@ public class StateMachineSchemeConfigServiceImpl implements StateMachineSchemeCo
     @Autowired
     private ProjectConfigMapper projectConfigMapper;
     @Autowired
-    private StateMachineClientService stateMachineClientService;
-    @Autowired
     private StateMachineService stateMachineService;
     @Autowired
-    private SagaServiceImpl sagaService;
+    private StatusService statusService;
+    @Autowired
+    private IssueStatusService issueStatusService;
+    @Autowired
+    private BoardColumnService boardColumnService;
+    @Autowired
+    private IssueAccessDataService issueAccessDataService;
+    @Autowired
+    private StateMachineSchemeService schemeService;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -315,7 +318,7 @@ public class StateMachineSchemeConfigServiceImpl implements StateMachineSchemeCo
         ChangeStatus changeStatus = new ChangeStatus(addStatusIds, deleteStatusIds);
         //发布之前，更新deployStatus为doing
         schemeMapper.updateDeployStatus(organizationId, schemeId, StateMachineSchemeDeployStatus.DOING);
-        sagaService.deployStateMachineScheme(organizationId, schemeId, changeItems, changeStatus);
+        this.deployStateMachineScheme(organizationId, schemeId, changeItems, changeStatus);
         //新增的状态机ids和删除的状态机ids
         List<Long> deleteStateMachineIds = changeMap.get("deleteStateMachineIds");
         List<Long> addStateMachineIds = changeMap.get("addStateMachineIds");
@@ -328,6 +331,54 @@ public class StateMachineSchemeConfigServiceImpl implements StateMachineSchemeCo
             stateMachineService.notActiveStateMachine(organizationId, deleteStateMachineIds);
         }
         return true;
+    }
+
+    private void deployStateMachineScheme(Long organizationId, Long schemeId, List<StateMachineSchemeChangeItem> changeItems, ChangeStatus changeStatus) {
+        Long userId = DetailsHelper.getUserDetails().getUserId();
+        //获取当前方案配置的项目列表
+        List<ProjectConfigDTO> projectConfigs = projectConfigMapper.queryConfigsBySchemeId(SchemeType.STATE_MACHINE, schemeId);
+        //获取所有状态
+        List<StatusVO> statusVOS = statusService.queryAllStatus(organizationId);
+        Map<Long, StatusVO> statusVOMap = statusVOS.stream().collect(Collectors.toMap(StatusVO::getId, x -> x));
+        //将要增加和减少的状态进行判断，确定哪些项目要增加哪些状态与减少哪些状态
+        DeployStateMachinePayload deployStateMachinePayload = stateMachineService.handleStateMachineChangeStatusBySchemeIds(organizationId, null, schemeId, Arrays.asList(schemeId), changeStatus);
+        List<RemoveStatusWithProject> removeStatusWithProjects = deployStateMachinePayload.getRemoveStatusWithProjects();
+        List<AddStatusWithProject> addStatusWithProjects = deployStateMachinePayload.getAddStatusWithProjects();
+        //新增的状态赋予实体
+        addStatusWithProjects.stream().forEach(addStatusWithProject -> {
+            List<StatusVO> statuses = new ArrayList<>(addStatusWithProject.getAddStatusIds().size());
+            addStatusWithProject.getAddStatusIds().forEach(addStatusId -> {
+                StatusVO status = statusVOMap.get(addStatusId);
+                if (status != null) {
+                    statuses.add(status);
+                }
+            });
+            addStatusWithProject.setAddStatuses(statuses);
+        });
+        //增加项目下的状态
+        if (addStatusWithProjects != null && !addStatusWithProjects.isEmpty()) {
+            issueStatusService.batchCreateStatusByProjectIds(addStatusWithProjects, userId);
+        }
+        //批量更新项目对应的issue状态
+        projectConfigs.forEach(projectConfig -> {
+            Long projectId = projectConfig.getProjectId();
+            String applyType = projectConfig.getApplyType();
+            changeItems.forEach(changeItem -> {
+                Long issueTypeId = changeItem.getIssueTypeId();
+                List<StateMachineSchemeStatusChangeItem> statusChangeItems = changeItem.getStatusChangeItems();
+                statusChangeItems.forEach(statusChangeItem -> {
+                    Long oldStatusId = statusChangeItem.getOldStatus().getId();
+                    Long newStatusId = statusChangeItem.getNewStatus().getId();
+                    issueAccessDataService.updateIssueStatusByIssueTypeId(projectId, applyType, issueTypeId, oldStatusId, newStatusId, userId);
+                });
+            });
+        });
+        //删除项目下的状态及与列的关联
+        if (removeStatusWithProjects != null && !removeStatusWithProjects.isEmpty()) {
+            boardColumnService.batchDeleteColumnAndStatusRel(removeStatusWithProjects);
+        }
+        schemeService.updateDeployProgress(organizationId, schemeId, 100);
+        logger.info("deploy-state-machine-scheme addStatusIds: {}, deleteStatusIds: {}", changeStatus.getAddStatusIds(), changeStatus.getDeleteStatusIds());
     }
 
     @Override

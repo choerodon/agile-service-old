@@ -44,13 +44,13 @@ public class ProductVersionStatisticsVO {
     private Integer doneIssueCount;
 
     @ApiModelProperty(value = "已完成状态列表")
-    private List<StatusMapVO> doneStatuses;
+    private List<StatusVO> doneStatuses;
 
     @ApiModelProperty(value = "进行中状态列表")
-    private List<StatusMapVO> doingStatuses;
+    private List<StatusVO> doingStatuses;
 
     @ApiModelProperty(value = "待处理状态列表")
-    private List<StatusMapVO> todoStatuses;
+    private List<StatusVO> todoStatuses;
 
     @ApiModelProperty(value = "版本下的进行中问题计数")
     private Integer doingIssueCount;
@@ -58,27 +58,27 @@ public class ProductVersionStatisticsVO {
     @ApiModelProperty(value = "版本下的待处理问题计数")
     private Integer todoIssueCount;
 
-    public List<StatusMapVO> getDoneStatuses() {
+    public List<StatusVO> getDoneStatuses() {
         return doneStatuses;
     }
 
-    public void setDoneStatuses(List<StatusMapVO> doneStatuses) {
+    public void setDoneStatuses(List<StatusVO> doneStatuses) {
         this.doneStatuses = doneStatuses;
     }
 
-    public List<StatusMapVO> getDoingStatuses() {
+    public List<StatusVO> getDoingStatuses() {
         return doingStatuses;
     }
 
-    public void setDoingStatuses(List<StatusMapVO> doingStatuses) {
+    public void setDoingStatuses(List<StatusVO> doingStatuses) {
         this.doingStatuses = doingStatuses;
     }
 
-    public List<StatusMapVO> getTodoStatuses() {
+    public List<StatusVO> getTodoStatuses() {
         return todoStatuses;
     }
 
-    public void setTodoStatuses(List<StatusMapVO> todoStatuses) {
+    public void setTodoStatuses(List<StatusVO> todoStatuses) {
         this.todoStatuses = todoStatuses;
     }
 

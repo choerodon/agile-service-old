@@ -1,30 +1,19 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.assembler.ReportAssembler;
-import io.choerodon.agile.app.service.DataLogService;
-import io.choerodon.agile.app.service.ReportService;
-import io.choerodon.agile.infra.dataobject.ReportIssueConvertDTO;
-import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
-import io.choerodon.agile.infra.utils.PageUtil;
-import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.enums.SchemeApplyType;
-import io.choerodon.agile.infra.utils.ConvertUtil;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
 import io.choerodon.agile.infra.mapper.*;
-
-import com.github.pagehelper.PageInfo;
-
-import io.choerodon.core.exception.CommonException;
-
-import com.github.pagehelper.PageHelper;
-
+import io.choerodon.agile.infra.utils.ConvertUtil;
+import io.choerodon.agile.infra.utils.PageUtil;
 import io.choerodon.base.domain.PageRequest;
-
+import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
@@ -77,9 +66,13 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private UserService userService;
     @Autowired
-    private IssueFeignClient issueFeignClient;
-    @Autowired
     private DataLogService dataLogService;
+    @Autowired
+    private PriorityService priorityService;
+    @Autowired
+    private IssueTypeService issueTypeService;
+    @Autowired
+    private StatusService statusService;
 
     private static final String STORY_POINTS = "storyPoints";
     private static final String REMAINING_ESTIMATED_TIME = "remainingEstimatedTime";
@@ -144,7 +137,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<IssuePriorityDistributionChartVO> queryIssuePriorityDistributionChart(Long projectId, Long organizationId) {
-        List<Long> priorityIds = issueFeignClient.queryByOrganizationIdList(organizationId).getBody().stream().map(PriorityVO::getId).collect(Collectors.toList());
+        List<Long> priorityIds = priorityService.queryByOrganizationIdList(organizationId).stream().map(PriorityVO::getId).collect(Collectors.toList());
         return reportAssembler.toIssuePriorityDistributionChartVO(projectId, reportMapper.queryIssuePriorityDistributionChart(projectId, priorityIds));
     }
 
@@ -215,7 +208,8 @@ public class ReportServiceImpl implements ReportService {
         List<ReportIssueConvertDTO> reportIssueConvertDTOList = getBurnDownReport(projectId, sprintId, type);
         return modelMapper.map(ordinalType.equals(ASC) ? reportIssueConvertDTOList.stream().
                 sorted(Comparator.comparing(ReportIssueConvertDTO::getDate)).collect(Collectors.toList()) : reportIssueConvertDTOList.stream().
-                sorted(Comparator.comparing(ReportIssueConvertDTO::getDate).reversed()).collect(Collectors.toList()), new TypeToken<List<ReportIssueVO>>(){}.getType());
+                sorted(Comparator.comparing(ReportIssueConvertDTO::getDate).reversed()).collect(Collectors.toList()), new TypeToken<List<ReportIssueVO>>() {
+        }.getType());
     }
 
     private List<ReportIssueConvertDTO> getBurnDownReport(Long projectId, Long sprintId, String type) {
@@ -393,9 +387,9 @@ public class ReportServiceImpl implements ReportService {
         PageInfo<IssueDTO> reportIssuePage = PageHelper.startPage(pageRequest.getPage(), pageRequest.getSize(),
                 PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() -> reportMapper.
                 queryReportIssues(projectId, versionId, status, type));
-        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         return PageUtil.buildPageInfoWithPageInfoList(reportIssuePage, issueAssembler.issueDoToIssueListDto(reportIssuePage.getList(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
 
@@ -779,7 +773,8 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleIssueCountAfterSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList) {
         if (sprintDTO.getStatusCode().equals(SPRINT_CLOSED)) {
-            List<ReportIssueConvertDTO> issueAfterSprintList = modelMapper.map(reportMapper.queryIssueCountAfterSprint(sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType());
+            List<ReportIssueConvertDTO> issueAfterSprintList = modelMapper.map(reportMapper.queryIssueCountAfterSprint(sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>() {
+            }.getType());
             if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
                 reportIssueConvertDTOList.addAll(issueAfterSprintList);
             } else {
@@ -793,7 +788,8 @@ public class ReportServiceImpl implements ReportService {
     private void handleRemoveDoneIssueCountDuringSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, List<Long> issueAllList) {
         // 获取当前冲刺期间移除done状态的issue
         List<Long> issueIdRemoveDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryRemoveDoneIssueIdsDuringSprint(sprintDTO, issueAllList) : null;
-        List<ReportIssueConvertDTO> issueRemoveDoneList = issueIdRemoveDoneList != null && !issueIdRemoveDoneList.isEmpty() ? modelMapper.map(reportMapper.queryRemoveIssueDoneDetailDurationSprint(issueIdRemoveDoneList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+        List<ReportIssueConvertDTO> issueRemoveDoneList = issueIdRemoveDoneList != null && !issueIdRemoveDoneList.isEmpty() ? modelMapper.map(reportMapper.queryRemoveIssueDoneDetailDurationSprint(issueIdRemoveDoneList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>() {
+        }.getType()) : null;
         if (issueRemoveDoneList != null && !issueRemoveDoneList.isEmpty()) {
             reportIssueConvertDTOList.addAll(issueRemoveDoneList);
         }
@@ -802,21 +798,24 @@ public class ReportServiceImpl implements ReportService {
     private void handleAddDoneIssueCountDuringSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, List<Long> issueAllList) {
         // 获取当前冲刺期间移动到done状态的issue
         List<Long> issueIdAddDoneList = issueAllList != null && !issueAllList.isEmpty() ? reportMapper.queryAddDoneIssueIdsDuringSprint(sprintDTO, issueAllList) : null;
-        List<ReportIssueConvertDTO> issueAddDoneList = issueIdAddDoneList != null && !issueIdAddDoneList.isEmpty() ? modelMapper.map(reportMapper.queryAddIssueDoneDetailDuringSprint(issueIdAddDoneList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+        List<ReportIssueConvertDTO> issueAddDoneList = issueIdAddDoneList != null && !issueIdAddDoneList.isEmpty() ? modelMapper.map(reportMapper.queryAddIssueDoneDetailDuringSprint(issueIdAddDoneList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>() {
+        }.getType()) : null;
         if (issueAddDoneList != null && !issueAddDoneList.isEmpty()) {
             reportIssueConvertDTOList.addAll(issueAddDoneList);
         }
     }
 
     private void handleRemoveCountDuringSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, List<Long> issueIdRemoveList) {
-        List<ReportIssueConvertDTO> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? modelMapper.map(reportMapper.queryRemoveIssueDuringSprint(issueIdRemoveList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+        List<ReportIssueConvertDTO> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? modelMapper.map(reportMapper.queryRemoveIssueDuringSprint(issueIdRemoveList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>() {
+        }.getType()) : null;
         if (issueRemoveList != null && !issueRemoveList.isEmpty()) {
             reportIssueConvertDTOList.addAll(issueRemoveList);
         }
     }
 
     private void handleAddIssueCountDuringSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, List<Long> issueIdAddList) {
-        List<ReportIssueConvertDTO> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? modelMapper.map(reportMapper.queryAddIssueDuringSprint(issueIdAddList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+        List<ReportIssueConvertDTO> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? modelMapper.map(reportMapper.queryAddIssueDuringSprint(issueIdAddList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>() {
+        }.getType()) : null;
         if (issueAddList != null && !issueAddList.isEmpty()) {
             reportIssueConvertDTOList.addAll(issueAddList);
         }
@@ -825,7 +824,8 @@ public class ReportServiceImpl implements ReportService {
     private void handleIssueCountBeforeSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, List<Long> issueIdBeforeSprintList) {
         //获取冲刺开启前状态为done的issue
         List<Long> doneBeforeIssue = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryDoneIssueIdsBeforeSprintStart(issueIdBeforeSprintList, sprintDTO) : null;
-        List<ReportIssueConvertDTO> issueBeforeSprintList = !issueIdBeforeSprintList.isEmpty() ? modelMapper.map(reportMapper.queryAddIssueBeforeDuringSprint(issueIdBeforeSprintList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+        List<ReportIssueConvertDTO> issueBeforeSprintList = !issueIdBeforeSprintList.isEmpty() ? modelMapper.map(reportMapper.queryAddIssueBeforeDuringSprint(issueIdBeforeSprintList, sprintDTO), new TypeToken<List<ReportIssueConvertDTO>>() {
+        }.getType()) : null;
         // 过滤开启冲刺前状态为done的issue，统计字段设为false（表示跳过统计）
         if (issueBeforeSprintList != null && !issueBeforeSprintList.isEmpty()) {
             if (doneBeforeIssue != null && !doneBeforeIssue.isEmpty()) {
@@ -843,7 +843,8 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleIssueValueAfterSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, String field) {
         if (sprintDTO.getStatusCode().equals(SPRINT_CLOSED)) {
-            List<ReportIssueConvertDTO> issueAfterSprintList = modelMapper.map(reportMapper.queryIssueValueAfterSprint(sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType());
+            List<ReportIssueConvertDTO> issueAfterSprintList = modelMapper.map(reportMapper.queryIssueValueAfterSprint(sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>() {
+            }.getType());
             if (issueAfterSprintList != null && !issueAfterSprintList.isEmpty()) {
                 reportIssueConvertDTOList.addAll(issueAfterSprintList);
             } else {
@@ -862,7 +863,8 @@ public class ReportServiceImpl implements ReportService {
         if (issueIdRemoveDoneList != null && !issueIdRemoveDoneList.isEmpty()) {
             //todo 还需要优化
             issueIdRemoveDoneList.parallelStream().forEach(issueIdRemoveDone -> reportIssueDTOS.addAll(reportMapper.queryRemoveIssueDoneValueDurationSprint(issueIdRemoveDone, sprintDTO, field)));
-            issueRemoveDoneList = !reportIssueDTOS.isEmpty() ? modelMapper.map(reportIssueDTOS, new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+            issueRemoveDoneList = !reportIssueDTOS.isEmpty() ? modelMapper.map(reportIssueDTOS, new TypeToken<List<ReportIssueConvertDTO>>() {
+            }.getType()) : null;
         }
         if (issueRemoveDoneList != null && !issueRemoveDoneList.isEmpty()) {
             reportIssueConvertDTOList.addAll(issueRemoveDoneList);
@@ -877,7 +879,8 @@ public class ReportServiceImpl implements ReportService {
         if (issueIdAddDoneList != null && !issueIdAddDoneList.isEmpty()) {
             //todo 还需要优化
             issueIdAddDoneList.parallelStream().forEach(issueIdAddDone -> reportIssueDTOS.addAll(reportMapper.queryAddIssueDoneValueDuringSprint(issueIdAddDone, sprintDTO, field)));
-            issueAddDoneList = !reportIssueDTOS.isEmpty() ? modelMapper.map(reportIssueDTOS, new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+            issueAddDoneList = !reportIssueDTOS.isEmpty() ? modelMapper.map(reportIssueDTOS, new TypeToken<List<ReportIssueConvertDTO>>() {
+            }.getType()) : null;
         }
         if (issueAddDoneList != null && !issueAddDoneList.isEmpty()) {
             reportIssueConvertDTOList.addAll(issueAddDoneList);
@@ -895,7 +898,8 @@ public class ReportServiceImpl implements ReportService {
 
     private void handleChangeIssueValueDuringSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, List<Long> issueAllList, String field) {
         //获取冲刺期间所有的当前值的变更
-        List<ReportIssueConvertDTO> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? modelMapper.map(reportMapper.queryIssueChangeValueDurationSprint(issueAllList, sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+        List<ReportIssueConvertDTO> issueChangeList = issueAllList != null && !issueAllList.isEmpty() ? modelMapper.map(reportMapper.queryIssueChangeValueDurationSprint(issueAllList, sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>() {
+        }.getType()) : null;
         if (issueChangeList != null && !issueChangeList.isEmpty()) {
             issueChangeList.parallelStream().forEach(reportIssueConvertDTO -> {
                 //变更时间是在done状态，计入统计字段设为false
@@ -916,7 +920,8 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleRemoveIssueValueDuringSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, List<Long> issueIdRemoveList, String field) {
-        List<ReportIssueConvertDTO> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? modelMapper.map(reportMapper.queryRemoveIssueValueDurationSprint(issueIdRemoveList, sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+        List<ReportIssueConvertDTO> issueRemoveList = issueIdRemoveList != null && !issueIdRemoveList.isEmpty() ? modelMapper.map(reportMapper.queryRemoveIssueValueDurationSprint(issueIdRemoveList, sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>() {
+        }.getType()) : null;
         if (issueRemoveList != null && !issueRemoveList.isEmpty()) {
             //移除时，状态为done的不计入统计
             reportIssueConvertDTOList.addAll(issueRemoveList);
@@ -932,14 +937,16 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private void handleAddIssueValueDuringSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, List<Long> issueIdAddList, String field) {
-        List<ReportIssueConvertDTO> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? modelMapper.map(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+        List<ReportIssueConvertDTO> issueAddList = issueIdAddList != null && !issueIdAddList.isEmpty() ? modelMapper.map(reportMapper.queryAddIssueValueDuringSprint(issueIdAddList, sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>() {
+        }.getType()) : null;
         if (issueAddList != null && !issueAddList.isEmpty()) {
             reportIssueConvertDTOList.addAll(issueAddList);
         }
     }
 
     private void handleIssueValueBeforeSprint(SprintDTO sprintDTO, List<ReportIssueConvertDTO> reportIssueConvertDTOList, List<Long> issueIdBeforeSprintList, String field) {
-        List<ReportIssueConvertDTO> issueBeforeList = !issueIdBeforeSprintList.isEmpty() ? modelMapper.map(reportMapper.queryValueBeforeSprintStart(issueIdBeforeSprintList, sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>(){}.getType()) : null;
+        List<ReportIssueConvertDTO> issueBeforeList = !issueIdBeforeSprintList.isEmpty() ? modelMapper.map(reportMapper.queryValueBeforeSprintStart(issueIdBeforeSprintList, sprintDTO, field), new TypeToken<List<ReportIssueConvertDTO>>() {
+        }.getType()) : null;
         // 获取冲刺开启前状态为done的issue
         List<Long> doneIssueBeforeSprint = !issueIdBeforeSprintList.isEmpty() ? reportMapper.queryDoneIssueIdsBeforeSprintStart(issueIdBeforeSprintList, sprintDTO) : null;
         // 过滤开启冲刺前状态为done的issue，统计字段设为false（表示跳过统计）
@@ -1100,7 +1107,8 @@ public class ReportServiceImpl implements ReportService {
             default:
                 break;
         }
-        return modelMapper.map(result, new TypeToken<List<VelocitySprintVO>>(){}.getType());
+        return modelMapper.map(result, new TypeToken<List<VelocitySprintVO>>() {
+        }.getType());
     }
 
     @Override
@@ -1135,7 +1143,7 @@ public class ReportServiceImpl implements ReportService {
 
     private List<PieChartVO> handlePieChartByPriorityType(Long projectId, Long organizationId, Date startDate, Date endDate, Long sprintId, Long versionId) {
         List<PieChartVO> pieChartVOS = handlePieChartByType(projectId, "priority_id", true, startDate, endDate, sprintId, versionId);
-        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
         pieChartVOS.forEach(pieChartDTO -> {
             pieChartDTO.setPriorityVO(priorityMap.get(Long.parseLong(pieChartDTO.getTypeName())));
             pieChartDTO.setName(pieChartDTO.getPriorityVO().getName());
@@ -1149,7 +1157,7 @@ public class ReportServiceImpl implements ReportService {
                 startDate, endDate, sprintId, versionId);
         if (pieChartDTOS != null && !pieChartDTOS.isEmpty()) {
             List<PieChartVO> pieChartVOS = reportAssembler.toTargetList(pieChartDTOS, PieChartVO.class);
-            Map<Long, StatusMapVO> statusMap = ConvertUtil.getIssueStatusMap(projectId);
+            Map<Long, StatusVO> statusMap = ConvertUtil.getIssueStatusMap(projectId);
             pieChartVOS.forEach(pieChartDTO -> pieChartDTO.setName(statusMap.get(Long.parseLong(pieChartDTO.getTypeName())).getName()));
             return pieChartVOS;
         } else {
@@ -1360,12 +1368,12 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<GroupDataChartListDTO> queryEpicChartList(Long projectId, Long epicId, Long organizationId) {
         List<GroupDataChartListDTO> groupDataChartListDOList = reportMapper.selectEpicIssueList(projectId, epicId);
-        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         for (GroupDataChartListDTO groupDataChartListDTO : groupDataChartListDOList) {
             groupDataChartListDTO.setPriorityVO(priorityMap.get(groupDataChartListDTO.getPriorityId()));
-            groupDataChartListDTO.setStatusMapVO(statusMapDTOMap.get(groupDataChartListDTO.getStatusId()));
+            groupDataChartListDTO.setStatusVO(statusMapDTOMap.get(groupDataChartListDTO.getStatusId()));
             groupDataChartListDTO.setIssueTypeVO(issueTypeDTOMap.get(groupDataChartListDTO.getIssueTypeId()));
         }
         return groupDataChartListDOList;
@@ -1468,8 +1476,8 @@ public class ReportServiceImpl implements ReportService {
         burnDownReportVO.setJsonObject(new JSONObject());
         handleBurnDownReportTypeData(burnDownReportVO, id, projectId, typeCondition);
         if (issueDOList != null && !issueDOList.isEmpty()) {
-            Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+            Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
             Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
             List<IssueBurnDownReportDTO> incompleteIssues = issueDOList.stream().filter(issueDO -> !issueDO.getCompleted()).collect(Collectors.toList());
             burnDownReportVO.setIncompleteIssues(reportAssembler.issueBurnDownReportDTOToVO(incompleteIssues, issueTypeDTOMap, statusMapDTOMap, priorityMap));
@@ -1483,7 +1491,7 @@ public class ReportServiceImpl implements ReportService {
         return burnDownReportVO;
     }
 
-    private void handleBurnDownReportSprintData(List<SprintDTO> sprintDTOList, List<IssueBurnDownReportDTO> completeIssues, BurnDownReportVO burnDownReportVO, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    private void handleBurnDownReportSprintData(List<SprintDTO> sprintDTOList, List<IssueBurnDownReportDTO> completeIssues, BurnDownReportVO burnDownReportVO, Map<Long, PriorityVO> priorityMap, Map<Long, StatusVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<SprintBurnDownReportVO> sprintBurnDownReportVOS = new ArrayList<>();
         if (sprintDTOList.size() == 1) {
             SprintBurnDownReportVO sprintBurnDownReportVO = reportAssembler.sprintBurnDownReportDTOToVO(sprintDTOList.get(0));
@@ -1645,12 +1653,12 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<GroupDataChartListDTO> queryVersionChartList(Long projectId, Long versionId, Long organizationId) {
         List<GroupDataChartListDTO> groupDataChartListDOList = reportMapper.selectVersionIssueList(projectId, versionId);
-        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         for (GroupDataChartListDTO groupDataChartListDTO : groupDataChartListDOList) {
             groupDataChartListDTO.setPriorityVO(priorityMap.get(groupDataChartListDTO.getPriorityId()));
-            groupDataChartListDTO.setStatusMapVO(statusMapDTOMap.get(groupDataChartListDTO.getStatusId()));
+            groupDataChartListDTO.setStatusVO(statusMapDTOMap.get(groupDataChartListDTO.getStatusId()));
             groupDataChartListDTO.setIssueTypeVO(issueTypeDTOMap.get(groupDataChartListDTO.getIssueTypeId()));
         }
         return groupDataChartListDOList;

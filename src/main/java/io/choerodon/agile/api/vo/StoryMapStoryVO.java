@@ -26,7 +26,7 @@ public class StoryMapStoryVO {
 
     private IssueTypeVO issueTypeVO;
 
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     private List<StoryMapVersionVO> storyMapVersionVOList;
 
@@ -102,11 +102,11 @@ public class StoryMapStoryVO {
         this.issueTypeVO = issueTypeVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 

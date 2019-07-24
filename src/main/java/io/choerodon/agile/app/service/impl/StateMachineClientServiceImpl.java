@@ -5,26 +5,18 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.app.assembler.IssueAssembler;
-import io.choerodon.agile.app.service.IssueAccessDataService;
-import io.choerodon.agile.app.service.IssueService;
-import io.choerodon.agile.app.service.RankService;
-import io.choerodon.agile.app.service.StateMachineClientService;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.dataobject.*;
 import io.choerodon.agile.api.vo.event.CreateIssuePayload;
 import io.choerodon.agile.api.vo.event.CreateSubIssuePayload;
-import io.choerodon.agile.api.vo.event.ProjectConfig;
-import io.choerodon.agile.api.vo.event.StateMachineSchemeDeployCheckIssue;
 import io.choerodon.agile.infra.enums.SchemeApplyType;
 import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.utils.EnumUtil;
 import io.choerodon.agile.infra.utils.RankUtil;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.agile.infra.mapper.RankMapper;
-import io.choerodon.agile.app.service.FeatureService;
-import io.choerodon.agile.app.service.PiFeatureService;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.annotation.Condition;
@@ -80,8 +72,6 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
     @Autowired
     private InstanceFeignClient instanceFeignClient;
     @Autowired
-    private IssueFeignClient issueFeignClient;
-    @Autowired
     private IssueAccessDataService issueAccessDataService;
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
@@ -99,6 +89,10 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
     private RankService rankService;
     @Autowired
     private IssueValidator issueValidator;
+    @Autowired
+    private ProjectConfigService projectConfigService;
+    @Autowired
+    private StateMachineTransformService transformService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -159,7 +153,7 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
         Long projectId = issueConvertDTO.getProjectId();
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issueConvertDTO.getIssueTypeId()).getBody();
+        Long stateMachineId = projectConfigService.queryStateMachineId(projectId, applyType, issueConvertDTO.getIssueTypeId());
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
@@ -219,7 +213,7 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
         Long projectId = subIssueConvertDTO.getProjectId();
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, SchemeApplyType.AGILE, subIssueConvertDTO.getIssueTypeId()).getBody();
+        Long stateMachineId = projectConfigService.queryStateMachineId(projectId, SchemeApplyType.AGILE, subIssueConvertDTO.getIssueTypeId());
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
@@ -264,7 +258,7 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
             throw new CommonException(ERROR_ISSUE_NOT_FOUND);
         }
         //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issue.getIssueTypeId()).getBody();
+        Long stateMachineId = projectConfigService.queryStateMachineId(projectId, applyType, issue.getIssueTypeId());
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
@@ -299,11 +293,11 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
             throw new CommonException(ERROR_ISSUE_NOT_FOUND);
         }
         //获取状态机id
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, applyType, issue.getIssueTypeId()).getBody();
+        Long stateMachineId = projectConfigService.queryStateMachineId(projectId, applyType, issue.getIssueTypeId());
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
-        Long targetStatusId = issueFeignClient.queryDeployTransformForAgile(organizationId, transformId).getBody().getEndStatusId();
+        Long targetStatusId = transformService.queryDeployTransformForAgile(organizationId, transformId).getEndStatusId();
         if (UPDATE_STATUS.equals(inputDTO.getInvokeCode())) {
             updateStatus(issueId, targetStatusId, inputDTO.getInput());
         } else if (UPDATE_STATUS_MOVE.equals(inputDTO.getInvokeCode())) {

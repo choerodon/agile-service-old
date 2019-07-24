@@ -1,9 +1,9 @@
 package io.choerodon.agile.app.service;
 
 import com.github.pagehelper.PageInfo;
-import io.choerodon.base.domain.PageRequest;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.infra.dataobject.StatusDTO;
+import io.choerodon.base.domain.PageRequest;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +19,7 @@ public interface StatusService {
      * 创建状态
      *
      * @param organizationId 组织id
-     * @param statusVO      状态对象
+     * @param statusVO       状态对象
      * @return 状态对象
      */
     StatusVO create(Long organizationId, StatusVO statusVO);
@@ -48,7 +48,7 @@ public interface StatusService {
      * @param statusId       状态id
      * @return
      */
-    StatusInfoVO queryStatusById(Long organizationId, Long statusId);
+    StatusVO queryStatusById(Long organizationId, Long statusId);
 
     /**
      * 获取所有
@@ -58,7 +58,7 @@ public interface StatusService {
      */
     List<StatusVO> queryAllStatus(Long organizationId);
 
-    Map<Long, StatusMapVO> queryAllStatusMap(Long organizationId);
+    Map<Long, StatusVO> queryAllStatusMap(Long organizationId);
 
     /**
      * 校验状态名字是否未被使用

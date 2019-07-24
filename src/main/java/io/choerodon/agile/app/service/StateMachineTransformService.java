@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.StateMachineTransformVO;
-import io.choerodon.agile.api.vo.event.TransformVO;
+import io.choerodon.agile.api.vo.TransformVO;
 import io.choerodon.agile.infra.dataobject.StateMachineTransformDTO;
 
 import java.util.List;

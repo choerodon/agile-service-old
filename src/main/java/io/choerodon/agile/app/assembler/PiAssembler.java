@@ -2,7 +2,7 @@ package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IssueTypeVO;
 import io.choerodon.agile.api.vo.PiWithFeatureVO;
-import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.api.vo.StatusVO;
 import io.choerodon.agile.api.vo.SubFeatureVO;
 import io.choerodon.agile.infra.dataobject.PiWithFeatureDTO;
 import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
@@ -21,13 +21,13 @@ import java.util.Map;
 public class PiAssembler {
 
     public List<SubFeatureVO> subFeatureDTOToVO(List<SubFeatureDTO> subFeatureDOList,
-                                                Map<Long, StatusMapVO> statusMapDTOMap,
+                                                Map<Long, StatusVO> statusMapDTOMap,
                                                 Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<SubFeatureVO> subFeatureVOList = new ArrayList<>();
         subFeatureDOList.forEach(subFeatureDO -> {
             SubFeatureVO subFeatureVO = new SubFeatureVO();
             BeanUtils.copyProperties(subFeatureDO, subFeatureVO);
-            subFeatureVO.setStatusMapVO(statusMapDTOMap.get(subFeatureDO.getStatusId()));
+            subFeatureVO.setStatusVO(statusMapDTOMap.get(subFeatureDO.getStatusId()));
             subFeatureVO.setIssueTypeVO(issueTypeDTOMap.get(subFeatureDO.getIssueTypeId()));
             subFeatureVOList.add(subFeatureVO);
         });
@@ -35,7 +35,7 @@ public class PiAssembler {
     }
 
     public List<PiWithFeatureVO> piWithFeatureDTOToVO(List<PiWithFeatureDTO> piWithFeatureDTOList,
-                                                      Map<Long, StatusMapVO> statusMapDTOMap,
+                                                      Map<Long, StatusVO> statusMapDTOMap,
                                                       Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<PiWithFeatureVO> piWithFeatureVOList = new ArrayList<>();
         piWithFeatureDTOList.forEach(piWithFeatureDTO -> {

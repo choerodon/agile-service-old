@@ -9,7 +9,6 @@ import io.choerodon.agile.app.service.impl.StateMachineClientServiceImpl
 import io.choerodon.agile.infra.enums.SchemeApplyType
 import io.choerodon.agile.infra.utils.SiteMsgUtil
 import io.choerodon.agile.infra.dataobject.*
-import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.*
 import com.github.pagehelper.PageInfo
 import io.choerodon.agile.app.service.UserService
@@ -74,9 +73,6 @@ class IssueControllerSpec extends Specification {
 
     @Autowired
     private SprintMapper sprintMapper
-
-    @Autowired
-    private IssueFeignClient issueFeignClient
 
     @Autowired
     private IssueSprintRelMapper issueSprintRelMapper

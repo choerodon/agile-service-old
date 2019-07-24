@@ -1,17 +1,18 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueStatusValidator;
+import io.choerodon.agile.api.vo.IssueStatusVO;
+import io.choerodon.agile.api.vo.StatusAndIssuesVO;
+import io.choerodon.agile.api.vo.StatusMoveVO;
+import io.choerodon.agile.api.vo.StatusVO;
 import io.choerodon.agile.api.vo.event.AddStatusWithProject;
-import io.choerodon.agile.app.service.ColumnStatusRelService;
-import io.choerodon.agile.app.service.IIssueStatusService;
-import io.choerodon.agile.app.service.IssueStatusService;
-import io.choerodon.agile.api.vo.event.StatusPayload;
+import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.aspect.DataLogRedisUtil;
-import io.choerodon.agile.infra.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper;
+import io.choerodon.agile.infra.mapper.IssueMapper;
+import io.choerodon.agile.infra.mapper.IssueStatusMapper;
+import io.choerodon.agile.infra.utils.RedisUtil;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -19,7 +20,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,9 +51,6 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     private IssueMapper issueMapper;
 
     @Autowired
-    private IssueFeignClient issueFeignClient;
-
-    @Autowired
     private ColumnStatusRelService columnStatusRelService;
 
     @Autowired
@@ -64,6 +61,10 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Autowired
     private IIssueStatusService iIssueStatusService;
+    @Autowired
+    private ProjectConfigService projectConfigService;
+    @Autowired
+    private StatusService statusService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -75,12 +76,12 @@ public class IssueStatusServiceImpl implements IssueStatusService {
     @Override
     public IssueStatusVO create(Long projectId, String applyType, IssueStatusVO issueStatusVO) {
         IssueStatusValidator.checkCreateStatus(projectId, issueStatusVO);
-        StatusInfoVO statusInfoVO = new StatusInfoVO();
-        statusInfoVO.setType(issueStatusVO.getCategoryCode());
-        statusInfoVO.setName(issueStatusVO.getName());
-        ResponseEntity<StatusInfoVO> responseEntity = issueFeignClient.createStatusForAgile(projectId, applyType, statusInfoVO);
-        if (responseEntity.getStatusCode().value() == 200 && responseEntity.getBody() != null && responseEntity.getBody().getId() != null) {
-            Long statusId = responseEntity.getBody().getId();
+        StatusVO statusVO = new StatusVO();
+        statusVO.setType(issueStatusVO.getCategoryCode());
+        statusVO.setName(issueStatusVO.getName());
+        statusVO = projectConfigService.createStatusForAgile(projectId, applyType, statusVO);
+        if (statusVO != null && statusVO.getId() != null) {
+            Long statusId = statusVO.getId();
             if (issueStatusMapper.selectByStatusId(projectId, statusId) != null) {
                 throw new CommonException("error.status.exist");
             }
@@ -157,9 +158,9 @@ public class IssueStatusServiceImpl implements IssueStatusService {
 
     @Override
     public List<StatusAndIssuesVO> queryUnCorrespondStatus(Long projectId, Long boardId, String applyType) {
-        List<StatusMapVO> statusMapVOList = issueFeignClient.queryStatusByProjectId(projectId, applyType).getBody();
+        List<StatusVO> statusMapVOList = projectConfigService.queryStatusByProjectId(projectId, applyType);
         List<Long> realStatusIds = new ArrayList<>();
-        for (StatusMapVO statusMapVO : statusMapVOList) {
+        for (StatusVO statusMapVO : statusMapVOList) {
             realStatusIds.add(statusMapVO.getId());
         }
         if (realStatusIds.isEmpty()) {
@@ -171,16 +172,17 @@ public class IssueStatusServiceImpl implements IssueStatusService {
             for (StatusAndIssuesDTO statusAndIssuesDTO : statusAndIssuesDTOList) {
                 ids.add(statusAndIssuesDTO.getStatusId());
             }
-            Map<Long, Status> map = issueFeignClient.batchStatusGet(ids).getBody();
+            Map<Long, StatusDTO> map = statusService.batchStatusGet(ids);
             for (StatusAndIssuesDTO statusAndIssuesDTO : statusAndIssuesDTOList) {
-                Status status = map.get(statusAndIssuesDTO.getStatusId());
+                StatusDTO status = map.get(statusAndIssuesDTO.getStatusId());
                 statusAndIssuesDTO.setCategoryCode(status.getType());
                 statusAndIssuesDTO.setName(status.getName());
             }
         }
         List<StatusAndIssuesVO> statusAndIssuesVOList = new ArrayList<>();
         if (statusAndIssuesDTOList != null) {
-            statusAndIssuesVOList = modelMapper.map(statusAndIssuesDTOList, new TypeToken<List<StatusAndIssuesVO>>(){}.getType());
+            statusAndIssuesVOList = modelMapper.map(statusAndIssuesDTOList, new TypeToken<List<StatusAndIssuesVO>>() {
+            }.getType());
         }
         return statusAndIssuesVOList;
     }
@@ -210,28 +212,18 @@ public class IssueStatusServiceImpl implements IssueStatusService {
         checkIssueNumOfStatus(projectId, statusId);
         checkStatusExist(projectId, statusId);
         try {
-            issueFeignClient.removeStatusForAgile(projectId, statusId, applyType);
+            projectConfigService.removeStatusForAgile(projectId, statusId, applyType);
         } catch (Exception e) {
             throw new CommonException("error.status.delete");
         }
     }
 
     @Override
-    public void consumDeleteStatus(StatusPayload statusPayload) {
-        Long projectId = statusPayload.getProjectId();
-        Long statusId = statusPayload.getStatusId();
-        checkStatusExist(projectId, statusId);
-        IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
-        issueStatusDTO.setProjectId(projectId);
-        issueStatusDTO.setStatusId(statusId);
-        delete(issueStatusDTO);
-    }
-
-    @Override
     public List<IssueStatusVO> queryIssueStatusList(Long projectId) {
         IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
         issueStatusDTO.setProjectId(projectId);
-        return modelMapper.map(issueStatusMapper.select(issueStatusDTO), new TypeToken<List<IssueStatusVO>>(){}.getType());
+        return modelMapper.map(issueStatusMapper.select(issueStatusDTO), new TypeToken<List<IssueStatusVO>>() {
+        }.getType());
     }
 
     @Override

@@ -1,7 +1,10 @@
 package io.choerodon.agile.infra.utils;
 
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.app.service.InstanceService;
+import io.choerodon.agile.app.service.PriorityService;
+import io.choerodon.agile.app.service.ProjectConfigService;
+import io.choerodon.agile.app.service.StatusService;
 import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.core.exception.CommonException;
 
@@ -30,7 +33,7 @@ public class ConvertUtil {
      * @return IssueTypeMap
      */
     public static Map<Long, IssueTypeVO> getIssueTypeMap(Long projectId, String applyType) {
-        List<IssueTypeVO> issueTypeVOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesByProjectId(projectId, applyType).getBody();
+        List<IssueTypeVO> issueTypeVOS = SpringBeanUtil.getBean(ProjectConfigService.class).queryIssueTypesByProjectId(projectId, applyType);
         return issueTypeVOS.stream().collect(Collectors.toMap(IssueTypeVO::getId, Function.identity()));
     }
 
@@ -40,9 +43,9 @@ public class ConvertUtil {
      * @param projectId projectId
      * @return StatusMap
      */
-    public static Map<Long, StatusMapVO> getIssueStatusMap(Long projectId) {
+    public static Map<Long, StatusVO> getIssueStatusMap(Long projectId) {
         Long organizationId = getOrganizationId(projectId);
-        return SpringBeanUtil.getBean(IssueFeignClient.class).queryAllStatusMap(organizationId).getBody();
+        return SpringBeanUtil.getBean(StatusService.class).queryAllStatusMap(organizationId);
     }
 
     /**
@@ -53,7 +56,7 @@ public class ConvertUtil {
      */
     public static Map<Long, PriorityVO> getIssuePriorityMap(Long projectId) {
         Long organizationId = getOrganizationId(projectId);
-        return SpringBeanUtil.getBean(IssueFeignClient.class).queryByOrganizationId(organizationId).getBody();
+        return SpringBeanUtil.getBean(PriorityService.class).queryByOrganizationId(organizationId);
     }
 
     public static Long getOrganizationId(Long projectId) {
@@ -84,10 +87,9 @@ public class ConvertUtil {
     }
 
     public static Map<Long, IssueTypeWithStateMachineIdVO> queryIssueTypesWithStateMachineIdByProjectId(Long projectId, String applyType) {
-        List<IssueTypeWithStateMachineIdVO> issueTypeWithStateMachineIdVOS = SpringBeanUtil.getBean(IssueFeignClient.class).queryIssueTypesWithStateMachineIdByProjectId(projectId, applyType)
-                .getBody();
-        Map<Long, Long> statusIdMap = SpringBeanUtil.getBean(IssueFeignClient.class).queryInitStatusIds(getOrganizationId(projectId), issueTypeWithStateMachineIdVOS
-                .stream().map(IssueTypeWithStateMachineIdVO::getStateMachineId).collect(Collectors.toList())).getBody();
+        List<IssueTypeWithStateMachineIdVO> issueTypeWithStateMachineIdVOS = SpringBeanUtil.getBean(ProjectConfigService.class).queryIssueTypesWithStateMachineIdByProjectId(projectId, applyType);
+        Map<Long, Long> statusIdMap = SpringBeanUtil.getBean(InstanceService.class).queryInitStatusIds(getOrganizationId(projectId), issueTypeWithStateMachineIdVOS
+                .stream().map(IssueTypeWithStateMachineIdVO::getStateMachineId).collect(Collectors.toList()));
         issueTypeWithStateMachineIdVOS.forEach(issueTypeWithStateMachineIdDTO -> issueTypeWithStateMachineIdDTO.setInitStatusId(statusIdMap.get(issueTypeWithStateMachineIdDTO.getStateMachineId())));
         return issueTypeWithStateMachineIdVOS.stream().collect(Collectors.toMap(IssueTypeWithStateMachineIdVO::getId, Function.identity()));
     }

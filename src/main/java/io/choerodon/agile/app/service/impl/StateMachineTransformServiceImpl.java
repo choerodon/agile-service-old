@@ -1,10 +1,9 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.vo.StateMachineNodeVO;
 import io.choerodon.agile.api.vo.StateMachineTransformVO;
 import io.choerodon.agile.api.vo.StatusVO;
-import io.choerodon.agile.api.vo.event.TransformVO;
+import io.choerodon.agile.api.vo.TransformVO;
 import io.choerodon.agile.app.service.StateMachineConfigService;
 import io.choerodon.agile.app.service.StateMachineNodeService;
 import io.choerodon.agile.app.service.StateMachineTransformService;
@@ -15,6 +14,7 @@ import io.choerodon.agile.infra.enums.TransformConditionStrategy;
 import io.choerodon.agile.infra.enums.TransformType;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.agile.infra.utils.EnumUtil;
+import io.choerodon.core.exception.CommonException;
 import io.choerodon.mybatis.entity.Criteria;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;

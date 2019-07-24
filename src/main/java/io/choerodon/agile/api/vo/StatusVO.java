@@ -26,6 +26,8 @@ public class StatusVO {
     private Long objectVersionNumber;
     @ApiModelProperty(value = "是否能删除")
     private Boolean canDelete;
+    @ApiModelProperty(value = "状态是否已完成")
+    private Boolean completed;
 
     public StatusVO() {
     }
@@ -35,6 +37,14 @@ public class StatusVO {
         this.description = description;
         this.type = type;
         this.organizationId = organizationId;
+    }
+
+    public Boolean getCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(Boolean completed) {
+        this.completed = completed;
     }
 
     public Boolean getCanDelete() {

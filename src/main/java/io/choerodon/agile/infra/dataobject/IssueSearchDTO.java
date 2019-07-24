@@ -2,7 +2,7 @@ package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.api.vo.IssueTypeVO;
 import io.choerodon.agile.api.vo.PriorityVO;
-import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.api.vo.StatusVO;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -35,7 +35,7 @@ public class IssueSearchDTO {
     private PriorityVO priorityVO;
     private Long priorityId;
 
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     private Long issueTypeId;
     private IssueTypeVO issueTypeVO;
@@ -210,11 +210,11 @@ public class IssueSearchDTO {
         return priorityId;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 

@@ -3,10 +3,10 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.BoardFeatureService;
 import io.choerodon.agile.app.service.BoardTeamService;
+import io.choerodon.agile.app.service.IssueTypeService;
 import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.utils.RankUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
@@ -45,7 +45,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     @Autowired
     private IamFeignClient iamFeignClient;
     @Autowired
-    private IssueFeignClient issueFeignClient;
+    private IssueTypeService issueTypeService;
 
     private static final String UPDATE_ERROR = "error.boardFeature.update";
     private static final String DELETE_ERROR = "error.boardFeature.deleteById";
@@ -148,7 +148,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
     public BoardFeatureInfoVO queryInfoById(Long projectId, Long boardFeatureId) {
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
         BoardFeatureInfoVO info = queryInfoByIdAndCheck(projectId, boardFeatureId);
-        Map<Long, IssueTypeVO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeMap = issueTypeService.listIssueTypeMap(organizationId);
         info.setIssueTypeVO(issueTypeMap.get(info.getIssueTypeId()));
         return info;
     }
@@ -222,7 +222,7 @@ public class BoardFeatureServiceImpl implements BoardFeatureService {
             sprintInfo.setColumnWidth(columnWidth);
             sprintInfos.add(sprintInfo);
         }
-        Map<Long, IssueTypeVO> issueTypeMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeMap = issueTypeService.listIssueTypeMap(organizationId);
         for (BoardFeatureInfoVO boardFeatureInfo : boardFeatureInfos) {
             boardFeatureInfo.setIssueTypeVO(issueTypeMap.get(boardFeatureInfo.getIssueTypeId()));
         }
