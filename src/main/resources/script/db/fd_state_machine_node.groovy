@@ -40,16 +40,4 @@ databaseChangeLog(logicalFilePath: 'fd_state_machine_node.groovy') {
             column(name: "type", type: "VARCHAR(30)")
         }
     }
-    changeSet(id: '2018-12-24-fix-position-and-width-height', author: 'shinan.chenX@gmail') {
-        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
-            "update fd_state_machine_node set width = 62, height = 26 where type != 'node_start'"
-        }
-        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
-            "update fd_state_machine_node set position_x = 21, width = 20, height = 20 where type = 'node_start'"
-        }
-        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
-            "update fd_state_machine_node set position_y = FLOOR(position_y/2/50)*50"
-        }
-    }
-
 }

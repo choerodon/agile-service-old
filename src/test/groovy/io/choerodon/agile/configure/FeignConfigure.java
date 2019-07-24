@@ -13,11 +13,9 @@ import io.choerodon.core.convertor.ApplicationContextHelper;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.dto.StateMachineTransformDTO;
-import io.choerodon.statemachine.feign.InstanceFeignClient;
 import io.choerodon.statemachine.feign.InstanceFeignClientFallback;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -67,23 +65,6 @@ public class FeignConfigure {
         rel.add(rel2);
         Mockito.when(iamFeignClient.getProjUnderGroup(Matchers.anyLong(), Matchers.anyLong(), Matchers.anyBoolean())).thenReturn(new ResponseEntity<>(rel, HttpStatus.OK));
         return iamFeignClient;
-    }
-
-    @Bean
-    @Primary
-    InstanceFeignClient instanceFeignClient() {
-        InstanceFeignClient instanceFeignClient = Mockito.mock(InstanceFeignClientFallback.class);
-        Mockito.when(instanceFeignClient.queryInitStatusId(Matchers.anyLong(), Matchers.anyLong())).thenReturn(new ResponseEntity<>(1L, HttpStatus.OK));
-        ExecuteResult executeResult = new ExecuteResult();
-        executeResult.setSuccess(true);
-        Mockito.when(instanceFeignClient.startInstance(Matchers.anyLong(), Matchers.anyString(), Matchers.anyLong(), Matchers.any(InputDTO.class)))
-                .thenReturn(new ResponseEntity<>(executeResult, HttpStatus.OK));
-        Mockito.when(instanceFeignClient.executeTransform(Matchers.anyLong(), Matchers.anyString(), Matchers.anyLong(), Matchers.anyLong(), Matchers.anyLong(), Matchers.any(InputDTO.class)))
-                .thenReturn(new ResponseEntity<>(executeResult, HttpStatus.OK));
-        StateMachineTransformDTO stateMachineTransformDTO = new StateMachineTransformDTO();
-        Mockito.when(instanceFeignClient.queryInitTransform(Matchers.anyLong(), Matchers.anyLong()))
-                .thenReturn(new ResponseEntity<>(stateMachineTransformDTO, HttpStatus.OK));
-        return instanceFeignClient;
     }
 
     @Bean

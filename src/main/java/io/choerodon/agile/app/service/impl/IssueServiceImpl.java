@@ -31,7 +31,6 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.dto.InputDTO;
-import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -137,8 +136,6 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
-    private InstanceFeignClient instanceFeignClient;
-    @Autowired
     private StateMachineClientService stateMachineClientService;
     @Autowired
     private DataLogRedisUtil dataLogRedisUtil;
@@ -172,6 +169,8 @@ public class IssueServiceImpl implements IssueService {
     private ObjectSchemeFieldService objectSchemeFieldService;
     @Autowired
     private StatusService statusService;
+    @Autowired
+    private InstanceService instanceService;
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
@@ -667,7 +666,7 @@ public class IssueServiceImpl implements IssueService {
                 if (stateMachineId == null) {
                     throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
                 }
-                Long initStatusId = instanceFeignClient.queryInitStatusId(ConvertUtil.getOrganizationId(projectId), stateMachineId).getBody();
+                Long initStatusId = instanceService.queryInitStatusId(ConvertUtil.getOrganizationId(projectId), stateMachineId);
                 if (issueConvertDTO.getStatusId() == null && !oldIssue.getStatusId().equals(initStatusId)) {
                     issueConvertDTO.setStatusId(initStatusId);
                     fieldList.add(STATUS_ID);
@@ -2180,7 +2179,7 @@ public class IssueServiceImpl implements IssueService {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
         //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+        Long initStatusId = instanceService.queryInitStatusId(organizationId, stateMachineId);
 
         ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
         projectInfoDTO.setProjectId(projectId);

@@ -3,12 +3,12 @@ package io.choerodon.agile.api.controller.v1;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.enums.ResourceType;
 import io.choerodon.core.base.BaseController;
-import io.choerodon.agile.api.vo.ExecuteResult;
-import io.choerodon.agile.api.vo.InputVO;
+import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.agile.api.vo.StateMachineTransformVO;
 import io.choerodon.agile.api.vo.event.TransformInfo;
 import io.choerodon.agile.app.service.InstanceService;
 import io.choerodon.agile.infra.cache.InstanceCache;
+import io.choerodon.statemachine.dto.InputDTO;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,8 +38,8 @@ public class InstanceController extends BaseController {
     public ResponseEntity<ExecuteResult> startInstance(@PathVariable("organization_id") Long organizationId,
                                                        @RequestParam("service_code") String serviceCode,
                                                        @RequestParam("state_machine_id") Long stateMachineId,
-                                                       @RequestBody InputVO inputVO) {
-        ExecuteResult result = instanceService.startInstance(organizationId, serviceCode, stateMachineId, inputVO);
+                                                       @RequestBody InputDTO inputDTO) {
+        ExecuteResult result = instanceService.startInstance(organizationId, serviceCode, stateMachineId, inputDTO);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
@@ -51,8 +51,8 @@ public class InstanceController extends BaseController {
                                                           @RequestParam("state_machine_id") Long stateMachineId,
                                                           @RequestParam("current_status_id") Long currentStatusId,
                                                           @RequestParam("transform_id") Long transformId,
-                                                          @RequestBody InputVO inputVO) {
-        ExecuteResult result = instanceService.executeTransform(organizationId, serviceCode, stateMachineId, currentStatusId, transformId, inputVO);
+                                                          @RequestBody InputDTO inputDTO) {
+        ExecuteResult result = instanceService.executeTransform(organizationId, serviceCode, stateMachineId, currentStatusId, transformId, inputDTO);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

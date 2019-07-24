@@ -1,8 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.core.exception.CommonException;
-import io.choerodon.agile.api.vo.ExecuteResult;
-import io.choerodon.agile.api.vo.InputVO;
+import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.agile.api.vo.StateMachineConfigVO;
 import io.choerodon.agile.api.vo.StateMachineTransformVO;
 import io.choerodon.agile.api.vo.event.TransformInfo;
@@ -15,21 +13,22 @@ import io.choerodon.agile.infra.dataobject.StateMachineTransformDTO;
 import io.choerodon.agile.infra.enums.ConfigType;
 import io.choerodon.agile.infra.enums.NodeType;
 import io.choerodon.agile.infra.factory.MachineFactory;
-import io.choerodon.agile.infra.feign.CustomFeignClientAdaptor;
 import io.choerodon.agile.infra.mapper.StateMachineMapper;
 import io.choerodon.agile.infra.mapper.StateMachineNodeMapper;
 import io.choerodon.agile.infra.mapper.StateMachineTransformMapper;
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.statemachine.dto.InputDTO;
+import io.choerodon.statemachine.service.ClientService;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.statemachine.StateContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,9 +42,6 @@ public class InstanceServiceImpl implements InstanceService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstanceServiceImpl.class);
     private static final String EXCEPTION = "Exception:{}";
-    private static final String HTTP = "http://";
-    private static final String URI = "uri:{}";
-    private static final String AND_TARGET_STATUS_ID = "&target_status_id=";
     @Autowired
     private StateMachineNodeMapper nodeDeployMapper;
     @Autowired
@@ -57,24 +53,28 @@ public class InstanceServiceImpl implements InstanceService {
     @Autowired
     private MachineFactory machineFactory;
     @Autowired
-    private CustomFeignClientAdaptor customFeignClientAdaptor;
-    @Autowired
     private StateMachineMapper stateMachineMapper;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    @Qualifier("clientService")
+    private ClientService stateMachineClientService;
 
     @Override
-    public ExecuteResult startInstance(Long organizationId, String serviceCode, Long stateMachineId, InputVO inputVO) {
+    public ExecuteResult startInstance(Long organizationId, String serviceCode, Long stateMachineId, InputDTO inputDTO) {
         StateMachineDTO stateMachine = stateMachineMapper.queryById(organizationId, stateMachineId);
         if (stateMachine == null) {
             throw new CommonException("error.stateMachine.notFound");
         }
         ExecuteResult executeResult;
         try {
-            executeResult = machineFactory.startInstance(organizationId, serviceCode, stateMachineId, inputVO);
+            executeResult = machineFactory.startInstance(organizationId, serviceCode, stateMachineId, inputDTO);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            executeResult = new ExecuteResult(false, null, "创建状态机实例失败");
+            executeResult = new ExecuteResult();
+            executeResult.setSuccess(false);
+            executeResult.setResultStatusId(null);
+            executeResult.setErrorMessage("创建状态机实例失败");
         }
         return executeResult;
     }
@@ -93,8 +93,8 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public ExecuteResult executeTransform(Long organizationId, String serviceCode, Long stateMachineId, Long currentStatusId, Long transformId, InputVO inputVO) {
-        return machineFactory.executeTransform(organizationId, serviceCode, stateMachineId, currentStatusId, transformId, inputVO);
+    public ExecuteResult executeTransform(Long organizationId, String serviceCode, Long stateMachineId, Long currentStatusId, Long transformId, InputDTO inputDTO) {
+        return machineFactory.executeTransform(organizationId, serviceCode, stateMachineId, currentStatusId, transformId, inputDTO);
     }
 
     @Override
@@ -124,8 +124,9 @@ public class InstanceServiceImpl implements InstanceService {
         //调用对应服务，根据条件校验转换，过滤掉不可用的转换
         if (isNeedFilter) {
             try {
-                ResponseEntity<List<TransformInfo>> listEntity = customFeignClientAdaptor.filterTransformsByConfig(getFilterTransformURI(serviceCode, instanceId), transformInfos);
-                transformInfos = listEntity.getBody();
+                transformInfos = modelMapper.map(stateMachineClientService.conditionFilter(instanceId, modelMapper.map(transformInfos, new TypeToken<List<io.choerodon.statemachine.dto.TransformInfo>>() {
+                }.getType())), new TypeToken<List<TransformInfo>>() {
+                }.getType());
             } catch (Exception e) {
                 LOGGER.error(EXCEPTION, e);
                 transformInfos = Collections.emptyList();
@@ -135,24 +136,30 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public Boolean validatorGuard(Long organizationId, String serviceCode, Long transformId, InputVO inputVO, StateContext<String, String> context) {
+    public Boolean validatorGuard(Long organizationId, String serviceCode, Long transformId, InputDTO inputDTO, StateContext<String, String> context) {
         StateMachineTransformDTO transform = transformMapper.queryById(organizationId, transformId);
         List<StateMachineConfigVO> conditionConfigs = condition(organizationId, transformId);
         List<StateMachineConfigVO> validatorConfigs = validator(organizationId, transformId);
-        ExecuteResult executeResult = new ExecuteResult(true, null, null);
+        ExecuteResult executeResult = new ExecuteResult();
+        executeResult.setSuccess(true);
         //调用对应服务，执行条件和验证，返回是否成功
         try {
             if (!conditionConfigs.isEmpty()) {
-                inputVO.setConfigs(conditionConfigs);
-                executeResult = customFeignClientAdaptor.executeConfig(getExecuteConfigConditionURI(serviceCode, null, transform.getConditionStrategy()), inputVO).getBody();
+                inputDTO.setConfigs(modelMapper.map(conditionConfigs, new TypeToken<List<StateMachineConfigVO>>() {
+                }.getType()));
+                executeResult = modelMapper.map(stateMachineClientService.configExecuteCondition(null, transform.getConditionStrategy(), modelMapper.map(inputDTO, InputDTO.class)), ExecuteResult.class);
             }
             if (executeResult.getSuccess() && !validatorConfigs.isEmpty()) {
-                inputVO.setConfigs(validatorConfigs);
-                executeResult = customFeignClientAdaptor.executeConfig(getExecuteConfigValidatorURI(serviceCode, null), inputVO).getBody();
+                inputDTO.setConfigs(modelMapper.map(validatorConfigs, new TypeToken<List<StateMachineConfigVO>>() {
+                }.getType()));
+                executeResult = modelMapper.map(stateMachineClientService.configExecuteValidator(null, modelMapper.map(inputDTO, InputDTO.class)), ExecuteResult.class);
             }
         } catch (Exception e) {
             LOGGER.error(EXCEPTION, e);
-            executeResult = new ExecuteResult(false, null, "验证调用失败");
+            executeResult = new ExecuteResult();
+            executeResult.setSuccess(false);
+            executeResult.setResultStatusId(null);
+            executeResult.setErrorMessage("验证调用失败");
         }
 
         Map<Object, Object> variables = context.getExtendedState().getVariables();
@@ -161,9 +168,10 @@ public class InstanceServiceImpl implements InstanceService {
     }
 
     @Override
-    public Boolean postAction(Long organizationId, String serviceCode, Long transformId, InputVO inputVO, StateContext<String, String> context) {
+    public Boolean postAction(Long organizationId, String serviceCode, Long transformId, InputDTO inputDTO, StateContext<String, String> context) {
         List<StateMachineConfigVO> configs = action(organizationId, transformId);
-        inputVO.setConfigs(configs);
+        inputDTO.setConfigs(modelMapper.map(configs, new TypeToken<List<StateMachineConfigVO>>() {
+        }.getType()));
         StateMachineTransformDTO transform = transformMapper.queryById(organizationId, transformId);
         //节点转状态
         Long targetStatusId = nodeDeployMapper.getNodeDeployById(Long.parseLong(context.getTarget().getId())).getStatusId();
@@ -173,16 +181,20 @@ public class InstanceServiceImpl implements InstanceService {
         ExecuteResult executeResult;
         //调用对应服务，执行动作，返回是否成功
         try {
-            ResponseEntity<ExecuteResult> executeResultEntity = customFeignClientAdaptor.executeConfig(getExecuteConfigPostActionURI(serviceCode, targetStatusId, transform.getType()), inputVO);
+            executeResult = modelMapper.map(stateMachineClientService.configExecutePostAction(targetStatusId, transform.getType(), modelMapper.map(inputDTO, InputDTO.class)), ExecuteResult.class);
             //返回为空则调用对应服务，对应服务方法报错
-            if (executeResultEntity.getBody().getSuccess() != null) {
-                executeResult = executeResultEntity.getBody();
-            } else {
-                executeResult = new ExecuteResult(false, null, "后置动作调用失败");
+            if (executeResult.getSuccess() != null) {
+                executeResult = new ExecuteResult();
+                executeResult.setSuccess(false);
+                executeResult.setResultStatusId(null);
+                executeResult.setErrorMessage("后置动作调用失败");
             }
         } catch (Exception e) {
             LOGGER.error(EXCEPTION, e);
-            executeResult = new ExecuteResult(false, null, "后置动作调用失败");
+            executeResult = new ExecuteResult();
+            executeResult.setSuccess(false);
+            executeResult.setResultStatusId(null);
+            executeResult.setErrorMessage("后置动作调用失败");
         }
         Map<Object, Object> variables = context.getExtendedState().getVariables();
         variables.put("executeResult", executeResult);
@@ -221,105 +233,6 @@ public class InstanceServiceImpl implements InstanceService {
         } else {
             return new HashMap<>();
         }
-    }
-
-    /**
-     * 获取过滤转换的URI
-     *
-     * @param serviceCode
-     * @param instanceId
-     * @return
-     */
-    private URI getFilterTransformURI(String serviceCode, Long instanceId) {
-        URI uri = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(HTTP).append(serviceCode).append("/v1").append("/statemachine/filter_transform").append("?1=1");
-        if (instanceId != null) {
-            stringBuilder.append("&instance_id=").append(instanceId);
-        }
-        LOGGER.info(URI, Optional.of(stringBuilder).map(result -> stringBuilder.toString()));
-        try {
-            uri = new URI(stringBuilder.toString());
-        } catch (URISyntaxException e) {
-            LOGGER.error(EXCEPTION, e);
-        }
-        return uri;
-    }
-
-    /**
-     * 获取执行条件的URI
-     *
-     * @param serviceCode
-     * @param targetStatusId
-     * @param conditionStrategy
-     * @return
-     */
-    private URI getExecuteConfigConditionURI(String serviceCode, Long targetStatusId, String conditionStrategy) {
-        URI uri = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(HTTP).append(serviceCode).append("/v1").append("/statemachine/execute_config_condition").append("?1=1");
-        if (targetStatusId != null) {
-            stringBuilder.append(AND_TARGET_STATUS_ID).append(targetStatusId);
-        }
-        if (conditionStrategy != null) {
-            stringBuilder.append("&condition_strategy=").append(conditionStrategy);
-        }
-        LOGGER.info(URI, Optional.of(stringBuilder).map(result -> stringBuilder.toString()));
-        try {
-            uri = new URI(stringBuilder.toString());
-        } catch (URISyntaxException e) {
-            LOGGER.error(EXCEPTION, e);
-        }
-        return uri;
-    }
-
-    /**
-     * 获取执行验证的URI
-     *
-     * @param serviceCode
-     * @return
-     */
-    private URI getExecuteConfigValidatorURI(String serviceCode, Long targetStatusId) {
-        URI uri = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(HTTP).append(serviceCode).append("/v1").append("/statemachine/execute_config_validator").append("?1=1");
-        if (targetStatusId != null) {
-            stringBuilder.append(AND_TARGET_STATUS_ID).append(targetStatusId);
-        }
-        LOGGER.info(URI, Optional.of(stringBuilder).map(result -> stringBuilder.toString()));
-        try {
-            uri = new URI(stringBuilder.toString());
-        } catch (URISyntaxException e) {
-            LOGGER.error(EXCEPTION, e);
-        }
-        return uri;
-    }
-
-    /**
-     * 获取执行后置动作的URI
-     *
-     * @param serviceCode
-     * @param targetStatusId
-     * @return
-     */
-    private URI getExecuteConfigPostActionURI(String serviceCode, Long targetStatusId, String transformType) {
-        URI uri = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(HTTP).append(serviceCode).append("/v1").append("/statemachine/execute_config_action").append("?1=1");
-        if (targetStatusId != null) {
-            stringBuilder.append(AND_TARGET_STATUS_ID).append(targetStatusId);
-        }
-        if (transformType != null) {
-            stringBuilder.append("&transform_type=").append(transformType);
-        }
-        String uriStr = stringBuilder.toString();
-        LOGGER.debug(URI, uriStr);
-        try {
-            uri = new URI(uriStr);
-        } catch (URISyntaxException e) {
-            LOGGER.error(EXCEPTION, e);
-        }
-        return uri;
     }
 
     /**

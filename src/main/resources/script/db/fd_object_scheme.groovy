@@ -33,5 +33,4 @@ databaseChangeLog(logicalFilePath: 'fd_object_scheme.groovy') {
             column(name: "organization_id", type: "BIGINT UNSIGNED")
         }
     }
-
 }

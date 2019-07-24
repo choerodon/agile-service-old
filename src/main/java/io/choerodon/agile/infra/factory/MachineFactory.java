@@ -1,7 +1,5 @@
 package io.choerodon.agile.infra.factory;
 
-import io.choerodon.agile.api.vo.ExecuteResult;
-import io.choerodon.agile.api.vo.InputVO;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.cache.InstanceCache;
 import io.choerodon.agile.infra.dataobject.StateMachineDTO;
@@ -10,6 +8,8 @@ import io.choerodon.agile.infra.dataobject.StateMachineTransformDTO;
 import io.choerodon.agile.infra.enums.TransformType;
 import io.choerodon.agile.infra.mapper.StateMachineNodeMapper;
 import io.choerodon.core.exception.CommonException;
+import io.choerodon.statemachine.dto.ExecuteResult;
+import io.choerodon.statemachine.dto.InputDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class MachineFactory {
     private static Logger logger = LoggerFactory.getLogger(MachineFactory.class);
 
     private static final String EXECUTE_RESULT = "executeResult";
-    private static final String INPUT_VO = "inputVO";
+    private static final String INPUT_DTO = "InputDTO";
     @Autowired
     private StateMachineClientService stateMachineClientService;
     @Autowired
@@ -116,18 +116,25 @@ public class MachineFactory {
      * @param stateMachineId
      * @return
      */
-    public ExecuteResult startInstance(Long organizationId, String serviceCode, Long stateMachineId, InputVO inputVO) {
+    public ExecuteResult startInstance(Long organizationId, String serviceCode, Long stateMachineId, InputDTO inputDTO) {
         StateMachine<String, String> instance = buildInstance(organizationId, serviceCode, stateMachineId);
         //存入instanceId，以便执行guard和action
-        instance.getExtendedState().getVariables().put(INPUT_VO, inputVO);
+        instance.getExtendedState().getVariables().put(INPUT_DTO, inputDTO);
         //执行初始转换
         Long initTransformId = transformService.getInitTransform(organizationId, stateMachineId).getId();
         instance.sendEvent(initTransformId.toString());
 
         //缓存实例
-        instanceCache.putInstance(serviceCode, stateMachineId, inputVO.getInstanceId(), instance);
-
-        return instance.getExtendedState().getVariables().get(EXECUTE_RESULT) == null ? new ExecuteResult(false, null, "触发事件失败") : (ExecuteResult) instance.getExtendedState().getVariables().get(EXECUTE_RESULT);
+        instanceCache.putInstance(serviceCode, stateMachineId, inputDTO.getInstanceId(), instance);
+        Object obj = instance.getExtendedState().getVariables().get(EXECUTE_RESULT);
+        ExecuteResult executeResult = new ExecuteResult();
+        if (obj != null) {
+            executeResult = (ExecuteResult) obj;
+        } else {
+            executeResult.setSuccess(false);
+            executeResult.setErrorMessage("触发事件失败");
+        }
+        return executeResult;
     }
 
     /**
@@ -139,9 +146,9 @@ public class MachineFactory {
      * @param transformId
      * @return
      */
-    public ExecuteResult executeTransform(Long organizationId, String serviceCode, Long stateMachineId, Long currentStatusId, Long transformId, InputVO inputVO) {
+    public ExecuteResult executeTransform(Long organizationId, String serviceCode, Long stateMachineId, Long currentStatusId, Long transformId, InputDTO inputDTO) {
         try {
-            Long instanceId = inputVO.getInstanceId();
+            Long instanceId = inputDTO.getInstanceId();
             //校验transformId是否合法
             List<StateMachineTransformDTO> transforms = transformService.queryListByStatusIdByDeploy(organizationId, stateMachineId, currentStatusId);
             if (transforms.stream().noneMatch(x -> x.getId().equals(transformId))) {
@@ -162,7 +169,7 @@ public class MachineFactory {
                 instanceCache.putInstance(serviceCode, stateMachineId, instanceId, instance);
             }
             //存入instanceId，以便执行guard和action
-            instance.getExtendedState().getVariables().put(INPUT_VO, inputVO);
+            instance.getExtendedState().getVariables().put(INPUT_DTO, inputDTO);
             //触发事件
             instance.sendEvent(transformId.toString());
 
@@ -170,12 +177,19 @@ public class MachineFactory {
             Long statusId = nodeDeployMapper.getNodeDeployById(Long.parseLong(instance.getState().getId())).getStatusId();
             Object executeResult = instance.getExtendedState().getVariables().get(EXECUTE_RESULT);
             if (executeResult == null) {
-                executeResult = new ExecuteResult(false, statusId, "触发事件失败");
+                executeResult = new ExecuteResult();
+                ((ExecuteResult) executeResult).setSuccess(false);
+                ((ExecuteResult) executeResult).setResultStatusId(statusId);
+                ((ExecuteResult) executeResult).setErrorMessage("触发事件失败");
             }
             return (ExecuteResult) executeResult;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            return new ExecuteResult(false, null, "执行转换失败");
+            ExecuteResult executeResult = new ExecuteResult();
+            executeResult.setSuccess(false);
+            executeResult.setResultStatusId(null);
+            executeResult.setErrorMessage("执行转换失败");
+            return executeResult;
         }
 
     }
@@ -202,9 +216,9 @@ public class MachineFactory {
     private Action<String, String> action(Long organizationId, String serviceCode) {
         return context -> {
             Long transformId = Long.parseLong(context.getEvent());
-            InputVO inputVO = (InputVO) context.getExtendedState().getVariables().get(INPUT_VO);
-            logger.info("stateMachine instance execute transform action,instanceId:{},transformId:{}", inputVO.getInstanceId(), transformId);
-            Boolean result = instanceService.postAction(organizationId, serviceCode, transformId, inputVO, context);
+            InputDTO inputDTO = (InputDTO) context.getExtendedState().getVariables().get(INPUT_DTO);
+            logger.info("stateMachine instance execute transform action,instanceId:{},transformId:{}", inputDTO.getInstanceId(), transformId);
+            Boolean result = instanceService.postAction(organizationId, serviceCode, transformId, inputDTO, context);
             if (!result) {
                 throw new CommonException("error.stateMachine.action");
             }
@@ -220,8 +234,8 @@ public class MachineFactory {
     private Action<String, String> errorAction(Long organizationId, String serviceCode) {
         return context -> {
             Long transformId = Long.parseLong(context.getEvent());
-            InputVO inputVO = (InputVO) context.getExtendedState().getVariables().get(INPUT_VO);
-            logger.error("stateMachine instance execute transform error,organizationId:{},serviceCode:{},instanceId:{},transformId:{}", organizationId, serviceCode, inputVO.getInstanceId(), transformId);
+            InputDTO inputDTO = (InputDTO) context.getExtendedState().getVariables().get(INPUT_DTO);
+            logger.error("stateMachine instance execute transform error,organizationId:{},serviceCode:{},instanceId:{},transformId:{}", organizationId, serviceCode, inputDTO.getInstanceId(), transformId);
             // do something
         };
     }
@@ -235,9 +249,9 @@ public class MachineFactory {
     private Guard<String, String> guard(Long organizationId, String serviceCode) {
         return context -> {
             Long transformId = Long.parseLong(context.getEvent());
-            InputVO inputVO = (InputVO) context.getExtendedState().getVariables().get(INPUT_VO);
-            logger.info("stateMachine instance execute transform guard,instanceId:{},transformId:{}", inputVO.getInstanceId(), transformId);
-            return instanceService.validatorGuard(organizationId, serviceCode, transformId, inputVO, context);
+            InputDTO inputDTO = (InputDTO) context.getExtendedState().getVariables().get(INPUT_DTO);
+            logger.info("stateMachine instance execute transform guard,instanceId:{},transformId:{}", inputDTO.getInstanceId(), transformId);
+            return instanceService.validatorGuard(organizationId, serviceCode, transformId, inputDTO, context);
         };
     }
 }

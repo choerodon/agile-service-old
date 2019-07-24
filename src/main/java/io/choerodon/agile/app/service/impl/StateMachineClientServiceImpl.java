@@ -2,21 +2,21 @@ package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueValidator;
+import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.api.vo.event.CreateIssuePayload;
+import io.choerodon.agile.api.vo.event.CreateSubIssuePayload;
 import io.choerodon.agile.app.assembler.IssueAssembler;
 import io.choerodon.agile.app.service.*;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.api.vo.event.CreateIssuePayload;
-import io.choerodon.agile.api.vo.event.CreateSubIssuePayload;
 import io.choerodon.agile.infra.enums.SchemeApplyType;
-import io.choerodon.agile.infra.utils.ConvertUtil;
-import io.choerodon.agile.infra.utils.EnumUtil;
-import io.choerodon.agile.infra.utils.RankUtil;
 import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.IssueMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.agile.infra.mapper.RankMapper;
+import io.choerodon.agile.infra.utils.ConvertUtil;
+import io.choerodon.agile.infra.utils.EnumUtil;
+import io.choerodon.agile.infra.utils.RankUtil;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.annotation.Condition;
@@ -33,14 +33,10 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author shinan.chen
@@ -53,7 +49,6 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
     private static final String AGILE_SERVICE = "agile-service";
     private static final String ERROR_ISSUE_STATE_MACHINE_NOT_FOUND = "error.issueStateMachine.notFound";
     private static final String ERROR_ISSUE_NOT_FOUND = "error.issue.notFound";
-    private static final String ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM = "error.instanceFeignClient.executeTransform";
     private static final String ERROR_PROJECT_INFO_NOT_FOUND = "error.createIssue.projectInfoNotFound";
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String RANK = "rank";
@@ -69,8 +64,6 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
     private IssueService issueService;
     @Autowired
     private IssueAssembler issueAssembler;
-    @Autowired
-    private InstanceFeignClient instanceFeignClient;
     @Autowired
     private IssueAccessDataService issueAccessDataService;
     @Autowired
@@ -93,6 +86,8 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
     private ProjectConfigService projectConfigService;
     @Autowired
     private StateMachineTransformService transformService;
+    @Autowired
+    private InstanceService instanceService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -103,7 +98,7 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
 
     private void insertRank(Long projectId, Long issueId, String type, RankVO rankVO) {
         List<RankDTO> rankDTOList = new ArrayList<>();
-        String rank = null;
+        String rank;
         if (rankVO == null) {
             String minRank = rankMapper.selectMinRank(projectId, type);
             rank = (minRank == null ? RankUtil.mid() : RankUtil.genPre(minRank));
@@ -158,7 +153,7 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
         //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+        Long initStatusId = instanceService.queryInitStatusId(organizationId, stateMachineId);
         if (initStatusId == null) {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
@@ -218,7 +213,7 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
         //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+        Long initStatusId = instanceService.queryInitStatusId(organizationId, stateMachineId);
         if (initStatusId == null) {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
@@ -244,10 +239,9 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
     }
 
     /**
-     * 执行转换要开启新事务，否则转换后查询不到最新的数据
+     * 执行转换
      */
     @Override
-    @Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     public ExecuteResult executeTransform(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType, InputDTO inputDTO) {
         if (!EnumUtil.contain(SchemeApplyType.class, applyType)) {
             throw new CommonException("error.applyType.illegal");
@@ -264,11 +258,11 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
         }
         Long currentStatusId = issue.getStatusId();
         //执行状态转换
-        ResponseEntity<ExecuteResult> responseEntity = instanceFeignClient.executeTransform(organizationId, AGILE_SERVICE, stateMachineId, currentStatusId, transformId, inputDTO);
-        if (!responseEntity.getBody().getSuccess()) {
-            throw new CommonException(ERROR_INSTANCE_FEGIN_CLIENT_EXECUTE_TRANSFORM);
+        ExecuteResult executeResult = instanceService.executeTransform(organizationId, AGILE_SERVICE, stateMachineId, currentStatusId, transformId, inputDTO);
+        if (!executeResult.getSuccess()) {
+            throw new CommonException("error.stateMachine.executeTransform");
         }
-        return responseEntity.getBody();
+        return executeResult;
     }
 
     /**

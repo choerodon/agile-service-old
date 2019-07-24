@@ -20,6 +20,9 @@ databaseChangeLog(logicalFilePath: 'fd_priority.groovy') {
             column(name: 'is_default', type: 'TINYINT UNSIGNED', defaultValue: "0", remarks: '是否默认') {
                 constraints(nullable: 'false')
             }
+            column(name: 'is_enable', type: 'TINYINT UNSIGNED', defaultValue: "1", remarks: 'is enable flag') {
+                constraints(nullable: 'false')
+            }
             column(name: 'sequence', type: 'DECIMAL', defaultValue: "0", remarks: '排序') {
                 constraints(nullable: 'false')
             }
@@ -42,14 +45,6 @@ databaseChangeLog(logicalFilePath: 'fd_priority.groovy') {
         }
         createIndex(tableName: "fd_priority", indexName: "priority_n4") {
             column(name: "is_default", type: "TINYINT UNSIGNED")
-        }
-    }
-
-    changeSet(id: '2019-03-04-add-column-is-enable', author: 'shinan.chenX@gmail.com') {
-        addColumn(tableName: 'fd_priority') {
-            column(name: 'is_enable', type: 'TINYINT UNSIGNED', defaultValue: "1", remarks: 'is enable flag') {
-                constraints(nullable: 'false')
-            }
         }
     }
 }

@@ -1,10 +1,10 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.agile.api.vo.ExecuteResult;
-import io.choerodon.agile.api.vo.InputVO;
+import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.agile.api.vo.StateMachineConfigVO;
 import io.choerodon.agile.api.vo.StateMachineTransformVO;
 import io.choerodon.agile.api.vo.event.TransformInfo;
+import io.choerodon.statemachine.dto.InputDTO;
 import org.springframework.statemachine.StateContext;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public interface InstanceService {
      * @param stateMachineId
      * @return
      */
-    ExecuteResult startInstance(Long organizationId, String serviceCode, Long stateMachineId, InputVO inputVO);
+    ExecuteResult startInstance(Long organizationId, String serviceCode, Long stateMachineId, InputDTO inputDTO);
 
     /**
      * 查询状态机的初始状态id
@@ -43,7 +43,7 @@ public interface InstanceService {
      * @param serviceCode     请求服务code
      * @return
      */
-    ExecuteResult executeTransform(Long organizationId, String serviceCode, Long stateMachineId, Long currentStatusId, Long transformId, InputVO inputVO);
+    ExecuteResult executeTransform(Long organizationId, String serviceCode, Long stateMachineId, Long currentStatusId, Long transformId, InputDTO inputDTO);
 
     /**
      * 获取当前状态拥有的转换列表，feign调用对应服务的条件验证
@@ -60,11 +60,11 @@ public interface InstanceService {
      * @param organizationId
      * @param serviceCode
      * @param transformId
-     * @param inputVO
+     * @param inputDTO
      * @param context        状态机上下文，传递参数
      * @return
      */
-    Boolean validatorGuard(Long organizationId, String serviceCode, Long transformId, InputVO inputVO, StateContext<String, String> context);
+    Boolean validatorGuard(Long organizationId, String serviceCode, Long transformId, InputDTO inputDTO, StateContext<String, String> context);
 
     /**
      * 调用相应服务，执行后置动作
@@ -72,11 +72,11 @@ public interface InstanceService {
      * @param organizationId
      * @param serviceCode
      * @param transformId
-     * @param inputVO
+     * @param inputDTO
      * @param context        状态机上下文，传递参数
      * @return
      */
-    Boolean postAction(Long organizationId, String serviceCode, Long transformId, InputVO inputVO, StateContext<String, String> context);
+    Boolean postAction(Long organizationId, String serviceCode, Long transformId, InputDTO inputDTO, StateContext<String, String> context);
 
     /**
      * 条件

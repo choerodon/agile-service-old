@@ -15,7 +15,6 @@ import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
@@ -49,43 +48,28 @@ public class PiServiceImpl implements PiService {
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String SPRINT_COMPLETE_SETTING_BACKLOG = "backlog";
     private static final String SPRINT_COMPLETE_SETTING_NEXT_SPRINT = "next_sprint";
-
     @Autowired
     private PiMapper piMapper;
-
     @Autowired
     private ArtMapper artMapper;
-
     @Autowired
     private WorkCalendarHolidayRefService workCalendarHolidayRefService;
-
     @Autowired
     private PiValidator piValidator;
-
     @Autowired
     private IamFeignClient iamFeignClient;
-
     @Autowired
     private SprintService sprintService;
-
     @Autowired
     private IssueMapper issueMapper;
-
     @Autowired
     private SprintMapper sprintMapper;
-
     @Autowired
     private PiAssembler piAssembler;
-
     @Autowired
     private IssueStatusMapper issueStatusMapper;
-
-    @Autowired
-    private InstanceFeignClient instanceFeignClient;
-
     @Autowired
     private SendMsgUtil sendMsgUtil;
-
     @Autowired
     private IssueAccessDataService issueAccessDataService;
     @Autowired
@@ -94,6 +78,8 @@ public class PiServiceImpl implements PiService {
     private ProjectConfigService projectConfigService;
     @Autowired
     private StatusService statusService;
+    @Autowired
+    private InstanceService instanceService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -401,7 +387,7 @@ public class PiServiceImpl implements PiService {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
         //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+        Long initStatusId = instanceService.queryInitStatusId(organizationId, stateMachineId);
         if (initStatusId == null) {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }

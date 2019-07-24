@@ -36,26 +36,4 @@ databaseChangeLog(logicalFilePath: 'fd_issue_type_scheme_config.groovy') {
             column(name: "organization_id", type: "BIGINT UNSIGNED")
         }
     }
-
-    changeSet(id: '2018-12-07-fix-add-default-issue-auto-test-config', author: 'shinan.chenX@gmail') {
-        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
-            "insert into fd_issue_type_scheme_config(scheme_id,issue_type_id,organization_id,sequence) " +
-                    "select its.id as scheme_id,it.id as issue_type_id,it.organization_id,'2' as sequence " +
-                    "from fd_issue_type_scheme its " +
-                    "LEFT JOIN fd_issue_type it on its.organization_id = it.organization_id " +
-                    "where its.apply_type = 'test' " +
-                    "and it.type_code = 'issue_auto_test'"
-        }
-    }
-
-    changeSet(id: '2019-03-12-fix-add-default-feature-config', author: 'shinan.chenX@gmail') {
-        sql(stripComments: true, splitStatements: false, endDelimiter: ';') {
-            "insert into fd_issue_type_scheme_config(scheme_id,issue_type_id,organization_id,sequence) " +
-                    "select its.id as scheme_id,it.id as issue_type_id,it.organization_id,'2' as sequence " +
-                    "from fd_issue_type_scheme its " +
-                    "LEFT JOIN fd_issue_type it on its.organization_id = it.organization_id " +
-                    "where its.apply_type = 'agile' " +
-                    "and it.type_code = 'feature'"
-        }
-    }
 }

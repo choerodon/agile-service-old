@@ -22,7 +22,6 @@ import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.iam.ResourceLevel;
-import io.choerodon.statemachine.feign.InstanceFeignClient;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,8 +70,6 @@ public class ProjectConfigServiceImpl implements ProjectConfigService {
     private ProjectUtil projectUtil;
     @Autowired
     private ProjectConfigService projectConfigService;
-    @Autowired
-    private InstanceFeignClient instanceFeignClient;
     @Autowired
     private SagaClient sagaClient;
     @Autowired
@@ -425,7 +422,7 @@ public class ProjectConfigServiceImpl implements ProjectConfigService {
         if (statusMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, statusMachineId).getBody();
+        Long initStatusId = instanceService.queryInitStatusId(organizationId, statusMachineId);
         if (initStatusId == null) {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
