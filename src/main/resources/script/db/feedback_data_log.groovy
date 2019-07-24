@@ -21,4 +21,13 @@ databaseChangeLog(logicalFilePath: 'script/db/feedback_data_log.groovy') {
             column(name: "last_update_date", type: "DATETIME", defaultValueComputed: "CURRENT_TIMESTAMP")
         }
     }
+
+    changeSet(id: '2019-07-24-feedback-data-log-add-index', author: 'fuqianghuang01@gmail.com') {
+        createIndex(tableName: "feedback_data_log", indexName: "idx_project_id") {
+            column(name: "project_id")
+        }
+        createIndex(tableName: "feedback_data_log", indexName: "idx_feedback_id") {
+            column(name: "feedback_id")
+        }
+    }
 }
