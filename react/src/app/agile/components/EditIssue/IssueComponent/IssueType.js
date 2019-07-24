@@ -61,7 +61,7 @@ const IssueType = observer(({
 
   let issueTypeData = store.getIssueTypes ? store.getIssueTypes : [];
   const issue = store.getIssue;
-  const { issueTypeVO = {}, featureVO = {} } = issue;
+  const { issueTypeVO = {}, featureVO = {}, subIssueVOList = [] } = issue;
   const { typeCode } = issueTypeVO;
   const { featureType } = featureVO || {};
   let currentIssueType = issueTypeVO;
@@ -83,7 +83,10 @@ const IssueType = observer(({
     ];
     currentIssueType = featureType === 'business' ? issueTypeData[0] : issueTypeData[1];
   } else {
-    issueTypeData = issueTypeData.filter(item => item.typeCode !== 'feature');
+    issueTypeData = issueTypeData.filter(item => ![typeCode, 'feature', 'sub_task'].includes(item.typeCode));
+  }
+  if (subIssueVOList.length > 0) {
+    issueTypeData = issueTypeData.filter(item => ['task', 'story'].includes(item.typeCode));
   }
   const typeList = (
     <Menu
