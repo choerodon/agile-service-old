@@ -140,7 +140,7 @@ const { Text, Edit } = TextEditToggle;
               <Select
                 // style={{ width: 150 }}
                 loading={selectLoading}
-                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}
+                getPopupContainer={() => document.getElementById('detail')}
                 onChange={(value, item) => {
                   this.setState({
                     transformId: item.key,

@@ -177,7 +177,7 @@ class BaseEditor extends Component {
     const newStyle = { ...defaultStyle, ...style };
     const editHeight = newStyle.height === '100%' ? `calc(100% - ${toolbarHeight || '42px'})` : (newStyle.height - (toolbarHeight || 42));
     return (
-      <div style={{ width: '100%', height: '100%' }}>
+      <div className="c7n-quill-editor" style={{ width: '100%', height: '100%' }}>
         <div style={newStyle} className={`react-quill-editor react-quill-editor-${mode}`}>
           <ToolBar id={this.toolBarId} onFullScreenClick={onFullScreenClick} hideFullScreen={hideFullScreen} />
           <ReactQuill

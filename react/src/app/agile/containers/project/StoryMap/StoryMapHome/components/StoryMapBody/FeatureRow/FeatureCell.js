@@ -43,7 +43,7 @@ class FeatureCell extends Component {
             <div style={{ display: 'flex' }}>        
               {adding ? null : (
                 <Fragment>
-                  {featureCommonDTOList.filter(feature => !feature.adding).map(feature => <FeatureColumn epic={epic} feature={feature} otherData={otherData.feature[feature.issueId]} />)}             
+                  {featureCommonDTOList.filter(feature => !feature.adding).map(feature => <FeatureColumn epic={epic} feature={feature} otherData={otherData ? otherData.feature[feature.issueId] : {}} />)}             
                   {/* 没有关联feature，但是关联了史诗的故事 */}
                   {otherData && otherData.feature.none && otherData.feature.none.storys.length > 0 ? <FeatureColumn isLast={isLastColumn} epic={epic} feature={{ issueId: 'none' }} otherData={otherData.feature.none} /> : null}                  
                 </Fragment>

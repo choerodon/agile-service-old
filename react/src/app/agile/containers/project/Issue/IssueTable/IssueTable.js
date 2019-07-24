@@ -33,7 +33,7 @@ class IssueTable extends Component {
     });
   }
 
-  setSelectRow=() => {
+  setSelectRow = () => {
     const selectedIssue = IssueStore.getSelectedIssue;
     if (selectedIssue && selectedIssue.issueId) {
       const issues = IssueStore.getIssues;
@@ -146,6 +146,7 @@ class IssueTable extends Component {
     IssueStore.judgeConditionWithFilter();
     IssueStore.judgeFilterConditionIsEmpty();
     IssueStore.setLoading(true);
+    IssueStore.setFilterMap(this.filterControler.cache);
     // 更新函数
     this.filterControler.update(
       pagination.current,
@@ -218,7 +219,6 @@ class IssueTable extends Component {
     } else {
       fieldFilteredValue = [];
     }
-
     return fieldFilteredValue;
   }
 

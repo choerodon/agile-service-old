@@ -148,7 +148,7 @@ const { Text, Edit } = TextEditToggle;
                 mode="multiple"
                 loading={selectLoading}
                 tokenSeparators={[',']}
-                getPopupContainer={() => document.getElementsByClassName('c7n-body-editIssue')[0]}
+                getPopupContainer={() => document.getElementById('detail')}
                 style={{ width: '100%', marginTop: 0, paddingTop: 0 }}
                 onChange={(value) => {
                   const versions = value.filter(v => v && v.trim()).map((item) => {
