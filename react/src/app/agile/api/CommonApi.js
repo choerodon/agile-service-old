@@ -1,5 +1,7 @@
 import { stores, axios } from '@choerodon/boot';
+import { func } from 'prop-types';
 import { getProjectId, getOrganizationId } from '../common/utils';
+
 
 const { AppState } = stores;
 
@@ -14,7 +16,6 @@ export function getUsers(param, userId, page = 1) {
   }
   return axios.get(`/iam/v1/projects/${projectId}/users?size=20&page=${page}${userId ? `&id=${userId}` : ''}`);
 }
-
 export function getUser(userId) {
   const projectId = AppState.currentMenuType.id;
   return axios.get(`iam/v1/projects/${projectId}/users?id=${userId}`);

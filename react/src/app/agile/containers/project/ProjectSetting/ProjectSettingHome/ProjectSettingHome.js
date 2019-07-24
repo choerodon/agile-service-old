@@ -9,7 +9,7 @@ import {
 } from 'choerodon-ui';
 import { COLOR } from '../../../../common/Constant';
 import { loadPriorities } from '../../../../api/NewIssueApi';
-import { getUsers, getUser } from '../../../../api/CommonApi';
+import { getUsers, getUser, getPageUser } from '../../../../api/CommonApi';
 import UserHead from '../../../../components/UserHead';
 
 const { AppState } = stores;
@@ -24,12 +24,13 @@ class ProjectSetting extends Component {
     this.state = {
       origin: {},
       loading: false,
-      couldUpdate: false,
+      // couldUpdate: false,
       originUsers: [],
-
+      num: 40,
       code: undefined,
       strategy: undefined,
       assignee: undefined,
+      hasNextPage: false,
     };
   }
 
@@ -72,6 +73,7 @@ class ProjectSetting extends Component {
   }
 
   loadUser(assigneeId) {
+    // console.log(assigneeId)
     getUser(assigneeId).then((res) => {
       this.setState({
         assignee: assigneeId,
@@ -92,6 +94,7 @@ class ProjectSetting extends Component {
         this.setState({
           originUsers: res.list.filter(u => u.enabled),
           selectLoading: false,
+          hasNextPage: res.hasNextPage,
         });
       });
       sign = true;
@@ -115,12 +118,12 @@ class ProjectSetting extends Component {
   handleCheckSameName = (rule, value, callback) => {
     if (!value) {
       this.setState({
-        couldUpdate: false,
+        // couldUpdate: false,
       });
       callback('项目code不能为空');
     } else if (value === this.state.origin.projectCode) {
       this.setState({
-        couldUpdate: false,
+        // couldUpdate: false,
       });
       callback();
     } else {
@@ -139,7 +142,7 @@ class ProjectSetting extends Component {
       //     }
       //   });
       this.setState({
-        couldUpdate: true,
+        // couldUpdate: true,
       });
       callback();
     }
@@ -165,7 +168,7 @@ class ProjectSetting extends Component {
               this.setState({
                 origin: res,
                 loading: false,
-                couldUpdate: false,
+                // couldUpdate: false,
                 code: res.projectCode,
                 strategy: res.defaultAssigneeType,
                 assignee: res.defaultAssigneeId,
@@ -180,6 +183,20 @@ class ProjectSetting extends Component {
             this.getProjectCode();
           });
       }
+    });
+  };
+
+  loadMoreUser = () => {
+    const { num } = this.state;
+    this.setState({
+      num: num + 20,
+    });
+    getPageUser(this.state.num).then((res) => {
+      this.setState({
+        originUsers: res.list.filter(u => u.enabled),
+        selectLoading: false,
+        hasNextPage: res.hasNextPage,
+      });
     });
   };
 
@@ -264,6 +281,14 @@ class ProjectSetting extends Component {
                         </div>
                       </Option>
                     ))}
+                    <Option key="loadMore" disabled style={{ display: this.state.hasNextPage ? '' : 'none' }}>
+                      <Button
+                        style={{ width: '100%', textAlign: 'left' }}
+                        onClick={this.loadMoreUser.bind(this)}
+                      >
+                        加载更多
+                      </Button>
+                    </Option>
                   </Select>,
                 )}
               </FormItem>
