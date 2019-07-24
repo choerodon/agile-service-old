@@ -37,8 +37,8 @@ class EditNotificationType extends Component {
         total: 0,
       },
       // 用于延迟过滤搜索。
-      oldParam: '',
       tid: 0,
+      isHasNextPage: true,
     };
   }
 
@@ -135,54 +135,9 @@ class EditNotificationType extends Component {
             getPopupContainer={trigger => trigger.parentNode}
             onChange={value => this.handleSelectChange(value, index)}
             onSearch={(value) => {
-              this.setState({
-                oldParam: value,
-              });
+
             }}
-            onFilterChange={(param = '') => {
-              const requestUserOption = () => {
-                axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?param=${param}&page=1&size=${this.state.page.size}`)
-                  .then((res) => {
-                    const more = (
-                      <Option key="9999" disabled className="hidden_my">{this.isHasNextPage() ? <Button onClick={this.handleCheckNextPage}>更多内容</Button> : <span>没有更多了</span>}</Option>
-                    );
-                    if (typeof (_.last(userOptions) === 'react.element')) {
-                      _.pull(userOptions, ...userOptions);
-                    }
-                    this.setState({
-                      userOptionsLoading: false,
-                      userOptions: param ? res.list : [...userOptions, ...res.list, ...userOptionsWithUserId, more],
-                      // page: {
-                      //   current: this.isHasNextPage() ? page.current : 1,
-                      //   size: page.size,
-                      //   total: page.total,
-                      // },
-                    // 如果搜索条件为空，就把为空时搜出来的20条与之前有userId的数据进行拼接，保证已被选中但不在20条之内的数据显示出来
-                    });
-                  })
-                  .catch((e) => {
-                    Choerodon.prompt(e);
-                  });
-              };
-              // 延迟搜索 
-              /**
-               * 逻辑.....
-               * 当param变化时，设置一个定时器，记录定时器ID到state中tid
-               * 300ms到了，还在变化则清除定时器,重新设定
-               */
-              this.debounce(() => {
-                if (this.state.oldParam === param) {
-                  this.setState({
-                    page: {
-                      current: 1,
-                      size: page.size,
-                      total: page.total,
-                    },
-                  });
-                  requestUserOption(param);
-                }
-              }, 300);
-            }}
+            onFilterChange={value => this.onFilterChange(value)}
             mode="multiple"
             label="请选择"
             optionFilterProp="children"
@@ -211,6 +166,9 @@ class EditNotificationType extends Component {
               })
             }
 
+            {
+              this.state.isHasNextPage ? <Option key="9999" disabled className="c7n-hidden-my"><Button onClick={this.handleCheckNextPage}>更多内容</Button></Option> : <Option key="9998" disabled className="c7n-hidden-icon"><span>没有更多了</span></Option>
+            }
           </Select>
 
         ) : ''),
@@ -228,46 +186,58 @@ class EditNotificationType extends Component {
     this.state.tid = setTimeout(fn, time);
   }
 
-  // 是否有下一页 有则返回true
-  isHasNextPage = () => {
-    if (this.state.page.size * this.state.page.current < this.state.page.total) {
-      return true; 
-    } else {
-      return false;
-    }
+  onFilterChange(param = '') {
+    // 延迟搜索 
+    /**
+     * 逻辑.....
+     * 当param变化时，设置一个定时器，记录定时器ID到state中tid
+     * 300ms到了，还在变化则清除定时器,重新设定
+     */
+    const { page } = this.state;
+    this.debounce(() => {
+      this.setState({
+        page: {
+          current: 1,
+          size: page.size,
+          total: page.total,
+        },
+        userOptions: [],
+      });
+      this.loadMoreOptions(param);
+    }, 350);
   }
 
+
   handleCheckNextPage = () => {
-    const { page } = this.state;
-    if (this.isHasNextPage()) {
+    const { page, userOptions } = this.state;
+    if (this.state.isHasNextPage) {
       this.setState({
         page: {
           current: page.current + 1,
           size: page.size,
           total: page.total,
         },
-      }, () => this.loadMoreOptions());
+      }, () => this.loadMoreOptions('', userOptions));
     }
   }
 
-  loadMoreOptions() {
+  loadMoreOptions(param = '', oldUserOptions = []) {
     const { page } = this.state;
     this.setState({
       userOptionsLoading: true,
     });
-
-    axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=${this.state.page.current}&size=${this.state.page.size}`)
+    axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?param=${param}&page=${this.state.page.current}&size=${this.state.page.size}`)
       .then((res) => {
-        const more = (
-          <Option key="9999" disabled className="hidden_my">{this.isHasNextPage() ? <Button onClick={this.handleCheckNextPage.bind(this)}>更多内容</Button> : <span>没有更多了</span>}</Option>
-        );
-        this.state.userOptions.pop();
-        const oldUserOptions = this.state.userOptions;
         this.setState({
           userOptionsLoading: false,
-          userOptions: [...oldUserOptions, ...res.list, more],
-        
-        });   
+          isHasNextPage: res.hasNextPage,
+          userOptions: param ? res.list : [...oldUserOptions, ...res.list, ...userOptionsWithUserId],
+          page: {
+            current: res.pageNum,
+            size: page.size,
+            total: res.total,
+          },
+        });
       })
       .catch((e) => {
         Choerodon.prompt(e);
