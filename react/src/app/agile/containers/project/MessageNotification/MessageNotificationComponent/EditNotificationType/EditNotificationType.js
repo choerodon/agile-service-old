@@ -30,11 +30,21 @@ class EditNotificationType extends Component {
       updateData: [],
       selectedValue: [],
       dataSource: [],
+      // 分页信息
+      page: {
+        current: 1,
+        size: 10,
+        total: 0,
+      },
+      // 用于延迟过滤搜索。
+      oldParam: '',
+      tid: 0,
     };
   }
 
   componentDidMount() {
     const { location: { search } } = this.props;
+    const { page } = this.state;
     const noticeType = _.last(search.split('&')).split('=')[1];
     axios.all([
       axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/notice`),
@@ -47,7 +57,7 @@ class EditNotificationType extends Component {
         this.setState({
           loading: false,
           checkeds: _.map(noticeTypeData, 'enable'),
-          userOptions: [...users.list.filter(item => item.enabled), ...noticeTypeData[3].idWithNameVOList.filter(item => !users.list.find(o => o.id === item.userId))], // 如果后端返回的idWithNameVOList中的用户不在20条数据之内，就拼接在后面
+          userOptions: [...noticeTypeData[3].idWithNameVOList.filter(item => !users.list.find(o => o.id === item.userId))], // 如果后端返回的idWithNameVOList中的用户不在20条数据之内，就拼接在后面
           updateData: _.map(noticeTypeData, (item) => {
             const pickItem = _.pick(item, ['id', 'event', 'noticeType', 'noticeName', 'enable', 'user', 'objectVersionNumber']); // 去除对象中的idWithNameVOList字段，更新时不需要
             return ({ ...pickItem, objectVersionNumber: pickItem.id ? pickItem.objectVersionNumber : null });// 如果之前没有更新过,pickItem.id为null, 此时后端接受的objectVersionNumber为null
@@ -75,6 +85,12 @@ class EditNotificationType extends Component {
               typeName: '用户 (可多选)',
             },
           ],
+          // 分页初始状态设置
+          page: {
+            current: 1,
+            size: page.size,
+            total: users.total,
+          },
         });
       }))
       .catch((error) => {
@@ -87,7 +103,7 @@ class EditNotificationType extends Component {
 
   getColumns() {
     const {
-      userOptions, userOptionsLoading, checkeds, selectedValue,
+      userOptions, userOptionsLoading, checkeds, selectedValue, page,
     } = this.state;
     userOptionsWithUserId = (() => _.map(_.union(_.map(userOptionsWithUserId, JSON.stringify), _.map(_.filter(userOptions, 'userId'), JSON.stringify)), JSON.parse)
     )(); // userOptions中所有有userId字段的user筛选出来，和原来的拼接，注意去重
@@ -117,49 +133,145 @@ class EditNotificationType extends Component {
             style={{ width: 520 }}
             value={selectedValue}
             getPopupContainer={trigger => trigger.parentNode}
-            // value={}
             onChange={value => this.handleSelectChange(value, index)}
-            onFilterChange={(param) => {
+            onSearch={(value) => {
               this.setState({
-                userOptionsLoading: true,
+                oldParam: value,
               });
-              axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?param=${param}`)
-                .then((res) => {
-                  this.setState({
-                    userOptionsLoading: false,
-                    userOptions: param ? res.list : [...res.list, ...userOptionsWithUserId],
+            }}
+            onFilterChange={(param = '') => {
+              const requestUserOption = () => {
+                axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?param=${param}&page=1&size=${this.state.page.size}`)
+                  .then((res) => {
+                    const more = (
+                      <Option key="9999" disabled className="hidden_my">{this.isHasNextPage() ? <Button onClick={this.handleCheckNextPage}>更多内容</Button> : <span>没有更多了</span>}</Option>
+                    );
+                    if (typeof (_.last(userOptions) === 'react.element')) {
+                      _.pull(userOptions, ...userOptions);
+                    }
+                    this.setState({
+                      userOptionsLoading: false,
+                      userOptions: param ? res.list : [...userOptions, ...res.list, ...userOptionsWithUserId, more],
+                      // page: {
+                      //   current: this.isHasNextPage() ? page.current : 1,
+                      //   size: page.size,
+                      //   total: page.total,
+                      // },
                     // 如果搜索条件为空，就把为空时搜出来的20条与之前有userId的数据进行拼接，保证已被选中但不在20条之内的数据显示出来
+                    });
+                  })
+                  .catch((e) => {
+                    Choerodon.prompt(e);
                   });
-                })
-                .catch((e) => {
-                  Choerodon.prompt(e);
-                });
+              };
+              // 延迟搜索 
+              /**
+               * 逻辑.....
+               * 当param变化时，设置一个定时器，记录定时器ID到state中tid
+               * 300ms到了，还在变化则清除定时器,重新设定
+               */
+              this.debounce(() => {
+                if (this.state.oldParam === param) {
+                  this.setState({
+                    page: {
+                      current: 1,
+                      size: page.size,
+                      total: page.total,
+                    },
+                  });
+                  requestUserOption(param);
+                }
+              }, 300);
             }}
             mode="multiple"
             label="请选择"
             optionFilterProp="children"
             loading={userOptionsLoading}
             filter
+            filterOption={false}
             allowClear
             autoFocus
           >
             {
-              userOptions && _.map(userOptions, item => (
-                <Option
-                  key={item.id ? item.id : item.userId}
-                  value={item.id ? item.id : item.userId}
-                >
-                  <Tooltip title={item.realName ? `${item.loginName || ''}${item.realName || ''}` : item.name} mouseEnterDelay={0.5}>
-                    {item.realName ? `${item.realName}` : item.name}
-                  </Tooltip>
-                </Option>
-              ))
+              userOptions && _.map(userOptions, (item) => {
+                if (typeof (item.id) !== 'undefined') {
+                  return (
+                    <Option
+                      key={item.id ? item.id : item.userId}
+                      value={item.id ? item.id : item.userId}
+                    >
+                      <Tooltip title={item.realName ? `${item.loginName || ''}${item.realName || ''}` : item.name} mouseEnterDelay={0.5}>
+                        {item.realName ? `${item.realName}` : item.name}
+                      </Tooltip>
+                    </Option>
+                  );
+                } else {
+                  return item;
+                }
+              })
             }
+
           </Select>
+
         ) : ''),
       },
     ];
     return columns;
+  }
+
+
+  // 延迟加载
+  debounce(fn, time) {
+    if (this.state.tid) {
+      clearTimeout(this.state.tid);
+    }
+    this.state.tid = setTimeout(fn, time);
+  }
+
+  // 是否有下一页 有则返回true
+  isHasNextPage = () => {
+    if (this.state.page.size * this.state.page.current < this.state.page.total) {
+      return true; 
+    } else {
+      return false;
+    }
+  }
+
+  handleCheckNextPage = () => {
+    const { page } = this.state;
+    if (this.isHasNextPage()) {
+      this.setState({
+        page: {
+          current: page.current + 1,
+          size: page.size,
+          total: page.total,
+        },
+      }, () => this.loadMoreOptions());
+    }
+  }
+
+  loadMoreOptions() {
+    const { page } = this.state;
+    this.setState({
+      userOptionsLoading: true,
+    });
+
+    axios.get(`/iam/v1/projects/${AppState.currentMenuType.id}/users?page=${this.state.page.current}&size=${this.state.page.size}`)
+      .then((res) => {
+        const more = (
+          <Option key="9999" disabled className="hidden_my">{this.isHasNextPage() ? <Button onClick={this.handleCheckNextPage.bind(this)}>更多内容</Button> : <span>没有更多了</span>}</Option>
+        );
+        this.state.userOptions.pop();
+        const oldUserOptions = this.state.userOptions;
+        this.setState({
+          userOptionsLoading: false,
+          userOptions: [...oldUserOptions, ...res.list, more],
+        
+        });   
+      })
+      .catch((e) => {
+        Choerodon.prompt(e);
+      });
   }
 
   handleCheckboxChange = (e, index) => {
@@ -179,55 +291,57 @@ class EditNotificationType extends Component {
     });
   }
 
- handleSaveBtnClick = () => {
-   const { history } = this.props;
-   const { updateData } = this.state;
-   const postData = _.map(_.difference(_.map(updateData, JSON.stringify), _.map(initialNoticeTypeData, JSON.stringify)), JSON.parse);
-   axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/notice`, postData)
-     .then((res) => {
-       Choerodon.prompt('更新成功');
-       history.push(`/agile/messageNotification?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
-     })
-     .catch((error) => {
-       Choerodon.prompt('更新失败');
-     });
- }
+  handleSaveBtnClick = () => {
+    const { history } = this.props;
+    const { updateData } = this.state;
+    const postData = _.map(_.difference(_.map(updateData, JSON.stringify), _.map(initialNoticeTypeData, JSON.stringify)), JSON.parse);
+    axios.put(`/agile/v1/projects/${AppState.currentMenuType.id}/notice`, postData)
+      .then((res) => {
+        Choerodon.prompt('更新成功');
+        history.push(`/agile/messageNotification?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
+      })
+      .catch((error) => {
+        Choerodon.prompt('更新失败');
+      });
+  }
 
- render() {
-   const { dataSource, loading } = this.state;
-   return (
-     <Page>
-       <Header
-         title="编辑通知对象"
-         backPath={`/agile/messageNotification?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`}
-       />
-       <Content
-         className="c7n-editNotificationType"
-       >
-         <Table
-           loading={loading}
-           columns={this.getColumns()}
-           dataSource={dataSource}
-           filterBar={false}
-           pagination={false}
-           rowKey={record => record.key}
-         />
-         <div className="saveOrCancel">
-           <Button type="primary" funcType="raised" style={{ marginRight: 10 }} onClick={this.handleSaveBtnClick}>保存</Button>
-           <Button
-             funcType="raised"
-             onClick={() => {
-               const { history } = this.props;
-               history.push(`/agile/messageNotification?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
-             }}
-           >
-             {'取消'}
-           </Button>
-         </div>
-       </Content>
-     </Page>
-   );
- }
+
+  render() {
+    const { dataSource, loading } = this.state;
+    return (
+      <Page>
+        <Header
+          title="编辑通知对象"
+          backPath={`/agile/messageNotification?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`}
+        />
+        <Content
+          className="c7n-editNotificationType"
+        >
+          <Table
+            loading={loading}
+            columns={this.getColumns()}
+            dataSource={dataSource}
+            filterBar={false}
+            pagination={false}
+            rowKey={record => record.key}
+          />
+          <div className="saveOrCancel">
+            <Button type="primary" funcType="raised" style={{ marginRight: 10 }} onClick={this.handleSaveBtnClick}>保存</Button>
+            <Button
+              funcType="raised"
+              onClick={() => {
+                const { history } = this.props;
+                history.push(`/agile/messageNotification?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
+              }}
+            >
+              {'取消'}
+            </Button>
+
+          </div>
+        </Content>
+      </Page>
+    );
+  }
 }
 
 export default withRouter(EditNotificationType);

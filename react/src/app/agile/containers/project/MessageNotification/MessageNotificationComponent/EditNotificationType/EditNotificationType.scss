@@ -6,9 +6,13 @@
       .c7n-select-selection__rendered {
         height: 0.36rem;
       }
-  
       .c7n-select-label {
         margin-top: 0;
       }
     }
+}
+.hidden_my {
+  .c7n-checkbox-wrapper {
+    display: none;
+  }
 }
