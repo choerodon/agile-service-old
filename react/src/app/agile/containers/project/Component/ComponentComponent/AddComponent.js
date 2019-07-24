@@ -1,7 +1,7 @@
 /* eslint-disable */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
-  Modal, Form, Input, Select, message, 
+  Modal, Form, Input, Select, message, Button
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
@@ -24,6 +24,8 @@ class AddComponent extends Component {
       originUsers: [],
       selectLoading: false,
       createLoading: false,
+      page: 1,
+      canLoadMore: true
     };
   }
 
@@ -33,9 +35,9 @@ class AddComponent extends Component {
       this.setState({
         selectLoading: true,
       });
-      getUsers(input).then((res) => {
+      getUsers(input, this.state.page).then((res) => {
         this.setState({
-          originUsers: res.list.filter(u => u.enabled),
+          originUsers: [...this.state.originUsers, ...res.list.filter(u => u.enabled)],
           selectLoading: false,
         });
       });
@@ -46,15 +48,18 @@ class AddComponent extends Component {
   }
 
   debounceFilterIssues = _.debounce((input) => {
-    this.setState({
-      selectLoading: true,
-    });
-    getUsers(input).then((res) => {
+    if (this.state.canLoadMore) {
       this.setState({
-        originUsers: res.list.filter(u => u.enabled),
-        selectLoading: false,
+        selectLoading: true,
       });
-    });
+      getUsers(input, this.state.page).then((res) => {
+        this.setState({
+          originUsers: [...this.state.originUsers, ...res.list.filter(u => u.enabled)],
+          selectLoading: false,
+          canLoadMore: res.hasNextPage
+        });
+      });
+    }
   }, 500);
 
   getFirst(str) {
@@ -75,7 +80,7 @@ class AddComponent extends Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const {
-          defaultAssigneeRole, description, managerId, name, 
+          defaultAssigneeRole, description, managerId, name,
         } = values;
         const component = {
           defaultAssigneeRole,
@@ -100,7 +105,7 @@ class AddComponent extends Component {
       }
     });
   }
-  
+
   checkComponentNameRepeat = (rule, value, callback) => {
     if (value && value.trim()) {
       axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/component/check_name?componentName=${value.trim()}`)
@@ -115,6 +120,16 @@ class AddComponent extends Component {
       callback();
     }
   };
+
+  loadMoreUsers(e) {
+    e.preventDefault();
+    this.setState({
+      page: this.state.page + 1
+    });
+    if (this.state.canLoadMore) {
+      this.debounceFilterIssues();
+    }
+  }
 
   render() {
     const { getFieldDecorator, getFieldsValue } = this.props.form;
@@ -141,7 +156,7 @@ class AddComponent extends Component {
             width: 512,
           }}
           >
-            <FormItem style={{marginBottom:20}}>
+            <FormItem style={{ marginBottom: 20 }}>
               {getFieldDecorator('name', {
                 rules: [{
                   required: true,
@@ -154,12 +169,12 @@ class AddComponent extends Component {
                 <Input label="模块名称" maxLength={10} />,
               )}
             </FormItem>
-            <FormItem style={{marginBottom:20}}>
+            <FormItem style={{ marginBottom: 20 }}>
               {getFieldDecorator('description', {})(
                 <Input label="模块描述" maxLength={30} />,
               )}
             </FormItem>
-            <FormItem style={{marginBottom:20}}>
+            <FormItem style={{ marginBottom: 20 }}>
               {getFieldDecorator('defaultAssigneeRole', {
                 rules: [{
                   required: true,
@@ -176,32 +191,35 @@ class AddComponent extends Component {
               )}
             </FormItem>
             {getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole && getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole === '模块负责人' && (
-            <FormItem style={{marginBottom:20}}>
-              {getFieldDecorator('managerId', {})(
-                <Select
-                  label="负责人"
-                  loading={this.state.selectLoading}
-                  allowClear
-                  filter
-                  onFilterChange={this.onFilterChange.bind(this)}
-                >
-                  {this.state.originUsers.map(user => (
-                    <Option key={JSON.stringify(user)} value={JSON.stringify(user)}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
-                        <UserHead
-                          user={{
-                            id: user.id,
-                            loginName: user.loginName,
-                            realName: user.realName,
-                            avatar: user.imageUrl,
-                          }}
-                        />
-                      </div>
+              <FormItem style={{ marginBottom: 20 }}>
+                {getFieldDecorator('managerId', {})(
+                  <Select
+                    label="负责人"
+                    loading={this.state.selectLoading}
+                    allowClear
+                    filter
+                    onFilterChange={this.onFilterChange.bind(this)}
+                  >
+                    {this.state.originUsers.map(user => (
+                      <Option key={JSON.stringify(user)} value={JSON.stringify(user)}>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
+                          <UserHead
+                            user={{
+                              id: user.id,
+                              loginName: user.loginName,
+                              realName: user.realName,
+                              avatar: user.imageUrl,
+                            }}
+                          />
+                        </div>
+                      </Option>
+                    ))}
+                    <Option key='loadMore' disabled>
+                      <Button type="primary" onClick={this.loadMoreUsers.bind(this)} className={`${this.state.canLoadMore? '': 'hidden'}`}>加载更多</Button>
                     </Option>
-                  ))}
-                </Select>,
-              )}
-            </FormItem>
+                  </Select>,
+                )}
+              </FormItem>
             )}
           </Form>
         </Content>
