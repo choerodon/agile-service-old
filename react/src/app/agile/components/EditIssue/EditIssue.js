@@ -1,6 +1,6 @@
 /* eslint-disable react/sort-comp */
 import React, {
-  useContext, useState, useEffect, 
+  useContext, useState, useEffect, useImperativeHandle, forwardRef,
 } from 'react';
 import { observer } from 'mobx-react-lite';
 import { stores, axios } from '@choerodon/boot';
@@ -32,10 +32,11 @@ const defaultProps = {
   applyType: 'agile',
 };
 
-const EditIssue = observer(() => {  
+const EditIssue = observer(() => {
   const [issueLoading, setIssueLoading] = useState(false);
   const {
     store, 
+    forwardedRef,
     issueId: currentIssueId,
     applyType,
     programId,
@@ -47,7 +48,7 @@ const EditIssue = observer(() => {
     onDeleteSubIssue,
     disabled, 
     prefixCls,
-    intlPrefix,
+    intlPrefix,   
   } = useContext(EditIssueContext);
   const container = React.createRef();
   const loadIssueDetail = (paramIssueId) => {
@@ -75,6 +76,9 @@ const EditIssue = observer(() => {
         store.initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branches);
       }));
   };
+  useImperativeHandle(forwardedRef, () => ({
+    loadIssueDetail,
+  }));
   const setQuery = (width = container.current.clientWidth) => {
     if (width <= 600) {
       container.current.setAttribute('max-width', '600px');

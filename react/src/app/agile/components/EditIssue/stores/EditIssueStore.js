@@ -93,4 +93,4 @@ class EditIssueStore {
     this.branch = branch || {};
   }
 }
-export default new EditIssueStore();
+export default EditIssueStore;

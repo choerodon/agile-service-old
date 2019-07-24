@@ -6,18 +6,19 @@ import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapSto
 @inject('AppState')
 @observer
 class IssueDetail extends Component {
-  // componentDidMount() {
-  //   const { onRef } = this.props;
-  //   onRef(this);
-  // }
+  constructor(props) {
+    super(props);
+
+    this.EditIssue = React.createRef();
+  }
 
 
   /**
    * 刷新issue详情的数据
    */
   refreshIssueDetail() {
-    if (this.editIssue) {
-      this.editIssue.loadIssueDetail();
+    if (this.EditIssue.current) {
+      this.EditIssue.current.loadIssueDetail();
     }
   }
 
@@ -42,9 +43,7 @@ class IssueDetail extends Component {
           programId={programId}       
           disabled={programId}
           applyType={programId ? 'program' : 'agile'}
-          onRef={(ref) => {
-            this.editIssue = ref;
-          }}
+          forwardedRef={this.EditIssue}
           issueId={issueId}
           onCancel={this.handleCancel}
           onDeleteIssue={this.handleDeleteIssue}

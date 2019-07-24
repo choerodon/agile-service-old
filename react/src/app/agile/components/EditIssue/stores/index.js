@@ -1,4 +1,4 @@
-import React, { useReducer, createContext } from 'react';
+import React, { useReducer, createContext, useMemo } from 'react';
 import { inject } from 'mobx-react';
 import { injectIntl } from 'react-intl';
 import EditIssueStore from './EditIssueStore';
@@ -43,7 +43,7 @@ export const EditIssueContextProvider = injectIntl(inject('AppState')((props) =>
     ...props,
     prefixCls: 'c7n-agile-EditIssue',
     intlPrefix: 'agile.EditIssue',
-    store: EditIssueStore,
+    store: useMemo(() => new EditIssueStore(), []), // 防止update时创建多次store
   };
 
   return (

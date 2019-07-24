@@ -1,11 +1,16 @@
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
+import React, { Component, createRef } from 'react';
+import { observer } from 'mobx-react';
 import EditIssue from '../../../../../components/EditIssue';
 import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 
-@inject('AppState')
 @observer
 class IssueDetail extends Component {
+  constructor(props) {
+    super(props);
+
+    this.EditIssue = React.createRef();
+  }
+
   componentDidMount() {
     const { onRef } = this.props;
     onRef(this);
@@ -27,9 +32,9 @@ class IssueDetail extends Component {
   /**
    * 刷新issue详情的数据
    */
-  refreshIssueDetail() {
-    if (this.editIssue) {
-      this.editIssue.loadIssueDetail();
+  refreshIssueDetail() {  
+    if (this.EditIssue.current) {
+      this.EditIssue.current.loadIssueDetail();
     }
   }
 
@@ -37,15 +42,11 @@ class IssueDetail extends Component {
     // const { paramOpenIssueId } = this.state;
     const { cancelCallback, refresh } = this.props;
     const visible = Object.keys(BacklogStore.getClickIssueDetail).length > 0;
-    const { programId, issueId } = BacklogStore.getClickIssueDetail || {};   
-
+    const { programId, issueId } = BacklogStore.getClickIssueDetail || {}; 
     return (
       visible ? (
-        <EditIssue
-          store={BacklogStore}
-          onRef={(ref) => {
-            this.editIssue = ref;
-          }}
+        <EditIssue     
+          forwardedRef={this.EditIssue}
           issueId={BacklogStore.getClickIssueId}          
           programId={programId}       
           disabled={programId}

@@ -71,7 +71,7 @@ class ScrumBoardHome extends Component {
     ScrumBoardStore.resetDataBeforeUnmount();
   }
 
-  async getBoard() {
+  async getBoard() {    
     const { location } = this.props;
     const url = this.paramConverter(location.search);
     const boardListData = await ScrumBoardStore.axiosGetBoardList();
@@ -223,7 +223,7 @@ class ScrumBoardHome extends Component {
           ScrumBoardStore.judgeMoveParentToDone(destinationStatus, SwimLaneId, +parentId, ScrumBoardStore.getStatusMap.get(destinationStatus).categoryCode === 'done');
         }
         if (data.issueId === ScrumBoardStore.getCurrentClickId) {
-          ScrumBoardStore.getEditRef.reloadIssue();
+          ScrumBoardStore.editRef.current.loadIssueDetail();
         }
         if (startColumn !== destinationColumn) {
           ScrumBoardStore.resetHeaderData(startColumn, destinationColumn, issue.issueTypeVO.typeCode);
@@ -356,7 +356,7 @@ class ScrumBoardHome extends Component {
           <Button
             className="leftBtn2"
             funcType="flat"
-            onClick={() => {
+            onClick={() => {        
               this.refresh(ScrumBoardStore.getBoardList.get(ScrumBoardStore.getSelectedBoard));
             }}
           >
