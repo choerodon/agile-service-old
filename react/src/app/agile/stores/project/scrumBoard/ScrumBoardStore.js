@@ -574,7 +574,7 @@ class ScrumBoardStore {
   }
 
   axiosGetLookupValue(code) {
-    return axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/lookup_values/${code}`);
+    return axios.get(`/agile/v1/organizations/${AppState.currentMenuType.organizationId}/lookup_values/${code}`);
   }
 
   @computed get getLookupValue() {
@@ -643,7 +643,7 @@ class ScrumBoardStore {
   }
 
   axiosGetStatusCategory() {
-    return axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/lookup_values/status_category`);
+    return axios.get(`/agile/v1/organizations/${AppState.currentMenuType.organizationId}/lookup_values/status_category`);
   }
 
   @computed get getParentIds() {

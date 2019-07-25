@@ -318,7 +318,7 @@ class FeatureStore {
     this.setFeatureData(listData);
   }
 
-  axiosGetColorLookupValue = () => axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/lookup_values/epic_color`);
+  axiosGetColorLookupValue = () => axios.get(`/agile/v1/organizations/${AppState.currentMenuType.organizationId}/lookup_values/epic_color`);
 
   axiosGetEpic = () => axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/issues/epics`);
 

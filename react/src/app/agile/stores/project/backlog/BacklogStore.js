@@ -325,7 +325,7 @@ class BacklogStore {
   }
 
   axiosGetColorLookupValue() {
-    return axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/lookup_values/epic_color`);
+    return axios.get(`/agile/v1/organizations/${AppState.currentMenuType.organizationId}/lookup_values/epic_color`);
   }
 
   @computed get getColorLookupValue() {
