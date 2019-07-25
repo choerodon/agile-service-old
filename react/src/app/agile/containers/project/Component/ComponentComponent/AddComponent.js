@@ -1,7 +1,7 @@
 /* eslint-disable */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
-  Modal, Form, Input, Select, message, 
+  Modal, Form, Input, Select, message, Button
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
@@ -24,6 +24,9 @@ class AddComponent extends Component {
       originUsers: [],
       selectLoading: false,
       createLoading: false,
+      page: 1,
+      canLoadMore: true,
+      input: ''
     };
   }
 
@@ -33,26 +36,33 @@ class AddComponent extends Component {
       this.setState({
         selectLoading: true,
       });
-      getUsers(input).then((res) => {
+      getUsers(input, undefined, this.state.page).then((res) => {
         this.setState({
+          input,
           originUsers: res.list.filter(u => u.enabled),
           selectLoading: false,
+          // page: 1,
+          canLoadMore: res.hasNextPage
         });
       });
       sign = true;
     } else {
-      this.debounceFilterIssues(input);
+      this.debounceFilterIssues(input, undefined, this.state.page);
     }
   }
 
   debounceFilterIssues = _.debounce((input) => {
     this.setState({
       selectLoading: true,
+      page: 1
     });
-    getUsers(input).then((res) => {
+    getUsers(input, undefined, this.state.page).then((res) => {
       this.setState({
+        input,
+        page: 1,
         originUsers: res.list.filter(u => u.enabled),
         selectLoading: false,
+        canLoadMore: res.hasNextPage
       });
     });
   }, 500);
@@ -70,12 +80,12 @@ class AddComponent extends Component {
     return str[0];
   }
 
-  handleOk(e) {
+  handleOk = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const {
-          defaultAssigneeRole, description, managerId, name, 
+          defaultAssigneeRole, description, managerId, name,
         } = values;
         const component = {
           defaultAssigneeRole,
@@ -100,7 +110,7 @@ class AddComponent extends Component {
       }
     });
   }
-  
+
   checkComponentNameRepeat = (rule, value, callback) => {
     if (value && value.trim()) {
       axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/component/check_name?componentName=${value.trim()}`)
@@ -116,8 +126,25 @@ class AddComponent extends Component {
     }
   };
 
+  loadMoreUsers = (e) => {
+    e.preventDefault();
+    const { page, input, originUsers } = this.state;
+    this.setState({
+      selectLoading: true,
+    });
+    getUsers(input, undefined, page + 1).then((res) => {
+      this.setState({
+        originUsers: [...originUsers, ...res.list.filter(u => u.enabled)],
+        selectLoading: false,
+        canLoadMore: res.hasNextPage,
+        page: this.state.page + 1
+      });
+    });
+  }
+
   render() {
     const { getFieldDecorator, getFieldsValue } = this.props.form;
+    const { canLoadMore } = this.state;
     return (
       <Sidebar
         className="c7n-component-component"
@@ -126,8 +153,8 @@ class AddComponent extends Component {
         cancelText="取消"
         visible={this.props.visible || false}
         confirmLoading={this.state.createLoading}
-        onOk={this.handleOk.bind(this)}
-        onCancel={this.props.onCancel.bind(this)}
+        onOk={this.handleOk}
+        onCancel={this.props.onCancel}
       >
         <Content
           style={{
@@ -141,7 +168,7 @@ class AddComponent extends Component {
             width: 512,
           }}
           >
-            <FormItem style={{marginBottom:20}}>
+            <FormItem style={{ marginBottom: 20 }}>
               {getFieldDecorator('name', {
                 rules: [{
                   required: true,
@@ -154,12 +181,12 @@ class AddComponent extends Component {
                 <Input label="模块名称" maxLength={10} />,
               )}
             </FormItem>
-            <FormItem style={{marginBottom:20}}>
+            <FormItem style={{ marginBottom: 20 }}>
               {getFieldDecorator('description', {})(
                 <Input label="模块描述" maxLength={30} />,
               )}
             </FormItem>
-            <FormItem style={{marginBottom:20}}>
+            <FormItem style={{ marginBottom: 20 }}>
               {getFieldDecorator('defaultAssigneeRole', {
                 rules: [{
                   required: true,
@@ -176,36 +203,44 @@ class AddComponent extends Component {
               )}
             </FormItem>
             {getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole && getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole === '模块负责人' && (
-            <FormItem style={{marginBottom:20}}>
-              {getFieldDecorator('managerId', {})(
-                <Select
-                  label="负责人"
-                  loading={this.state.selectLoading}
-                  allowClear
-                  filter
-                  onFilterChange={this.onFilterChange.bind(this)}
-                >
-                  {this.state.originUsers.map(user => (
-                    <Option key={JSON.stringify(user)} value={JSON.stringify(user)}>
-                      <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
-                        <UserHead
-                          user={{
-                            id: user.id,
-                            loginName: user.loginName,
-                            realName: user.realName,
-                            avatar: user.imageUrl,
-                          }}
-                        />
-                      </div>
-                    </Option>
-                  ))}
-                </Select>,
-              )}
-            </FormItem>
+              <FormItem style={{ marginBottom: 20 }}>
+                {getFieldDecorator('managerId', {})(
+                  <Select
+                    label="负责人"
+                    loading={this.state.selectLoading}
+                    allowClear
+                    filter
+                    onFilterChange={this.onFilterChange.bind(this)}
+                    getPopupContainer={(trigger) => (trigger.parentNode)}
+                  >
+                    {
+                      this.state.originUsers.map(user => (
+                        <Option key={JSON.stringify(user)} value={JSON.stringify(user)}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
+                            <UserHead
+                              user={{
+                                id: user.id,
+                                loginName: user.loginName,
+                                realName: user.realName,
+                                avatar: user.imageUrl,
+                              }}
+                            />
+                          </div>
+                        </Option>
+                      ))
+                    }
+                    {
+                      canLoadMore && <Option key='loadMore' disabled className='loadMore-option'>
+                        <Button type="primary" onClick={this.loadMoreUsers}>加载更多</Button>
+                      </Option>
+                    }
+                  </Select> ,
+                )}
+              </FormItem>
             )}
           </Form>
         </Content>
-      </Sidebar>
+      </Sidebar >
     );
   }
 }
