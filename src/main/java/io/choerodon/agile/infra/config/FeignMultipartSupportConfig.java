@@ -9,7 +9,6 @@ import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
-
 /**
  * Created by HuangFuqiang@choerodon.io on 2018/3/21.
  * Email: fuqianghuang01@gmail.com
@@ -25,4 +24,3 @@ public class FeignMultipartSupportConfig {
         return new SpringFormEncoder(new SpringEncoder(messageConverters));
     }
 }
-

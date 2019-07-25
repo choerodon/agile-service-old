@@ -2,7 +2,7 @@ package io.choerodon.agile.api.vo;
 
 import javax.validation.constraints.NotNull;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 
 public class IssueUpdateParentIdVO {
 

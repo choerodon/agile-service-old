@@ -130,8 +130,8 @@
             CONCAT_WS('-', api.project_code, ai.issue_num)                                   AS issue_num_splicing
         FROM agile_issue ai
             LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
-            LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
-            LEFT JOIN agile_lookup_value alv3 ON ai.color_code = alv3.value_code
+            LEFT JOIN lookup_value alv2 ON ai2.color_code = alv2.value_code
+            LEFT JOIN lookup_value alv3 ON ai.color_code = alv3.value_code
             LEFT JOIN agile_issue ai3 ON ai3.issue_id = ai.parent_issue_id
             LEFT JOIN agile_issue ai4 ON ai4.issue_id = ai.relate_issue_id
             LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
@@ -433,7 +433,7 @@
         af.feature_type
         FROM agile_issue ai
         left join agile_issue ai3 on ai.epic_id = ai3.issue_id
-        LEFT JOIN agile_lookup_value alv2 ON ai3.color_code = alv2.value_code
+        LEFT JOIN lookup_value alv2 ON ai3.color_code = alv2.value_code
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_version_issue_rel avir on avir.issue_id = ai.issue_id
         left join agile_product_version apv on avir.version_id = apv.version_id
@@ -892,7 +892,7 @@
             ar.rank as epic_rank,
             ar.object_version_number as epic_ran_object_version_number
         FROM agile_issue ai
-        LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
+        LEFT JOIN lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_rank ar on ar.project_id = #{projectId} and ai.issue_id = ar.issue_id and ar.type = 'epic'
         WHERE ai.project_id = #{projectId} AND ai.type_code = 'issue_epic'
@@ -911,7 +911,7 @@
             ai.object_version_number,
             ai.epic_sequence
         FROM agile_issue ai
-        LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
+        LEFT JOIN lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         WHERE ai.program_id = #{programId} AND ai.type_code = 'issue_epic'
         ORDER BY ai.issue_id DESC
@@ -927,7 +927,7 @@
             alv.name AS color,
             ai.object_version_number,
             ai.epic_sequence
-        FROM agile_issue ai LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
+        FROM agile_issue ai LEFT JOIN lookup_value alv ON ai.color_code = alv.value_code
         WHERE ai.project_id = #{projectId} AND ai.issue_id = #{issueId}
     </select>
 
@@ -1329,7 +1329,7 @@
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue ai1 ON ai.epic_id = ai1.issue_id
-        LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
+        LEFT JOIN lookup_value alv2 ON ai1.color_code = alv2.value_code
         LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
         WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
@@ -1872,7 +1872,7 @@
         CONCAT_WS( '-', api.project_code, ai.issue_num ) AS issue_num
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
-        LEFT JOIN agile_lookup_value alv ON alv.value_code = ai.type_code
+        LEFT JOIN lookup_value alv ON alv.value_code = ai.type_code
         WHERE ai.project_id = #{projectId}
         <choose>
             <when test="issueId != null">
@@ -2261,7 +2261,7 @@
         FROM agile_issue ai
         LEFT JOIN agile_project_info api ON ai.project_id = api.project_id
         LEFT JOIN agile_issue ai2 ON ai2.issue_id = ai.epic_id
-        LEFT JOIN agile_lookup_value alv2 ON ai2.color_code = alv2.value_code
+        LEFT JOIN lookup_value alv2 ON ai2.color_code = alv2.value_code
         WHERE ai.issue_id in
         <foreach collection="issueIds" item="issueId" open="(" separator="," close=")">
             #{issueId}
@@ -3111,7 +3111,7 @@
         LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
         left join agile_feature af on ai.issue_id = af.issue_id
         left join agile_issue ai2 on ai.epic_id = ai2.issue_id
-        left join agile_lookup_value alv on ai2.color_code = alv.value_code
+        left join lookup_value alv on ai2.color_code = alv.value_code
         left join agile_pi_feature apf on ai.issue_id = apf.issue_id
         left join agile_pi ap on apf.pi_id = ap.id
         where ai.program_id = #{programId} and ai.type_code in ('feature', 'issue_epic')
@@ -3226,7 +3226,7 @@
             ar.object_version_number as epic_rank_object_version_number,
             ai.program_id
         FROM agile_issue ai
-        LEFT JOIN agile_lookup_value alv ON ai.color_code = alv.value_code
+        LEFT JOIN lookup_value alv ON ai.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON ai.program_id = api.project_id
         left join agile_rank ar on ar.project_id = #{projectId} and ai.issue_id = ar.issue_id and ar.type = 'epic'
         WHERE ai.program_id = #{programId} AND ai.type_code = 'issue_epic'

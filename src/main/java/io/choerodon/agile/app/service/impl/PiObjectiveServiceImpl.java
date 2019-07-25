@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.PiObjectiveVO;
 import io.choerodon.agile.api.vo.ProjectRelationshipVO;
 import io.choerodon.agile.app.service.PiObjectiveService;
-import io.choerodon.agile.infra.feign.UserFeignClient;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.feign.IamFeignClient;
+import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.PiObjectiveDTO;
 import io.choerodon.agile.infra.mapper.PiObjectiveMapper;
 import io.choerodon.core.exception.CommonException;
@@ -32,7 +32,7 @@ public class PiObjectiveServiceImpl implements PiObjectiveService {
     private PiObjectiveMapper piObjectiveMapper;
 
     @Autowired
-    private UserFeignClient userFeignClient;
+    private IamFeignClient iamFeignClient;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -81,7 +81,7 @@ public class PiObjectiveServiceImpl implements PiObjectiveService {
     public JSONObject queryPiObjectiveList(Long programId, Long piId) {
         JSONObject result = new JSONObject();
         // get team
-        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        List<ProjectRelationshipVO> projectRelationshipVOList = iamFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         List<Long> teamWithProgramIds = new ArrayList<>();
         teamWithProgramIds.add(programId);
         if (projectRelationshipVOList != null && !projectRelationshipVOList.isEmpty()) {

@@ -628,12 +628,12 @@ class SprintReport extends Component {
         dataIndex: 'statusCode',
         render: (statusCode, record) => (
           <div>
-            <Tooltip mouseEnterDelay={0.5} placement="topLeft" title={`任务状态： ${record.statusMapVO.name}`}>
+            <Tooltip mouseEnterDelay={0.5} placement="topLeft" title={`任务状态： ${record.statusVO.name}`}>
               <div>
                 <StatusTag
                   style={{ display: 'inline-block' }}
-                  name={record.statusMapVO.name}
-                  color={STATUS[record.statusMapVO.type]}
+                  name={record.statusVO.name}
+                  color={STATUS[record.statusVO.type]}
                 />
               </div>
             </Tooltip>

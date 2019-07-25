@@ -29,6 +29,16 @@ const FEEDBACK = asyncRouter(() => import('./project/Feedback'));
 
 const WORKCALENDARINDEX = asyncRouter(() => import('./organization/WorkCalendar'));
 
+const IssueTypeIndex = asyncRouter(() => import('./organization/issueType'));
+const IssueTypeSchemeIndex = asyncRouter(() => import('./organization/issueTypeScheme'));
+const StateMachineSchemeIndex = asyncRouter(() => import('./organization/stateMachineScheme'));
+const PriorityIndex = asyncRouter(() => import('./organization/priority'));
+const IssueTypeScreenSchemes = asyncRouter(() => import('./organization/issueTypeScreenSchemes'));
+const StateIndex = asyncRouter(() => import('./organization/state'));
+const StateMachineIndex = asyncRouter(() => import('./organization/stateMachine'));
+const OBJECTSCHEMEINDEX = asyncRouter(() => import('./organization/ObjectScheme'));
+const PAGEINDEX = asyncRouter(() => import('./organization/Page'));
+
 class AGILEIndex extends React.Component {
   componentDidCatch(error, info) {
     // Choerodon.prompt(error.message);
@@ -77,6 +87,42 @@ class AGILEIndex extends React.Component {
 
             <Route path={`${match.url}/workCalendar`} component={WORKCALENDARINDEX} />
 
+            <Route
+              path={`${match.url}/state-machine-schemes`}
+              component={StateMachineSchemeIndex}
+            />
+            <Route
+              path={`${match.url}/issue-type`}
+              component={IssueTypeIndex}
+            />
+            <Route
+              path={`${match.url}/issue-type-schemes`}
+              component={IssueTypeSchemeIndex}
+            />
+            <Route
+              path={`${match.url}/priorities`}
+              component={PriorityIndex}
+            />
+            <Route
+              path={`${match.url}/issue-type-screen-schemes`}
+              component={IssueTypeScreenSchemes}
+            />
+            <Route
+              path={`${match.url}/states`}
+              component={StateIndex}
+            />
+            <Route
+              path={`${match.url}/state-machines`}
+              component={StateMachineIndex}
+            />
+            <Route
+              path={`${match.url}/objectScheme`}
+              component={OBJECTSCHEMEINDEX}
+            />
+            <Route
+              path={`${match.url}/page`}
+              component={PAGEINDEX}
+            />
 
             <Route path="*" component={nomatch} />
           </Switch>

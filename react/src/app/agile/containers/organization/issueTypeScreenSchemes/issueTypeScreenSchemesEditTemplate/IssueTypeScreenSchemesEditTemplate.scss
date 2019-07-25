@@ -1,0 +1,38 @@
+.issue-type-page-scheme-create-tips {
+  width: 520px;
+  font-size: 14px;
+  line-height: 20px;
+  color: #000000;
+  margin-bottom: 30px;
+
+  p:nth-child(2) {
+    margin-top: 5px;
+  }
+}
+
+.issue-type-page-scheme-create-icon {
+  margin-right: 10px;
+  vertical-align: top;
+}
+
+.scheme-form {
+  width: 520px;
+}
+
+.associations-wrapper {
+  width: 50vw;
+  padding: 20px;
+  background: #ECECEC;
+  margin-bottom: 30px;
+
+  .add-btn {
+    font-size: 14px;
+    color: #3F51B5;
+  }
+
+  .associations-table {
+    background: #FFFFFF;
+    margin: 0;
+  }
+}
+

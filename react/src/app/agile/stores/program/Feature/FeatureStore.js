@@ -329,12 +329,12 @@ class FeatureStore {
 
   axiosGetIssueTypes = () => {
     const proId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=program`);
+    return axios.get(`/agile/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=program`);
   };
 
   axiosGetDefaultPriority = () => {
     const proId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${proId}/priority/default`);
+    return axios.get(`/agile/v1/projects/${proId}/priority/default`);
   };
 
   checkStartAndEnd = (prevIndex, currentIndex) => (prevIndex > currentIndex ? [currentIndex, prevIndex] : [prevIndex, currentIndex]);

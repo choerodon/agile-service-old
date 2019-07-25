@@ -1,13 +1,13 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.agile.api.vo.IssueTypeVO;
+import io.choerodon.agile.api.vo.PriorityVO;
+import io.choerodon.agile.api.vo.StatusVO;
+import io.choerodon.agile.infra.utils.StringUtil;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-
-import io.choerodon.agile.api.vo.IssueTypeVO;
-import io.choerodon.agile.api.vo.PriorityVO;
-import io.choerodon.agile.api.vo.StatusMapVO;
-import io.choerodon.agile.infra.common.utils.StringUtil;
 
 /**
  * @author dinghuang123@gmail.com
@@ -92,7 +92,7 @@ public class IssueDetailDTO {
 
     private IssueTypeVO issueTypeVO;
 
-    private StatusMapVO statusMapVO;
+    private StatusVO statusVO;
 
     private Long createdBy;
 
@@ -118,12 +118,12 @@ public class IssueDetailDTO {
         this.issueTypeCode = issueTypeCode;
     }
 
-    public StatusMapVO getStatusMapVO() {
-        return statusMapVO;
+    public StatusVO getStatusVO() {
+        return statusVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
-        this.statusMapVO = statusMapVO;
+    public void setStatusVO(StatusVO statusVO) {
+        this.statusVO = statusVO;
     }
 
     public Long getIssueId() {

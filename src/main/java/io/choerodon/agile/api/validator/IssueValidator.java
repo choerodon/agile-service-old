@@ -3,11 +3,11 @@ package io.choerodon.agile.api.validator;
 import com.alibaba.fastjson.JSONObject;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.service.IssueService;
+import io.choerodon.agile.app.service.ProjectConfigService;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.common.utils.EnumUtil;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
+import io.choerodon.agile.infra.utils.EnumUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
 import io.choerodon.agile.infra.mapper.*;
 import io.choerodon.core.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +64,7 @@ public class IssueValidator {
     private LabelIssueRelMapper labelIssueRelMapper;
 
     @Autowired
-    private IssueFeignClient issueFeignClient;
+    private ProjectConfigService projectConfigService;
 
 
     public void verifyCreateData(IssueCreateVO issueCreateVO, Long projectId, String applyType) {
@@ -239,8 +239,8 @@ public class IssueValidator {
         if (issueUpdateTypeVO.getTypeCode().equals(issueConvertDTO.getTypeCode())) {
             throw new CommonException("error.IssueRule.sameTypeCode");
         }
-        Long originStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueConvertDTO.getIssueTypeId()).getBody();
-        Long currentStateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, issueUpdateTypeVO.getIssueTypeId()).getBody();
+        Long originStateMachineId = projectConfigService.queryStateMachineId(projectId, AGILE, issueConvertDTO.getIssueTypeId());
+        Long currentStateMachineId = projectConfigService.queryStateMachineId(projectId, AGILE, issueUpdateTypeVO.getIssueTypeId());
         if (originStateMachineId == null || currentStateMachineId == null) {
             throw new CommonException("error.IssueRule.stateMachineId");
         }

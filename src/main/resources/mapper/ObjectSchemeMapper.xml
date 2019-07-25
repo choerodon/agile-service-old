@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.ObjectSchemeMapper">
+
+    <resultMap id="objectSchemeMap" type="io.choerodon.agile.infra.dataobject.ObjectSchemeDTO">
+        <id property="id" column="id"/>
+        <id property="name" column="name"/>
+        <id property="description" column="description"/>
+        <id property="schemeCode" column="scheme_code"/>
+        <id property="schemeCodeName" column="scheme_code_name"/>
+        <id property="organizationId" column="organization_id"/>
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="fulltextSearch" resultMap="objectSchemeMap">
+        SELECT os.*,
+        flv.name as scheme_code_name
+        FROM fd_object_scheme os
+        LEFT JOIN lookup_value flv ON flv.value_code = os.scheme_code and flv.type_code =
+        'object_scheme_code'
+        WHERE (os.is_system = 1 OR os.organization_id = #{organizationId})
+        <if test="searchVO.name != null">
+            AND os.name LIKE concat('%',#{searchVO.name},'%')
+        </if>
+        <if test="searchVO.description != null">
+            AND os.description LIKE concat('%',#{searchVO.description},'%')
+        </if>
+        <if test="searchVO.schemeCode != null">
+            AND os.scheme_code = #{searchVO.schemeCode}
+        </if>
+        <if test="searchVO.param != null">
+            AND ( os.name LIKE concat('%',#{searchVO.param},'%')
+            OR os.description LIKE concat('%',#{searchVO.param},'%')
+            )
+        </if>
+    </select>
+</mapper>

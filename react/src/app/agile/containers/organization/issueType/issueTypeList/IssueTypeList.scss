@@ -1,0 +1,28 @@
+.issue-issueType {
+  &-ul {
+    max-height: 300px;
+    overflow: scroll;
+    padding-left: 20px;
+  }
+
+  &-icon {
+    vertical-align: text-bottom;
+    margin-right: 5px;
+  }
+
+  &-tip {
+    font-size: 14px;
+    margin: 10px 0;
+  }
+
+  &-des {
+    margin-bottom: 20px;
+    font-size: 14px;
+    width: 520px;
+  }
+
+  &-bold {
+    font-weight: 500;
+  }
+}
+

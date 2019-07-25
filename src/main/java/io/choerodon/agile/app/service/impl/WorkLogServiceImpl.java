@@ -5,7 +5,6 @@ import io.choerodon.agile.api.validator.WorkLogValidator;
 import io.choerodon.agile.app.service.IWorkLogService;
 import io.choerodon.agile.app.service.IssueAccessDataService;
 import io.choerodon.agile.app.service.WorkLogService;
-import io.choerodon.agile.infra.common.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.IssueConvertDTO;
 import io.choerodon.agile.infra.dataobject.WorkLogDTO;
 import io.choerodon.agile.app.service.UserService;

@@ -1,34 +1,20 @@
 package io.choerodon.agile.app.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-
-import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.api.validator.PiValidator;
-import io.choerodon.agile.app.assembler.PiAssembler;
-import io.choerodon.agile.app.service.IssueAccessDataService;
-import io.choerodon.agile.app.service.PiService;
-import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.app.service.WorkCalendarHolidayRefService;
-import io.choerodon.agile.infra.dataobject.BatchRemovePiDTO;
-import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
-import io.choerodon.agile.infra.common.utils.*;
-import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.dataobject.SubFeatureDTO;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
-import io.choerodon.agile.infra.mapper.*;
-
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-
+import io.choerodon.agile.api.validator.PiValidator;
+import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.app.assembler.PiAssembler;
+import io.choerodon.agile.app.service.*;
+import io.choerodon.agile.infra.dataobject.*;
+import io.choerodon.agile.infra.feign.IamFeignClient;
+import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.utils.*;
+import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-
-import com.github.pagehelper.PageHelper;
-
-import io.choerodon.base.domain.PageRequest;
-import io.choerodon.statemachine.feign.InstanceFeignClient;
-
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
@@ -62,48 +48,38 @@ public class PiServiceImpl implements PiService {
     private static final String ERROR_ISSUE_STATUS_NOT_FOUND = "error.createIssue.issueStatusNotFound";
     private static final String SPRINT_COMPLETE_SETTING_BACKLOG = "backlog";
     private static final String SPRINT_COMPLETE_SETTING_NEXT_SPRINT = "next_sprint";
-
     @Autowired
     private PiMapper piMapper;
-
     @Autowired
     private ArtMapper artMapper;
-
     @Autowired
     private WorkCalendarHolidayRefService workCalendarHolidayRefService;
-
     @Autowired
     private PiValidator piValidator;
-
     @Autowired
-    private UserFeignClient userFeignClient;
-
+    private IamFeignClient iamFeignClient;
     @Autowired
     private SprintService sprintService;
-
     @Autowired
     private IssueMapper issueMapper;
-
     @Autowired
     private SprintMapper sprintMapper;
-
-    @Autowired
-    private IssueFeignClient issueFeignClient;
-
     @Autowired
     private PiAssembler piAssembler;
-
     @Autowired
     private IssueStatusMapper issueStatusMapper;
-
-    @Autowired
-    private InstanceFeignClient instanceFeignClient;
-
     @Autowired
     private SendMsgUtil sendMsgUtil;
-
     @Autowired
     private IssueAccessDataService issueAccessDataService;
+    @Autowired
+    private IssueTypeService issueTypeService;
+    @Autowired
+    private ProjectConfigService projectConfigService;
+    @Autowired
+    private StatusService statusService;
+    @Autowired
+    private InstanceService instanceService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -282,7 +258,7 @@ public class PiServiceImpl implements PiService {
         }
     }
 
-    private void setStatusIsCompleted(Long projectId, Map<Long, StatusMapVO> statusMapDTOMap) {
+    private void setStatusIsCompleted(Long projectId, Map<Long, StatusVO> statusMapDTOMap) {
         IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
         issueStatusDTO.setProjectId(projectId);
         Map<Long, Boolean> statusCompletedMap = issueStatusMapper.select(issueStatusDTO).stream().collect(Collectors.toMap(IssueStatusDTO::getStatusId, IssueStatusDTO::getCompleted));
@@ -294,10 +270,10 @@ public class PiServiceImpl implements PiService {
         // return result by JSONObject
         JSONObject result = new JSONObject();
         // get statusMap and issueTypeMap by organizationId
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         // set status completed
         setStatusIsCompleted(programId, statusMapDTOMap);
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
         // query backlog with all feature
         List<SubFeatureDTO> backlogFeatures = piMapper.selectBacklogNoPiList(programId, StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)));
         result.put("backlogAllFeatures", backlogFeatures != null && !backlogFeatures.isEmpty() ? piAssembler.subFeatureDTOToVO(backlogFeatures, statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
@@ -327,7 +303,7 @@ public class PiServiceImpl implements PiService {
         sprintDTO.setProjectId(programId);
         sprintDTO.setPiId(piId);
         List<SprintDTO> sprintDTOList = sprintMapper.select(sprintDTO);
-        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        List<ProjectRelationshipVO> projectRelationshipVOList = iamFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         for (ProjectRelationshipVO projectRelationshipVO : projectRelationshipVOList) {
             Long projectId = projectRelationshipVO.getProjectId();
             for (SprintDTO sprint : sprintDTOList) {
@@ -399,19 +375,19 @@ public class PiServiceImpl implements PiService {
         Long organizationId = ConvertUtil.getOrganizationId(programId);
         //获取状态机id
         Long issueTypeId = null;
-        List<IssueTypeVO> issueTypeVOList = issueFeignClient.queryIssueTypesByProjectId(programId, "program").getBody();
+        List<IssueTypeVO> issueTypeVOList = projectConfigService.queryIssueTypesByProjectId(programId, "program");
         for (IssueTypeVO issueTypeVO : issueTypeVOList) {
             if ("feature".equals(issueTypeVO.getTypeCode())) {
                 issueTypeId = issueTypeVO.getId();
                 break;
             }
         }
-        Long stateMachineId = issueFeignClient.queryStateMachineId(programId, "program", issueTypeId).getBody();
+        Long stateMachineId = projectConfigService.queryStateMachineId(programId, "program", issueTypeId);
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
         //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+        Long initStatusId = instanceService.queryInitStatusId(organizationId, stateMachineId);
         if (initStatusId == null) {
             throw new CommonException(ERROR_ISSUE_STATUS_NOT_FOUND);
         }
@@ -424,7 +400,7 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public void completeProjectsSprints(Long programId, Long piId, Boolean onlySelectEnable) {
-        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, onlySelectEnable).getBody();
+        List<ProjectRelationshipVO> projectRelationshipVOList = iamFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, onlySelectEnable).getBody();
         if (projectRelationshipVOList == null || projectRelationshipVOList.isEmpty()) {
             return;
         }
@@ -445,7 +421,7 @@ public class PiServiceImpl implements PiService {
 
     @Override
     public void completeSprintsWithSelect(Long programId, Long piId, Long nextPiId, Long artId) {
-        List<ProjectRelationshipVO> projectRelationshipVOList = userFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
+        List<ProjectRelationshipVO> projectRelationshipVOList = iamFeignClient.getProjUnderGroup(ConvertUtil.getOrganizationId(programId), programId, true).getBody();
         if (projectRelationshipVOList == null || projectRelationshipVOList.isEmpty()) {
             return;
         }
@@ -642,7 +618,8 @@ public class PiServiceImpl implements PiService {
         }
         List<PiDTO> piDTOList = piMapper.selectUnDonePiDOList(programId, activeArt.getId());
         if (piDTOList != null && !piDTOList.isEmpty()) {
-            return modelMapper.map(piDTOList, new TypeToken<List<PiNameVO>>(){}.getType());
+            return modelMapper.map(piDTOList, new TypeToken<List<PiNameVO>>() {
+            }.getType());
         } else {
             return new ArrayList<>();
         }
@@ -656,9 +633,9 @@ public class PiServiceImpl implements PiService {
         }
         List<PiWithFeatureDTO> piWithFeatureDTOList = piMapper.selectRoadMapPiList(programId, activeArt.getId());
         if (piWithFeatureDTOList != null && !piWithFeatureDTOList.isEmpty()) {
-            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+            Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
             setStatusIsCompleted(programId, statusMapDTOMap);
-            Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
             return piAssembler.piWithFeatureDTOToVO(piWithFeatureDTOList, statusMapDTOMap, issueTypeDTOMap);
         } else {
             return new ArrayList<>();

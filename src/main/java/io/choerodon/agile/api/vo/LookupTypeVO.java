@@ -1,27 +1,20 @@
 package io.choerodon.agile.api.vo;
 
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 敏捷开发code键值类型
- *
- * @author dinghuang123@gmail.com
- * @since 2018-05-15 10:13:37
+ * Created by HuangFuqiang@choerodon.io on 2018/09/27.
+ * Email: fuqianghuang01@gmail.com
  */
 public class LookupTypeVO {
-
-    @ApiModelProperty(value = "快码类型code")
+    @ApiModelProperty(value = "类型编码")
     private String typeCode;
-
-    @ApiModelProperty(value = "快码类型名称")
+    @ApiModelProperty(value = "名称")
     private String name;
-
     @ApiModelProperty(value = "描述")
     private String description;
-
-    @ApiModelProperty(value = "版本号")
+    @ApiModelProperty(value = "乐观锁")
     private Long objectVersionNumber;
 
     public String getTypeCode() {
@@ -55,10 +48,4 @@ public class LookupTypeVO {
     public void setObjectVersionNumber(Long objectVersionNumber) {
         this.objectVersionNumber = objectVersionNumber;
     }
-
-    @Override
-    public String toString() {
-        return StringUtil.getToString(this);
-    }
-
 }

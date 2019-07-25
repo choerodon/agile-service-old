@@ -7,9 +7,9 @@ import io.choerodon.agile.api.vo.RoleAssignmentSearchVO;
 import io.choerodon.agile.api.vo.UserWithRoleVO;
 import io.choerodon.agile.app.service.ProjectInfoService;
 import io.choerodon.agile.api.vo.event.ProjectEvent;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
-import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
@@ -32,7 +32,7 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
     @Autowired
     private ProjectInfoMapper projectInfoMapper;
     @Autowired
-    private UserFeignClient userFeignClient;
+    private IamFeignClient iamFeignClient;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -80,9 +80,9 @@ public class ProjectInfoServiceImpl implements ProjectInfoService {
     @Override
     public List<ProjectRelationshipVO> queryProgramTeamInfo(Long projectId) {
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        List<ProjectRelationshipVO> projectRelationshipVOS = userFeignClient.getProjUnderGroup(organizationId, projectId, true).getBody();
+        List<ProjectRelationshipVO> projectRelationshipVOS = iamFeignClient.getProjUnderGroup(organizationId, projectId, true).getBody();
         for (ProjectRelationshipVO relationshipVO : projectRelationshipVOS) {
-            PageInfo<UserWithRoleVO> users = userFeignClient.pagingQueryUsersWithProjectLevelRoles(0, 0, relationshipVO.getProjectId(), new RoleAssignmentSearchVO(), false).getBody();
+            PageInfo<UserWithRoleVO> users = iamFeignClient.pagingQueryUsersWithProjectLevelRoles(0, 0, relationshipVO.getProjectId(), new RoleAssignmentSearchVO(), false).getBody();
             relationshipVO.setUserCount(users.getSize());
         }
         return projectRelationshipVOS;

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="io.choerodon.agile.infra.mapper.StateMachineSchemeMapper">
+
+    <resultMap id="stateMachineSchemeWithConfig" type="io.choerodon.agile.infra.dataobject.StateMachineSchemeDTO">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="organizationId" column="organization_id"/>
+        <result property="status" column="status"/>
+        <result property="creationDate" column="creation_date"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="lastUpdateDate" column="last_update_date"/>
+        <result property="lastUpdatedBy" column="last_updated_by"/>
+        <result property="objectVersionNumber" column="object_version_number"/>
+
+        <collection property="schemeConfigs" ofType="io.choerodon.agile.infra.dataobject.StateMachineSchemeConfigDTO"
+                    columnPrefix="c_" autoMapping="true">
+        </collection>
+
+        <collection property="projectConfigs" ofType="io.choerodon.agile.infra.dataobject.ProjectConfigDTO" columnPrefix="pc_"
+                    autoMapping="true">
+        </collection>
+    </resultMap>
+
+    <select id="fulltextSearch" resultType="io.choerodon.agile.infra.dataobject.StateMachineSchemeDTO">
+        SELECT SMS.*
+        FROM fd_state_machine_scheme SMS
+        WHERE 1=1
+        <if test="scheme.organizationId != null">
+            AND SMS.organization_id = #{scheme.organizationId}
+        </if>
+        <if test="scheme.name != null">
+            AND SMS.name LIKE concat('%',#{scheme.name},'%')
+        </if>
+        <if test="scheme.description != null">
+            AND SMS.description LIKE concat('%',#{scheme.description},'%')
+        </if>
+        <if test="param != null">
+            AND ( SMS.name LIKE concat('%',#{param},'%')
+            OR SMS.description LIKE concat('%',#{param},'%')
+            )
+        </if>
+    </select>
+
+    <select id="queryByIdsWithConfig" resultMap="stateMachineSchemeWithConfig">
+        SELECT SMS.*,
+        SMSC.id as c_id,
+        SMSC.scheme_id as c_scheme_id,
+        SMSC.issue_type_id as c_issue_type_id,
+        SMSC.state_machine_id as c_state_machine_id,
+        SMSC.sequence as c_sequence,
+        SMSC.is_default as c_is_default,
+        SMSC.creation_date as c_creation_date,
+        SMSC.created_by as c_created_by,
+        SMSC.last_update_date as c_last_update_date,
+        SMSC.last_updated_by as c_last_updated_by,
+        SMSC.object_version_number as c_object_version_number,
+        PC.project_id as pc_project_id
+        FROM fd_state_machine_scheme SMS
+        LEFT JOIN fd_state_machine_scheme_config SMSC on SMS.id = SMSC.scheme_id
+        LEFT JOIN fd_project_config PC on SMS.id = PC.scheme_id
+        WHERE SMS.organization_id = #{organizationId}
+        <if test="schemeIds != null and schemeIds.size()>0">
+            AND SMS.id IN
+            <foreach item="item" index="index" collection="schemeIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by SMS.id DESC
+    </select>
+
+    <select id="queryByIds" resultType="io.choerodon.agile.infra.dataobject.StateMachineSchemeDTO">
+        SELECT SMS.*
+        FROM fd_state_machine_scheme SMS
+        WHERE 1=1
+        <if test="organizationId != null">
+            AND SMS.organization_id = #{organizationId}
+        </if>
+        <if test="schemeIds != null and schemeIds.size()>0">
+            AND SMS.id IN
+            <foreach item="item" index="index" collection="schemeIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="queryByOrgId" resultType="io.choerodon.agile.infra.dataobject.StateMachineSchemeDTO">
+        SELECT SMS.*
+        FROM fd_state_machine_scheme SMS
+        WHERE SMS.organization_id = #{organizationId}
+    </select>
+
+    <update id="updateDeployProgress">
+        UPDATE fd_state_machine_scheme
+        SET deploy_progress = #{deployProgress}
+        WHERE organization_id = #{organizationId}
+        and id = #{schemeId}
+    </update>
+
+    <update id="updateDeployStatus">
+        UPDATE fd_state_machine_scheme
+        SET deploy_status = #{deployStatus}
+        WHERE organization_id = #{organizationId}
+        and id = #{schemeId}
+    </update>
+
+</mapper>

@@ -3,15 +3,14 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueComponentValidator;
-import io.choerodon.agile.infra.common.utils.PageUtil;
-import io.choerodon.agile.infra.common.utils.RedisUtil;
+import io.choerodon.agile.infra.utils.PageUtil;
+import io.choerodon.agile.infra.utils.RedisUtil;
 import io.choerodon.agile.infra.dataobject.ComponentForListDTO;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
 import io.choerodon.agile.app.service.ComponentIssueRelService;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
 import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
-import io.choerodon.core.convertor.ConvertPageHelper;
 
 import com.github.pagehelper.PageInfo;
 

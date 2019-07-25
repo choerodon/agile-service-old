@@ -641,7 +641,7 @@ class UserMapStore {
 
   axiosGetIssueTypes() {
     const proId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=agile`).then((data) => {
+    return axios.get(`/agile/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=agile`).then((data) => {
       if (data && !data.failed) {
         this.setIssueTypes(data);
       } else {
@@ -660,7 +660,7 @@ class UserMapStore {
 
   axiosGetDefaultPriority() {
     const proId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${proId}/priority/default`).then((data) => {
+    return axios.get(`/agile/v1/projects/${proId}/priority/default`).then((data) => {
       if (data && !data.failed) {
         this.setDefaultPriority(data);
       } else {

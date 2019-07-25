@@ -1,0 +1,44 @@
+.issue-stateMachineScheme {
+  &-tip {
+    margin-bottom: 20px;
+    font-size: 14px;
+    width: 520px;
+  }
+  &-table {
+    &-ul {
+      padding-left: 16px;
+      margin-bottom: 0;
+    }
+    &-col {
+      vertical-align: top;
+    }
+    &-title {
+      position: relative;
+    }
+    &-issueType {
+      width: 169px;
+      display: inline-block;
+      vertical-align: top;
+      & .icon {
+        vertical-align: text-bottom;
+        font-size: 16px;
+      }
+      &-content {
+        width: 105px;
+        display: inline-block;
+      }
+    }
+    &-stateMachine {
+      width: 160px;
+      position: absolute;
+      right: 0;
+      &-content {
+        width: 158px;
+        display: inline-block;
+      }
+    }
+    &-related {
+      margin-bottom: 3px;
+    }
+  }
+}

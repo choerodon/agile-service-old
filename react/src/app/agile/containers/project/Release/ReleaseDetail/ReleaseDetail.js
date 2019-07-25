@@ -247,7 +247,7 @@ class ReleaseDetail extends Component {
               </span>
               <span>
                 {
-                  ReleaseStore.getOriginIssue.filter(issues => (issues.statusMapVO && item.id && issues.statusMapVO.id === item.id)).length
+                  ReleaseStore.getOriginIssue.filter(issues => (issues.statusVO && item.id && issues.statusVO.id === item.id)).length
                 }
                 {'个'}
               </span>
@@ -381,7 +381,7 @@ class ReleaseDetail extends Component {
         key: 'statusId',
         render: (text, record) => (
           <StatusTag
-            data={record.statusMapVO}
+            data={record.statusVO}
           />
         ),
         filters: filterMap.get('statusId'),

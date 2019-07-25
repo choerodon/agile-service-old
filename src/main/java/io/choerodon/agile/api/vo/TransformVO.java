@@ -7,21 +7,46 @@ import io.swagger.annotations.ApiModelProperty;
  * Email: fuqianghuang01@gmail.com
  */
 public class TransformVO {
-
     @ApiModelProperty(value = "转换id")
     private Long id;
-
     @ApiModelProperty(value = "转换名称")
     private String name;
-
     @ApiModelProperty(value = "转换所属状态机id")
     private Long stateMachineId;
-
     @ApiModelProperty(value = "终点状态")
     private Long endStatusId;
-
+    @ApiModelProperty(value = "转换类型")
+    private String type;
+    @ApiModelProperty(value = "开始节点id")
+    private Long startNodeId;
+    @ApiModelProperty(value = "目标状态类型")
+    private String statusType;
     @ApiModelProperty(value = "状态DTO")
     private StatusVO statusVO;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Long getStartNodeId() {
+        return startNodeId;
+    }
+
+    public void setStartNodeId(Long startNodeId) {
+        this.startNodeId = startNodeId;
+    }
+
+    public String getStatusType() {
+        return statusType;
+    }
+
+    public void setStatusType(String statusType) {
+        this.statusType = statusType;
+    }
 
     public Long getId() {
         return id;

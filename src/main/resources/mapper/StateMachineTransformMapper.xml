@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.StateMachineTransformMapper">
+
+    <select id="queryById" resultType="io.choerodon.agile.infra.dataobject.StateMachineTransformDTO">
+        SELECT
+        smt.*,
+        smn.status_id as endStatusId
+        FROM fd_state_machine_transform smt
+        LEFT JOIN fd_state_machine_node smn ON smn.id = smt.end_node_id
+        where smt.organization_id = #{organizationId}
+        and smt.id = #{id}
+    </select>
+
+    <update id="deleteByNodeId">
+        DELETE FROM fd_state_machine_transform
+        WHERE start_node_id = #{nodeId} OR end_node_id = #{nodeId}
+    </update>
+
+    <select id="queryByStartNodeIdOrType" resultType="io.choerodon.agile.infra.dataobject.StateMachineTransformDTO">
+        SELECT *
+        FROM fd_state_machine_transform
+        WHERE organization_id = #{organizationId}
+        and state_machine_id = #{stateMachineId}
+        and (
+          start_node_id = #{startNodeId}
+          OR
+          type = #{transformType}
+        )
+    </select>
+
+    <select id="queryByStateMachineIds" resultType="io.choerodon.agile.infra.dataobject.StateMachineTransformDTO">
+        SELECT
+        smt.*,
+        smn.status_id as endStatusId
+        FROM fd_state_machine_transform smt
+        LEFT JOIN fd_state_machine_node smn ON smn.id = smt.end_node_id
+        where smt.organization_id = #{organizationId}
+        and smt.state_machine_id in
+        <foreach collection="stateMachineIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

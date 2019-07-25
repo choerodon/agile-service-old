@@ -1,10 +1,10 @@
 package io.choerodon.agile.app.assembler;
 
 import io.choerodon.agile.api.vo.IssueTypeVO;
-import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.api.vo.StatusVO;
 import io.choerodon.agile.api.vo.StoryMapStoryVO;
 import io.choerodon.agile.api.vo.StoryMapVersionVO;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.StoryMapStoryDTO;
 import org.springframework.stereotype.Component;
 
@@ -27,11 +27,11 @@ public class StoryMapAssembler extends AbstractAssembler {
         }
         List<StoryMapStoryVO> result = new ArrayList<>();
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, APPLYTYPE_AGILE);
-        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         storyMapStoryDTOList.forEach(storyMapStoryDTO -> {
             StoryMapStoryVO storyMapStoryVO = toTarget(storyMapStoryDTO, StoryMapStoryVO.class);
             storyMapStoryVO.setIssueTypeVO(issueTypeDTOMap.get(storyMapStoryDTO.getIssueTypeId()));
-            storyMapStoryVO.setStatusMapVO(statusMapDTOMap.get(storyMapStoryDTO.getStatusId()));
+            storyMapStoryVO.setStatusVO(statusMapDTOMap.get(storyMapStoryDTO.getStatusId()));
             storyMapStoryVO.setStoryMapVersionVOList(toTargetList(storyMapStoryDTO.getStoryMapVersionDTOList(), StoryMapVersionVO.class));
             result.add(storyMapStoryVO);
         });

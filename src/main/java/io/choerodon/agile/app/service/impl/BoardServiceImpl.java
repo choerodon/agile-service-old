@@ -6,15 +6,14 @@ import io.choerodon.agile.api.validator.BoardValidator;
 import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.app.service.*;
-import io.choerodon.agile.infra.common.annotation.DataLog;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.common.utils.DateUtil;
-import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.common.utils.RedisUtil;
-import io.choerodon.agile.infra.common.utils.SendMsgUtil;
+import io.choerodon.agile.infra.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.utils.DateUtil;
+import io.choerodon.agile.infra.utils.RankUtil;
+import io.choerodon.agile.infra.utils.RedisUtil;
+import io.choerodon.agile.infra.utils.SendMsgUtil;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
@@ -56,70 +55,52 @@ public class BoardServiceImpl implements BoardService {
 
     @Autowired
     private BoardMapper boardMapper;
-
     @Autowired
     private BoardColumnService boardColumnService;
-
     @Autowired
     private BoardColumnMapper boardColumnMapper;
-
     @Autowired
     private SprintService sprintService;
-
     @Autowired
     private IssueMapper issueMapper;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private QuickFilterMapper quickFilterMapper;
-
     @Autowired
     private UserSettingMapper userSettingMapper;
-
     @Autowired
     private UserSettingService userSettingService;
-
     @Autowired
     private DateUtil dateUtil;
-
     @Autowired
     private WorkCalendarRefMapper workCalendarRefMapper;
-
     @Autowired
-    private IssueFeignClient issueFeignClient;
-
-    @Autowired
-    private StateMachineService stateMachineService;
-
+    private StateMachineClientService stateMachineClientService;
     @Autowired
     private SprintMapper sprintMapper;
-
     @Autowired
     private PiMapper piMapper;
-
     @Autowired
     private PiFeatureService piFeatureService;
-
     @Autowired
     private PiFeatureMapper piFeatureMapper;
-
     @Autowired
     private ArtMapper artMapper;
-
     @Autowired
     private SendMsgUtil sendMsgUtil;
-
     @Autowired
     private ColumnStatusRelMapper columnStatusRelMapper;
-
     @Autowired
     private RedisUtil redisUtil;
-
     @Autowired
     private ColumnStatusRelService columnStatusRelService;
-
+    @Autowired
+    private PriorityService priorityService;
+    @Autowired
+    private IssueTypeService issueTypeService;
+    @Autowired
+    private StatusService statusService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -250,11 +231,11 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private void getDatas(List<SubStatusDTO> subStatusDTOS, List<Long> parentIds, List<Long> assigneeIds, List<Long> ids, List<Long> epicIds, Long organizationId, Map<Long, List<Long>> parentWithSubs, Map<Long, IssueTypeVO> issueTypeDTOMap) {
-        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
         subStatusDTOS.forEach(subStatusDTO -> subStatusDTO.getIssues().forEach(issueForBoardDO -> addIssueInfos(issueForBoardDO, parentIds, assigneeIds, ids, epicIds, priorityMap, issueTypeDTOMap, parentWithSubs)));
     }
 
-    public void putDatasAndSort(List<ColumnAndIssueDTO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId, Map<Long, List<Long>> parentWithSubss, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    public void putDatasAndSort(List<ColumnAndIssueDTO> columns, List<Long> parentIds, List<Long> assigneeIds, Long boardId, List<Long> epicIds, Boolean condition, Long organizationId, Map<Long, List<Long>> parentWithSubss, Map<Long, StatusVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<Long> issueIds = new ArrayList<>();
         for (ColumnAndIssueDTO column : columns) {
             List<SubStatusDTO> subStatusDTOS = column.getSubStatusDTOS();
@@ -270,9 +251,9 @@ public class BoardServiceImpl implements BoardService {
         Collections.sort(assigneeIds);
     }
 
-    private void fillStatusData(List<SubStatusDTO> subStatusDTOS, Map<Long, StatusMapVO> statusMap) {
+    private void fillStatusData(List<SubStatusDTO> subStatusDTOS, Map<Long, StatusVO> statusMap) {
         for (SubStatusDTO subStatusDTO : subStatusDTOS) {
-            StatusMapVO status = statusMap.get(subStatusDTO.getStatusId());
+            StatusVO status = statusMap.get(subStatusDTO.getStatusId());
             subStatusDTO.setCategoryCode(status.getType());
             subStatusDTO.setName(status.getName());
             Collections.sort(subStatusDTO.getIssues(), Comparator.comparing(IssueForBoardDO::getIssueId));
@@ -358,13 +339,13 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
-    private List<ParentIssueDTO> getParentIssues(Long projectId, List<Long> parentIds, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    private List<ParentIssueDTO> getParentIssues(Long projectId, List<Long> parentIds, Map<Long, StatusVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         if (parentIds == null || parentIds.isEmpty()) {
             return new ArrayList<>();
         }
         List<ParentIssueDTO> parentIssueDTOList = boardColumnMapper.queryParentIssuesByIds(projectId, parentIds);
         for (ParentIssueDTO parentIssueDTO : parentIssueDTOList) {
-            parentIssueDTO.setStatusMapVO(statusMap.get(parentIssueDTO.getStatusId()));
+            parentIssueDTO.setStatusVO(statusMap.get(parentIssueDTO.getStatusId()));
             parentIssueDTO.setIssueTypeVO(issueTypeDTOMap.get(parentIssueDTO.getIssueTypeId()));
         }
         return parentIssueDTOList;
@@ -397,8 +378,8 @@ public class BoardServiceImpl implements BoardService {
         List<ColumnAndIssueDTO> columns = boardColumnMapper.selectColumnsByBoardId(projectId, boardId, activeSprintId, assigneeId, onlyStory, filterSql, assigneeFilterIds);
         Boolean condition = assigneeId != null && onlyStory;
         Map<Long, List<Long>> parentWithSubs = new HashMap<>();
-        Map<Long, StatusMapVO> statusMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, StatusVO> statusMap = statusService.queryAllStatusMap(organizationId);
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
         putDatasAndSort(columns, parentIds, assigneeIds, boardId, epicIds, condition, organizationId, parentWithSubs, statusMap, issueTypeDTOMap);
         jsonObject.put("parentIds", parentIds);
         jsonObject.put("parentIssues", getParentIssues(projectId, parentIds, statusMap, issueTypeDTOMap));
@@ -489,10 +470,10 @@ public class BoardServiceImpl implements BoardService {
     public IssueMoveVO move(Long projectId, Long issueId, Long transformId, IssueMoveVO issueMoveVO, Boolean isDemo) {
         //执行状态机转换
         if (isDemo) {
-            stateMachineService.executeTransformForDemo(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
+            stateMachineClientService.executeTransformForDemo(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
                     SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveVO))));
         } else {
-            stateMachineService.executeTransform(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
+            stateMachineClientService.executeTransform(projectId, issueId, transformId, issueMoveVO.getObjectVersionNumber(),
                     SchemeApplyType.AGILE, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleIssueMoveRank(projectId, issueMoveVO))));
         }
         IssueDTO issueDTO = issueMapper.selectByPrimaryKey(issueId);
@@ -504,7 +485,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public FeatureMoveVO moveByProgram(Long projectId, Long issueId, Long transformId, FeatureMoveVO featureMoveVO) {
         IssueDTO issueDTO = issueMapper.selectByPrimaryKey(issueId);
-        stateMachineService.executeTransform(projectId, issueId, transformId, featureMoveVO.getObjectVersionNumber(),
+        stateMachineClientService.executeTransform(projectId, issueId, transformId, featureMoveVO.getObjectVersionNumber(),
                 SchemeApplyType.PROGRAM, new InputDTO(issueId, UPDATE_STATUS_MOVE, JSON.toJSONString(handleFeatureMoveRank(projectId, issueDTO))));
         issueDTO = issueMapper.selectByPrimaryKey(issueId);
         // deal pi of feature
@@ -663,7 +644,7 @@ public class BoardServiceImpl implements BoardService {
         boardColumnService.initBoardColumnsByProgram(projectId, boardResult.getBoardId(), statusPayloads);
     }
 
-    private void setColumnDeatil(List<ColumnAndIssueDTO> columns, Map<Long, StatusMapVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    private void setColumnDeatil(List<ColumnAndIssueDTO> columns, Map<Long, StatusVO> statusMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         for (ColumnAndIssueDTO column : columns) {
             List<SubStatusDTO> subStatusDTOS = column.getSubStatusDTOS();
             fillStatusData(subStatusDTOS, statusMap);
@@ -701,8 +682,8 @@ public class BoardServiceImpl implements BoardService {
             });
         });
         // get status map from organization
-        Map<Long, StatusMapVO> statusMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, StatusVO> statusMap = statusService.queryAllStatusMap(organizationId);
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
         // reset status info
         setColumnDeatil(columns, statusMap, issueTypeDTOMap);
         columns.sort(Comparator.comparing(ColumnAndIssueDTO::getSequence));

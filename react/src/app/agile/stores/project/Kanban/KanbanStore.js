@@ -232,7 +232,7 @@ class KanbanStore {
   }
 
   axiosCanAddStatus() {
-    axios.get(`/issue/v1/projects/${AppState.currentMenuType.id}/schemes/check_create_status_for_agile?applyType=program`)
+    axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/schemes/check_create_status_for_agile?applyType=program`)
       .then((data) => {
         this.setCanAddStatus(data);
       })
@@ -424,7 +424,7 @@ class KanbanStore {
   setTransFromData(parentIssue, parentId) {
     const projectId = AppState.currentMenuType.id;
     axios.get(
-      `/issue/v1/projects/${projectId}/schemes/query_transforms?current_status_id=${parentIssue.statusId}&issue_id=${parentIssue.issueId}&issue_type_id=${parentIssue.issueTypeId}&apply_type=agile`,
+      `/agile/v1/projects/${projectId}/schemes/query_transforms?current_status_id=${parentIssue.statusId}&issue_id=${parentIssue.issueId}&issue_type_id=${parentIssue.issueTypeId}&apply_type=agile`,
     ).then(
       action('fetchSuccess', (res) => {
         this.updatedParentIssue = this.interconnectedData.get(parentId);
@@ -687,7 +687,7 @@ class KanbanStore {
   }
 
   axiosStatusCanBeDelete(code) {
-    return axios.get(`/issue/v1/projects/${AppState.currentMenuType.id}/schemes/check_remove_status_for_agile?status_id=${code}&applyType=program`);
+    return axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/schemes/check_remove_status_for_agile?status_id=${code}&applyType=program`);
   }
 
   axiosDeleteStatus(code) {
@@ -811,19 +811,19 @@ class KanbanStore {
 
   axiosGetIssueTypes() {
     const proId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=program`);
+    return axios.get(`/agile/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=program`);
   }
 
   loadTransforms = (statusId, issueId, typeId) => {
     const projectId = AppState.currentMenuType.id;
     return axios.get(
-      `/issue/v1/projects/${projectId}/schemes/query_transforms?current_status_id=${statusId}&issue_id=${issueId}&issue_type_id=${typeId}&apply_type=program`,
+      `/agile/v1/projects/${projectId}/schemes/query_transforms?current_status_id=${statusId}&issue_id=${issueId}&issue_type_id=${typeId}&apply_type=program`,
     );
   }
 
   loadStatus = () => {
     const projectId = AppState.currentMenuType.id;
-    axios.get(`/issue/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=program`).then((data) => {
+    axios.get(`/agile/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=program`).then((data) => {
       if (data && !data.failed) {
         this.setStatusList(data);
       } else {
@@ -836,7 +836,7 @@ class KanbanStore {
 
   axiosGetStateMachine = () => {
     const projectId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${projectId}/schemes/query_transforms_map?apply_type=program`);
+    return axios.get(`/agile/v1/projects/${projectId}/schemes/query_transforms_map?apply_type=program`);
   }
 
   axiosUpdateIssue(data) {

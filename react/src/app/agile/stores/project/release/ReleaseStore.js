@@ -262,11 +262,11 @@ class ReleaseStore {
     this.setIssuePriority(priorities);
   }
 
-  loadType = () => axios.get(`/issue/v1/projects/${AppState.currentMenuType.id}/schemes/query_issue_types?apply_type=agile`);
+  loadType = () => axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/schemes/query_issue_types?apply_type=agile`);
 
-  loadStatus = () => axios.get(`/issue/v1/projects/${AppState.currentMenuType.id}/schemes/query_status_by_project_id?apply_type=agile`);
+  loadStatus = () => axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/schemes/query_status_by_project_id?apply_type=agile`);
 
-  loadPriorities = () => axios.get(`/issue/v1/projects/${AppState.currentMenuType.id}/priority/list_by_org`);
+  loadPriorities = () => axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/priority/list_by_org`);
 }
 
 const releaseStore = new ReleaseStore();

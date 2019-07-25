@@ -2,11 +2,11 @@ package io.choerodon.agile.api.controller.v1
 
 import io.choerodon.agile.AgileTestConfiguration
 import io.choerodon.agile.api.vo.IssueStatusVO
-import io.choerodon.agile.api.vo.StatusInfoVO
 import io.choerodon.agile.api.vo.StatusMoveVO
+import io.choerodon.agile.api.vo.StatusVO
+import io.choerodon.agile.app.service.ProjectConfigService
 import io.choerodon.agile.infra.dataobject.ColumnStatusRelDTO
 import io.choerodon.agile.infra.dataobject.IssueStatusDTO
-import io.choerodon.agile.infra.feign.IssueFeignClient
 import io.choerodon.agile.infra.mapper.ColumnStatusRelMapper
 import io.choerodon.agile.infra.mapper.IssueStatusMapper
 import org.mockito.Matchers
@@ -44,6 +44,8 @@ class IssueStatusControllerSpec extends Specification {
     @Autowired
     ColumnStatusRelMapper columnStatusRelMapper
 
+    @Autowired
+    ProjectConfigService projectConfigService
     @Shared
     Long projectId = 1L
 
@@ -59,20 +61,23 @@ class IssueStatusControllerSpec extends Specification {
     @Shared
     Long statusId
 
+<<<<<<< HEAD
     @Shared
     Long statusIdReal
 
     @Autowired
     private IssueFeignClient issueFeignClient
 
+=======
+>>>>>>> [IMP] 合并issue服务，去掉部分Feign调用
     @Shared
     Long boardId = 1L
 
     def setup() {
-        StatusInfoVO statusInfoDTO = new StatusInfoVO()
+        StatusVO statusInfoDTO = new StatusVO()
         statusInfoDTO.setId(10001L)
         statusInfoDTO.setName(statusName)
-        Mockito.when(issueFeignClient.createStatusForAgile(Matchers.anyLong(), Matchers.anyString(), Matchers.any(StatusInfoVO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
+        Mockito.when(projectConfigService.createStatusForAgile(Matchers.anyLong(), Matchers.anyString(), Matchers.any(StatusVO.class))).thenReturn(new ResponseEntity<>(statusInfoDTO, HttpStatus.OK));
     }
 
     def 'createStatus'() {

@@ -1,5 +1,7 @@
 package io.choerodon.agile.api.vo.event;
 
+import io.choerodon.agile.infra.dataobject.ProjectConfigDTO;
+
 import java.util.List;
 
 /**
@@ -9,13 +11,13 @@ import java.util.List;
 public class StateMachineSchemeDeployCheckIssue {
     private List<Long> issueTypeIds;
 
-    private List<ProjectConfig> projectConfigs;
+    private List<ProjectConfigDTO> projectConfigs;
 
-    public List<ProjectConfig> getProjectConfigs() {
+    public List<ProjectConfigDTO> getProjectConfigs() {
         return projectConfigs;
     }
 
-    public void setProjectConfigs(List<ProjectConfig> projectConfigs) {
+    public void setProjectConfigs(List<ProjectConfigDTO> projectConfigs) {
         this.projectConfigs = projectConfigs;
     }
 

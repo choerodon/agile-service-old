@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.vo;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
@@ -55,7 +55,7 @@ public class IssueSubListVO {
     private IssueTypeVO issueTypeVO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     @ApiModelProperty(value = "是否已完成")
     private Boolean completed;
@@ -166,11 +166,11 @@ public class IssueSubListVO {
         this.issueTypeVO = issueTypeVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 

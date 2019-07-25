@@ -598,7 +598,7 @@ class BacklogStore {
 
   axiosGetIssueTypes() {
     const proId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=agile`);
+    return axios.get(`/agile/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=agile`);
   }
 
   @computed get getDefaultPriority() {
@@ -611,7 +611,7 @@ class BacklogStore {
 
   axiosGetDefaultPriority() {
     const proId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${proId}/priority/default`);
+    return axios.get(`/agile/v1/projects/${proId}/priority/default`);
   }
 
   checkSprintName(proId, name) {

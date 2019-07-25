@@ -5,7 +5,7 @@ import io.choerodon.agile.app.service.IFeedbackAttachmentService;
 import io.choerodon.agile.infra.dataobject.ApplicationDTO;
 import io.choerodon.agile.infra.dataobject.FeedbackAttachmentDTO;
 import io.choerodon.agile.infra.feign.FileFeignClient;
-import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.FeedbackAttachmentMapper;
 import io.choerodon.core.exception.CommonException;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public class FeedbackAttachmentServiceImpl implements FeedbackAttachmentService 
     private FileFeignClient fileFeignClient;
 
     @Autowired
-    private UserFeignClient userFeignClient;
+    private IamFeignClient iamFeignClient;
 
 
     @Value("${services.attachment.url}")
@@ -144,7 +144,7 @@ public class FeedbackAttachmentServiceImpl implements FeedbackAttachmentService 
 
     @Override
     public List<FeedbackAttachmentDTO> uploadAttachmentPublic(Long feedbackId, String token, HttpServletRequest request) {
-        ApplicationDTO applicationDTO = userFeignClient.getApplicationByToken(new ApplicationDTO(token)).getBody();
+        ApplicationDTO applicationDTO = iamFeignClient.getApplicationByToken(new ApplicationDTO(token)).getBody();
         if (applicationDTO == null) {
             throw new CommonException("error.application.get");
         }

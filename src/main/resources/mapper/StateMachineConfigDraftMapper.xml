@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.StateMachineConfigDraftMapper">
+
+    <select id="queryById" resultType="io.choerodon.agile.infra.dataobject.StateMachineConfigDraftDTO">
+        SELECT *
+        FROM fd_state_machine_config_draft
+        WHERE organization_id = #{organizationId}
+        and id = #{id}
+    </select>
+
+    <select id="queryWithCodeInfo" resultType="io.choerodon.agile.infra.dataobject.StateMachineConfigDraftDTO">
+        SELECT smcd.*,
+        cc.name code_name,
+        cc.description code_description
+        FROM fd_state_machine_config_draft smcd
+        LEFT JOIN fd_config_code cc on cc.code = smcd.code
+        WHERE smcd.organization_id = #{organizationId}
+        and smcd.transform_id = #{transformId}
+        and smcd.type = #{type}
+    </select>
+
+</mapper>

@@ -7,22 +7,20 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-
-import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.IssueLinkValidator;
 import io.choerodon.agile.api.validator.IssueValidator;
 import io.choerodon.agile.api.validator.ProductVersionValidator;
 import io.choerodon.agile.api.validator.SprintValidator;
+import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.api.vo.event.IssuePayload;
 import io.choerodon.agile.app.assembler.*;
 import io.choerodon.agile.app.service.*;
-import io.choerodon.agile.api.vo.event.IssuePayload;
-import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
-import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.common.utils.*;
+import io.choerodon.agile.infra.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.enums.ObjectSchemeCode;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
 import io.choerodon.agile.infra.mapper.*;
+import io.choerodon.agile.infra.utils.*;
 import io.choerodon.asgard.saga.annotation.Saga;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
@@ -33,8 +31,6 @@ import io.choerodon.core.iam.ResourceLevel;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import io.choerodon.statemachine.dto.InputDTO;
-import io.choerodon.statemachine.feign.InstanceFeignClient;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -42,7 +38,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -141,11 +136,7 @@ public class IssueServiceImpl implements IssueService {
     @Autowired
     private IssueMapper issueMapper;
     @Autowired
-    private IssueFeignClient issueFeignClient;
-    @Autowired
-    private InstanceFeignClient instanceFeignClient;
-    @Autowired
-    private StateMachineService stateMachineService;
+    private StateMachineClientService stateMachineClientService;
     @Autowired
     private DataLogRedisUtil dataLogRedisUtil;
     @Autowired
@@ -166,6 +157,20 @@ public class IssueServiceImpl implements IssueService {
     private RankMapper rankMapper;
     @Autowired
     private IssueValidator issueValidator;
+    @Autowired
+    private PriorityService priorityService;
+    @Autowired
+    private IssueTypeService issueTypeService;
+    @Autowired
+    private ProjectConfigService projectConfigService;
+    @Autowired
+    private PageFieldService pageFieldService;
+    @Autowired
+    private ObjectSchemeFieldService objectSchemeFieldService;
+    @Autowired
+    private StatusService statusService;
+    @Autowired
+    private InstanceService instanceService;
 
     private static final String SUB_TASK = "sub_task";
     private static final String ISSUE_EPIC = "issue_epic";
@@ -255,7 +260,8 @@ public class IssueServiceImpl implements IssueService {
     private PiMapper piMapper;
     @Autowired
     private ProjectInfoService projectInfoService;
-
+    @Autowired
+    private FieldValueService fieldValueService;
 
     @Override
     public void afterCreateIssue(Long issueId, IssueConvertDTO issueConvertDTO, IssueCreateVO issueCreateVO, ProjectInfoDTO projectInfoDTO) {
@@ -337,35 +343,11 @@ public class IssueServiceImpl implements IssueService {
             issue.getIssueAttachmentDTOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
-        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueVO result = issueAssembler.issueDetailDTOToVO(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueCreate(projectId, result);
         return result;
-    }
-
-    private PriorityVO getPriorityById(Long organizationId, Long priorityId) {
-        ResponseEntity<PriorityVO> priorityDTOResponseEntity = issueFeignClient.queryById(organizationId, priorityId);
-        if (priorityDTOResponseEntity == null) {
-            throw new CommonException("error.priority.get");
-        }
-        return priorityDTOResponseEntity.getBody();
-    }
-
-    private IssueTypeVO getIssueTypeById(Long organizationId, Long issueTypeId) {
-        ResponseEntity<IssueTypeVO> issueTypeDTOResponseEntity = issueFeignClient.queryIssueTypeById(organizationId, issueTypeId);
-        if (issueTypeDTOResponseEntity == null) {
-            throw new CommonException("error.issueType.get");
-        }
-        return issueTypeDTOResponseEntity.getBody();
-    }
-
-    private StatusMapVO getStatusById(Long organizationId, Long statusId) {
-        ResponseEntity<StatusMapVO> statusInfoDTOResponseEntity = issueFeignClient.queryStatusById(organizationId, statusId);
-        if (statusInfoDTOResponseEntity == null) {
-            throw new CommonException("error.status.get");
-        }
-        return statusInfoDTOResponseEntity.getBody();
     }
 
     @Override
@@ -389,7 +371,7 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
-        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         return issueAssembler.issueDetailDTOToVO(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
     }
@@ -406,7 +388,7 @@ public class IssueServiceImpl implements IssueService {
             }
         }
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, issue.getApplyType());
-        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
         IssueVO result = issueAssembler.issueDetailDTOToVO(issue, issueTypeDTOMap, statusMapDTOMap, priorityDTOMap);
         sendMsgUtil.sendMsgByIssueAssignee(projectId, fieldList, result);
@@ -448,7 +430,7 @@ public class IssueServiceImpl implements IssueService {
                 order.put(fieldCode, sortCode);
                 PageUtil.sortResetOrder(pageRequest.getSort(), null, order);
                 List<Long> issueIdsWithSub = issueMapper.queryIssueIdsListWithSub(projectId, searchVO, searchSql, searchVO.getAssigneeFilterIds());
-                List<Long> foundationIssueIds = issueFeignClient.sortIssueIdsByFieldValue(organizationId, projectId, pageRequest.getSort().toString()).getBody();
+                List<Long> foundationIssueIds = fieldValueService.sortIssueIdsByFieldValue(organizationId, projectId, pageRequest);
 
                 List<Long> foundationIssueIdsWithSub = foundationIssueIds.stream().filter(issueIdsWithSub::contains).collect(Collectors.toList());
                 List<Long> issueIdsWithSubWithoutFoundation = issueIdsWithSub.stream().filter(t -> !foundationIssueIdsWithSub.contains(t)).collect(Collectors.toList());
@@ -472,10 +454,10 @@ public class IssueServiceImpl implements IssueService {
             PageInfo<IssueListFieldKVVO> issueListDTOPage;
             if (issueIdPage.getList() != null && !issueIdPage.getList().isEmpty()) {
                 List<IssueDTO> issueDTOList = issueMapper.queryIssueListWithSubByIssueIds(issueIdPage.getList());
-                Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-                Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-                Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
-                Map<Long, Map<String, String>> foundationCodeValue = issueFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIdPage.getList()).getBody();
+                Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+                Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
+                Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
+                Map<Long, Map<String, String>> foundationCodeValue = pageFieldService.queryFieldValueWithIssueIdsForAgileExport(organizationId, projectId, issueIdPage.getList());
                 issueListDTOPage = PageUtil.buildPageInfoWithPageInfoList(issueIdPage,
                         issueAssembler.issueDoToIssueListFieldKVDTO(issueDTOList, priorityMap, statusMapDTOMap, issueTypeDTOMap, foundationCodeValue));
             } else {
@@ -606,7 +588,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public IssueVO updateIssueStatus(Long projectId, Long issueId, Long transformId, Long objectVersionNumber, String applyType) {
-        stateMachineService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType, new InputDTO(issueId, "updateStatus", null));
+        stateMachineClientService.executeTransform(projectId, issueId, transformId, objectVersionNumber, applyType, new InputDTO(issueId, "updateStatus", null));
         if ("agile".equals(applyType)) {
             IssueConvertDTO issueConvertDTO = new IssueConvertDTO();
             issueConvertDTO.setIssueId(issueId);
@@ -680,11 +662,11 @@ public class IssueServiceImpl implements IssueService {
         SprintSearchDTO sprintSearchDTO = sprintMapper.queryActiveSprintNoIssueIds(projectId);
         if (oldIssue.getApplyType().equals(SchemeApplyType.AGILE)) {
             if (sprintSearchDTO == null || !Objects.equals(issueConvertDTO.getSprintId(), sprintSearchDTO.getSprintId())) {
-                Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, AGILE, oldIssue.getIssueTypeId()).getBody();
+                Long stateMachineId = projectConfigService.queryStateMachineId(projectId, AGILE, oldIssue.getIssueTypeId());
                 if (stateMachineId == null) {
                     throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
                 }
-                Long initStatusId = instanceFeignClient.queryInitStatusId(ConvertUtil.getOrganizationId(projectId), stateMachineId).getBody();
+                Long initStatusId = instanceService.queryInitStatusId(ConvertUtil.getOrganizationId(projectId), stateMachineId);
                 if (issueConvertDTO.getStatusId() == null && !oldIssue.getStatusId().equals(initStatusId)) {
                     issueConvertDTO.setStatusId(initStatusId);
                     fieldList.add(STATUS_ID);
@@ -1121,9 +1103,9 @@ public class IssueServiceImpl implements IssueService {
     @Override
     public IssueSubVO queryIssueSub(Long projectId, Long organizationId, Long issueId) {
         IssueDetailDTO issue = issueMapper.queryIssueDetail(projectId, issueId);
-        issue.setPriorityVO(getPriorityById(organizationId, issue.getPriorityId()));
-        issue.setIssueTypeVO(getIssueTypeById(organizationId, issue.getIssueTypeId()));
-        issue.setStatusMapVO(getStatusById(organizationId, issue.getStatusId()));
+        issue.setPriorityVO(priorityService.queryById(organizationId, issue.getPriorityId()));
+        issue.setIssueTypeVO(issueTypeService.queryById(organizationId, issue.getIssueTypeId()));
+        issue.setStatusVO(statusService.queryStatusById(organizationId, issue.getStatusId()));
         if (issue.getIssueAttachmentDTOList() != null && !issue.getIssueAttachmentDTOList().isEmpty()) {
             issue.getIssueAttachmentDTOList().forEach(issueAttachmentDO -> issueAttachmentDO.setUrl(attachmentUrl + issueAttachmentDO.getUrl()));
         }
@@ -1195,7 +1177,8 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleCreateLabelIssue(List<LabelIssueRelVO> labelIssueRelVOList, Long issueId) {
         if (labelIssueRelVOList != null && !labelIssueRelVOList.isEmpty()) {
-            List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<List<LabelIssueRelDTO>>(){}.getType());
+            List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<List<LabelIssueRelDTO>>() {
+            }.getType());
             labelIssueDTOList.forEach(labelIssueRelDTO -> {
                 labelIssueRelDTO.setIssueId(issueId);
                 handleLabelIssue(labelIssueRelDTO);
@@ -1205,7 +1188,8 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleCreateVersionIssueRel(List<VersionIssueRelVO> versionIssueRelVOList, Long projectId, Long issueId) {
         if (versionIssueRelVOList != null && !versionIssueRelVOList.isEmpty()) {
-            handleVersionIssueRel(modelMapper.map(versionIssueRelVOList, new TypeToken<List<VersionIssueRelDTO>>(){}.getType()), projectId, issueId);
+            handleVersionIssueRel(modelMapper.map(versionIssueRelVOList, new TypeToken<List<VersionIssueRelDTO>>() {
+            }.getType()), projectId, issueId);
         }
     }
 
@@ -1260,7 +1244,8 @@ public class IssueServiceImpl implements IssueService {
 
     private void handleCreateComponentIssueRel(List<ComponentIssueRelVO> componentIssueRelVOList, Long projectId, Long issueId, ProjectInfoDTO projectInfoDTO, Boolean assigneeCondition) {
         if (componentIssueRelVOList != null && !componentIssueRelVOList.isEmpty()) {
-            handleComponentIssueRelWithHandleAssignee(modelMapper.map(componentIssueRelVOList, new TypeToken<List<ComponentIssueRelDTO>>(){}.getType()), projectId, issueId, projectInfoDTO, assigneeCondition);
+            handleComponentIssueRelWithHandleAssignee(modelMapper.map(componentIssueRelVOList, new TypeToken<List<ComponentIssueRelDTO>>() {
+            }.getType()), projectId, issueId, projectInfoDTO, assigneeCondition);
         }
     }
 
@@ -1316,8 +1301,10 @@ public class IssueServiceImpl implements IssueService {
             if (!labelIssueRelVOList.isEmpty()) {
                 LabelIssueRelDTO labelIssueRelDTO = new LabelIssueRelDTO();
                 labelIssueRelDTO.setIssueId(issueId);
-                List<LabelIssueRelDTO> originLabels = modelMapper.map(labelIssueRelMapper.select(labelIssueRelDTO), new TypeToken<List<LabelIssueRelDTO>>(){}.getType());
-                List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<List<LabelIssueRelDTO>>(){}.getType());
+                List<LabelIssueRelDTO> originLabels = modelMapper.map(labelIssueRelMapper.select(labelIssueRelDTO), new TypeToken<List<LabelIssueRelDTO>>() {
+                }.getType());
+                List<LabelIssueRelDTO> labelIssueDTOList = modelMapper.map(labelIssueRelVOList, new TypeToken<List<LabelIssueRelDTO>>() {
+                }.getType());
                 List<LabelIssueRelDTO> labelIssueCreateList = labelIssueDTOList.stream().filter(labelIssueRel ->
                         labelIssueRel.getLabelId() != null).collect(Collectors.toList());
                 List<Long> curLabelIds = originLabels.stream().
@@ -1350,7 +1337,8 @@ public class IssueServiceImpl implements IssueService {
         if (versionIssueRelVOList != null && versionType != null) {
             if (!versionIssueRelVOList.isEmpty()) {
                 //归档状态的版本之间的关联不删除
-                List<VersionIssueRelDTO> versionIssueRelDTOS = modelMapper.map(versionIssueRelVOList, new TypeToken<List<VersionIssueRelDTO>>(){}.getType());
+                List<VersionIssueRelDTO> versionIssueRelDTOS = modelMapper.map(versionIssueRelVOList, new TypeToken<List<VersionIssueRelDTO>>() {
+                }.getType());
                 List<VersionIssueRelDTO> versionIssueRelCreate = versionIssueRelDTOS.stream().filter(versionIssueRel ->
                         versionIssueRel.getVersionId() != null).collect(Collectors.toList());
                 List<Long> curVersionIds = versionIssueRelMapper.queryByIssueIdAndProjectIdNoArchivedExceptInfluence(projectId, issueId, versionType);
@@ -1383,7 +1371,8 @@ public class IssueServiceImpl implements IssueService {
     private void handleUpdateComponentIssueRel(List<ComponentIssueRelVO> componentIssueRelVOList, Long projectId, Long issueId) {
         if (componentIssueRelVOList != null) {
             if (!componentIssueRelVOList.isEmpty()) {
-                List<ComponentIssueRelDTO> componentIssueRelDTOList = modelMapper.map(componentIssueRelVOList, new TypeToken<List<ComponentIssueRelDTO>>(){}.getType());
+                List<ComponentIssueRelDTO> componentIssueRelDTOList = modelMapper.map(componentIssueRelVOList, new TypeToken<List<ComponentIssueRelDTO>>() {
+                }.getType());
                 List<ComponentIssueRelDTO> componentIssueRelCreate = componentIssueRelDTOList.stream().filter(componentIssueRel ->
                         componentIssueRel.getComponentId() != null).collect(Collectors.toList());
                 List<Long> curComponentIds = getComponentIssueRel(projectId, issueId).stream().
@@ -1487,7 +1476,7 @@ public class IssueServiceImpl implements IssueService {
                 Map<Long, List<VersionIssueRelDTO>> influenceVersionNames = issueMapper.queryVersionNameByIssueIds(projectId, issueIds, INFLUENCE_RELATION_TYPE).stream().collect(Collectors.groupingBy(VersionIssueRelDTO::getIssueId));
                 Map<Long, List<LabelIssueRelDTO>> labelNames = issueMapper.queryLabelIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(LabelIssueRelDTO::getIssueId));
                 Map<Long, List<ComponentIssueRelDTO>> componentMap = issueMapper.queryComponentIssueByIssueIds(projectId, issueIds).stream().collect(Collectors.groupingBy(ComponentIssueRelDTO::getIssueId));
-                Map<Long, Map<String, String>> foundationCodeValue = issueFeignClient.queryFieldValueWithIssueIds(organizationId, projectId, issueIds).getBody();
+                Map<Long, Map<String, String>> foundationCodeValue = pageFieldService.queryFieldValueWithIssueIdsForAgileExport(organizationId, projectId, issueIds);
                 exportIssues.forEach(exportIssue -> {
                     String closeSprintName = closeSprintNames.get(exportIssue.getIssueId()) != null ? closeSprintNames.get(exportIssue.getIssueId()).stream().map(SprintNameDTO::getSprintName).collect(Collectors.joining(",")) : "";
                     String fixVersionName = fixVersionNames.get(exportIssue.getIssueId()) != null ? fixVersionNames.get(exportIssue.getIssueId()).stream().map(VersionIssueRelDTO::getName).collect(Collectors.joining(",")) : "";
@@ -1524,10 +1513,11 @@ public class IssueServiceImpl implements IssueService {
         String[] fieldNames = fieldMap.get(FIELD_NAMES);
         List<Long> exportIssueIds = issueMapper.selectExportIssueIdsInProgram(programId, searchVO);
         List<FeatureExportDTO> featureExportDTOList = issueMapper.selectExportIssuesInProgram(programId, exportIssueIds);
-        List<FeatureExportVO> featureExportVOList = (featureExportDTOList != null && !featureExportDTOList.isEmpty() ? modelMapper.map(featureExportDTOList, new TypeToken<List<FeatureExportVO>>(){}.getType()) : null);
+        List<FeatureExportVO> featureExportVOList = (featureExportDTOList != null && !featureExportDTOList.isEmpty() ? modelMapper.map(featureExportDTOList, new TypeToken<List<FeatureExportVO>>() {
+        }.getType()) : null);
         if (featureExportVOList != null && !featureExportVOList.isEmpty()) {
-            Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
-            Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+            Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
+            Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
             Map<Long, List<PiExportNameDTO>> closePiIssueMap = issueMapper.queryPiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.groupingBy(PiExportNameDTO::getIssueId));
             Map<Long, PiExportNameDTO> activePiIssueMap = issueMapper.queryActivePiNameByIssueIds(programId, exportIssueIds).stream().collect(Collectors.toMap(PiExportNameDTO::getIssueId, Function.identity()));
             featureExportVOList.forEach(featureExportVO -> {
@@ -1557,9 +1547,9 @@ public class IssueServiceImpl implements IssueService {
         Map<String, String[]> fieldMap = new HashMap<>(2);
         ObjectMapper m = new ObjectMapper();
 
-        Object content = Optional.ofNullable(issueFeignClient
-                .listQuery(projectId, organizationId, ObjectSchemeCode.AGILE_ISSUE)
-                .getBody()).orElseThrow(() -> new CommonException("error.foundation.listQuery"))
+        Object content = Optional.ofNullable(objectSchemeFieldService
+                .listQuery(projectId, organizationId, ObjectSchemeCode.AGILE_ISSUE))
+                .orElseThrow(() -> new CommonException("error.foundation.listQuery"))
                 .get("content");
 
         List<Object> contentList = m.convertValue(content, List.class);
@@ -1651,10 +1641,10 @@ public class IssueServiceImpl implements IssueService {
             Long newIssueId;
             Long objectVersionNumber;
             issueDetailDTO.setSummary(copyConditionVO.getSummary());
-            IssueTypeVO issueTypeVO = issueFeignClient.queryIssueTypeById(ConvertUtil.getOrganizationId(projectId), issueDetailDTO.getIssueTypeId()).getBody();
+            IssueTypeVO issueTypeVO = issueTypeService.queryById(ConvertUtil.getOrganizationId(projectId), issueDetailDTO.getIssueTypeId());
             if (issueTypeVO.getTypeCode().equals(SUB_TASK)) {
                 IssueSubCreateVO issueSubCreateVO = issueAssembler.issueDtoToIssueSubCreateDto(issueDetailDTO);
-                IssueSubVO newIssue = stateMachineService.createSubIssue(issueSubCreateVO);
+                IssueSubVO newIssue = stateMachineClientService.createSubIssue(issueSubCreateVO);
                 newIssueId = newIssue.getIssueId();
                 objectVersionNumber = newIssue.getObjectVersionNumber();
             } else {
@@ -1677,7 +1667,7 @@ public class IssueServiceImpl implements IssueService {
                 if ("program".equals(applyType)) {
                     issueCreateVO.setProgramId(projectId);
                 }
-                IssueVO newIssue = stateMachineService.createIssue(issueCreateVO, applyType);
+                IssueVO newIssue = stateMachineClientService.createIssue(issueCreateVO, applyType);
                 newIssueId = newIssue.getIssueId();
                 objectVersionNumber = newIssue.getObjectVersionNumber();
             }
@@ -1723,7 +1713,7 @@ public class IssueServiceImpl implements IssueService {
     private void copySubIssue(IssueDTO issueDTO, Long newIssueId, Long projectId) {
         IssueDetailDTO subIssueDetailDTO = issueMapper.queryIssueDetail(issueDTO.getProjectId(), issueDTO.getIssueId());
         IssueSubCreateVO issueSubCreateVO = issueAssembler.issueDtoToSubIssueCreateDto(subIssueDetailDTO, newIssueId);
-        IssueSubVO newSubIssue = stateMachineService.createSubIssue(issueSubCreateVO);
+        IssueSubVO newSubIssue = stateMachineClientService.createSubIssue(issueSubCreateVO);
         //复制剩余工作量并记录日志
         if (issueDTO.getRemainingTime() != null) {
             IssueUpdateVO subIssueUpdateVO = new IssueUpdateVO();
@@ -1742,7 +1732,8 @@ public class IssueServiceImpl implements IssueService {
 
     private void batchCreateCopyIssueLink(Boolean condition, Long issueId, Long newIssueId, Long projectId) {
         if (condition) {
-            List<IssueLinkDTO> issueLinkDTOList = modelMapper.map(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId, false), new TypeToken<List<IssueLinkDTO>>(){}.getType());
+            List<IssueLinkDTO> issueLinkDTOList = modelMapper.map(issueLinkMapper.queryIssueLinkByIssueId(issueId, projectId, false), new TypeToken<List<IssueLinkDTO>>() {
+            }.getType());
             issueLinkDTOList.forEach(issueLinkDTO -> {
                 IssueLinkDTO copy = new IssueLinkDTO();
                 if (issueLinkDTO.getIssueId().equals(issueId)) {
@@ -1907,7 +1898,8 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<IssueInfoVO> listByIssueIds(Long projectId, List<Long> issueIds) {
-        return modelMapper.map(issueMapper.listByIssueIds(projectId, issueIds), new TypeToken<List<IssueInfoVO>>(){}.getType());
+        return modelMapper.map(issueMapper.listByIssueIds(projectId, issueIds), new TypeToken<List<IssueInfoVO>>() {
+        }.getType());
     }
 
     @Override
@@ -1922,8 +1914,8 @@ public class IssueServiceImpl implements IssueService {
     }
 
     private PageInfo<IssueListTestVO> handleIssueListTestDoToDto(PageInfo<IssueDTO> issueDOPage, Long organizationId, Long projectId) {
-        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         Map<Long, IssueTypeVO> issueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
         return PageUtil.buildPageInfoWithPageInfoList(issueDOPage, issueAssembler.issueDoToIssueTestListDto(issueDOPage.getList(), priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
@@ -1986,7 +1978,8 @@ public class IssueServiceImpl implements IssueService {
     public List<IssueCreationNumVO> queryIssueNumByTimeSlot(Long projectId, String typeCode, Integer timeSlot) {
         //h2 不支持dateSub函数，这个函数不能自定义
         Date date = MybatisFunctionTestUtil.dataSubFunction(new Date(), timeSlot);
-        return modelMapper.map(issueMapper.queryIssueNumByTimeSlot(projectId, typeCode, date), new TypeToken<List<IssueCreationNumVO>>(){}.getType());
+        return modelMapper.map(issueMapper.queryIssueNumByTimeSlot(projectId, typeCode, date), new TypeToken<List<IssueCreationNumVO>>() {
+        }.getType());
     }
 
     @Override
@@ -2099,7 +2092,7 @@ public class IssueServiceImpl implements IssueService {
         return sql.toString();
     }
 
-    private void getDoneIds(Map<Long, StatusMapVO> statusMapDTOMap, List<Long> doneIds) {
+    private void getDoneIds(Map<Long, StatusVO> statusMapDTOMap, List<Long> doneIds) {
         for (Long key : statusMapDTOMap.keySet()) {
             if ("done".equals(statusMapDTOMap.get(key).getType())) {
                 doneIds.add(key);
@@ -2181,12 +2174,12 @@ public class IssueServiceImpl implements IssueService {
         Long issueTypeId = issueDOList.get(0).getIssueTypeId();
         //获取状态机id
         Long organizationId = ConvertUtil.getOrganizationId(projectId);
-        Long stateMachineId = issueFeignClient.queryStateMachineId(projectId, SchemeApplyType.TEST, issueTypeId).getBody();
+        Long stateMachineId = projectConfigService.queryStateMachineId(projectId, SchemeApplyType.TEST, issueTypeId);
         if (stateMachineId == null) {
             throw new CommonException(ERROR_ISSUE_STATE_MACHINE_NOT_FOUND);
         }
         //获取初始状态
-        Long initStatusId = instanceFeignClient.queryInitStatusId(organizationId, stateMachineId).getBody();
+        Long initStatusId = instanceService.queryInitStatusId(organizationId, stateMachineId);
 
         ProjectInfoDTO projectInfoDTO = new ProjectInfoDTO();
         projectInfoDTO.setProjectId(projectId);
@@ -2293,14 +2286,14 @@ public class IssueServiceImpl implements IssueService {
                 PageUtil.sortToSql(pageRequest.getSort())).doSelectPageInfo(() ->
                 issueMapper.selectFeatureIdsByPage(programId, searchVO)
         );
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         return PageUtil.buildPageInfoWithPageInfoList(featureCommonDOPage, featureCommonDOPage.getList() != null && !featureCommonDOPage.getList().isEmpty() ? featureCommonAssembler.featureCommonDTOToVO(issueMapper.selectFeatureList(programId, featureCommonDOPage.getList()), statusMapDTOMap, issueTypeDTOMap) : new ArrayList<>());
     }
 
     @Override
     public List<FeatureCommonVO> queryFeatureListByPiId(Long programId, Long organizationId, Long piId) {
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
         List<FeatureCommonVO> featureCommonVOS = modelMapper.map(issueMapper.selectFeatureByPiId(programId, piId), new TypeToken<List<FeatureCommonVO>>() {
         }.getType());
         for (FeatureCommonVO featureCommon : featureCommonVOS) {

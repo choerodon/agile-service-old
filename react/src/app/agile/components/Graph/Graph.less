@@ -1,0 +1,64 @@
+.graph {
+  &-container {
+    border: 1px solid #E4E4E4;
+    border-top: none;
+    overflow: hidden;
+  }
+  &-toolbar {
+    background: #F2F2F2;
+    height: 50px;
+    padding: 8px;
+    border: 1px solid #E4E4E4;
+    &-button {
+      margin-right: 15px;
+    }
+    &-popover {
+      width: 290px;
+      height: 120px;
+    }
+    &-checkbox {
+      float: right;
+      line-height: 34px;
+    }
+  }
+  &-popover {
+    &-select {
+      width: 290px;
+    }
+    &-tip {
+      font-size: 12px;
+      opacity: 0.8;
+      margin: 5px 0;
+    }
+    &-button {
+      margin-top: 5px;
+      float: right;
+    }
+    &-create {
+      margin-right: 10px;
+    }
+  }
+  &-card {
+    position: absolute;
+    top: 206px;
+    right: 40px;
+    width: 280px;
+    height: 250px;
+    background-color: #FFFFFF;
+    border-radius: 3px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.2);
+    padding: 20px;
+  }
+
+  .outline-container {
+    position: absolute;
+    z-index: 1;
+    overflow: hidden;
+    top: 70px;
+    right: 20px;
+    width: 160px;
+    height: 120px;
+    background: #FFFFFF;
+    border: 2px solid lightgray;
+  }
+}

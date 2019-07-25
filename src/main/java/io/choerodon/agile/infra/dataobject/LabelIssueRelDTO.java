@@ -3,7 +3,7 @@ package io.choerodon.agile.infra.dataobject;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 import io.choerodon.mybatis.entity.BaseDTO;
 
 /**

@@ -1,24 +1,25 @@
 package io.choerodon.agile.infra.dataobject;
 
+import io.choerodon.mybatis.entity.BaseDTO;
+
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
- * Created by HuangFuqiang@choerodon.io on 2018/6/26.
- * Email: fuqianghuang01@gmail.com
+ * @author peng.jiang,dinghuang123@gmail.com
  */
-public class StatusDTO {
-
+@Table(name = "fd_status")
+public class StatusDTO extends BaseDTO {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-
-    private Long projectId;
-
-    private String categoryCode;
-
-    private String categoryName;
-
-    private Integer issueNumCount;
-
-    private Long objectVersionNumber;
+    private String code;
+    private String description;
+    private String type;
+    private Long organizationId;
 
     public Long getId() {
         return id;
@@ -36,43 +37,35 @@ public class StatusDTO {
         this.name = name;
     }
 
-    public Long getProjectId() {
-        return projectId;
+    public String getDescription() {
+        return description;
     }
 
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getCategoryCode() {
-        return categoryCode;
+    public String getType() {
+        return type;
     }
 
-    public void setCategoryCode(String categoryCode) {
-        this.categoryCode = categoryCode;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public Long getOrganizationId() {
+        return organizationId;
     }
 
-    public String getCategoryName() {
-        return categoryName;
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
-    public void setIssueNumCount(Integer issueNumCount) {
-        this.issueNumCount = issueNumCount;
+    public String getCode() {
+        return code;
     }
 
-    public Integer getIssueNumCount() {
-        return issueNumCount;
-    }
-
-    public Long getObjectVersionNumber() {
-        return objectVersionNumber;
-    }
-
-    public void setObjectVersionNumber(Long objectVersionNumber) {
-        this.objectVersionNumber = objectVersionNumber;
+    public void setCode(String code) {
+        this.code = code;
     }
 }

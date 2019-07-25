@@ -3,13 +3,12 @@ package io.choerodon.agile.app.assembler;
 import io.choerodon.agile.api.vo.IssueLinkVO;
 import io.choerodon.agile.api.vo.IssueTypeVO;
 import io.choerodon.agile.api.vo.PriorityVO;
-import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.api.vo.StatusVO;
 import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
+import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.IssueLinkDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
-import io.choerodon.agile.infra.mapper.IssueMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,7 +34,7 @@ public class IssueLinkAssembler extends AbstractAssembler {
         if (!issueLinkDTOList.isEmpty()) {
             Map<Long, IssueTypeVO> testIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.TEST);
             Map<Long, IssueTypeVO> agileIssueTypeDTOMap = ConvertUtil.getIssueTypeMap(projectId, SchemeApplyType.AGILE);
-            Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+            Map<Long, StatusVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
             Map<Long, PriorityVO> priorityDTOMap = ConvertUtil.getIssuePriorityMap(projectId);
             List<Long> assigneeIds = issueLinkDTOList.stream().filter(issue -> issue.getAssigneeId() != null && !Objects.equals(issue.getAssigneeId(), 0L)).map(IssueLinkDTO::getAssigneeId).distinct().collect(Collectors.toList());
             Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(assigneeIds, true);
@@ -49,7 +48,7 @@ public class IssueLinkAssembler extends AbstractAssembler {
                 } else {
                     issueLinkVO.setIssueTypeVO(agileIssueTypeDTOMap.get(issueLinkDO.getIssueTypeId()));
                 }
-                issueLinkVO.setStatusMapVO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
+                issueLinkVO.setStatusVO(statusMapDTOMap.get(issueLinkDO.getStatusId()));
                 issueLinkVO.setPriorityVO(priorityDTOMap.get(issueLinkDO.getPriorityId()));
                 issueLinkVO.setAssigneeName(assigneeName);
                 issueLinkVO.setImageUrl(imageUrl);

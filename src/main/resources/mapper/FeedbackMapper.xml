@@ -19,7 +19,7 @@
           fb.email,
           fb.last_update_date,
           fb.object_version_number
-        from feedback fb, agile_lookup_value lv, agile_lookup_value lv2, agile_project_info pi
+        from feedback fb, lookup_value lv, lookup_value lv2, agile_project_info pi
         where fb.project_id = #{projectId}
             and fb.type = lv.value_code
             and fb.status = lv2.value_code
@@ -57,7 +57,7 @@
           fb.creation_date,
           fb.last_update_date,
           fb.object_version_number
-        from feedback fb, agile_lookup_value lv, agile_lookup_value lv2, agile_project_info pi
+        from feedback fb, lookup_value lv, lookup_value lv2, agile_project_info pi
         where fb.project_id = #{projectId}
           and fb.id = #{id}
           and fb.type = lv.value_code

@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.api.vo.*;
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -56,7 +56,7 @@ public class IssueComponentDetailDTO {
 
     private IssueTypeVO issueTypeVO;
 
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     private PriorityVO priorityVO;
 
@@ -228,11 +228,11 @@ public class IssueComponentDetailDTO {
         this.issueTypeVO = issueTypeVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 

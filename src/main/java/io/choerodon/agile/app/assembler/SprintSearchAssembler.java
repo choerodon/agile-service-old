@@ -20,7 +20,7 @@ public class SprintSearchAssembler extends AbstractAssembler {
     @Autowired
     private IssueSearchAssembler issueSearchAssembler;
 
-    public SprintSearchVO dtoToVO(SprintSearchDTO sprintSearchDTO, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    public SprintSearchVO dtoToVO(SprintSearchDTO sprintSearchDTO, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         if (sprintSearchDTO == null) {
             return null;
         }
@@ -33,7 +33,7 @@ public class SprintSearchAssembler extends AbstractAssembler {
         return sprintSearchVO;
     }
 
-    public List<SprintSearchVO> dtoListToVO(List<SprintSearchDTO> sprintSearchDTOS, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    public List<SprintSearchVO> dtoListToVO(List<SprintSearchDTO> sprintSearchDTOS, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<SprintSearchVO> sprintSearchList = new ArrayList<>(sprintSearchDTOS.size());
         sprintSearchDTOS.forEach(sprintSearchDO -> sprintSearchList.add(dtoToVO(sprintSearchDO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap)));
         return sprintSearchList;

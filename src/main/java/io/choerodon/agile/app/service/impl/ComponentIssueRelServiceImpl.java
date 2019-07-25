@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.ComponentIssueRelDTO;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.ComponentIssueRelService;
@@ -8,7 +8,6 @@ import io.choerodon.agile.infra.mapper.ComponentIssueRelMapper;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;

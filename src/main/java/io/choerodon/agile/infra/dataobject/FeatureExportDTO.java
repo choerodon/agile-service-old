@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.agile.api.vo.IssueTypeVO;
-import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.api.vo.StatusVO;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -48,7 +48,7 @@ public class FeatureExportDTO {
 
     private String acceptanceCritera;
 
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     private IssueTypeVO issueTypeVO;
 
@@ -128,11 +128,11 @@ public class FeatureExportDTO {
         this.acceptanceCritera = acceptanceCritera;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 

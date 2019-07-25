@@ -1,8 +1,8 @@
 package io.choerodon.agile.api.vo;
 
 
-import io.choerodon.agile.infra.common.annotation.Update;
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.annotation.Update;
+import io.choerodon.agile.infra.utils.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.math.BigDecimal;

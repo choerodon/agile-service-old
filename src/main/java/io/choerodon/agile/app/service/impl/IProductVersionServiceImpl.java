@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.app.service.IProductVersionService;
-import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.annotation.DataLog;
 import io.choerodon.agile.infra.dataobject.ProductVersionDTO;
 import io.choerodon.agile.infra.dataobject.VersionIssueDTO;
 import io.choerodon.agile.infra.mapper.ProductVersionMapper;

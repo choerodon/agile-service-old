@@ -6,10 +6,10 @@ import io.choerodon.agile.api.vo.RoleAssignmentSearchVO;
 import io.choerodon.agile.api.vo.RoleVO;
 import io.choerodon.agile.api.vo.UserVO;
 import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.agile.infra.dataobject.UserDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
-import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +28,11 @@ import java.util.Map;
 @Component
 public class UserServiceImpl implements UserService {
 
-    private final UserFeignClient userFeignClient;
+    private final IamFeignClient iamFeignClient;
 
     @Autowired
-    public UserServiceImpl(UserFeignClient userFeignClient) {
-        this.userFeignClient = userFeignClient;
+    public UserServiceImpl(IamFeignClient iamFeignClient) {
+        this.iamFeignClient = iamFeignClient;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         if (userId == null || userId == 0) {
             return new UserDTO();
         } else {
-            UserDTO userDTO = userFeignClient.query(customUserDetails.getOrganizationId(), userId).getBody();
+            UserDTO userDTO = iamFeignClient.query(customUserDetails.getOrganizationId(), userId).getBody();
             if (withId) {
                 userDTO.setRealName(userDTO.getLoginName() + userDTO.getRealName());
                 return userDTO;
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         if (!assigneeIdList.isEmpty()) {
             Long[] assigneeIds = new Long[assigneeIdList.size()];
             assigneeIdList.toArray(assigneeIds);
-            List<UserDTO> userDTOS = userFeignClient.listUsersByIds(assigneeIds, false).getBody();
+            List<UserDTO> userDTOS = iamFeignClient.listUsersByIds(assigneeIds, false).getBody();
             if (withLoginName) {
                 userDTOS.forEach(userDO -> userMessageMap.put(userDO.getId(), new UserMessageDTO(userDO.getLoginName() + userDO.getRealName(), userDO.getLoginName(), userDO.getRealName(), userDO.getImageUrl(), userDO.getEmail())));
             } else {
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserVO> queryUsersByNameAndProjectId(Long projectId, String name) {
-        ResponseEntity<PageInfo<UserVO>> userList = userFeignClient.list(projectId, name);
+        ResponseEntity<PageInfo<UserVO>> userList = iamFeignClient.list(projectId, name);
         if (userList != null) {
             return userList.getBody().getList();
         } else {
@@ -82,30 +82,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ProjectVO queryProject(Long projectId) {
-        return userFeignClient.queryProject(projectId).getBody();
+        return iamFeignClient.queryProject(projectId).getBody();
     }
 
     @Override
     public List<RoleVO> listRolesWithUserCountOnProjectLevel(Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO) {
-        ResponseEntity<List<RoleVO>> roles = userFeignClient.listRolesWithUserCountOnProjectLevel(sourceId, roleAssignmentSearchVO);
+        ResponseEntity<List<RoleVO>> roles = iamFeignClient.listRolesWithUserCountOnProjectLevel(sourceId, roleAssignmentSearchVO);
         return roles != null ? roles.getBody() : new ArrayList<>();
     }
 
     @Override
     public PageInfo<UserVO> pagingQueryUsersByRoleIdOnProjectLevel(int page, int size, Long roleId, Long sourceId, RoleAssignmentSearchVO roleAssignmentSearchVO) {
-        ResponseEntity<PageInfo<UserVO>> users = userFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(page, size, roleId, sourceId, roleAssignmentSearchVO);
+        ResponseEntity<PageInfo<UserVO>> users = iamFeignClient.pagingQueryUsersByRoleIdOnProjectLevel(page, size, roleId, sourceId, roleAssignmentSearchVO);
         return users != null ? users.getBody() : new PageInfo<>(new ArrayList<>());
     }
 
     @Override
     public List<UserDTO> listUsersByIds(Long[] ids) {
-        ResponseEntity<List<UserDTO>> users = userFeignClient.listUsersByIds(ids, false);
+        ResponseEntity<List<UserDTO>> users = iamFeignClient.listUsersByIds(ids, false);
         return users != null ? users.getBody() : new ArrayList<>();
     }
 
     @Override
     public ProjectVO getGroupInfoByEnableProject(Long organizationId, Long projectId) {
-        ResponseEntity<ProjectVO> projectDTOResponseEntity = userFeignClient.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
+        ResponseEntity<ProjectVO> projectDTOResponseEntity = iamFeignClient.getGroupInfoByEnableProject(ConvertUtil.getOrganizationId(projectId), projectId);
         return projectDTOResponseEntity != null ? projectDTOResponseEntity.getBody() : null;
     }
 

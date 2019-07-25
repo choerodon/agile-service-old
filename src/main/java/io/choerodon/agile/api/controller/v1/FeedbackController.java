@@ -5,7 +5,7 @@ import com.github.pagehelper.PageInfo;
 import io.choerodon.agile.api.vo.FeedbackUpdateVO;
 import io.choerodon.agile.api.vo.SearchVO;
 import io.choerodon.agile.app.service.FeedbackService;
-import io.choerodon.agile.infra.common.utils.VerifyUpdateUtil;
+import io.choerodon.agile.infra.utils.VerifyUpdateUtil;
 import io.choerodon.agile.infra.dataobject.FeedbackDTO;
 import io.choerodon.base.annotation.Permission;
 import io.choerodon.base.constant.PageConstant;

@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class IssueSearchAssembler extends AbstractAssembler {
 
-    public List<IssueSearchVO> dtoListToVO(List<IssueSearchDTO> issueSearchDTOList, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    public List<IssueSearchVO> dtoListToVO(List<IssueSearchDTO> issueSearchDTOList, Map<Long, UserMessageDTO> usersMap, Map<Long, PriorityVO> priorityMap, Map<Long, StatusVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         if (issueSearchDTOList != null && !issueSearchDTOList.isEmpty()) {
             List<IssueSearchVO> issueSearchVOList = new ArrayList<>(issueSearchDTOList.size());
             issueSearchDTOList.forEach(issueSearch -> {
@@ -31,7 +31,7 @@ public class IssueSearchAssembler extends AbstractAssembler {
                 issueSearch.setAssigneeLoginName(assigneeLoginName);
                 issueSearch.setAssigneeRealName(assigneeRealName);
                 issueSearch.setPriorityVO(priorityMap.get(issueSearch.getPriorityId()));
-                issueSearch.setStatusMapVO(statusMapDTOMap.get(issueSearch.getStatusId()));
+                issueSearch.setStatusVO(statusMapDTOMap.get(issueSearch.getStatusId()));
                 issueSearch.setIssueTypeVO(issueTypeDTOMap.get(issueSearch.getIssueTypeId()));
                 issueSearchVOList.add(toTarget(issueSearch, IssueSearchVO.class));
             });

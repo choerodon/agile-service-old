@@ -22,8 +22,8 @@
 			alv.description AS alv_description,
 			alv.object_version_number AS alv_object_version_number
 		FROM
-			agile_lookup_type alt
-		LEFT JOIN agile_lookup_value alv ON alt.type_code = alv.type_code
+			lookup_type alt
+		LEFT JOIN lookup_value alv ON alt.type_code = alv.type_code
 		WHERE
 			alt.type_code = #{typeCode}
 	</select>
@@ -32,7 +32,7 @@
 		SELECT
 			NAME
 		FROM
-			agile_lookup_value
+			lookup_value
 		WHERE
 			value_code = #{valueCode}
 	</select>

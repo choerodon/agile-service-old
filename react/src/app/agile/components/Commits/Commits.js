@@ -44,7 +44,7 @@ class Commits extends Component {
   loadCommits() {
     const { issueId } = this.props;
     this.setState({ loading: true });
-    axios.get(`/devops/v1/project/${AppState.currentMenuType.id}/issue/${issueId}/commit/list`)
+    axios.get(`/devops/v1/project/${AppState.currentMenuType.id}/agile/${issueId}/commit/list`)
       .then((res) => {
         this.setState({
           commits: res,
@@ -193,7 +193,7 @@ class Commits extends Component {
           }}
           title={`查看问题“ ${this.props.issueNum} ”关联的分支`}
           description="您可以在此查看该问题关联的所有分支、提交及合并请求状态，及为某分支创建合并请求。"
-          link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/issue/manage-branch/"
+          link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/agile/manage-branch/"
         >
           <Table
             filterBar={false}

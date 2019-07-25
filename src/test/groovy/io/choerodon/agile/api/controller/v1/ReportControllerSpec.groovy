@@ -6,8 +6,8 @@ import io.choerodon.agile.api.vo.*
 import io.choerodon.agile.app.service.IssueService
 import io.choerodon.agile.app.service.ReportService
 import io.choerodon.agile.app.service.SprintService
-import io.choerodon.agile.app.service.impl.StateMachineServiceImpl
-import io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil
+import io.choerodon.agile.app.service.impl.StateMachineClientServiceImpl
+import io.choerodon.agile.infra.utils.MybatisFunctionTestUtil
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.mapper.*
 import com.github.pagehelper.PageInfo
@@ -55,7 +55,7 @@ class ReportControllerSpec extends Specification {
     private IssueService issueService
 
     @Autowired
-    private StateMachineServiceImpl stateMachineService
+    private StateMachineClientServiceImpl stateMachineService
 
     @Autowired
     private BoardColumnMapper boardColumnMapper

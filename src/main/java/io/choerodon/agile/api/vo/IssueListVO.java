@@ -1,6 +1,6 @@
 package io.choerodon.agile.api.vo;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
@@ -86,7 +86,7 @@ public class IssueListVO implements Serializable {
     private PriorityVO priorityVO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeVO issueTypeVO;
@@ -299,11 +299,11 @@ public class IssueListVO implements Serializable {
         return priorityVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 

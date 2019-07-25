@@ -3,7 +3,7 @@ package io.choerodon.agile.app.assembler;
 import io.choerodon.agile.api.vo.FeatureCommonVO;
 import io.choerodon.agile.api.vo.IssueTypeVO;
 import io.choerodon.agile.api.vo.PiNameVO;
-import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.api.vo.StatusVO;
 import io.choerodon.agile.infra.dataobject.FeatureCommonDTO;
 import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
@@ -37,7 +37,7 @@ public class FeatureCommonAssembler {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
 
-    public List<FeatureCommonVO> featureCommonDTOToVO(List<FeatureCommonDTO> featureCommonDTOList, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    public List<FeatureCommonVO> featureCommonDTOToVO(List<FeatureCommonDTO> featureCommonDTOList, Map<Long, StatusVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<FeatureCommonVO> result = new ArrayList<>();
         List<Long> reporterIds = new ArrayList<>();
         reporterIds.addAll(featureCommonDTOList.stream().filter(issue -> issue.getReporterId() != null && !Objects.equals(issue.getReporterId(), 0L)).map(FeatureCommonDTO::getReporterId).collect(Collectors.toSet()));
@@ -46,7 +46,7 @@ public class FeatureCommonAssembler {
         featureCommonDTOList.forEach(featureCommonDO -> {
             FeatureCommonVO featureCommonVO = modelMapper.map(featureCommonDO, FeatureCommonVO.class);
             featureCommonVO.setPiNameVOList(modelMapper.map(featureCommonDO.getPiNameDTOList(), new TypeToken<List<PiNameVO>>(){}.getType()));
-            featureCommonVO.setStatusMapVO(statusMapDTOMap.get(featureCommonDO.getStatusId()));
+            featureCommonVO.setStatusVO(statusMapDTOMap.get(featureCommonDO.getStatusId()));
             featureCommonVO.setIssueTypeVO(issueTypeDTOMap.get(featureCommonDO.getIssueTypeId()));
             UserMessageDTO userMessageDTO = userMessageDOMap.get(featureCommonDO.getReporterId());
             if (userMessageDTO != null) {

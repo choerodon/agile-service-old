@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.StatusMapper">
+
+    <select id="queryById" resultType="io.choerodon.agile.infra.dataobject.StatusDTO">
+        SELECT *
+        FROM fd_status
+        WHERE organization_id = #{organizationId}
+        and id = #{id}
+    </select>
+
+    <resultMap id="statusListMap" type="io.choerodon.agile.infra.dataobject.StatusWithInfoDTO">
+        <id property="id" column="st_id"/>
+        <id property="name" column="st_name"/>
+        <id property="description" column="st_description"/>
+        <id property="type" column="st_type"/>
+        <id property="code" column="st_code"/>
+        <id property="organizationId" column="st_organization_id"/>
+        <id property="objectVersionNumber" column="st_object_version_number"/>
+        <collection property="stateMachineInfoList" autoMapping="true"
+                    ofType="io.choerodon.agile.infra.dataobject.StateMachineInfoDTO">
+            <id property="stateMachineId" column="smddn_state_machine_id"/>
+            <id property="stateMachineName" column="smddn_name"/>
+            <id property="stateMachineStatus" column="smddn_status"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectStatusIds" resultType="java.lang.Long">
+        select
+        st.id
+        from fd_status st
+        where st.organization_id = #{organizationId}
+        <if test="statusSearchVO.name != null">
+            AND st.name LIKE concat('%',#{statusSearchVO.name},'%')
+        </if>
+        <if test="statusSearchVO.type != null">
+            AND st.type LIKE concat('%',#{statusSearchVO.type},'%')
+        </if>
+        <if test="statusSearchVO.description != null">
+            AND st.description LIKE concat('%',#{statusSearchVO.description},'%')
+        </if>
+        <if test="statusSearchVO.param != null">
+            AND ( st.name LIKE concat('%',#{statusSearchVO.param},'%')
+            OR st.description LIKE concat('%',#{statusSearchVO.param},'%')
+            )
+        </if>
+    </select>
+
+    <select id="queryStatusList" resultMap="statusListMap">
+        select
+        st.id as st_id,
+        st.name as st_name,
+        st.description as st_description,
+        st.code as st_code,
+        st.type as st_type,
+        st.organization_id as st_organization_id,
+        st.object_version_number as st_object_version_number,
+        smddn.state_machine_id as smddn_state_machine_id,
+        smddn.name as smddn_name,
+        smddn.status as smddn_status
+        from fd_status st
+        left join (select smn.status_id, smn.state_machine_id, sm.name, sm.status
+        from fd_state_machine_node smn, state_machine sm
+        where smn.state_machine_id = sm.id
+        union all
+        select smnd.status_id, smnd.state_machine_id, sm.name, sm.status
+        from fd_state_machine_node_draft smnd, state_machine sm
+        where smnd.state_machine_id = sm.id) smddn on st.id = smddn.status_id
+        where st.organization_id = #{organizationId}
+        and st.id in
+        <foreach collection="statusIds" item="statusId"
+                 open="(" close=")" separator=",">
+            #{statusId}
+        </foreach>
+        order by st.id desc
+    </select>
+
+    <!--<select id="fulltextSearch" resultType="io.choerodon.statemachine.domain.Status">-->
+    <!--SELECT * FROM status-->
+    <!--WHERE 1=1-->
+    <!--<if test="status.organizationId != null">-->
+    <!--AND organization_id = #{status.organizationId}-->
+    <!--</if>-->
+    <!--<if test="status.name != null">-->
+    <!--AND name LIKE concat('%',#{status.name},'%')-->
+    <!--</if>-->
+    <!--<if test="status.type != null">-->
+    <!--AND type LIKE concat('%',#{status.type},'%')-->
+    <!--</if>-->
+    <!--<if test="status.description != null">-->
+    <!--AND description = #{status.description}-->
+    <!--</if>-->
+    <!--<if test="param != null">-->
+    <!--AND ( name LIKE concat('%',#{param},'%')-->
+    <!--OR description LIKE concat('%',#{param},'%')-->
+    <!--)-->
+    <!--</if>-->
+    <!--</select>-->
+
+    <select id="batchStatusGet" resultType="io.choerodon.agile.infra.dataobject.StatusDTO">
+        select * from fd_status where id in
+        <foreach collection="ids" item="id"
+                 open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        order by id
+    </select>
+
+    <select id="queryByStateMachineIds" resultType="io.choerodon.agile.infra.dataobject.StatusDTO">
+        SELECT *
+        FROM fd_status
+        WHERE organization_id = #{organizationId}
+        AND id IN(
+        SELECT
+        smn.status_id
+        FROM fd_state_machine_node smn
+        WHERE smn.state_machine_id IN
+        <foreach item="item" index="index" collection="stateMachineIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        )
+    </select>
+</mapper>

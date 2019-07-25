@@ -3,23 +3,18 @@ package io.choerodon.agile.app.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Ordering;
-import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.api.validator.SprintValidator;
+import io.choerodon.agile.api.vo.*;
 import io.choerodon.agile.app.assembler.*;
-import io.choerodon.agile.app.service.IssueAccessDataService;
-import io.choerodon.agile.app.service.SprintService;
-import io.choerodon.agile.app.service.WorkCalendarRefService;
-import io.choerodon.agile.infra.common.aspect.DataLogRedisUtil;
-import io.choerodon.agile.infra.dataobject.SprintConvertDTO;
-import io.choerodon.agile.infra.common.enums.SchemeApplyType;
-import io.choerodon.agile.infra.common.utils.DateUtil;
-import io.choerodon.agile.infra.common.utils.PageUtil;
-import io.choerodon.agile.infra.common.utils.RankUtil;
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.app.service.*;
+import io.choerodon.agile.infra.aspect.DataLogRedisUtil;
 import io.choerodon.agile.infra.dataobject.*;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.enums.SchemeApplyType;
 import io.choerodon.agile.infra.mapper.*;
-import io.choerodon.agile.app.service.UserService;
+import io.choerodon.agile.infra.utils.DateUtil;
+import io.choerodon.agile.infra.utils.PageUtil;
+import io.choerodon.agile.infra.utils.RankUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 import io.choerodon.base.domain.PageRequest;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
@@ -80,8 +75,6 @@ public class SprintServiceImpl implements SprintService {
     private WorkCalendarRefService workCalendarRefService;
     @Autowired
     private IssueStatusMapper issueStatusMapper;
-    @Autowired
-    private IssueFeignClient issueFeignClient;
 
     @Autowired
     private PiMapper piMapper;
@@ -94,7 +87,14 @@ public class SprintServiceImpl implements SprintService {
 
     @Autowired
     private IssueAccessDataService issueAccessDataService;
-
+    @Autowired
+    private PriorityService priorityService;
+    @Autowired
+    private IssueTypeService issueTypeService;
+    @Autowired
+    private ProjectConfigService projectConfigService;
+    @Autowired
+    private StatusService statusService;
 
     private static final String ADVANCED_SEARCH_ARGS = "advancedSearchArgs";
     private static final String SPRINT_DATA = "sprintData";
@@ -231,10 +231,10 @@ public class SprintServiceImpl implements SprintService {
                 StringUtil.cast(searchParamMap.get(ADVANCED_SEARCH_ARGS)), filterSql, assigneeFilterIds);
         List<SprintSearchVO> sprintSearches = new ArrayList<>();
         BackLogIssueVO backLogIssueVO = new BackLogIssueVO();
-        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         setStatusIsCompleted(projectId, statusMapDTOMap);
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
         if (issueIdSprintIdVOS != null && !issueIdSprintIdVOS.isEmpty()) {
             handleSprintIssueData(issueIdSprintIdVOS, issueIds, sprintSearches, backLogIssueVO, projectId, priorityMap, statusMapDTOMap, issueTypeDTOMap);
         } else {
@@ -245,7 +245,7 @@ public class SprintServiceImpl implements SprintService {
         return backlog;
     }
 
-    private void setStatusIsCompleted(Long projectId, Map<Long, StatusMapVO> statusMapDTOMap) {
+    private void setStatusIsCompleted(Long projectId, Map<Long, StatusVO> statusMapDTOMap) {
         IssueStatusDTO issueStatusDTO = new IssueStatusDTO();
         issueStatusDTO.setProjectId(projectId);
         Map<Long, Boolean> statusCompletedMap = issueStatusMapper.select(issueStatusDTO).stream().collect(Collectors.toMap(IssueStatusDTO::getStatusId, IssueStatusDTO::getCompleted));
@@ -271,7 +271,7 @@ public class SprintServiceImpl implements SprintService {
         }
     }
 
-    private void handleSprintIssueData(List<IssueIdSprintIdVO> issueIdSprintIdVOS, List<Long> issueIds, List<SprintSearchVO> sprintSearches, BackLogIssueVO backLogIssueVO, Long projectId, Map<Long, PriorityVO> priorityMap, Map<Long, StatusMapVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
+    private void handleSprintIssueData(List<IssueIdSprintIdVO> issueIdSprintIdVOS, List<Long> issueIds, List<SprintSearchVO> sprintSearches, BackLogIssueVO backLogIssueVO, Long projectId, Map<Long, PriorityVO> priorityMap, Map<Long, StatusVO> statusMapDTOMap, Map<Long, IssueTypeVO> issueTypeDTOMap) {
         List<Long> allIssueIds = issueIdSprintIdVOS.stream().map(IssueIdSprintIdVO::getIssueId).collect(Collectors.toList());
         //查询出所有经办人用户id
         Set<Long> assigneeIds = sprintMapper.queryAssigneeIdsByIssueIds(projectId, allIssueIds);
@@ -283,8 +283,8 @@ public class SprintServiceImpl implements SprintService {
             sprintSearchDTO.setAssigneeIssueDTOList(sprintMapper.queryAssigneeIssueByActiveSprintId(projectId, sprintSearchDTO.getSprintId()));
             SprintSearchVO activeSprint = sprintSearchAssembler.dtoToVO(sprintSearchDTO, usersMap, priorityMap, statusMapDTOMap, issueTypeDTOMap);
             activeSprint.setIssueCount(activeSprint.getIssueSearchVOList() == null ? 0 : activeSprint.getIssueSearchVOList().size());
-            Map<String, List<Long>> statusMap = issueFeignClient.queryStatusByProjectId(projectId, SchemeApplyType.AGILE).getBody()
-                    .stream().collect(Collectors.groupingBy(StatusMapVO::getType, Collectors.mapping(StatusMapVO::getId, Collectors.toList())));
+            Map<String, List<Long>> statusMap = projectConfigService.queryStatusByProjectId(projectId, SchemeApplyType.AGILE)
+                    .stream().collect(Collectors.groupingBy(StatusVO::getType, Collectors.mapping(StatusVO::getId, Collectors.toList())));
             BigDecimal zero = new BigDecimal(0);
             activeSprint.setTodoStoryPoint(statusMap.get(CATEGORY_TODO_CODE) != null && !statusMap.get(CATEGORY_TODO_CODE).isEmpty() && !activeSprintIssueIds.isEmpty() ? sprintMapper.queryStoryPoint(statusMap.get(CATEGORY_TODO_CODE), activeSprintIssueIds, projectId) : zero);
             activeSprint.setDoingStoryPoint(statusMap.get(CATEGORY_DOING_CODE) != null && !statusMap.get(CATEGORY_DOING_CODE).isEmpty() && !activeSprintIssueIds.isEmpty() ? sprintMapper.queryStoryPoint(statusMap.get(CATEGORY_DOING_CODE), activeSprintIssueIds, projectId) : zero);
@@ -456,7 +456,7 @@ public class SprintServiceImpl implements SprintService {
         if (reportIssueIds.isEmpty()) {
             return new PageInfo<>(new ArrayList<>());
         }
-        Map<Long, StatusMapVO> statusMapDTOMap = issueFeignClient.queryAllStatusMap(organizationId).getBody();
+        Map<Long, StatusVO> statusMapDTOMap = statusService.queryAllStatusMap(organizationId);
         //冲刺报告查询的issue
         List<IssueDTO> reportIssues = reportMapper.queryIssueByIssueIds(projectId, reportIssueIds);
         //冲刺中新添加的issue
@@ -469,7 +469,7 @@ public class SprintServiceImpl implements SprintService {
         List<SprintReportIssueStatusDO> reportIssueBeforeStatus = reportMapper.queryBeforeIssueStatus(projectId, reportIssueIds, startDate, actualEndDate);
         Map<Long, SprintReportIssueStatusDO> reportIssueBeforeStatusMap = new HashMap<>();
         for (SprintReportIssueStatusDO sprintReportIssueStatusDO : reportIssueBeforeStatus) {
-            StatusMapVO statusMapVO = statusMapDTOMap.get(sprintReportIssueStatusDO.getStatusId());
+            StatusVO statusMapVO = statusMapDTOMap.get(sprintReportIssueStatusDO.getStatusId());
             sprintReportIssueStatusDO.setCategoryCode(statusMapVO.getType());
             sprintReportIssueStatusDO.setStatusName(statusMapVO.getName());
             reportIssueBeforeStatusMap.put(sprintReportIssueStatusDO.getIssueId(), sprintReportIssueStatusDO);
@@ -479,7 +479,7 @@ public class SprintServiceImpl implements SprintService {
         List<SprintReportIssueStatusDO> reportIssueAfterStatus = reportIssueIds.isEmpty() ? new ArrayList<>() : reportMapper.queryAfterIssueStatus(projectId, reportIssueIds, actualEndDate);
         Map<Long, SprintReportIssueStatusDO> reportIssueAfterStatusMap = new HashMap<>();
         for (SprintReportIssueStatusDO sprintReportIssueStatusDO : reportIssueAfterStatus) {
-            StatusMapVO statusMapVO = statusMapDTOMap.get(sprintReportIssueStatusDO.getStatusId());
+            StatusVO statusMapVO = statusMapDTOMap.get(sprintReportIssueStatusDO.getStatusId());
             sprintReportIssueStatusDO.setCategoryCode(statusMapVO.getType());
             sprintReportIssueStatusDO.setStatusName(statusMapVO.getName());
             reportIssueAfterStatusMap.put(sprintReportIssueStatusDO.getIssueId(), sprintReportIssueStatusDO);
@@ -488,8 +488,8 @@ public class SprintServiceImpl implements SprintService {
             updateReportIssue(reportIssue, reportIssueStoryPointsMap, reportIssueBeforeStatusMap, reportIssueAfterStatusMap, issueIdAddList);
             return reportIssue;
         }).collect(Collectors.toList());
-        Map<Long, PriorityVO> priorityMap = issueFeignClient.queryByOrganizationId(organizationId).getBody();
-        Map<Long, IssueTypeVO> issueTypeDTOMap = issueFeignClient.listIssueTypeMap(organizationId).getBody();
+        Map<Long, PriorityVO> priorityMap = priorityService.queryByOrganizationId(organizationId);
+        Map<Long, IssueTypeVO> issueTypeDTOMap = issueTypeService.listIssueTypeMap(organizationId);
         return PageUtil.buildPageInfoWithPageInfoList(reportIssuePage, issueAssembler.issueDoToIssueListDto(reportIssues, priorityMap, statusMapDTOMap, issueTypeDTOMap));
     }
 
@@ -551,7 +551,8 @@ public class SprintServiceImpl implements SprintService {
 
     @Override
     public List<SprintUnClosedVO> queryUnClosedSprint(Long projectId) {
-        return modelMapper.map(sprintMapper.queryUnClosedSprint(projectId), new TypeToken<List<SprintUnClosedVO>>(){}.getType());
+        return modelMapper.map(sprintMapper.queryUnClosedSprint(projectId), new TypeToken<List<SprintUnClosedVO>>() {
+        }.getType());
     }
 
     @Override
@@ -656,7 +657,6 @@ public class SprintServiceImpl implements SprintService {
             }
         }
     }
-
 
 
     @Override

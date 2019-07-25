@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.FieldDataLogMapper">
+
+    <resultMap id="fieldDataLogMap" type="io.choerodon.agile.infra.dataobject.FieldDataLogDTO">
+        <id property="id" column="id"/>
+        <id property="fieldId" column="field_id"/>
+        <id property="instanceId" column="instance_id"/>
+        <id property="oldValue" column="old_value"/>
+        <id property="oldString" column="old_string"/>
+        <id property="newValue" column="new_value"/>
+        <id property="newString" column="new_string"/>
+        <id property="projectId" column="project_id"/>
+        <id property="schemeCode" column="scheme_code"/>
+
+        <id property="fieldCode" column="field_code"/>
+        <id property="fieldName" column="field_name"/>
+
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="queryByInstanceId" resultMap="fieldDataLogMap">
+        SELECT
+        fdl.*,
+        osf.code field_code,
+        osf.name field_name
+        FROM fd_field_data_log fdl
+        LEFT JOIN fd_object_scheme_field osf ON osf.id = fdl.field_id
+        WHERE fdl.project_id = #{projectId}
+        AND fdl.scheme_code = #{schemeCode}
+        AND fdl.instance_id = #{instanceId}
+    </select>
+
+</mapper>

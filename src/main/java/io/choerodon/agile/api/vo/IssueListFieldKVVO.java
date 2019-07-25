@@ -7,7 +7,7 @@ import java.util.Map;
 
 import io.swagger.annotations.ApiModelProperty;
 
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 
 /**
  * Created by WangZhe@choerodon.io on 2019-06-28.
@@ -88,7 +88,7 @@ public class IssueListFieldKVVO {
     private PriorityVO priorityVO;
 
     @ApiModelProperty(value = "状态DTO")
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     @ApiModelProperty(value = "问题类型DTO")
     private IssueTypeVO issueTypeVO;
@@ -304,11 +304,11 @@ public class IssueListFieldKVVO {
         return priorityVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 

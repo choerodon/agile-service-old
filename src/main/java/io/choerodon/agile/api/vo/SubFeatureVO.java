@@ -48,7 +48,7 @@ public class SubFeatureVO {
 
     @ApiModelProperty(value = "状态DTO")
     @Transient
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     @ApiModelProperty(value = "feature的类型")
     private String featureType;
@@ -147,11 +147,11 @@ public class SubFeatureVO {
         return issueTypeVO;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 

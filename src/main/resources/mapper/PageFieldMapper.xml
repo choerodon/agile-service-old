@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.choerodon.agile.infra.mapper.PageFieldMapper">
+
+    <resultMap id="pageFieldMap" type="io.choerodon.agile.infra.dataobject.PageFieldDTO">
+        <id property="id" column="id"/>
+        <id property="pageId" column="page_id"/>
+        <id property="fieldId" column="field_id"/>
+        <id property="display" column="is_display"/>
+        <id property="rank" column="rank"/>
+        <id property="fieldName" column="field_name"/>
+        <id property="fieldType" column="field_type"/>
+        <id property="fieldCode" column="field_code"/>
+        <id property="system" column="is_system"/>
+        <id property="context" column="context"/>
+        <id property="extraConfig" column="extra_config"/>
+        <id property="defaultValue" column="default_value"/>
+        <id property="fieldTypeName" column="field_type_name"/>
+        <id property="required" column="is_required"/>
+        <id property="projectId" column="project_id"/>
+        <id property="organizationId" column="organization_id"/>
+        <id property="creationDate" column="creation_date"/>
+        <id property="createdBy" column="created_by"/>
+        <id property="lastUpdateDate" column="last_update_date"/>
+        <id property="lastUpdatedBy" column="last_updated_by"/>
+        <id property="objectVersionNumber" column="object_version_number"/>
+    </resultMap>
+
+    <select id="listQuery" resultMap="pageFieldMap">
+        SELECT pf.*,
+        osf.name as field_name,
+        osf.field_type,
+        osf.is_system,
+        osf.context,
+        osf.is_required,
+        osf.default_value,
+        osf.extra_config,
+        osf.code as field_code,
+        flv.name as field_type_name
+        FROM fd_page_field pf
+        LEFT JOIN fd_page p ON p.id = pf.page_id
+        LEFT JOIN fd_object_scheme_field osf ON osf.id = pf.field_id
+        LEFT JOIN lookup_value flv ON flv.value_code = osf.field_type and flv.type_code = 'field_type'
+        WHERE pf.organization_id = #{organizationId}
+        <choose>
+            <when test="projectId != null">
+                AND pf.project_id = #{projectId}
+            </when>
+            <otherwise>
+                AND pf.project_id is null
+            </otherwise>
+        </choose>
+        <if test="pageCode != null">
+            AND p.page_code = #{pageCode}
+        </if>
+        <if test="context != null">
+            AND (osf.context REGEXP '^${context},|,${context},|^${context}$|,${context}$' OR osf.context REGEXP '^global,|,global,|^global$|,global$')
+        </if>
+        order by pf.rank DESC,pf.id ASC
+    </select>
+
+    <select id="queryRightRank" resultType="java.lang.String">
+        SELECT MAX(pf.rank)
+        FROM fd_page_field pf
+        LEFT JOIN fd_page p ON p.id = pf.page_id
+        WHERE pf.organization_id = #{organizationId}
+        <choose>
+            <when test="projectId != null">
+                AND pf.project_id = #{projectId}
+            </when>
+            <otherwise>
+                AND pf.project_id is null
+            </otherwise>
+        </choose>
+        AND p.page_code = #{pageCode}
+        AND pf.rank &lt; #{rank}
+    </select>
+
+    <select id="queryMinRank" resultType="java.lang.String">
+        SELECT MIN(pf.rank)
+        FROM fd_page_field pf
+        LEFT JOIN fd_page p ON p.id = pf.page_id
+        WHERE pf.organization_id = #{organizationId}
+        <choose>
+            <when test="projectId != null">
+                AND pf.project_id = #{projectId}
+            </when>
+            <otherwise>
+                AND pf.project_id is null
+            </otherwise>
+        </choose>
+        AND p.page_code = #{pageCode}
+    </select>
+
+    <select id="queryByFieldId" resultMap="pageFieldMap">
+        SELECT pf.*
+        FROM fd_page_field pf
+        LEFT JOIN fd_page p ON p.id = pf.page_id
+        WHERE pf.organization_id = #{organizationId}
+        <choose>
+            <when test="projectId != null">
+                AND pf.project_id = #{projectId}
+            </when>
+            <otherwise>
+                AND pf.project_id is null
+            </otherwise>
+        </choose>
+        AND p.page_code = #{pageCode}
+        AND pf.field_id = #{fieldId}
+    </select>
+
+    <insert id="batchInsert">
+        INSERT IGNORE INTO fd_page_field
+        (page_id, field_id, is_display, rank, project_id, organization_id)
+        values
+        <foreach collection="pageFields" item="pageField" index="index"
+                 separator=",">
+            (#{pageField.pageId}, #{pageField.fieldId}, #{pageField.display}, #{pageField.rank}, #{projectId},
+            #{organizationId})
+        </foreach>
+    </insert>
+
+    <insert id="copyOrgPageFieldToPro">
+        INSERT IGNORE INTO fd_page_field
+        (page_id, field_id, is_display, rank, project_id, organization_id)
+        select pf.page_id,pf.field_id,pf.is_display, pf.rank,#{projectId},pf.organization_id
+        from fd_page_field pf
+        where pf.organization_id = #{organizationId}
+        AND pf.project_id is null
+    </insert>
+
+    <delete id="deleteByFieldId">
+        DELETE
+        FROM fd_page_field
+        WHERE field_id = #{fieldId}
+    </delete>
+</mapper>

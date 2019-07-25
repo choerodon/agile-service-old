@@ -1,0 +1,102 @@
+.issue-readAndEdit {
+  .c7n-input-length-info {
+    position: absolute;
+    float: left;
+    left: 0;
+    letter-spacing: 0;
+    right: unset;
+  }
+
+  .c7n-input-icon {
+    right: auto;
+  }
+
+  &.c7n-readAndEdit {
+    position: relative;
+    line-height: 20px;
+    padding: 2px 30px 2px 5px;
+    transition: box-shadow 150ms ease-in 0ms;
+    border-radius: 2.01px;
+    cursor: text;
+    margin-left: -5px;
+    margin-top: -2px;
+    border-bottom: 1px solid transparent;
+  }
+
+  .edit {
+    box-sizing: border-box;
+    // background-color: #f0f0f0;
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    // border-left: 1px solid #ccc;
+    bottom: 0;
+    height: auto;
+    margin: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 24px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 24px;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  .edit-edit {
+    box-sizing: border-box;
+    // background-color: rgba(0, 0, 0, 0.08);
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    bottom: 0;
+    margin: 0;
+    // position: absolute;
+    right: -48px;
+    // top: 0;
+    width: 18px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 18px;
+    height: 18px;
+    // border: 1px solid rgba(0, 0, 0, 0.26);
+    // border-radius: 2px;
+    display: inline-block;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  .close {
+    box-sizing: border-box;
+    // background-color: rgba(0, 0, 0, 0.08);
+    background-repeat: no-repeat;
+    background-position: 4px 4px;
+    bottom: 0;
+    margin: 0;
+    // position: absolute;
+    right: -24px;
+    // top: 0;
+    width: 18px;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: center;
+    line-height: 18px;
+    height: 18px;
+    // border: 1px solid rgba(0, 0, 0, 0.26);
+    // border-radius: 2px;
+    display: inline-block;
+    color: rgba(0, 0, 0, 0.65);
+  }
+
+  &.c7n-readAndEdit:hover {
+    // box-shadow: 0 0 0 1px #ccc;
+    border-bottom-color: rgba(0, 0, 0, 0.54);
+  }
+
+  &.c7n-readAndEdit:hover .edit {
+    display: flex !important;
+  }
+
+  &.c7n-readAndEdit:hover .close {
+    display: block !important;
+  }
+}

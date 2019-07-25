@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.dataobject;
 
 import io.choerodon.mybatis.entity.BaseDTO;
-import io.choerodon.agile.infra.common.utils.StringUtil;
+import io.choerodon.agile.infra.utils.StringUtil;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
  * @author dinghuang123@gmail.com
  * @since 2018-05-15 10:13:37
  */
-@Table(name = "agile_lookup_type")
+@Table(name = "lookup_type")
 public class LookupTypeDTO extends BaseDTO {
 
     /***/

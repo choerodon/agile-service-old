@@ -4,7 +4,6 @@ import io.choerodon.agile.api.vo.IssueStatusVO;
 import io.choerodon.agile.api.vo.StatusAndIssuesVO;
 import io.choerodon.agile.api.vo.StatusMoveVO;
 import io.choerodon.agile.api.vo.event.AddStatusWithProject;
-import io.choerodon.agile.api.vo.event.StatusPayload;
 import io.choerodon.agile.infra.dataobject.IssueStatusDTO;
 
 import java.util.List;
@@ -26,8 +25,6 @@ public interface IssueStatusService {
     IssueStatusVO moveStatusToUnCorrespond(Long projectId, Long statusId, StatusMoveVO statusMoveVO);
 
     void deleteStatus(Long projectId, Long statusId, String applyType);
-
-    void consumDeleteStatus(StatusPayload statusPayload);
 
     /**
      * 查询issueStatus列表

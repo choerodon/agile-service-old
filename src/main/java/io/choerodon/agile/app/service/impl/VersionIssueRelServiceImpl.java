@@ -1,12 +1,11 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.agile.infra.common.annotation.DataLog;
+import io.choerodon.agile.infra.annotation.DataLog;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.app.service.VersionIssueRelService;
 import io.choerodon.agile.infra.dataobject.VersionIssueRelDTO;
 import io.choerodon.agile.infra.mapper.VersionIssueRelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

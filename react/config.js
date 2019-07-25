@@ -1,7 +1,7 @@
 const config = {
   // use for c7n start
-  server: 'http://api.staging.saas.hand-china.com',
-  // server: 'http://10.211.102.55:8080',
+  // server: 'http://api.staging.saas.hand-china.com',
+  server: 'http://10.211.102.55:8080',
   // server: 'http://10.211.103.61:8080', // 富强
   // port: 8080,
   // server: 'http://10.211.108.232:8080', // 王喆

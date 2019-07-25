@@ -13,7 +13,7 @@ import io.choerodon.agile.infra.dataobject.ApplicationDTO;
 import io.choerodon.agile.infra.dataobject.FeedbackDTO;
 import io.choerodon.agile.infra.dataobject.ProjectInfoDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
-import io.choerodon.agile.infra.feign.UserFeignClient;
+import io.choerodon.agile.infra.feign.IamFeignClient;
 import io.choerodon.agile.infra.mapper.FeedbackAttachmentMapper;
 import io.choerodon.agile.infra.mapper.FeedbackMapper;
 import io.choerodon.agile.infra.mapper.ProjectInfoMapper;
@@ -55,7 +55,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     private FeedbackValidator feedbackValidator;
 
     @Autowired
-    private UserFeignClient userFeignClient;
+    private IamFeignClient iamFeignClient;
 
     @Autowired
     private FeedbackAttachmentMapper feedbackAttachmentMapper;
@@ -68,7 +68,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 
 
     private void initByToken(FeedbackDTO feedbackDTO) {
-        ApplicationDTO applicationDTO = userFeignClient.getApplicationByToken(new ApplicationDTO(feedbackDTO.getToken())).getBody();
+        ApplicationDTO applicationDTO = iamFeignClient.getApplicationByToken(new ApplicationDTO(feedbackDTO.getToken())).getBody();
         Long projectId = applicationDTO.getProjectId();
         Long organizationId = applicationDTO.getOrganizationId();
         Long applicationId = applicationDTO.getId();
@@ -86,7 +86,7 @@ public class FeedbackServiceImpl implements FeedbackService {
             throw new CommonException("error.projectInfo.notFound");
         }
         Long feedbackMaxNum = projectInfoDTO.getFeedbackMaxNum();
-        feedbackMaxNum ++ ;
+        feedbackMaxNum++;
         feedbackDTO.setFeedbackNum(feedbackMaxNum.toString());
         projectInfoMapper.updateFeedbackMaxNum(feedbackDTO.getProjectId(), feedbackMaxNum);
     }
@@ -145,7 +145,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         Map<Long, UserMessageDTO> userMessageDOMap = userService.queryUsersMap(
                 assigneeIds.stream().filter(Objects::nonNull).distinct().collect(Collectors.toList()), false);
         feedbackDTO.setAssignee(userMessageDOMap.get(feedbackDTO.getAssigneeId()));
-        feedbackDTO.setApplicationDTO(userFeignClient.queryByApplicationId(organizationId, feedbackDTO.getApplicationId(), false).getBody());
+        feedbackDTO.setApplicationDTO(iamFeignClient.queryByApplicationId(organizationId, feedbackDTO.getApplicationId(), false).getBody());
         return feedbackDTO;
     }
 

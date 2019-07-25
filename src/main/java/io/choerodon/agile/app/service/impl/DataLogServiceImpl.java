@@ -3,16 +3,16 @@ package io.choerodon.agile.app.service.impl;
 import io.choerodon.agile.api.vo.DataLogCreateVO;
 import io.choerodon.agile.api.vo.DataLogVO;
 import io.choerodon.agile.api.vo.FieldDataLogVO;
-import io.choerodon.agile.api.vo.StatusMapVO;
+import io.choerodon.agile.api.vo.StatusVO;
 import io.choerodon.agile.app.service.DataLogService;
-import io.choerodon.agile.infra.common.enums.ObjectSchemeCode;
-import io.choerodon.agile.infra.common.utils.ConvertUtil;
+import io.choerodon.agile.app.service.FieldDataLogService;
+import io.choerodon.agile.app.service.UserService;
 import io.choerodon.agile.infra.dataobject.DataLogDTO;
 import io.choerodon.agile.infra.dataobject.DataLogStatusChangeDTO;
 import io.choerodon.agile.infra.dataobject.UserMessageDTO;
-import io.choerodon.agile.infra.feign.IssueFeignClient;
+import io.choerodon.agile.infra.enums.ObjectSchemeCode;
 import io.choerodon.agile.infra.mapper.DataLogMapper;
-import io.choerodon.agile.app.service.UserService;
+import io.choerodon.agile.infra.utils.ConvertUtil;
 import io.choerodon.core.exception.CommonException;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
@@ -38,7 +38,7 @@ public class DataLogServiceImpl implements DataLogService {
     @Autowired
     private UserService userService;
     @Autowired
-    private IssueFeignClient issueFeignClient;
+    private FieldDataLogService fieldDataLogService;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -61,7 +61,7 @@ public class DataLogServiceImpl implements DataLogService {
     public List<DataLogVO> listByIssueId(Long projectId, Long issueId) {
         List<DataLogVO> dataLogVOS = modelMapper.map(dataLogMapper.selectByIssueId(projectId, issueId), new TypeToken<List<DataLogVO>>() {
         }.getType());
-        List<FieldDataLogVO> fieldDataLogVOS = issueFeignClient.queryDataLogByInstanceId(projectId, issueId, ObjectSchemeCode.AGILE_ISSUE).getBody();
+        List<FieldDataLogVO> fieldDataLogVOS = fieldDataLogService.queryByInstanceId(projectId, issueId, ObjectSchemeCode.AGILE_ISSUE);
         for (FieldDataLogVO fieldDataLogVO : fieldDataLogVOS) {
             DataLogVO dataLogVO = modelMapper.map(fieldDataLogVO, DataLogVO.class);
             dataLogVO.setField(fieldDataLogVO.getFieldCode());
@@ -80,7 +80,7 @@ public class DataLogServiceImpl implements DataLogService {
      * @param dataLogVOS
      */
     private void fillUserAndStatus(Long projectId, List<DataLogVO> dataLogVOS) {
-        Map<Long, StatusMapVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
+        Map<Long, StatusVO> statusMapDTOMap = ConvertUtil.getIssueStatusMap(projectId);
         List<Long> createByIds = dataLogVOS.stream().filter(dataLogDTO -> dataLogDTO.getCreatedBy() != null && !Objects.equals(dataLogDTO.getCreatedBy(), 0L)).map(DataLogVO::getCreatedBy).distinct().collect(Collectors.toList());
         Map<Long, UserMessageDTO> usersMap = userService.queryUsersMap(createByIds, true);
         for (DataLogVO dto : dataLogVOS) {
@@ -96,7 +96,7 @@ public class DataLogServiceImpl implements DataLogService {
             dto.setImageUrl(imageUrl);
             dto.setEmail(email);
             if ("status".equals(dto.getField())) {
-                StatusMapVO statusMapVO = statusMapDTOMap.get(Long.parseLong(dto.getNewValue()));
+                StatusVO statusMapVO = statusMapDTOMap.get(Long.parseLong(dto.getNewValue()));
                 dto.setCategoryCode(statusMapVO != null ? statusMapVO.getType() : null);
             }
             if (dto.getIsCusLog() == null) {

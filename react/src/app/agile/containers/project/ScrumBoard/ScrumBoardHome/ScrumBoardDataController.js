@@ -74,8 +74,8 @@ export default class ScrumBoardDataController {
   addEpicLabelToFlattenData(flattenedArr, epicInfo, parentWithSubs, parentIssues, parentCompleted) {
     const combinedIssueArr = [...flattenedArr, ...parentIssues.filter(issue => !this.flattenedArrSet.has(issue.issueId)).map(issue => ({
       ...issue,
-      statusName: issue.statusMapVO.name,
-      categoryCode: issue.statusMapVO.type,
+      statusName: issue.statusVO.name,
+      categoryCode: issue.statusVO.type,
     }))];
     // 遍历 epicInfo，找出与史诗相对应的 issue 组成 Arr
     return {
@@ -161,8 +161,8 @@ export default class ScrumBoardDataController {
     } else {
       combinedIssueArr = [...flattenedArr, ...parentIssues.filter(issue => !this.flattenedArrSet.has(issue.issueId)).map(issue => ({
         ...issue,
-        statusName: issue.statusMapVO.name,
-        categoryCode: issue.statusMapVO.type,
+        statusName: issue.statusVO.name,
+        categoryCode: issue.statusVO.type,
       }))];
       this.combinedIssueArr = combinedIssueArr;
     }

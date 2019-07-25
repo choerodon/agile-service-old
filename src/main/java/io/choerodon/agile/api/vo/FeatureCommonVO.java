@@ -46,7 +46,7 @@ public class FeatureCommonVO {
 
     private String acceptanceCritera;
 
-    private StatusMapVO statusMapVO;
+    private StatusVO statusMapVO;
 
     private IssueTypeVO issueTypeVO;
 
@@ -132,11 +132,11 @@ public class FeatureCommonVO {
         return piNameVOList;
     }
 
-    public void setStatusMapVO(StatusMapVO statusMapVO) {
+    public void setStatusVO(StatusVO statusMapVO) {
         this.statusMapVO = statusMapVO;
     }
 
-    public StatusMapVO getStatusMapVO() {
+    public StatusVO getStatusVO() {
         return statusMapVO;
     }
 

@@ -133,7 +133,7 @@
             where aio.type_code = 'feature'
             and aio.issue_id = af.issue_id
         ) feature_info ON ai.feature_id = feature_info.issue_id
-        LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
+        LEFT JOIN lookup_value alv2 ON ai1.color_code = alv2.value_code
         LEFT JOIN (SELECT aisr.issue_id, asp.sprint_id
         FROM agile_issue_sprint_rel aisr, agile_sprint asp
         WHERE aisr.sprint_id = asp.sprint_id AND asp.status_code != 'closed'
@@ -378,7 +378,7 @@
             where ai3.type_code = 'feature'
             and ai3.issue_id = af.issue_id
         ) feature_info ON ai2.feature_id = feature_info.issue_id
-        LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
+        LEFT JOIN lookup_value alv2 ON ai1.color_code = alv2.value_code
         left join agile_issue_sprint_rel aisr2 on aisr2.issue_id = ai2.issue_id
         LEFT JOIN
         (
@@ -469,7 +469,7 @@
           where ai3.type_code = 'feature'
           and ai3.issue_id = af.issue_id
         ) feature_info ON ai2.feature_id = feature_info.issue_id
-        LEFT JOIN agile_lookup_value alv2 ON ai1.color_code = alv2.value_code
+        LEFT JOIN lookup_value alv2 ON ai1.color_code = alv2.value_code
         LEFT JOIN (
             SELECT
             avir.version_id,

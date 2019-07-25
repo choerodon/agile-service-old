@@ -34,9 +34,6 @@ public class DemoEventHandler {
     @Autowired
     private TimeZoneWorkCalendarMapper timeZoneWorkCalendarMapper;
 
-//    @Autowired
-//    private TimeZoneWorkCalendarRepository timeZoneWorkCalendarRepository;
-
     @Autowired
     private TimeZoneWorkCalendarService timeZoneWorkCalendarService;
 
