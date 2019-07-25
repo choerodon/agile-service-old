@@ -71,10 +71,7 @@ public class InstanceServiceImpl implements InstanceService {
             executeResult = machineFactory.startInstance(organizationId, serviceCode, stateMachineId, inputDTO);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            executeResult = new ExecuteResult();
-            executeResult.setSuccess(false);
-            executeResult.setResultStatusId(null);
-            executeResult.setErrorMessage("创建状态机实例失败");
+            executeResult = new ExecuteResult(false, null, "创建状态机实例失败");
         }
         return executeResult;
     }
@@ -140,26 +137,22 @@ public class InstanceServiceImpl implements InstanceService {
         StateMachineTransformDTO transform = transformMapper.queryById(organizationId, transformId);
         List<StateMachineConfigVO> conditionConfigs = condition(organizationId, transformId);
         List<StateMachineConfigVO> validatorConfigs = validator(organizationId, transformId);
-        ExecuteResult executeResult = new ExecuteResult();
-        executeResult.setSuccess(true);
+        ExecuteResult executeResult = new ExecuteResult(true, null, null);
         //调用对应服务，执行条件和验证，返回是否成功
         try {
             if (!conditionConfigs.isEmpty()) {
                 inputDTO.setConfigs(modelMapper.map(conditionConfigs, new TypeToken<List<StateMachineConfigVO>>() {
                 }.getType()));
-                executeResult = modelMapper.map(stateMachineClientService.configExecuteCondition(null, transform.getConditionStrategy(), modelMapper.map(inputDTO, InputDTO.class)), ExecuteResult.class);
+                executeResult = stateMachineClientService.configExecuteCondition(null, transform.getConditionStrategy(), modelMapper.map(inputDTO, InputDTO.class));
             }
             if (executeResult.getSuccess() && !validatorConfigs.isEmpty()) {
                 inputDTO.setConfigs(modelMapper.map(validatorConfigs, new TypeToken<List<StateMachineConfigVO>>() {
                 }.getType()));
-                executeResult = modelMapper.map(stateMachineClientService.configExecuteValidator(null, modelMapper.map(inputDTO, InputDTO.class)), ExecuteResult.class);
+                executeResult = stateMachineClientService.configExecuteValidator(null, modelMapper.map(inputDTO, InputDTO.class));
             }
         } catch (Exception e) {
             LOGGER.error(EXCEPTION, e);
-            executeResult = new ExecuteResult();
-            executeResult.setSuccess(false);
-            executeResult.setResultStatusId(null);
-            executeResult.setErrorMessage("验证调用失败");
+            executeResult = new ExecuteResult(false, null, "验证调用失败");
         }
 
         Map<Object, Object> variables = context.getExtendedState().getVariables();
@@ -181,20 +174,14 @@ public class InstanceServiceImpl implements InstanceService {
         ExecuteResult executeResult;
         //调用对应服务，执行动作，返回是否成功
         try {
-            executeResult = modelMapper.map(stateMachineClientService.configExecutePostAction(targetStatusId, transform.getType(), modelMapper.map(inputDTO, InputDTO.class)), ExecuteResult.class);
+            executeResult = stateMachineClientService.configExecutePostAction(targetStatusId, transform.getType(), modelMapper.map(inputDTO, InputDTO.class));
             //返回为空则调用对应服务，对应服务方法报错
-            if (executeResult.getSuccess() != null) {
-                executeResult = new ExecuteResult();
-                executeResult.setSuccess(false);
-                executeResult.setResultStatusId(null);
-                executeResult.setErrorMessage("后置动作调用失败");
+            if (executeResult == null) {
+                executeResult = new ExecuteResult(false, null, "后置动作调用失败");
             }
         } catch (Exception e) {
             LOGGER.error(EXCEPTION, e);
-            executeResult = new ExecuteResult();
-            executeResult.setSuccess(false);
-            executeResult.setResultStatusId(null);
-            executeResult.setErrorMessage("后置动作调用失败");
+            executeResult = new ExecuteResult(false, null, "后置动作调用失败");
         }
         Map<Object, Object> variables = context.getExtendedState().getVariables();
         variables.put("executeResult", executeResult);

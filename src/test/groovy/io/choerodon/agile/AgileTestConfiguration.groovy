@@ -7,9 +7,7 @@ import io.choerodon.agile.api.vo.event.ProjectCreateAgilePayload
 import io.choerodon.agile.api.vo.event.ProjectEvent
 import io.choerodon.agile.api.vo.event.StatusPayload
 import io.choerodon.agile.app.eventhandler.AgileEventHandler
-import io.choerodon.agile.app.service.IssueAttachmentService
 import io.choerodon.agile.app.service.UserService
-import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.infra.dataobject.*
 import io.choerodon.agile.infra.enums.ProjectCategory
 import io.choerodon.agile.infra.feign.FileFeignClient
@@ -26,9 +24,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.ApplicationContext
-import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.Primary
 import org.springframework.http.HttpRequest
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
@@ -37,7 +33,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.security.jwt.JwtHelper
 import org.springframework.security.jwt.crypto.sign.MacSigner
 import org.springframework.security.jwt.crypto.sign.Signer
-import spock.mock.DetachedMockFactory
 
 import javax.annotation.PostConstruct
 import java.sql.Connection
@@ -56,8 +51,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(LiquibaseConfig)
 class AgileTestConfiguration {
-
-    private final detachedMockFactory = new DetachedMockFactory()
 
     @Autowired
     ApplicationContext applicationContext
@@ -122,11 +115,11 @@ class AgileTestConfiguration {
     @MockBean(name = "fileFeignClient")
     private FileFeignClient fileFeignClient
 
-    @Bean("issueAttachmentService")
-    @Primary
-    IssueAttachmentService issueAttachmentService() {
-        new IssueAttachmentServiceImpl(fileFeignClient)
-    }
+//    @Bean("issueAttachmentService")
+//    @Primary
+//    IssueAttachmentService issueAttachmentService() {
+//        new IssueAttachmentServiceImpl(fileFeignClient)
+//    }
 
 //    @Bean("productVersionService")
 //    @Primary
@@ -148,10 +141,10 @@ class AgileTestConfiguration {
         liquibaseExecutor.execute()
         setTestRestTemplateJWT()
         applicationContextHelper.setApplicationContext(applicationContext)
-        initSqlFunction()
+//        initSqlFunction()
         //初始化数据
-        initOrgProData()
-        initProjectData()
+//        initOrgProData()
+//        initProjectData()
 //        initUserDetail()
     }
 

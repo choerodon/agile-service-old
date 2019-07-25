@@ -42,7 +42,7 @@
         alv. NAME AS STATUS
         FROM
         agile_product_version apv
-        LEFT JOIN agile_lookup_value alv ON alv.value_code = apv.status_code
+        LEFT JOIN lookup_value alv ON alv.value_code = apv.status_code
         WHERE apv.project_id = #{projectId} AND apv.version_id IN
         <foreach collection="versionIds" item="versionId" index="index"
                  open="(" close=")" separator=",">
@@ -176,7 +176,7 @@
             alv.name AS status_name,
             apv.project_id
         FROM agile_product_version apv
-            LEFT JOIN agile_lookup_value alv ON alv.value_code = apv.status_code
+            LEFT JOIN lookup_value alv ON alv.value_code = apv.status_code
         WHERE apv.project_id = #{projectId} AND apv.version_id = #{versionId}
     </select>
 
@@ -463,7 +463,7 @@
             alv.`name` AS status_name
         FROM
             agile_product_version apv
-            LEFT JOIN agile_lookup_value alv ON apv.status_code = alv.value_code
+            LEFT JOIN lookup_value alv ON apv.status_code = alv.value_code
         WHERE
             apv.project_id = #{projectId}
     </select>

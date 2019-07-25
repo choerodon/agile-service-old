@@ -24,7 +24,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @Stepwise
 class LookupTypeControllerSpec extends Specification {
     @Autowired
-    TestRestTemplate restTemplate;
+    TestRestTemplate restTemplate
 
     @Shared
     def projectId = 1

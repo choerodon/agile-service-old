@@ -111,7 +111,7 @@
                 </if>
             </if>
             LEFT JOIN agile_issue epic_info on ai.epic_id = epic_info.issue_id
-            LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code
+            LEFT JOIN lookup_value alv on epic_info.color_code = alv.value_code
             LEFT JOIN agile_feature af ON ai.issue_id = af.issue_id
             LEFT JOIN agile_project_info api ON api.project_id = ai.program_id
         WHERE
@@ -138,7 +138,7 @@
         FROM
             agile_issue ai
         LEFT JOIN agile_issue epic_info on ai.epic_id = epic_info.issue_id
-        LEFT JOIN agile_lookup_value alv on epic_info.color_code = alv.value_code
+        LEFT JOIN lookup_value alv on epic_info.color_code = alv.value_code
         LEFT JOIN agile_project_info api ON api.project_id = ai.program_id,
         agile_feature af, agile_issue_status ais
         WHERE

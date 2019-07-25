@@ -76,7 +76,7 @@
         </if>
         ) ai ON ai.status_id = ais.status_id
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-        LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code
+        LEFT JOIN lookup_value alv1 ON abc.color_code = alv1.value_code
         WHERE
         abc.project_id = #{projectId} AND abc.board_id = #{boardId}
         ORDER BY abc.sequence
@@ -137,8 +137,8 @@
         </foreach>
         ) ai ON ai.status_id = ais.id
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-        LEFT JOIN agile_lookup_value alv ON ai.priority_code = alv.value_code
-        LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code
+        LEFT JOIN lookup_value alv ON ai.priority_code = alv.value_code
+        LEFT JOIN lookup_value alv1 ON abc.color_code = alv1.value_code
         WHERE abc.board_id = #{boardId}
         ORDER BY abc.sequence
     </select>
@@ -263,7 +263,7 @@
 
     <select id="queryColumnByColumnIds" resultType="io.choerodon.agile.infra.dataobject.ColumnDTO">
         SELECT abc.column_id ,abc.name,alv.name as color,abc.category_code
-        from agile_board_column abc left join agile_lookup_value alv on
+        from agile_board_column abc left join lookup_value alv on
         alv.type_code = 'column_color'
         and alv.value_code = abc.color_code where abc.column_id in
         <foreach collection="columnIds" item="columnId"
@@ -430,7 +430,7 @@
            and ap.id = apf.pi_id
         ) pi_info on pi_info.issue_id = ai.issue_id
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-        LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code
+        LEFT JOIN lookup_value alv1 ON abc.color_code = alv1.value_code
         WHERE
           abc.project_id = #{projectId} AND abc.board_id = #{boardId} AND abc.category_code in ('prepare', 'todo')
         )
@@ -513,7 +513,7 @@
            and ap.id = apf.pi_id
         ) pi_info on pi_info.issue_id = ai.issue_id
         LEFT JOIN agile_project_info api ON api.project_id = ai.project_id
-        LEFT JOIN agile_lookup_value alv1 ON abc.color_code = alv1.value_code
+        LEFT JOIN lookup_value alv1 ON abc.color_code = alv1.value_code
         WHERE
           abc.project_id = #{projectId} AND abc.board_id = #{boardId} AND abc.category_code not in ('prepare', 'todo')
         )
