@@ -27,7 +27,7 @@ import io.choerodon.statemachine.client.StateMachineClient;
 import io.choerodon.statemachine.dto.ExecuteResult;
 import io.choerodon.statemachine.dto.InputDTO;
 import io.choerodon.statemachine.dto.StateMachineConfigDTO;
-import io.choerodon.statemachine.feign.InstanceFeignClient;
+import io.choerodon.statemachine.dto.StateMachineTransformDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
@@ -191,7 +191,8 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
         CreateIssuePayload createIssuePayload = new CreateIssuePayload(issueCreateVO, issueConvertDTO, projectInfo);
         InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createIssuePayload));
         //通过状态机客户端创建实例, 反射验证/条件/后置动作
-        stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
+        StateMachineTransformDTO initTransform = modelMapper.map(instanceService.queryInitTransform(organizationId, stateMachineId), StateMachineTransformDTO.class);
+        stateMachineClient.createInstance(initTransform, inputDTO);
         issueService.afterCreateIssue(issueId, issueConvertDTO, issueCreateVO, projectInfo);
         return issueService.queryIssueCreate(issueCreateVO.getProjectId(), issueId);
     }
@@ -233,7 +234,8 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
         CreateSubIssuePayload createSubIssuePayload = new CreateSubIssuePayload(issueSubCreateVO, subIssueConvertDTO, projectInfo);
         InputDTO inputDTO = new InputDTO(issueId, JSON.toJSONString(createSubIssuePayload));
         //通过状态机客户端创建实例, 反射验证/条件/后置动作
-        stateMachineClient.createInstance(organizationId, stateMachineId, inputDTO);
+        StateMachineTransformDTO initTransform = modelMapper.map(instanceService.queryInitTransform(organizationId, stateMachineId), StateMachineTransformDTO.class);
+        stateMachineClient.createInstance(initTransform, inputDTO);
         issueService.afterCreateSubIssue(issueId, subIssueConvertDTO, issueSubCreateVO, projectInfo);
         return issueService.queryIssueSubByCreate(subIssueConvertDTO.getProjectId(), issueId);
     }

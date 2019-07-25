@@ -2,18 +2,19 @@ package io.choerodon.agile
 
 import com.alibaba.fastjson.JSON
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.choerodon.agile.app.eventhandler.AgileEventHandler
-import io.choerodon.agile.app.service.IssueAttachmentService
-import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.api.vo.event.OrganizationCreateEventPayload
 import io.choerodon.agile.api.vo.event.ProjectCreateAgilePayload
 import io.choerodon.agile.api.vo.event.ProjectEvent
 import io.choerodon.agile.api.vo.event.StatusPayload
-import io.choerodon.agile.infra.utils.SiteMsgUtil
+import io.choerodon.agile.app.eventhandler.AgileEventHandler
+import io.choerodon.agile.app.service.IssueAttachmentService
+import io.choerodon.agile.app.service.UserService
+import io.choerodon.agile.app.service.impl.IssueAttachmentServiceImpl
 import io.choerodon.agile.infra.dataobject.*
+import io.choerodon.agile.infra.enums.ProjectCategory
 import io.choerodon.agile.infra.feign.FileFeignClient
 import io.choerodon.agile.infra.mapper.*
-import io.choerodon.agile.app.service.UserService
+import io.choerodon.agile.infra.utils.SiteMsgUtil
 import io.choerodon.core.convertor.ApplicationContextHelper
 import io.choerodon.core.oauth.CustomUserDetails
 import io.choerodon.liquibase.LiquibaseConfig
@@ -145,9 +146,25 @@ class AgileTestConfiguration {
     void init() {
         //初始化表，有些初始化表Groovy在H2database中需要修改，所以拷贝了groovy脚本并修改，然后修改yml配置中的初始化脚本路径
         liquibaseExecutor.execute()
-        initSqlFunction()
         setTestRestTemplateJWT()
         applicationContextHelper.setApplicationContext(applicationContext)
+        initSqlFunction()
+        //初始化数据
+        initOrgProData()
+        initProjectData()
+//        initUserDetail()
+    }
+
+    void initOrgProData() {
+        OrganizationCreateEventPayload organizationEvent = new OrganizationCreateEventPayload()
+        organizationEvent.id = 1
+        agileEventHandler.handleOrgaizationCreateByConsumeSagaTask(JSON.toJSONString(organizationEvent))
+        ProjectEvent projectEvent = new ProjectEvent()
+        projectEvent.projectId = 1
+        projectEvent.projectCode = "test"
+        projectEvent.projectCategory = ProjectCategory.AGILE
+        agileEventHandler.handleProjectInitByConsumeSagaTask(JSON.toJSONString(projectEvent))
+        System.out.print("初始化数据成功")
     }
 
     void initSqlFunction() {
@@ -157,8 +174,8 @@ class AgileTestConfiguration {
                 getConnection(dataBaseUrl, dataBaseUsername, dataBasePassword)
         Statement stat = conn.createStatement()
         //创建 SQL的IF函数，用JAVA的方法代替函数
-        stat.execute("CREATE ALIAS IF NOT EXISTS IF FOR \"io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil.ifFunction\"")
-        stat.execute("CREATE ALIAS IF NOT EXISTS DATE_FORMAT FOR \"io.choerodon.agile.infra.common.utils.MybatisFunctionTestUtil.dataFormatFunction\"")
+        stat.execute("CREATE ALIAS IF NOT EXISTS IF FOR \"io.choerodon.agile.infra.utils.MybatisFunctionTestUtil.ifFunction\"")
+        stat.execute("CREATE ALIAS IF NOT EXISTS DATE_FORMAT FOR \"io.choerodon.agile.infra.utils.MybatisFunctionTestUtil.dataFormatFunction\"")
         stat.close()
         conn.close()
     }
@@ -174,8 +191,6 @@ class AgileTestConfiguration {
                 return clientHttpRequestExecution.execute(httpRequest, bytes)
             }
         }])
-        initProjectData()
-//        initUserDetail()
     }
 
 //    void initUserDetail() {
@@ -258,11 +273,6 @@ class AgileTestConfiguration {
         statusPayloads.add(statusPayload2)
         statusPayloads.add(statusPayload3)
         projectCreateAgilePayload.statusPayloads = statusPayloads
-        agileEventHandler.dealStateMachineInitProject(JSON.toJSONString(projectCreateAgilePayload))
-//        DeployStateMachinePayload deployStateMachinePayload = new DeployStateMachinePayload()
-//        Map<String, List<Long>> map = new HashMap<>(1)
-//        map.put("test", [1])
-//        deployStatusPayload.projectIdsMap = map
         OrganizationCreateEventPayload organizationCreateEventPayload = new OrganizationCreateEventPayload()
         organizationCreateEventPayload.setId(1L)
         String message = JSON.toJSONString(organizationCreateEventPayload)

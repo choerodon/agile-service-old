@@ -1,19 +1,17 @@
 package io.choerodon.agile.configure;
 
-import io.choerodon.agile.api.vo.*;
+import io.choerodon.agile.api.vo.ProjectRelationshipVO;
+import io.choerodon.agile.api.vo.ProjectVO;
 import io.choerodon.agile.app.service.impl.IssueServiceImpl;
 import io.choerodon.agile.app.service.impl.ProductVersionServiceImpl;
-import io.choerodon.agile.infra.feign.*;
-import io.choerodon.agile.infra.feign.fallback.NotifyFeignClientFallback;
+import io.choerodon.agile.infra.feign.IamFeignClient;
+import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.agile.infra.feign.fallback.IamFeignClientFallback;
+import io.choerodon.agile.infra.feign.fallback.NotifyFeignClientFallback;
 import io.choerodon.asgard.saga.dto.SagaInstanceDTO;
 import io.choerodon.asgard.saga.dto.StartInstanceDTO;
 import io.choerodon.asgard.saga.feign.SagaClient;
 import io.choerodon.core.convertor.ApplicationContextHelper;
-import io.choerodon.statemachine.dto.ExecuteResult;
-import io.choerodon.statemachine.dto.InputDTO;
-import io.choerodon.statemachine.dto.StateMachineTransformDTO;
-import io.choerodon.statemachine.feign.InstanceFeignClientFallback;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
@@ -23,11 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * @author dinghuang123@gmail.com

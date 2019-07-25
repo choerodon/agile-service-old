@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.ConfigCodeVO;
-import io.choerodon.agile.api.vo.PropertyData;
+import io.choerodon.statemachine.dto.PropertyData;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public interface ConfigCodeService {
     List<ConfigCodeVO> queryByTransformId(Long organizationId, Long transformId, String type);
 
     /**
-     * 处理eureka发现新服务时扫描到的ConfigCode
+     * 处理扫描到的ConfigCode
      *
      * @param propertyData
      */

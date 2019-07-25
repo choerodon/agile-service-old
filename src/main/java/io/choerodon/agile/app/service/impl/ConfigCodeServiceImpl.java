@@ -1,8 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.core.exception.CommonException;
 import io.choerodon.agile.api.vo.ConfigCodeVO;
-import io.choerodon.agile.api.vo.PropertyData;
 import io.choerodon.agile.app.service.ConfigCodeService;
 import io.choerodon.agile.infra.dataobject.ConfigCodeDTO;
 import io.choerodon.agile.infra.dataobject.StateMachineConfigDraftDTO;
@@ -10,6 +8,8 @@ import io.choerodon.agile.infra.enums.ConfigType;
 import io.choerodon.agile.infra.mapper.ConfigCodeMapper;
 import io.choerodon.agile.infra.mapper.StateMachineConfigDraftMapper;
 import io.choerodon.agile.infra.utils.EnumUtil;
+import io.choerodon.core.exception.CommonException;
+import io.choerodon.statemachine.dto.PropertyData;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
@@ -76,7 +76,8 @@ public class ConfigCodeServiceImpl implements ConfigCodeService {
         delete.setService(propertyData.getServiceName());
         configCodeMapper.delete(delete);
         //再插入扫描到的ConfigCode
-        List<ConfigCodeVO> configCodeVOS = propertyData.getList();
+        List<ConfigCodeDTO> configCodeVOS = modelMapper.map(propertyData.getList(), new TypeToken<List<ConfigCodeDTO>>() {
+        }.getType());
         configCodeVOS.forEach(configCode -> {
             configCode.setService(service);
             configCodeMapper.insert(modelMapper.map(configCode, ConfigCodeDTO.class));
