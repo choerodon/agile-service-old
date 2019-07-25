@@ -117,6 +117,9 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private ColumnStatusRelService columnStatusRelService;
+
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -169,13 +172,7 @@ public class BoardServiceImpl implements BoardService {
             ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO();
             columnStatusRelDTO.setColumnId(column.getColumnId());
             columnStatusRelDTO.setProjectId(projectId);
-            if (columnStatusRelMapper.select(columnStatusRelDTO).isEmpty()) {
-                return;
-            }
-            if (columnStatusRelMapper.delete(columnStatusRelDTO) == 0) {
-                throw new CommonException("error.ColumnStatus.delete");
-            }
-            redisUtil.deleteRedisCache(new String[]{"Agile:CumulativeFlowDiagram" + columnStatusRelDTO.getProjectId() + ':' + "*"});
+            columnStatusRelService.delete(columnStatusRelDTO);
             if (boardColumnMapper.deleteByPrimaryKey(column.getColumnId()) != 1) {
                 throw new CommonException("error.BoardColumn.delete");
             }

@@ -113,10 +113,10 @@ class IssueStatusControllerSpec extends Specification {
 
     def 'moveStatusToColumn'() {
         given:
-        IssueStatusDTO issueStatusDO = new IssueStatusDTO()
-        issueStatusDO.setName(statusName)
-        issueStatusDO.projectId = projectId
-        statusId = issueStatusMapper.selectOne(issueStatusDO).id
+        IssueStatusDTO issueStatusDTO = new IssueStatusDTO()
+        issueStatusDTO.setName(statusName)
+        issueStatusDTO.projectId = projectId
+        statusId = issueStatusMapper.selectOne(issueStatusDTO).id
         StatusMoveVO statusMoveDTO = new StatusMoveVO()
         statusMoveDTO.columnId = 1L
         statusMoveDTO.originColumnId = 0L
@@ -124,11 +124,11 @@ class IssueStatusControllerSpec extends Specification {
         statusMoveDTO.statusObjectVersionNumber = 1L
 
         and:
-        ColumnStatusRelDTO columnStatusRelDO = new ColumnStatusRelDTO()
-        columnStatusRelDO.projectId = projectId
-        columnStatusRelDO.columnId = 1L
-        columnStatusRelDO.statusId = statusId
-        columnStatusRelDO.position = 1
+        ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO()
+        columnStatusRelDTO.projectId = projectId
+        columnStatusRelDTO.columnId = 1L
+        columnStatusRelDTO.statusId = statusId
+        columnStatusRelDTO.position = 1
 
         when:
         HttpEntity<StatusMoveVO> statusMoveDTOHttpEntity = new HttpEntity<>(statusMoveDTO)
@@ -142,7 +142,7 @@ class IssueStatusControllerSpec extends Specification {
 
         then:
         entity.statusCode.is2xxSuccessful()
-        ColumnStatusRelDTO result = columnStatusRelMapper.selectOne(columnStatusRelDO)
+        ColumnStatusRelDTO result = columnStatusRelMapper.selectOne(columnStatusRelDTO)
         result != null
 
     }

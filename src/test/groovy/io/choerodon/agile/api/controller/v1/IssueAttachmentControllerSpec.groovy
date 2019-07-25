@@ -145,7 +145,7 @@ class IssueAttachmentControllerSpec extends Specification {
         List<String> result = entity.body
 
         expect: '设置值'
-        result.get(0) == "file_56a005f56a584047b538d5bf84b17d70_blob.png"
+        result.get(0) == "example.com/agile-service/file_56a005f56a584047b538d5bf84b17d70_blob.png"
     }
 }
 
