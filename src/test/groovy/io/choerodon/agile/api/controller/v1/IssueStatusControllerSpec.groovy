@@ -59,6 +59,9 @@ class IssueStatusControllerSpec extends Specification {
     @Shared
     Long statusId
 
+    @Shared
+    Long statusIdReal
+
     @Autowired
     private IssueFeignClient issueFeignClient
 
@@ -116,7 +119,9 @@ class IssueStatusControllerSpec extends Specification {
         IssueStatusDTO issueStatusDTO = new IssueStatusDTO()
         issueStatusDTO.setName(statusName)
         issueStatusDTO.projectId = projectId
-        statusId = issueStatusMapper.selectOne(issueStatusDTO).id
+        IssueStatusDTO res = issueStatusMapper.selectOne(issueStatusDTO)
+        statusId = res.id
+        statusIdReal = res.statusId
         StatusMoveVO statusMoveDTO = new StatusMoveVO()
         statusMoveDTO.columnId = 1L
         statusMoveDTO.originColumnId = 0L
@@ -127,7 +132,7 @@ class IssueStatusControllerSpec extends Specification {
         ColumnStatusRelDTO columnStatusRelDTO = new ColumnStatusRelDTO()
         columnStatusRelDTO.projectId = projectId
         columnStatusRelDTO.columnId = 1L
-        columnStatusRelDTO.statusId = statusId
+        columnStatusRelDTO.statusId = statusIdReal
         columnStatusRelDTO.position = 1
 
         when:
@@ -137,7 +142,7 @@ class IssueStatusControllerSpec extends Specification {
                 statusMoveDTOHttpEntity,
                 IssueStatusVO.class,
                 projectId,
-                statusId
+                statusIdReal
         )
 
         then:
@@ -156,7 +161,7 @@ class IssueStatusControllerSpec extends Specification {
         ColumnStatusRelDTO columnStatusRelDO = new ColumnStatusRelDTO()
         columnStatusRelDO.projectId = projectId
         columnStatusRelDO.columnId = 1L
-        columnStatusRelDO.statusId = statusId
+        columnStatusRelDO.statusId = statusIdReal
         columnStatusRelDO.position = 1
 
         when:
@@ -166,7 +171,7 @@ class IssueStatusControllerSpec extends Specification {
                 statusMoveDTOHttpEntity,
                 IssueStatusVO.class,
                 projectId,
-                statusId
+                statusIdReal
         )
 
         then:

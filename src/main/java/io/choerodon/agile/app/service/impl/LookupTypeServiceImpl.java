@@ -33,7 +33,7 @@ public class LookupTypeServiceImpl implements LookupTypeService {
 
     @Override
     public List<LookupTypeVO> listLookupType(Long project) {
-        return modelMapper.map(lookupTypeMapper.selectAll(), new TypeToken<LookupTypeVO>(){}.getType());
+        return modelMapper.map(lookupTypeMapper.selectAll(), new TypeToken<List<LookupTypeVO>>(){}.getType());
     }
 
 }

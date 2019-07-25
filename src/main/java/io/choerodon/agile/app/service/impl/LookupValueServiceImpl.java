@@ -48,7 +48,7 @@ public class LookupValueServiceImpl implements LookupValueService {
     public LookupTypeWithValuesVO queryConstraintLookupValue(Long projectId) {
         LookupTypeWithValuesDTO typeWithValues = lookupValueMapper.queryLookupValueByCode("constraint");
         LookupTypeWithValuesVO result = modelMapper.map(typeWithValues, LookupTypeWithValuesVO.class);
-        result.setLookupValues(modelMapper.map(typeWithValues.getLookupValues(), new TypeToken<LookupValueVO>(){}.getType()));
+        result.setLookupValues(modelMapper.map(typeWithValues.getLookupValues(), new TypeToken<List<LookupValueVO>>(){}.getType()));
         return result;
     }
 
