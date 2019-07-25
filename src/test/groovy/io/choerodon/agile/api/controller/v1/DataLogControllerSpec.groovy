@@ -32,7 +32,7 @@ class DataLogControllerSpec extends Specification {
     TestRestTemplate restTemplate
 
     @Autowired
-    UserService userRepository
+    UserService userService
 
     @Autowired
     private DataLogMapper dataLogMapper
@@ -57,7 +57,7 @@ class DataLogControllerSpec extends Specification {
 
         when:
         HttpEntity<DataLogCreateVO> dataLogDTOHttpEntity = new HttpEntity<>(createDTO)
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/feedback_data_log",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/data_log",
                 HttpMethod.POST,
                 dataLogDTOHttpEntity,
                 DataLogVO.class,
@@ -74,10 +74,10 @@ class DataLogControllerSpec extends Specification {
         Map<Long, UserMessageDTO> userMessageDOMap = new HashMap<>()
         UserMessageDTO userMessageDO = new UserMessageDTO("admin", "http://admin.png", "admin@gmail.com")
         userMessageDOMap.put(1, userMessageDO)
-        userRepository.queryUsersMap(*_) >> userMessageDOMap
+        userService.queryUsersMap(*_) >> userMessageDOMap
 
         when:
-        def entity = restTemplate.exchange("/v1/projects/{project_id}/feedback_data_log?issueId={issueId}",
+        def entity = restTemplate.exchange("/v1/projects/{project_id}/data_log?issueId={issueId}",
                 HttpMethod.GET,
                 new HttpEntity<>(),
                 List.class,

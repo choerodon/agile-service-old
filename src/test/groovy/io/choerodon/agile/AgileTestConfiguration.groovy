@@ -110,7 +110,7 @@ class AgileTestConfiguration {
     private ProductVersionMapper productVersionMapper
 
     @MockBean(name = "userService")
-    private UserService userRepository
+    private UserService userService
 
     @MockBean
     private SiteMsgUtil siteMsgUtil
