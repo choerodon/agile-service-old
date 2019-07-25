@@ -28,6 +28,7 @@ const MESSAGENOTIFICATION = asyncRouter(() => import('./project/MessageNotificat
 const FEEDBACK = asyncRouter(() => import('./project/Feedback'));
 
 const WORKCALENDARINDEX = asyncRouter(() => import('./organization/WorkCalendar'));
+const WorkList = asyncRouter(() => import('./project/WorkList'));
 
 const IssueTypeIndex = asyncRouter(() => import('./organization/issueType'));
 const IssueTypeSchemeIndex = asyncRouter(() => import('./organization/issueTypeScheme'));
@@ -61,12 +62,13 @@ class AGILEIndex extends React.Component {
           <Switch>
             {/* 发布版本 */}
             <Route path={`${match.url}/release`} component={RELEASEINDEX} />
+            <Route path={`${match.url}/work-list`} component={WorkList} />
             {/* 待办事项 */}
-            <Route path={`${match.url}/backlog`} component={BACKLOGINDEX} />
+            {/* <Route path={`${match.url}/backlog`} component={BACKLOGINDEX} /> */}
             {/* 活跃冲刺 */}
             <Route path={`${match.url}/scrumboard`} component={SCRUMBOARDINDEX} />
             {/* 问题管理 */}
-            <Route path={`${match.url}/issue`} component={ISSUEIndex} />
+            {/* <Route path={`${match.url}/issue`} component={ISSUEIndex} /> */}
             {/* 模块管理 */}
             <Route path={`${match.url}/component`} component={COMPONENTIndex} />
             {/* 报告 */}
