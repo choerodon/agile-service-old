@@ -1,0 +1,27 @@
+.c7n-feedback {
+  .c7n-spin-nested-loading {
+    height: 100%;
+  }
+  .c7n-spin-container {
+    height: 100%;
+  }
+  .feedback-main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow: auto;
+  }
+  .feedback-sidebar {
+    width: 370px;
+    padding: 0 24px;
+    border-left: 1px solid #d3d3d3;
+    overflow: auto;
+  }
+
+  .c7n-loadWrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 220px;
+  }
+}
