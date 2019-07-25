@@ -1,0 +1,33 @@
+.c7nagile-upload-button {
+  display: flex;
+
+  .c7n-upload {
+    order: 1;
+    align-self: flex-end;
+    margin-left: 5px;
+  }
+
+  .c7n-upload-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: 10px;
+
+    .c7n-upload-list-item {
+      height: 0.3rem;
+      line-height: 0.3rem;
+
+      .icon-attach_file {
+        top: 0.08rem;
+      }
+
+      .icon-close {
+        top: 0.05rem;
+        font-size: 14px;
+      }
+
+      .c7n-upload-list-item-info {
+        padding-right: 0.22rem;
+      }
+    }
+  }
+}

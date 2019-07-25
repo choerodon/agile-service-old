@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192px" height="166px" viewBox="0 0 192 166" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>pi-target</title>
+    <desc>Created with Sketch.</desc>
+    <g id="SAFe" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="illustrations" transform="translate(-202.000000, -1184.000000)">
+            <g id="pi-target" transform="translate(202.000000, 1184.000000)">
+                <g id="分组-8">
+                    <rect id="Rectangle-8" fill="#DEE0ED" x="0" y="20" width="134" height="146" rx="6"></rect>
+                    <path d="M16,10 L118.476995,10 L144,33.7631788 L144,150 C144,153.313708 141.313708,156 138,156 L16,156 C12.6862915,156 10,153.313708 10,150 L10,16 C10,12.6862915 12.6862915,10 16,10 Z" id="Rectangle-8-Copy-3" fill="#E8EAF4"></path>
+                    <path d="M26,6.39488462e-14 L124,1.10844667e-12 L154,30 L154,140 C154,143.313708 151.313708,146 148,146 L26,146 C22.6862915,146 20,143.313708 20,140 L20,6 C20,2.6862915 22.6862915,6.08718376e-16 26,0 Z" id="Rectangle-8-Copy" fill="#F2F4FD"></path>
+                    <circle id="Oval-2" fill="#DEE0ED" cx="47" cy="31" r="9"></circle>
+                    <circle id="Oval-2-Copy" fill="#DEE0ED" cx="47" cy="59" r="9"></circle>
+                    <circle id="Oval-2-Copy-3" fill="#DEE0ED" cx="47" cy="87" r="9"></circle>
+                    <circle id="Oval-2-Copy-4" fill="#DEE0ED" cx="47" cy="115" r="9"></circle>
+                    <rect id="Rectangle-9" fill="#E8EAF4" x="66" y="25" width="66" height="4" rx="2"></rect>
+                    <rect id="Rectangle-9-Copy" fill="#E8EAF4" x="66" y="53" width="66" height="4" rx="2"></rect>
+                    <rect id="Rectangle-9-Copy-5" fill="#E8EAF4" x="66" y="81" width="66" height="4" rx="2"></rect>
+                    <rect id="Rectangle-9-Copy-9" fill="#E8EAF4" x="66" y="109" width="66" height="4" rx="2"></rect>
+                    <rect id="Rectangle-9-Copy-3" fill="#E8EAF4" x="66" y="33" width="37" height="4" rx="2"></rect>
+                    <rect id="Rectangle-9-Copy-4" fill="#E8EAF4" x="66" y="61" width="37" height="4" rx="2"></rect>
+                    <rect id="Rectangle-9-Copy-6" fill="#E8EAF4" x="66" y="89" width="37" height="4" rx="2"></rect>
+                    <rect id="Rectangle-9-Copy-10" fill="#E8EAF4" x="66" y="117" width="37" height="4" rx="2"></rect>
+                    <path d="M124,0 L148,0 C151.313708,-6.08718376e-16 154,2.6862915 154,6 L154,30 L124,0 Z" id="Rectangle-8-Copy-2" fill="#DEE0ED" transform="translate(139.000000, 15.000000) scale(-1, -1) translate(-139.000000, -15.000000) "></path>
+                </g>
+                <g id="分组-10" transform="translate(72.000000, 46.000000)">
+                    <circle id="椭圆形" fill="#6776C4" cx="50.6969697" cy="69.0909091" r="50.6363636"></circle>
+                    <circle id="椭圆形" fill="#2A2E76" cx="50.6969697" cy="69.0909091" r="37.6363636"></circle>
+                    <circle id="椭圆形" fill="#FFBA1C" cx="50.6969697" cy="69.0909091" r="24.0909091"></circle>
+                    <circle id="椭圆形" fill="#2A2E76" cx="50.6969697" cy="69.0909091" r="11.5454545"></circle>
+                    <g id="分组-9" transform="translate(80.426560, 39.426560) rotate(45.000000) translate(-80.426560, -39.426560) translate(65.881105, -1.785561)">
+                        <rect id="矩形" fill="#CFD5F1" x="12.1212121" y="12.1212121" width="4.84848485" height="70.3030303"></rect>
+                        <polygon id="矩形" fill="#3D42A3" points="16.969697 12.1212121 29.0909091 0 29.0909091 19.3939394 16.969697 31.5151515"></polygon>
+                        <polygon id="矩形-copy-9" fill="#3D42A3" transform="translate(6.060606, 15.757576) scale(-1, 1) translate(-6.060606, -15.757576) " points="0 12.1212121 12.1212121 0 12.1212121 19.3939394 0 31.5151515"></polygon>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

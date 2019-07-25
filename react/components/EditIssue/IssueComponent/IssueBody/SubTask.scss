@@ -1,0 +1,29 @@
+.c7n-subTask {
+  &-quickCreate {
+    padding: 15px 0 0 26px;
+
+    .c7n-input-length-info {
+      display: none;
+    }
+  }
+
+  &-progress {
+    padding-left: 25px;
+    margin-bottom: 25px;
+
+    .c7n-progress-bg {
+      background-color: #00bfa5;
+    }
+  }
+
+  &-icon {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    color: rgba(0, 0, 0, .65);
+    background: rgba(0, 0, 0, 0.08);
+    font-size: 13px;
+    text-align: center;
+    cursor: pointer;
+  }
+}
