@@ -24,12 +24,13 @@ class ProjectSetting extends Component {
     this.state = {
       origin: {},
       loading: false,
-      couldUpdate: false,
       originUsers: [],
-
       code: undefined,
       strategy: undefined,
       assignee: undefined,
+      hasNextPage: false,
+      page: 1,
+      input: '',
     };
   }
 
@@ -72,6 +73,7 @@ class ProjectSetting extends Component {
   }
 
   loadUser(assigneeId) {
+    // console.log(assigneeId)
     getUser(assigneeId).then((res) => {
       this.setState({
         assignee: assigneeId,
@@ -84,14 +86,20 @@ class ProjectSetting extends Component {
   }
 
   onFilterChange(input) {
+    this.setState({
+      page: 1,
+      // originUsers: [],
+    });
     if (!sign) {
       this.setState({
         selectLoading: true,
       });
-      getUsers(input).then((res) => {
+      getUsers(input, undefined, this.state.page).then((res) => {
         this.setState({
           originUsers: res.list.filter(u => u.enabled),
           selectLoading: false,
+          hasNextPage: res.hasNextPage,
+          input,
         });
       });
       sign = true;
@@ -104,10 +112,13 @@ class ProjectSetting extends Component {
     this.setState({
       selectLoading: true,
     });
-    getUsers(input).then((res) => {
+    getUsers(input, undefined, this.state.page).then((res) => {
       this.setState({
         originUsers: res.list.filter(u => u.enabled),
         selectLoading: false,
+        page: 1,
+        hasNextPage: res.hasNextPage,
+        input,
       });
     });
   }, 500);
@@ -115,12 +126,12 @@ class ProjectSetting extends Component {
   handleCheckSameName = (rule, value, callback) => {
     if (!value) {
       this.setState({
-        couldUpdate: false,
+        // couldUpdate: false,
       });
       callback('项目code不能为空');
     } else if (value === this.state.origin.projectCode) {
       this.setState({
-        couldUpdate: false,
+        // couldUpdate: false,
       });
       callback();
     } else {
@@ -139,7 +150,7 @@ class ProjectSetting extends Component {
       //     }
       //   });
       this.setState({
-        couldUpdate: true,
+        // couldUpdate: true,
       });
       callback();
     }
@@ -165,7 +176,7 @@ class ProjectSetting extends Component {
               this.setState({
                 origin: res,
                 loading: false,
-                couldUpdate: false,
+                // couldUpdate: false,
                 code: res.projectCode,
                 strategy: res.defaultAssigneeType,
                 assignee: res.defaultAssigneeId,
@@ -182,6 +193,21 @@ class ProjectSetting extends Component {
       }
     });
   };
+
+  loadMore = () => {
+    const { page, originUsers, input } = this.state;
+    this.setState({
+      selectLoading: true,
+    });
+    getUsers(input, undefined, page + 1).then((res) => {
+      this.setState({
+        originUsers: [...originUsers, ...res.list.filter(u => u.enabled)],
+        selectLoading: false,
+        page: page + 1,
+        hasNextPage: res.hasNextPage,
+      });
+    });
+  }
 
   render() {
     const { getFieldDecorator, isModifiedFields, getFieldValue } = this.props.form;
@@ -264,6 +290,14 @@ class ProjectSetting extends Component {
                         </div>
                       </Option>
                     ))}
+                    <Option key="loadMore" disabled style={{ display: this.state.hasNextPage ? '' : 'none', cursor: 'auto' }}>
+                      <Button
+                        style={{ width: '100%', textAlign: 'left' }}
+                        onClick={this.loadMore}
+                      >
+                        加载更多
+                      </Button>
+                    </Option>
                   </Select>,
                 )}
               </FormItem>
