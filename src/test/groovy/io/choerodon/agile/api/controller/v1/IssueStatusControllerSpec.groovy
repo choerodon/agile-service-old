@@ -61,15 +61,6 @@ class IssueStatusControllerSpec extends Specification {
     @Shared
     Long statusId
 
-<<<<<<< HEAD
-    @Shared
-    Long statusIdReal
-
-    @Autowired
-    private IssueFeignClient issueFeignClient
-
-=======
->>>>>>> [IMP] 合并issue服务，去掉部分Feign调用
     @Shared
     Long boardId = 1L
 
