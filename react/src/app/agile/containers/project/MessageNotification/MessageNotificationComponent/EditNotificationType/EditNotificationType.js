@@ -167,7 +167,7 @@ class EditNotificationType extends Component {
             }
 
             {
-              this.state.isHasNextPage ? <Option key="9999" disabled className="c7n-hidden-my"><Button onClick={this.handleCheckNextPage}>更多内容</Button></Option> : <Option key="9998" disabled className="c7n-hidden-icon"><span>没有更多了</span></Option>
+              this.state.isHasNextPage && <Option key="9999" disabled className="c7n-hidden-my"><Button onClick={this.handleCheckNextPage} type="primary" style={{ backgroundColor: 'transparent' }}>更多</Button></Option>
             }
           </Select>
 

@@ -292,10 +292,10 @@ class ProjectSetting extends Component {
                     ))}
                     <Option key="loadMore" disabled style={{ display: this.state.hasNextPage ? '' : 'none', cursor: 'auto' }}>
                       <Button
-                        style={{ width: '100%', textAlign: 'left' }}
+                        style={{ width: '100%', textAlign: 'left', backgroundColor: 'transparent' }}
                         onClick={this.loadMore}
                       >
-                        加载更多
+                        更多
                       </Button>
                     </Option>
                   </Select>,

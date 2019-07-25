@@ -4,5 +4,10 @@
   }
   .loadMore-option {
     cursor: auto;
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      background-color: transparent;
+    }
   }
 }

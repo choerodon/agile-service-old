@@ -231,7 +231,7 @@ class AddComponent extends Component {
                     }
                     {
                       canLoadMore && <Option key='loadMore' disabled className='loadMore-option'>
-                        <Button type="primary" onClick={this.loadMoreUsers}>加载更多</Button>
+                        <Button type="primary" onClick={this.loadMoreUsers} className="option-btn">更多</Button>
                       </Option>
                     }
                   </Select> ,
