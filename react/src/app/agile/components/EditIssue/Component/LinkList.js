@@ -106,10 +106,10 @@ class IssueList extends Component {
           width: '48px', marginRight: '15px', display: 'flex', justifyContent: 'flex-end', 
         }}
         >
-          <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${issue.statusMapVO.name}`}>
+          <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${issue.statusVO.name}`}>
             <div>
               <StatusTag
-                data={issue.statusMapVO}
+                data={issue.statusVO}
               />
             </div>
           </Tooltip>

@@ -6,7 +6,7 @@ export function getRoadMapInProject(programId) {
   return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/road_map?programId=${programId}&organizationId=${getOrganizationId()}`);
 }
 export function loadIssue(issueId, programId) {
-  return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/issue/${issueId}?programId=${programId}&organizationId=${getOrganizationId()}`);
+  return axios.get(`/agile/v1/projects/${getProjectId()}/project_invoke_program/agile/${issueId}?programId=${programId}&organizationId=${getOrganizationId()}`);
 }
 export function loadDatalogs(issueId, programId) {
   return axios.get(`agile/v1/projects/${getProjectId()}/project_invoke_program/datalog?programId=${programId}&issueId=${issueId}`);
@@ -16,7 +16,7 @@ export function loadDatalogs(issueId, programId) {
  * @returns {V|*}
  */
 export function getFieldAndValue(id, dto, programId) {  
-  return axios.post(`/issue/v1/projects/${getProjectId()}/field_value/list/${id}?programId=${programId}&organizationId=${getOrganizationId()}`, dto);
+  return axios.post(`/agile/v1/projects/${getProjectId()}/field_value/list/${id}?programId=${programId}&organizationId=${getOrganizationId()}`, dto);
 }
 export function getBoard(programId, filter) {
   return axios.post(`/agile/v1/projects/${getProjectId()}/project_invoke_program/query_board_info?programId=${programId}`, filter);

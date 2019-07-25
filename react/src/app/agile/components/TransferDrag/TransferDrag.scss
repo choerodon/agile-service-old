@@ -1,0 +1,47 @@
+.issue-issueTypeDrag-content {
+  background: #ECECEC;
+  padding: 20px;
+  width: 787px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.issue-issueTypeDrag-card {
+  background: #FFFFFF;
+  border-radius: 4px;
+  width: 363px;
+
+  .c7n-card-body {
+    height: calc(100% - 55px);
+  }
+}
+
+.issue-issueTypeDrag-drop {
+  min-height: 170px;
+  height: 100%;
+}
+
+.issue-issueTypeDrag-drag {
+  height: 20px;
+  margin-right: 10px;
+  vertical-align: top;
+}
+
+.issue-issueTypeDrag-icon {
+  margin-right: 10px;
+  vertical-align: top;
+}
+
+.issue-issueTypeDrag-des {
+  margin-bottom: 10px;
+}
+
+.issue-transferDrag-error {
+  border: 1px solid #d50000;
+  border-radius: 4px;
+}
+
+.issue-transferDrag-error-tip {
+  color: #d50000;
+  margin-top: 3px;
+}

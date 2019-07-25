@@ -259,7 +259,7 @@ class ScrumBoardStore {
   }
 
   axiosCanAddStatus() {
-    axios.get(`/issue/v1/projects/${AppState.currentMenuType.id}/schemes/check_create_status_for_agile?applyType=agile`)
+    axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/schemes/check_create_status_for_agile?applyType=agile`)
       .then((data) => {
         this.setCanAddStatus(data);
       })
@@ -452,7 +452,7 @@ class ScrumBoardStore {
   setTransFromData(parentIssue, parentId) {
     const projectId = AppState.currentMenuType.id;
     axios.get(
-      `/issue/v1/projects/${projectId}/schemes/query_transforms?current_status_id=${parentIssue.statusId}&issue_id=${parentIssue.issueId}&issue_type_id=${parentIssue.issueTypeId}&apply_type=agile`,
+      `/agile/v1/projects/${projectId}/schemes/query_transforms?current_status_id=${parentIssue.statusId}&issue_id=${parentIssue.issueId}&issue_type_id=${parentIssue.issueTypeId}&apply_type=agile`,
     ).then(
       action('fetchSuccess', (res) => {
         this.updatedParentIssue = this.interconnectedData.get(parentId);
@@ -725,7 +725,7 @@ class ScrumBoardStore {
   }
 
   axiosStatusCanBeDelete(code) {
-    return axios.get(`/issue/v1/projects/${AppState.currentMenuType.id}/schemes/check_remove_status_for_agile?status_id=${code}&applyType=agile`);
+    return axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/schemes/check_remove_status_for_agile?status_id=${code}&applyType=agile`);
   }
 
   axiosDeleteStatus(code) {
@@ -766,7 +766,7 @@ class ScrumBoardStore {
       rankFlag: true,
     };
     const { id: transformId } = this.stateMachineMap[issueTypeId] ? this.stateMachineMap[issueTypeId][startStatus].find(issue => issue.endStatusId === parseInt(destinationStatus, 10)) : this.stateMachineMap[0][startStatus].find(issue => issue.endStatusId === parseInt(destinationStatus, 10));
-    return axios.post(`/agile/v1/projects/${proId}/board/issue/${issueId}/move?transformId=${transformId}`, data);
+    return axios.post(`/agile/v1/projects/${proId}/board/agile/${issueId}/move?transformId=${transformId}`, data);
   };
 
   moveStatusToUnset(code, data) {
@@ -849,19 +849,19 @@ class ScrumBoardStore {
 
   axiosGetIssueTypes() {
     const proId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=agile`);
+    return axios.get(`/agile/v1/projects/${proId}/schemes/query_issue_types_with_sm_id?apply_type=agile`);
   }
 
   loadTransforms = (statusId, issueId, typeId) => {
     const projectId = AppState.currentMenuType.id;
     return axios.get(
-      `/issue/v1/projects/${projectId}/schemes/query_transforms?current_status_id=${statusId}&issue_id=${issueId}&issue_type_id=${typeId}&apply_type=agile`,
+      `/agile/v1/projects/${projectId}/schemes/query_transforms?current_status_id=${statusId}&issue_id=${issueId}&issue_type_id=${typeId}&apply_type=agile`,
     );
   }
 
   loadStatus = () => {
     const projectId = AppState.currentMenuType.id;
-    axios.get(`/issue/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=agile`).then((data) => {
+    axios.get(`/agile/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=agile`).then((data) => {
       if (data && !data.failed) {
         this.setStatusList(data);
       } else {
@@ -874,7 +874,7 @@ class ScrumBoardStore {
 
   axiosGetStateMachine = () => {
     const projectId = AppState.currentMenuType.id;
-    return axios.get(`/issue/v1/projects/${projectId}/schemes/query_transforms_map?apply_type=agile`);
+    return axios.get(`/agile/v1/projects/${projectId}/schemes/query_transforms_map?apply_type=agile`);
   }
 
   axiosUpdateIssue(data) {

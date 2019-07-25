@@ -1,0 +1,19 @@
+.issue-issueType-list-tip {
+  margin-bottom: 20px;
+}
+.issue-issueTypeColor-picker{
+  .issue-issueTypeColor-swatch{
+    padding: 3px;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.246);
+    display: inline-block;
+    cursor: pointer;
+
+    .issue-issueTypeColor-color {
+      width: 80px;
+      height: 18px;
+      border-radius: 2px;
+    }
+  }
+}

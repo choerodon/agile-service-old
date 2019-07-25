@@ -1,0 +1,36 @@
+.issue-issueTypeScheme {
+  &-ul {
+    padding-left: 16px;
+    margin-bottom: 0;
+  }
+
+  &-type {
+    margin: 3px 0;
+  }
+
+  &-icon {
+    vertical-align: text-bottom;
+    margin-right: 10px;
+  }
+
+  &-list-tip {
+    margin-bottom: 20px;
+    font-size: 14px;
+    width: 520px;
+  }
+
+  &-table-col {
+    vertical-align: top;
+  }
+}
+
+.issue-issueType {
+  &-tip {
+    font-size: 14px;
+    margin: 10px 0;
+  }
+
+  &-bold {
+    font-weight: 500;
+  }
+}

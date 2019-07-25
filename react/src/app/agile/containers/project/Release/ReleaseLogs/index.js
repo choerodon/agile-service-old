@@ -65,7 +65,7 @@ class ReleaseLogs extends Component {
 
   loadIssueTypes = () => {
     const projectId = AppState.currentMenuType.id;
-    axios.get(`/issue/v1/projects/${projectId}/schemes/query_issue_types?apply_type=agile`)
+    axios.get(`/agile/v1/projects/${projectId}/schemes/query_issue_types?apply_type=agile`)
       .then((res) => {
         if (res && !res.failed) {
           this.setState({ issueTypeData: res });

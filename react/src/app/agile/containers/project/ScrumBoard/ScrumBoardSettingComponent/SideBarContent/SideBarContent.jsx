@@ -127,7 +127,7 @@ class SideBarContent extends Component {
       return;
     }
     const { store, form } = this.props;
-    axios.get(`issue/v1/projects/${AppState.currentMenuType.id}/status/project_check_name?organization_id=${AppState.currentMenuType.organizationId}&name=${value}`).then((res) => {
+    axios.get(`agile/v1/projects/${AppState.currentMenuType.id}/status/project_check_name?organization_id=${AppState.currentMenuType.organizationId}&name=${value}`).then((res) => {
       if (res.statusExist) {
         this.setState({
           statusType: res.type,

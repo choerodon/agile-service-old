@@ -80,9 +80,9 @@ export function Priority({ record }) {
  */
 export function StatusName({ record }) {
   return (
-    <Tooltip mouseEnterDelay={0.5} title={`问题状态： ${record.statusMapVO && record.statusMapVO.name}`}>
+    <Tooltip mouseEnterDelay={0.5} title={`问题状态： ${record.statusVO && record.statusVO.name}`}>
       <StatusTag
-        data={record.statusMapVO}
+        data={record.statusVO}
         style={{ display: 'inline-block', verticalAlign: 'middle' }}
       />
     </Tooltip>

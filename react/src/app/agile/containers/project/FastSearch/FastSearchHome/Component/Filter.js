@@ -230,13 +230,13 @@ class AddComponent extends Component {
         name: 'realName',
       },
       priority: {
-        url: `/issue/v1/projects/${projectId}/priority/list_by_org`,
+        url: `/agile/v1/projects/${projectId}/priority/list_by_org`,
         prop: '',
         id: 'id',
         name: 'name',
       },
       status: {
-        url: `/issue/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=agile`,
+        url: `/agile/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=agile`,
         prop: '',
         id: 'id',
         name: 'name',
@@ -299,7 +299,7 @@ class AddComponent extends Component {
         name: 'name',
       },
       issue_type: {
-        url: `/issue/v1/projects/${projectId}/schemes/query_issue_types?apply_type=agile`,
+        url: `/agile/v1/projects/${projectId}/schemes/query_issue_types?apply_type=agile`,
         prop: '',
         id: 'typeCode',
         name: 'name',
@@ -447,13 +447,13 @@ class AddComponent extends Component {
         name: 'realName',
       },
       priority: {
-        url: `/issue/v1/projects/${projectId}/priority/list_by_org`,
+        url: `/agile/v1/projects/${projectId}/priority/list_by_org`,
         prop: '',
         id: 'id',
         name: 'name',
       },
       status: {
-        url: `/issue/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=agile`,
+        url: `/agile/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=agile`,
         prop: '',
         id: 'id',
         name: 'name',

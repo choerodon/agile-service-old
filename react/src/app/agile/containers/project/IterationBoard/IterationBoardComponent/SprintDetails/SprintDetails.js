@@ -297,11 +297,11 @@ class SprintDetails extends Component {
         width: 40,
         render: (text, record) => (
           <div>
-            <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${record.statusMapVO.name}`}>
+            <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${record.statusVO.name}`}>
               <div>
                 <StatusTag
                   style={{ minWidth: 40 }}
-                  data={record.statusMapVO}
+                  data={record.statusVO}
                 />
               </div>
             </Tooltip>

@@ -33,7 +33,7 @@ class SprintIssue extends Component {
             data={item.issueTypeVO}
           />
           <div className="c7n-backlog-IssueCard-left-summaryContainer">
-            <div className="c7n-backlog-IssueCard-left-issueNum" style={{ textDecoration: item.statusMapVO && item.statusMapVO.completed ? 'line-through' : 'none' }}>
+            <div className="c7n-backlog-IssueCard-left-issueNum" style={{ textDecoration: item.statusVO && item.statusVO.completed ? 'line-through' : 'none' }}>
               {`${item.issueNum}`}
             </div>
             <Tooltip title={item.summary} placement="topLeft">
@@ -93,10 +93,10 @@ class SprintIssue extends Component {
               }}
             />
             )}
-            <Tooltip title={`状态: ${item.statusMapVO ? item.statusMapVO.name : ''}`}>
+            <Tooltip title={`状态: ${item.statusVO ? item.statusVO.name : ''}`}>
               <div className="c7n-backlog-IssueCard-right-status">
                 <StatusTag
-                  data={item.statusMapVO}
+                  data={item.statusVO}
                 />
               </div>
             </Tooltip>

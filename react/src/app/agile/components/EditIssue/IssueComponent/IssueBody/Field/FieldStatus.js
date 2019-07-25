@@ -98,8 +98,8 @@ const { Text, Edit } = TextEditToggle;
     const { selectLoading, originStatus } = this.state;
     const { store, disabled } = this.props;
     const issue = store.getIssue;
-    const { statusMapVO = {}, statusId } = issue;
-    const { type, name } = statusMapVO;
+    const { statusVO = {}, statusId } = issue;
+    const { type, name } = statusVO;
     return (
       <div className="line-start mt-10">
         <div className="c7n-property-wrapper">

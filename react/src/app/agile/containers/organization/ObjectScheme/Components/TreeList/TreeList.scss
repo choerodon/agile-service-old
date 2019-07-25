@@ -1,0 +1,31 @@
+.issue-treeList {
+  &-content {
+    background: #ECECEC;
+    padding: 20px;
+    width: 520px;
+    display: flex;
+    justify-content: space-between;
+    & .draggable-tree .c7n-tree-node-content-wrapper {
+      width: 93%;
+      height: 29px;
+    }
+  }
+  &-des {
+    margin-bottom: 10px;
+  }
+  &-addBtn {
+    color: #3F51B5;
+  }
+  &-card {
+    background: #FFF;
+    border-radius: 4px;
+    width: 480px;
+    & .c7n-card-body {
+      height: calc(100% - 55px);
+    }
+    & .c7n-card-head-title {
+      line-height: 35px;
+    }
+  }
+}
+

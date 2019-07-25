@@ -1,0 +1,16 @@
+.issue-tips {
+  margin-bottom: 20px;
+  width: 520px;
+  font-size: 14px;
+
+  .emphasize-snippit {
+    font-weight: bold;
+  }
+
+  p {
+    margin-bottom: 5px;
+  }
+  p:last-child {
+    margin-bottom: 0;
+  }
+}

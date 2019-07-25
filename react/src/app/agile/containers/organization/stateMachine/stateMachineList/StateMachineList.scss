@@ -1,0 +1,23 @@
+.issue-state-machine {
+  &-tip {
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  &-del {
+    &-tip {
+      margin-top: 10px;
+    }
+    &-content {
+      margin-top: 20px;
+      &-name {
+        font-size: 14px;
+        color: #000000;
+        font-weight: 500;
+        margin-left: 5px;
+      }
+    }
+  }
+  &-related {
+    padding-left: 17px;
+  }
+}

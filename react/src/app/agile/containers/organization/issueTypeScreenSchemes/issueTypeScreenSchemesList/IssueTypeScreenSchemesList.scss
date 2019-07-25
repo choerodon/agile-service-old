@@ -1,0 +1,30 @@
+.issue-type-page-scheme{
+  &-create-btn {
+    font-size: 14px;
+    color: #3F51B5;
+  }
+  &-project {
+    font-size: 14px;
+    color: #3F51B5;
+    cursor: pointer;
+  }
+  &-tips {
+    width: 520px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #000000;
+    margin-bottom: 30px;
+
+    & p:nth-child(2) {
+      margin-top: 5px;
+    }
+  }
+  &-tip {
+    font-size: 14px;
+    margin: 10px 0;
+  }
+  &-icon {
+    vertical-align: text-bottom;
+    margin-right: 5px;
+  }
+}

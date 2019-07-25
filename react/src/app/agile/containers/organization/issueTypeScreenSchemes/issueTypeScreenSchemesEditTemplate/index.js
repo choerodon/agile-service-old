@@ -1,0 +1,3 @@
+import IssueTypeScreenSchemesEditTemplate from './IssueTypeScreenSchemesEditTemplate';
+
+export default IssueTypeScreenSchemesEditTemplate;
