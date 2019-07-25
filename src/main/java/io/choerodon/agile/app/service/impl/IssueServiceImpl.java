@@ -182,6 +182,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String PARENT_ISSUE_ID = "parentIssueId";
     private static final String EPIC_SEQUENCE = "epicSequence";
     private static final String ISSUE_TYPE_ID = "issueTypeId";
+    private static final String RELATE_ISSUE_ID = "relateIssueId";
     private static final String EPIC_COLOR_TYPE = "epic_color";
     private static final String STORY_TYPE = "story";
     private static final String ASSIGNEE = "assignee";
@@ -1149,6 +1150,13 @@ public class IssueServiceImpl implements IssueService {
         if (STORY_TYPE.equals(issueConvertDTO.getTypeCode()) && issueConvertDTO.getStoryPoints() != null) {
             issueConvertDTO.setStoryPoints(null);
         }
+        if (originType.equals("bug") && (issueConvertDTO.getRelateIssueId() != null && !Objects.equals(issueConvertDTO.getRelateIssueId(), 0L))) {
+            issueConvertDTO.setRelateIssueId(null);
+        }
+        if ((originType.equals("story") || originType.equals("task"))
+                && (!Objects.equals(issueUpdateTypeVO.getTypeCode(), "story") && !Objects.equals(issueUpdateTypeVO.getTypeCode(), "task"))) {
+            issueMapper.updateSubBugRelateIssueId(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId());
+        }
         if (issueUpdateTypeVO.getTypeCode().equals(ISSUE_EPIC)) {
             issueConvertDTO.setRank(null);
             issueConvertDTO.setTypeCode(issueUpdateTypeVO.getTypeCode());
@@ -1173,7 +1181,7 @@ public class IssueServiceImpl implements IssueService {
             issueConvertDTO.setTypeCode(issueUpdateTypeVO.getTypeCode());
         }
         issueConvertDTO.setIssueTypeId(issueUpdateTypeVO.getIssueTypeId());
-        issueAccessDataService.update(issueConvertDTO, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID});
+        issueAccessDataService.update(issueConvertDTO, new String[]{TYPE_CODE_FIELD, REMAIN_TIME_FIELD, PARENT_ISSUE_ID, EPIC_NAME_FIELD, COLOR_CODE_FIELD, EPIC_ID_FIELD, STORY_POINTS_FIELD, RANK_FIELD, EPIC_SEQUENCE, ISSUE_TYPE_ID, RELATE_ISSUE_ID});
         return queryIssue(issueConvertDTO.getProjectId(), issueConvertDTO.getIssueId(), organizationId);
     }
 

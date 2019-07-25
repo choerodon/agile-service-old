@@ -3246,4 +3246,12 @@
         AND ai.apply_type = 'agile'
         AND ai.issue_num = #{issueNum}
     </select>
+
+    <update id="updateSubBugRelateIssueId">
+        update agile_issue
+        set relate_issue_id = null
+        where project_id = #{projectId} and relate_issue_id = #{issueId}
+    </update>
+
+
 </mapper>
