@@ -115,6 +115,9 @@ class BacklogHome extends Component {
 
   refresh = (spinIf = true) => {
     const { BacklogStore } = this.props;
+    if (this.IssueDetail) {
+      this.IssueDetail.refreshIssueDetail();
+    }    
     if (spinIf) {
       BacklogStore.setSpinIf(true);
     }

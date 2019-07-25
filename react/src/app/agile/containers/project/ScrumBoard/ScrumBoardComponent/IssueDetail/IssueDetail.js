@@ -9,18 +9,16 @@ class IssueDetail extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.EditIssue = React.createRef();  
+    ScrumBoardStore.setEditRef(this.EditIssue);
   }
-
-  onRef = (ref) => {
-    ScrumBoardStore.setEditRef(ref);
-  };
 
   render() {
     const { refresh } = this.props;
     return ScrumBoardStore.getClickedIssue ? (
       <EditIssue
         store={ScrumBoardStore}
-        onRef={this.onRef}
+        forwardedRef={this.EditIssue}
         backUrl="scrumboard"        
         issueId={ScrumBoardStore.getCurrentClickId}
         onCancel={() => {

@@ -1108,10 +1108,6 @@ class ScrumBoardStore {
   @action setEditRef(ref) {
     this.editRef = ref;
   }
-
-  @computed get getEditRef() {
-    return this.editRef;
-  }
 }
 
 const scrumBoardStore = new ScrumBoardStore();

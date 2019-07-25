@@ -31,9 +31,9 @@ const IssueBody = (props) => {
           <IssueDes {...props} />
           <IssueAttachment {...props} />
           {issueTypeVO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeVO.typeCode) === -1
-            ? <IssueDoc {...props} /> : ''
+            ? <IssueDoc /> : ''
           }
-          {issueTypeVO.typeCode && ['sub_task', 'feature'].indexOf(issueTypeVO.typeCode) === -1
+          {issueTypeVO.typeCode && ['issue_epic', 'sub_task', 'feature'].indexOf(issueTypeVO.typeCode) === -1
             ? <SubTask {...props} /> : ''
           }
 

@@ -5,7 +5,6 @@ import { Progress } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
 import _ from 'lodash';
 import TextEditToggle from '../../../../TextEditToggle';
-import VisibleStore from '../../../../../stores/common/visible/VisibleStore';
 
 const { Text, Edit } = TextEditToggle;
 
@@ -75,7 +74,7 @@ const { Text, Edit } = TextEditToggle;
                   cursor: 'pointer',
                 }}
                 onClick={() => {
-                  VisibleStore.setWorkLogShow(true);
+                  store.setWorkLogShow(true);
                 }}
               >
                 {'登记工作'}
