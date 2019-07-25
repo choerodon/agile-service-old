@@ -64,7 +64,6 @@ ribbon:
 services:
   attachment:
     url: example.com
-
 #万历表
 workh:
   #目前只支持聚合数据
