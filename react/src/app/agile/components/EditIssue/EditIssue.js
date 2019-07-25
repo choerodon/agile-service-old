@@ -182,7 +182,7 @@ const EditIssue = observer(() => {
       <ResizeAble
         modes={['left']}
         size={{
-          maxWidth: 800,
+          maxWidth: window.innerWidth * 0.6,
           minWidth: 440,
         }}
         defaultSize={{

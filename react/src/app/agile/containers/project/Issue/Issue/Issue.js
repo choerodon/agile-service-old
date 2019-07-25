@@ -5,22 +5,14 @@ import { observer } from 'mobx-react';
 import {
   Page, Header, Content, stores, axios,
 } from '@choerodon/boot';
-import {
-  Button, Icon, Select, DatePicker, Modal, Input, Form, Tooltip,
-} from 'choerodon-ui';
-import _ from 'lodash';
+import { Button, Icon, Form } from 'choerodon-ui';
 import './Issue.scss';
-import moment from 'moment';
-import { _allowStateChangesInsideComputed } from 'mobx';
 import IssueStore from '../../../../stores/project/sprint/IssueStore/IssueStore';
 import IssueFilterControler from '../IssueFilterControler';
 import ImportIssue from '../ImportIssue';
 import AdvancedSearch from '../AdvancedSearch';
 import FilterManage from '../FilterManage';
 import SaveFilterModal from '../SaveFilterModal';
-
-// CSS 利用相邻兄弟选择器注入
-import ExpandCssControler from '../ExpandCssControler';
 // Table
 import IssueTable from '../IssueTable/IssueTable';
 // 任务详情
@@ -32,12 +24,8 @@ import ExportIssue from '../ExportIssue';
 
 import QuickSearch from '../../../../components/QuickSearch';
 
-const FileSaver = require('file-saver');
-
 const { AppState } = stores;
-const { Option } = Select;
-const { RangePicker } = DatePicker;
-const FormItem = Form.Item;
+
 @observer
 class Issue extends Component {
   /**
