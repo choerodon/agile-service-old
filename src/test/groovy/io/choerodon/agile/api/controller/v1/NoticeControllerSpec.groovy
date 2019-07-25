@@ -101,7 +101,7 @@ class NoticeControllerSpec extends Specification {
         then:
         JSONObject exceptionInfo = JSONObject.parse(entity.body)
         exceptionInfo.get("failed").toString() == "true"
-        exceptionInfo.get("code").toString() == "error.messageDetailDO.update"
+        exceptionInfo.get("code").toString() == "error.messageDetailDTO.update"
     }
 
     def 'queryByProjectId'() {

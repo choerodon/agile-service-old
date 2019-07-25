@@ -84,8 +84,6 @@ class ProjectInfoControllerSpec extends Specification {
         where: '期望值'
         projectIds | expectObject
         1L         | 'AGTest'
-        10L        | null
-
     }
 
 }
