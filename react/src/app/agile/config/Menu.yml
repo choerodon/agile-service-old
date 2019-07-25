@@ -39,10 +39,16 @@
         sort: 6
         permission:
           - 'agile-service.sprint.queryNameByOptions'
+    - "feedback":
+        icon: center_focus_strong
+        Routes: /agile/feedback
+        sort: 7
+        permission:
+          - 'agile-service.sprint.queryByProjectId'
     - "component":
         icon: extension
         Routes: /agile/component
-        sort: 7
+        sort: 8
         permission:
           - 'agile-service.issue-component.listByProjectId'    
     - "projectsetting":

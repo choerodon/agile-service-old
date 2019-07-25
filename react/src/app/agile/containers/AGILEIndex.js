@@ -25,6 +25,7 @@ const STORYMAPINDEX = asyncRouter(() => import('./project/StoryMap'));
 const INERATIONBOARDINDEX = asyncRouter(() => import('./project/IterationBoard'));
 const REPORTBOARD = asyncRouter(() => import('./project/ReportBoard'));
 const MESSAGENOTIFICATION = asyncRouter(() => import('./project/MessageNotification'));
+const FEEDBACK = asyncRouter(() => import('./project/Feedback'));
 
 const WORKCALENDARINDEX = asyncRouter(() => import('./organization/WorkCalendar'));
 
@@ -71,6 +72,8 @@ class AGILEIndex extends React.Component {
             <Route path={`${match.url}/iterationBoard/:id`} component={INERATIONBOARDINDEX} />
             <Route path={`${match.url}/reportBoard`} component={REPORTBOARD} />
             <Route path={`${match.url}/messageNotification`} component={MESSAGENOTIFICATION} />
+            {/* 反馈中心 */}
+            <Route path={`${match.url}/feedback`} component={FEEDBACK} />
 
             <Route path={`${match.url}/workCalendar`} component={WORKCALENDARINDEX} />
 

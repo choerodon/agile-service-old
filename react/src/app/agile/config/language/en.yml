@@ -12,6 +12,7 @@
 'agile.userStoryMap': Story Map
 'agile.iterationBoard': Iteration Board
 'agile.messageNotification': Notification Setting
+'agile.feedback': Feedback Center
 
 'agile.feature': Feature
 'agile.artCalendar': ART Calendar

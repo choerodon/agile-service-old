@@ -1,0 +1,116 @@
+// 右侧feedback详细信息
+.c7n-feedback {
+  .feedback-sidebar {
+
+    // 带 Icon 的标题
+    &-title {
+      display: flex;
+      align-items: center;
+      margin: 20px 0;
+      h3 {
+        margin-bottom: 0;
+        margin-left: 9px;
+        font-size: 14px;
+      }
+      .icon {
+        line-height: 22px;
+      }
+      &-hr {
+        flex: 1 1 0%;
+        height: 1px;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        margin-left: 14px;
+      }
+    }
+    &-status {
+      padding: 1px 4px;
+      border-radius: 2px;
+      color: white;
+      min-width: 36px;
+      height: 20px;
+      text-align: center;
+    }
+    &-priority {
+      background: rgba(77, 144, 254, 0.20);
+      border-radius: 2px;
+      color: white;
+      width: 36px;
+      height: 20px;
+      text-align: center;
+    }
+    // 内容
+    &-info {
+      display: flex;
+      margin-bottom: 10px;
+      font-size: 13px;
+      h6 {
+        margin: 0;
+        width: 80px;
+        font-weight: 400;
+        font-size: 13px;
+      }
+      p {
+        margin: 0;
+      }
+      &-detailInfo-assignee {
+        display: flex;
+        align-items: center;
+        .line-start {
+          .c7n-select-dropdown {
+            width: 200px !important;
+          }
+          .c7n-value-wrapper {
+            min-width: 1.2rem !important;
+         }
+        }
+        &-assigneeToMe {
+          color: #3F51B5;
+          margin-left: 5px;
+          cursor: pointer;
+        }
+      }
+    }
+    &-assignee {
+      display: flex;
+      div {
+        img {
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+    // 活动日志
+    &-activitylog {
+      display: flex;
+      min-height: 52px;
+      padding: 2px;
+      .c7n-userHead {
+        margin-right: 5px;
+      }
+      .blue {
+        color: #3F51B5;
+      }
+      &-header {
+        width: 100%;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        padding-bottom: 10px;
+        span {
+          margin-right: 3px;
+        }
+      }
+      &-hasAvatar {
+        width: 40px;
+        height: 40px;
+        background: #b3bac5;
+        color: #fff;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        border-radius: 4px;
+        flex-shrink: 0;
+      }
+    }
+  }
+}

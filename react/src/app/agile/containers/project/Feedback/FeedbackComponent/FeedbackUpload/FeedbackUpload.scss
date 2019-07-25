@@ -1,0 +1,38 @@
+.feedbackUpload {
+    .upload-content {
+      display: flex;
+      align-items: center;
+      padding: 10px 0;
+      .c7n-upload {
+        order: 1000;
+      }
+      .c7n-upload-list-item {
+        display: inline-block;
+        max-width: 100%;
+        height: 32px;
+        line-height: 32px;
+        margin-right: 5.4px;
+        background: #f3f3f3;
+        border-radius: 2px;
+        .c7n-upload-list-item-info {
+            padding-right: 16px;
+            span {
+                display: flex;
+                align-items: center;
+                .icon {
+                    top: 9px;
+                    padding-left: 6.4px;
+                  }
+                  a {
+                    padding-left: 20px;
+                  }
+            }
+        }
+        .icon-close {
+          transform: none;
+          font-size: 14px;
+          top: 7px;
+        }
+      }
+    }
+}
