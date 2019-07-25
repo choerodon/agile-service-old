@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button, Icon } from 'choerodon-ui';
 import WYSIWYGEditor from '../../../WYSIWYGEditor';
 import Comment from '../../Component/Comment';
 import { text2Delta, beforeTextUpload } from '../../../../common/utils';
@@ -9,6 +10,7 @@ const IssueCommit = ({
 }) => {
   const [addCommit, setAddCommit] = useState(false);
   const [addCommitDes, setAddCommitDes] = useState('');
+  const [commentExpendAll, setCommentExpendAll] = useState(false);
   const delta = text2Delta(addCommitDes);
   const newCommit = (commit) => {
     const { issueId } = store.getIssue;
@@ -38,7 +40,7 @@ const IssueCommit = ({
     return (
       <div style={{ marginBottom: 15 }}>
         {
-          issueCommentVOList.map(comment => (
+          issueCommentVOList.map((comment, i) => (
             <Comment
               key={comment.commentId}
               comment={comment}
@@ -46,8 +48,30 @@ const IssueCommit = ({
               onUpdateComment={() => { reloadIssue(issueId); }}
               loginUserId={loginUserId}
               hasPermission={hasPermission}
+              i={i}
+              commentExpendAll={commentExpendAll}
             />
           ))
+        }
+        {
+          issueCommentVOList.length > 5 && !commentExpendAll ? (
+            <div style={{ marginTop: 5 }}>
+              <Button className="leftBtn" funcType="flat" onClick={() => setCommentExpendAll(true)}>
+                <span>展开</span>
+                <Icon type="baseline-arrow_right icon" style={{ marginRight: 2 }} />
+              </Button>
+            </div>
+          ) : null
+        }
+        {
+          issueCommentVOList.length > 5 && commentExpendAll ? (
+            <div style={{ marginTop: 5 }}>
+              <Button className="leftBtn" funcType="flat" onClick={() => setCommentExpendAll(false)}>
+                <span>折叠</span>
+                <Icon type="baseline-arrow_drop_up icon" style={{ marginRight: 2 }} />
+              </Button>
+            </div>
+          ) : null
         }
       </div>
     );
