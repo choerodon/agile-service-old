@@ -11,9 +11,9 @@ import RunWhenProjectChange from './common/RunWhenProjectChange';
 import './style/index.less';
 
 const RELEASEINDEX = asyncRouter(() => import('./routes/Release'));
-const BACKLOGINDEX = asyncRouter(() => import('./routes/Backlog'));
+// const BACKLOGINDEX = asyncRouter(() => import('./routes/Backlog'));
 const SCRUMBOARDINDEX = asyncRouter(() => import('./routes/ScrumBoard'));
-const ISSUEIndex = asyncRouter(() => import('./routes/Issue'));
+// const ISSUEIndex = asyncRouter(() => import('./routes/Issue'));
 const COMPONENTIndex = asyncRouter(() => import('./routes/Component'));
 const PROJECTSETTINGINDEX = asyncRouter(() => import('./routes/ProjectSetting'));
 const FASTSEARCHINDEX = asyncRouter(() => import('./routes/FastSearch'));
@@ -24,10 +24,8 @@ const INERATIONBOARDINDEX = asyncRouter(() => import('./routes/IterationBoard'))
 const REPORTBOARD = asyncRouter(() => import('./routes/ReportBoard'));
 const MESSAGENOTIFICATION = asyncRouter(() => import('./routes/MessageNotification'));
 const FEEDBACK = asyncRouter(() => import('./routes/Feedback'));
-
 const WORKCALENDARINDEX = asyncRouter(() => import('./routes/WorkCalendar'));
 const WorkList = asyncRouter(() => import('./routes/WorkList'));
-
 const IssueTypeIndex = asyncRouter(() => import('./routes/issueType'));
 const IssueTypeSchemeIndex = asyncRouter(() => import('./routes/issueTypeScheme'));
 const StateMachineSchemeIndex = asyncRouter(() => import('./routes/stateMachineScheme'));
@@ -35,8 +33,8 @@ const PriorityIndex = asyncRouter(() => import('./routes/priority'));
 const IssueTypeScreenSchemes = asyncRouter(() => import('./routes/issueTypeScreenSchemes'));
 const StateIndex = asyncRouter(() => import('./routes/state'));
 const StateMachineIndex = asyncRouter(() => import('./routes/stateMachine'));
-const OBJECTSCHEMEINDEX = asyncRouter(() => import('./routes/ObjectScheme'));
-const PAGEINDEX = asyncRouter(() => import('./routes/Page'));
+const OBJECTSCHEMEINDEX = asyncRouter(() => import('./routes/object-scheme'));
+const PAGEINDEX = asyncRouter(() => import('./routes/page'));
 
 // 敏捷设置子路由
 const settings = asyncRouter(() => import('./routes/settings'));
