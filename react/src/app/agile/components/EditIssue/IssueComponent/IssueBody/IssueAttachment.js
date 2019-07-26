@@ -1,9 +1,6 @@
 import React, { useState, useContext } from 'react';
-import { observer } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
 import { Icon } from 'choerodon-ui';
-import _ from 'lodash';
-import { injectIntl } from 'react-intl';
 import { UploadButtonNow } from '../../../CommonComponent';
 import { handleFileUpload, getProjectId } from '../../../../common/utils';
 import EditIssueContext from '../../stores';

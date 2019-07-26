@@ -142,7 +142,12 @@ const IssueDropDown = ({ onDeleteIssue, loginUserId, hasPermission }) => {
     </Menu>
   );
   return (
-    <Dropdown overlay={getMenu()} trigger={['click']}>
+    <Dropdown
+      overlay={getMenu()}
+      trigger={['click']}
+      getPopupContainer={trigger => trigger.parentNode}
+      placement="bottomLeft"
+    >
       <Button icon="more_vert" />
     </Dropdown>
   );
