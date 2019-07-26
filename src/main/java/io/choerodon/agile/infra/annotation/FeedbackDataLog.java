@@ -1,4 +1,4 @@
-package io.choerodon.agile.infra.common.annotation;
+package io.choerodon.agile.infra.annotation;
 
 import java.lang.annotation.*;
 

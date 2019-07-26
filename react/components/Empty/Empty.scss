@@ -1,0 +1,44 @@
+.c7nagile-Empty {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  padding: 40px 0;
+
+  &-content {
+    width: 800px;
+    height: 280px;
+    padding: 60px;
+    display: flex;
+    align-items: center;
+  }
+
+  &-imgWrap {
+    margin-right: 25px;
+
+    &-img {
+      width: 100%;
+    }
+  }
+
+  &-textWrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    margin: 25px;
+  }
+
+  &-title {
+    font-size: 14px;
+    line-height: 20px;
+    color: rgba(0, 0, 0, 0.65);
+    margin-bottom: 9px;
+  }
+
+  &-description {
+    font-size: 16px;
+    color: #000;
+  }
+}

@@ -1,0 +1,26 @@
+.c7n-issue-link {
+  td {
+    div {
+      height: 24px;
+    }
+    i {
+      width: 24px;
+      height: 24px;
+      font-size: 18px;
+      line-height: 24px;
+      cursor: pointer;
+    }
+  }
+  
+  .columnMinWidth{
+    min-width: 100px;
+  }
+  .c7n-issue-link-overflowText {
+    display: block;
+    min-width: 100px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-bottom: 0;
+  }
+}

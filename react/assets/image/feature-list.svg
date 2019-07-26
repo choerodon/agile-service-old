@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="167px" height="153px" viewBox="0 0 167 153" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>feature-list</title>
+    <desc>Created with Sketch.</desc>
+    <g id="SAFe" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="illustrations" transform="translate(-221.000000, -266.000000)">
+            <g id="feature-list" transform="translate(221.000000, 266.000000)">
+                <rect id="Rectangle-8" fill="#E8EAF4" x="0" y="15" width="126" height="132" rx="6"></rect>
+                <rect id="Rectangle-8-Copy-4" fill="#F2F4FD" x="10" y="25" width="106" height="112" rx="2"></rect>
+                <path d="M52,11 C52,4.92486775 56.9248678,0 63,0 C69.0751322,0 74,4.92486775 74,11 L86,11 L86,25 L40,25 L40,11 L52,11 Z M63,15 C65.209139,15 67,13.209139 67,11 C67,8.790861 65.209139,7 63,7 C60.790861,7 59,8.790861 59,11 C59,13.209139 60.790861,15 63,15 Z" id="合并形状" fill="#CFD5F1"></path>
+                <rect id="Rectangle-3" fill="#DEE0ED" x="56" y="45" width="48" height="4" rx="2"></rect>
+                <rect id="Rectangle-3-Copy-4" fill="#DEE0ED" x="56" y="76" width="48" height="4" rx="2"></rect>
+                <rect id="Rectangle-3-Copy" fill="#DEE0ED" x="56" y="53" width="32" height="4" rx="2"></rect>
+                <rect id="Rectangle-3-Copy-5" fill="#DEE0ED" x="56" y="84" width="32" height="4" rx="2"></rect>
+                <g id="Group-4" transform="translate(20.000000, 100.000000)">
+                    <rect id="Rectangle-2" fill="#6776C4" x="0" y="0" width="122" height="28" rx="2"></rect>
+                    <circle id="Oval-2-Copy-2" fill="#FFBA1C" cx="27" cy="14" r="9"></circle>
+                    <rect id="Rectangle-9-Copy-7" fill="#FFFFFF" x="46" y="8" width="54" height="4" rx="2"></rect>
+                    <rect id="Rectangle-9-Copy-8" fill="#FFFFFF" x="46" y="16" width="32" height="4" rx="2"></rect>
+                </g>
+                <path d="M153.387406,137.423302 L153.387406,152.026912 C153.387406,153.131481 152.491975,154.026912 151.387406,154.026912 L137.666501,154.026912 C136.561931,154.026912 135.666501,153.131481 135.666501,152.026912 L135.666501,137.423302 L124.004447,137.423302 C123.559618,137.423302 123.127484,137.275006 122.776388,137.001868 C121.90457,136.32363 121.747642,135.067061 122.425881,134.195243 L142.948387,107.815288 C143.050236,107.684369 143.167976,107.566629 143.298894,107.46478 C144.170713,106.786542 145.427281,106.94347 146.10552,107.815288 L166.628026,134.195243 C166.901164,134.546339 167.04946,134.978473 167.04946,135.423302 C167.04946,136.527872 166.154029,137.423302 165.04946,137.423302 L153.387406,137.423302 Z" id="Combined-Shape" fill="#2A2E76" transform="translate(144.526912, 130.526912) rotate(-45.000000) translate(-144.526912, -130.526912) "></path>
+                <circle id="椭圆形" fill="#CFD5F1" cx="33" cy="51" r="9"></circle>
+                <circle id="椭圆形-copy" fill="#CFD5F1" cx="33" cy="82" r="9"></circle>
+            </g>
+        </g>
+    </g>
+</svg>

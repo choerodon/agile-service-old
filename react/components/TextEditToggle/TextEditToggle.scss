@@ -1,0 +1,67 @@
+.c7ntest-TextEditToggle {
+  &-text {
+    cursor: text;
+    position: relative;
+    border: 1px solid transparent;
+    padding: 0 20px 0 5px;
+    min-height: 32px;
+    min-width: 50px;
+    display: flex;
+    align-items: center;
+
+    &-icon {
+      // color: rgba(0, 0, 0, .65);
+      display: none;
+      // visibility: hidden;
+      cursor: pointer;
+    }
+
+    &-active:hover {
+      border: 1px solid rgba(0, 0, 0, 0.20);
+      border-radius: 5px;
+
+      .c7ntest-TextEditToggle-text-icon {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        display: block;
+        transform: translateY(-50%);
+      }
+    }
+
+    &.Input {
+      min-height: 32px;
+      .c7ntest-TextEditToggle-text-icon {
+        display: none !important;
+      }
+    }
+  }
+
+  &-edit {
+    &-icon {
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      color: rgba(0, 0, 0, .65);
+      background: rgba(0, 0, 0, 0.08);
+      font-size: 13px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .c7n-form-item {
+      padding: 0;
+      margin: 0;
+    }
+
+    .c7n-input-length-info {
+      left: 0;
+      right: unset;
+    }
+
+    .c7n-input-has-value .c7n-input-icon {
+      left: 0;
+      right: unset;
+    }
+  }
+}

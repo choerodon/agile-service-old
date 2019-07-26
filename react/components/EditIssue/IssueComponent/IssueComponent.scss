@@ -1,0 +1,41 @@
+.issue-sidebar-types {
+  .c7n-dropdown-menu-item {
+    padding: 2px 12px;
+  }
+}
+
+.c7n-content-wrapper {
+  padding-left: 26px;
+  display: flex;
+  flex-wrap: wrap;
+  .c7n-content-item {
+    flex: 1;
+  }
+}
+
+.issue-header-wide {
+  align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: -20px;
+  margin-right: -20px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.26);
+  height: 44px;
+}
+
+.issue-nav-narrow {
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.issue-nav-wide {
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.26);
+}

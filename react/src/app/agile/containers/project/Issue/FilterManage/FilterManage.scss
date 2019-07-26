@@ -1,5 +1,70 @@
 .c7n-filterList {
-  .c7n-filterNameForm {
-    width: 200px;
+  width: 100%;
+  max-width: 350px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.20), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  position: fixed;
+  top: 48px;
+  right: 0;
+  z-index: 2;
+  padding: 0;
+
+  .c7n-filterList-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 54px;
+    padding: 0 24px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+    span {
+      font-size: 14px;
+    }
+
+    i {
+      cursor: pointer;
+    }
+  }
+
+  .c7n-filterList-content {
+    list-style: none;
+    padding: 0;
+    height: 400px;
+    overflow-y: scroll;
+
+    .c7n-filterList-item {
+      display: flex;
+      height: 36px;
+      padding: 0 15px 0 24px;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+      .c7n-filterAction {
+        i {
+          cursor: pointer;
+        }
+
+        .icon-mode_edit,
+        .icon-check {
+          margin-right: 8px;
+        }
+      }
+
+      .c7n-filterNameForm {
+        width: 200px;
+        .c7n-input-wrapper:before {
+          border: none;
+        }
+
+        .c7n-input-length-info {
+          display: none;
+        }
+      }
+    }
   }
 }

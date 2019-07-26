@@ -1,0 +1,16 @@
+.c7n-agile-doc {
+  .c7n-input-length-info {
+    position: absolute;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+
+    .line-info {
+      display: flex;
+      margin-bottom: 32px;
+      align-items: flex-end;
+    }
+  }
+}

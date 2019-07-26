@@ -1,0 +1,18 @@
+.c7n-agile-assignee {
+  .body {
+    display: flex;
+    margin-top: 20px;
+
+    .wrap {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px;
+    }
+
+    .btn {
+      margin-top: 8px;
+      margin-left: 20px;
+      color: #3f51b5;
+    }
+  }
+}
