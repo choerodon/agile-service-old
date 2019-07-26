@@ -294,6 +294,7 @@ class ProjectSetting extends Component {
                       <Button
                         style={{ width: '100%', textAlign: 'left', backgroundColor: 'transparent' }}
                         onClick={this.loadMore}
+                        type="primary"
                       >
                         更多
                       </Button>
