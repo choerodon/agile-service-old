@@ -61,10 +61,5 @@
       "npm run lint-staged:es"
     ],
     "react/**/*.scss": "stylelint --syntax scss"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   }
 }
