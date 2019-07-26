@@ -10,10 +10,10 @@ import {
   Button, Table, Select, Icon, Spin,
 } from 'choerodon-ui';
 // import pic from './no_sprint.svg';
-import pic from '../../../../../assets/image/emptyChart.svg';
+import pic from '../../../../assets/image/emptyChart.svg';
 import SwithChart from '../../Component/switchChart';
-import VS from '../../../../../stores/project/velocityChart';
-import EmptyBlock from '../../../../../components/EmptyBlock';
+import VS from '../../../../stores/project/velocityChart';
+import EmptyBlock from '../../../../components/EmptyBlock';
 import './VelocityChart.scss';
 
 const { AppState } = stores;

@@ -6,8 +6,8 @@ import {
 import { Content, stores } from '@choerodon/boot';
 import _ from 'lodash';
 import moment from 'moment';
-import WorkCalendar from '../../../../../components/WorkCalendar';
-// import this.props.store from '../../../../../stores/project/backlog/this.props.store';
+import WorkCalendar from '../../../../components/WorkCalendar';
+// import this.props.store from '../../../../stores/project/backlog/this.props.store';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;

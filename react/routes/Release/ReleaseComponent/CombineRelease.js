@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import { stores, Content } from '@choerodon/boot';
 import _ from 'lodash';
-import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
+import ReleaseStore from '../../../stores/project/release/ReleaseStore';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;

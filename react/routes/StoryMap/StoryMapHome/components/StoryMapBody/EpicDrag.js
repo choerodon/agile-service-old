@@ -1,5 +1,5 @@
 import { DragSource } from 'react-dnd';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
 
 const EpicDrag = Component => DragSource(
   'epic',

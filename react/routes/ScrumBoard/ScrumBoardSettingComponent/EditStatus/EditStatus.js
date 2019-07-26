@@ -5,7 +5,7 @@ import _ from 'lodash';
 import {
   Form, Modal, Input, Select,
 } from 'choerodon-ui';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
 
 const FormItem = Form.Item;
 const { Sidebar } = Modal;

@@ -8,14 +8,14 @@ import { Modal } from 'choerodon-ui/pro';
 import { stores } from '@choerodon/boot';
 import classnames from 'classnames';
 import TimeAgo from 'timeago-react';
-import WYSIWYGEditor from '../../../../components/WYSIWYGEditor';
-import WYSIWYGViewer from '../../../../components/WYSIWYGViewer';
+import WYSIWYGEditor from '../../../components/WYSIWYGEditor';
+import WYSIWYGViewer from '../../../components/WYSIWYGViewer';
 import './FeedbackContentComponent.scss';
 import UserHead from './UserHead';
-import CommentDescription from '../../../../components/CommonComponent/IssueDescription';
+import CommentDescription from '../../../components/CommonComponent/IssueDescription';
 import {
   delta2Html, text2Delta, randomWord, getFileSuffix, 
-} from '../../../../common/utils';
+} from '../../../common/utils';
 
 const fileService = 'http://minio.staging.saas.hand-china.com/feedback-service/';
 const previewSuffix = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf', 'jpg', 'jpeg', 'gif', 'png'];

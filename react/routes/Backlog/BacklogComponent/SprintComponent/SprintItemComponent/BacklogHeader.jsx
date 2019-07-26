@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import SprintName from './SprintHeaderComponent/SprintName';
 import SprintVisibleIssue from './SprintHeaderComponent/SprintVisibleIssue';
 import '../Sprint.scss';
-import BacklogStore from '../../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 
 @inject('AppState', 'HeaderStore')
 @observer class BacklogHeader extends Component {

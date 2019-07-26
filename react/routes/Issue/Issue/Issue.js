@@ -6,7 +6,7 @@ import {
 } from '@choerodon/boot';
 import { Button, Icon, Form } from 'choerodon-ui';
 import './Issue.scss';
-import IssueStore from '../../../../stores/project/sprint/IssueStore/IssueStore';
+import IssueStore from '../../../stores/project/sprint/IssueStore/IssueStore';
 import IssueFilterControler from '../IssueFilterControler';
 import ImportIssue from '../ImportIssue';
 import AdvancedSearch from '../AdvancedSearch';
@@ -21,7 +21,7 @@ import CreateIssueModal from '../CreateIssueModal';
 // 导出用例
 import ExportIssue from '../ExportIssue';
 
-import QuickSearch from '../../../../components/QuickSearch';
+import QuickSearch from '../../../components/QuickSearch';
 
 const { AppState } = stores;
 

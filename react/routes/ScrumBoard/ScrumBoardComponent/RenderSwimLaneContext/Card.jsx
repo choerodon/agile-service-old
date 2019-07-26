@@ -3,7 +3,7 @@ import { Draggable } from 'react-beautiful-dnd';
 import {
   CardTypeTag, IssueNum, StayDay, StatusName, Priority, Assignee, Summary,
 } from './CardComponent/index';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
 import './StatusIssue.scss';
 
 export default class CardProvider extends Component {

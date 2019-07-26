@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { axios, stores } from '@choerodon/boot';
 import './Remain.scss';
 import { Spin } from 'choerodon-ui';
-import Progress from '../../../../../../components/Progress';
+import Progress from '../../../../../components/Progress';
 
 const { AppState } = stores;
 class Remain extends Component {

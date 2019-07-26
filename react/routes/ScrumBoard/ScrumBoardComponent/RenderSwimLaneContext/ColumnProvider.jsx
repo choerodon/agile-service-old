@@ -2,9 +2,9 @@
 import React from 'react';
 import classnames from 'classnames';
 import { inject, observer } from 'mobx-react';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
 import ColumnCouldDragOn from './ColumnCouldDragOn';
-import CSSBlackMagic from '../../../../../components/CSSBlackMagic';
+import CSSBlackMagic from '../../../../components/CSSBlackMagic';
 
 @CSSBlackMagic
 @observer

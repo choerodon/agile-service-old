@@ -4,8 +4,8 @@ import {
 } from 'choerodon-ui';
 import { inject } from 'mobx-react';
 import axios from 'axios';
-import { beforeTextUpload } from '../../../../../common/utils';
-import WYSIWYGEditor from '../../../../../components/WYSIWYGEditor';
+import { beforeTextUpload } from '../../../../common/utils';
+import WYSIWYGEditor from '../../../../components/WYSIWYGEditor';
 import FeedbackUpload from '../FeedbackUpload';
 import './FeedbackContent.scss';
 

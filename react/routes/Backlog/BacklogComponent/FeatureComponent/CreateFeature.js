@@ -4,8 +4,8 @@ import {
   Modal, Form, Input, Select,
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
-import { createIssueField } from '../../../../../api/NewIssueApi';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
+import { createIssueField } from '../../../../api/NewIssueApi';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;

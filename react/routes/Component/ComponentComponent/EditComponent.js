@@ -4,9 +4,9 @@ import {
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
-import UserHead from '../../../../components/UserHead';
-import { getUsers, getUser } from '../../../../api/CommonApi';
-import { loadComponent, updateComponent } from '../../../../api/ComponentApi';
+import UserHead from '../../../components/UserHead';
+import { getUsers, getUser } from '../../../api/CommonApi';
+import { loadComponent, updateComponent } from '../../../api/ComponentApi';
 import './component.scss';
 
 const { Sidebar } = Modal;

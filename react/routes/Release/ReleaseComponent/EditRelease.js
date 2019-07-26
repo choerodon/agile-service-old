@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import moment from 'moment';
 import { Content, stores } from '@choerodon/boot';
-import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
+import ReleaseStore from '../../../stores/project/release/ReleaseStore';
 
 const { Sidebar } = Modal;
 const { TextArea } = Input;

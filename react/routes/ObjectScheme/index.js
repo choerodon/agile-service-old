@@ -5,9 +5,9 @@ import {
 } from 'react-router-dom';
 import { asyncRouter, nomatch } from '@choerodon/boot';
 
-const ObjectSchemeHome = asyncRouter(() => (import('./ObjectSchemeHome')), () => import('../../../stores/organization/ObjectScheme/ObjectSchemeStore'));
-const ObjectSchemeDetail = asyncRouter(() => (import('./ObjectSchemeDetail')), () => import('../../../stores/organization/ObjectScheme/ObjectSchemeStore'));
-const ObjectSchemeField = asyncRouter(() => (import('./ObjectSchemeField')), () => import('../../../stores/organization/ObjectScheme/ObjectSchemeStore'));
+const ObjectSchemeHome = asyncRouter(() => (import('./ObjectSchemeHome')), () => import('../../stores/organization/ObjectScheme/ObjectSchemeStore'));
+const ObjectSchemeDetail = asyncRouter(() => (import('./ObjectSchemeDetail')), () => import('../../stores/organization/ObjectScheme/ObjectSchemeStore'));
+const ObjectSchemeField = asyncRouter(() => (import('./ObjectSchemeField')), () => import('../../stores/organization/ObjectScheme/ObjectSchemeStore'));
 
 
 const ObjectSchemeIndex = ({ match }) => (

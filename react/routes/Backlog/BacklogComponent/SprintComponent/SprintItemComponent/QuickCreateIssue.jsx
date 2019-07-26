@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import {
   Button, Icon, Dropdown, Input, Menu, Form,
 } from 'choerodon-ui';
-import TypeTag from '../../../../../../components/TypeTag';
+import TypeTag from '../../../../../components/TypeTag';
 
 const FormItem = Form.Item;
 

@@ -10,7 +10,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import AssociationCreate from '../associationCreate/AssociationCreate';
 import './IssueTypeScreenSchemesEditTemplate.scss';
 
-import Tips from '../../../../components/Tips';
+import Tips from '../../../components/Tips';
 
 const { AppState } = stores;
 const FormItem = Form.Item;

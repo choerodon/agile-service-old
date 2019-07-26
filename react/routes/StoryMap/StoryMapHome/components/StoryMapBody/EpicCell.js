@@ -12,10 +12,10 @@ import AddCard from './AddCard';
 import CreateEpic from './CreateEpic';
 import EpicDrag from './EpicDrag';
 import { ColumnWidth, CellPadding } from '../../Constants';
-import AutoScroll from '../../../../../../common/AutoScroll';
+import AutoScroll from '../../../../../common/AutoScroll';
 import EpicDragCollapse from './EpicDragCollapse';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
-import IsInProgramStore from '../../../../../../stores/common/program/IsInProgramStore';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
+import IsInProgramStore from '../../../../../stores/common/program/IsInProgramStore';
 
 @observer
 class EpicCell extends Component {

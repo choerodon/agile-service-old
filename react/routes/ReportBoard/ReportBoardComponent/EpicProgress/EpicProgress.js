@@ -3,9 +3,9 @@ import ReactEcharts from 'echarts-for-react';
 import { withRouter } from 'react-router-dom';
 import { Spin } from 'choerodon-ui';
 import { stores, axios } from '@choerodon/boot';
-import EmptyBlockDashboard from '../../../../../components/EmptyBlockDashboard';
+import EmptyBlockDashboard from '../../../../components/EmptyBlockDashboard';
 // import pic from './no_epic.svg';
-import pic from '../../../../../assets/image/emptyChart.svg';
+import pic from '../../../../assets/image/emptyChart.svg';
 import './index.scss';
 
 const { AppState } = stores;

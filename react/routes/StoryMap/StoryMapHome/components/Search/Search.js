@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Select } from 'choerodon-ui';
 import { observer } from 'mobx-react';
-import FiltersProvider from '../../../../../../components/FiltersProvider';
-import { configTheme } from '../../../../../../common/utils';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import FiltersProvider from '../../../../../components/FiltersProvider';
+import { configTheme } from '../../../../../common/utils';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
 
 const { Option } = Select;
 @FiltersProvider(['issueStatus', 'version'])

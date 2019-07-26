@@ -9,7 +9,7 @@ import RenderSwimLaneContext from './index';
 import ColumnProvider from './ColumnProvider';
 import StatusProvider from './StatusProvider';
 import CardProvider from './CardProvider';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
 import EpicRenderHeader from './EpicRenderHeader';
 
 @inject('AppState')

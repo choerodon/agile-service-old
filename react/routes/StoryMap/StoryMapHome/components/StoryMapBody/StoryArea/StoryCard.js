@@ -4,11 +4,11 @@ import { Icon, Tooltip } from 'choerodon-ui';
 import { DragSource } from 'react-dnd';
 import { find } from 'lodash';
 import { observer } from 'mobx-react';
-import { storyMove } from '../../../../../../../api/StoryMapApi';
-import AutoScroll from '../../../../../../../common/AutoScroll';
+import { storyMove } from '../../../../../../api/StoryMapApi';
+import AutoScroll from '../../../../../../common/AutoScroll';
 import Card from '../Card';
 import './StoryCard.scss';
-import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 
 @observer
 class StoryCard extends Component {

@@ -5,7 +5,7 @@ import {
 import { Content, stores, axios } from '@choerodon/boot';
 import moment from 'moment';
 import _ from 'lodash';
-import { NumericInput } from '../../../../../components/CommonComponent';
+import { NumericInput } from '../../../../components/CommonComponent';
 
 const { Sidebar } = Modal;
 const { TextArea } = Input;

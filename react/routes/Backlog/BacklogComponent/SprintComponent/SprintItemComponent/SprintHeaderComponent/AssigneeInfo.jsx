@@ -3,9 +3,9 @@ import { observer, inject } from 'mobx-react';
 import {
   Tooltip, Button, Select, Icon, Modal, Avatar, Dropdown, Menu,
 } from 'choerodon-ui';
-import UserHead from '../../../../../../../components/UserHead';
+import UserHead from '../../../../../../components/UserHead';
 import AssigneeModal from './AssigneeModal';
-// import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+// import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 
 @inject('AppState', 'HeaderStore')
 @observer class AssigneeInfo extends Component {

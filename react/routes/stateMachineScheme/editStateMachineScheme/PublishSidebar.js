@@ -5,8 +5,8 @@ import {
 } from 'choerodon-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { stores } from '@choerodon/boot';
-import TypeTag from '../../../../components/TypeTag/TypeTag';
-import StatusTag from '../../../../components/StatusTag/StatusTag';
+import TypeTag from '../../../components/TypeTag/TypeTag';
+import StatusTag from '../../../components/StatusTag/StatusTag';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;

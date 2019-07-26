@@ -6,7 +6,7 @@ import SprintBody from './SprintBody';
 import NoneIssue from './NoneIssue';
 import NoneBacklog from './NoneBacklog';
 import BacklogHeader from './BacklogHeader';
-import BacklogStore from '../../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 
 const shouldContainTypeCode = ['issue_epic', 'sub_task', 'feature'];
 

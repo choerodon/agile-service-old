@@ -5,12 +5,12 @@ import {
   Button, Input, Dropdown, Menu, Icon,
 } from 'choerodon-ui';
 import { axios, stores } from '@choerodon/boot';
-import IssueStore from '../../../../stores/project/sprint/IssueStore';
-import { createIssue, loadPriorities, createIssueField } from '../../../../api/NewIssueApi';
-import TypeTag from '../../../../components/TypeTag';
+import IssueStore from '../../../stores/project/sprint/IssueStore';
+import { createIssue, loadPriorities, createIssueField } from '../../../api/NewIssueApi';
+import TypeTag from '../../../components/TypeTag';
 import IssueFilterControler from '../IssueFilterControler';
-import { QuickSearchEvent } from '../../../../components/QuickSearch';
-import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
+import { QuickSearchEvent } from '../../../components/QuickSearch';
+import IsInProgramStore from '../../../stores/common/program/IsInProgramStore';
 
 const { AppState } = stores;
 @withRouter

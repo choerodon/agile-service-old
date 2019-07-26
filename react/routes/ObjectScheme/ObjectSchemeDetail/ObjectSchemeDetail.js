@@ -7,7 +7,7 @@ import {
   Page, Header, Content, stores,
 } from '@choerodon/boot';
 import CreateField from '../Components/CreateField';
-import TypeTag from '../../../../components/TypeTag';
+import TypeTag from '../../../components/TypeTag';
 
 const { confirm } = Modal;
 const { AppState } = stores;

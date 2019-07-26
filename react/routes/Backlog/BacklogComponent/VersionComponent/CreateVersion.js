@@ -5,8 +5,8 @@ import {
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
 import moment from 'moment';
-import ReleaseStore from '../../../../../stores/project/release/ReleaseStore';
-// import this.props.store from "../../../../../stores/project/backlog/this.props.store";
+import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
+// import this.props.store from "../../../../stores/project/backlog/this.props.store";
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;

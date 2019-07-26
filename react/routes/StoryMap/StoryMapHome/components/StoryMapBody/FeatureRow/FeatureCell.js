@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { find } from 'lodash';
 import FeatureColumn from './FeatureColumn';
 import Cell from '../Cell';
-import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 
 @observer
 class FeatureCell extends Component {

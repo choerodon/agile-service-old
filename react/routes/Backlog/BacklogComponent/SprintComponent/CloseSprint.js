@@ -3,7 +3,7 @@ import { observer, inject } from 'mobx-react';
 import { Form, Modal, Select } from 'choerodon-ui';
 import { Content, stores } from '@choerodon/boot';
 import _ from 'lodash';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 
 const { Sidebar } = Modal;
 const { AppState } = stores;

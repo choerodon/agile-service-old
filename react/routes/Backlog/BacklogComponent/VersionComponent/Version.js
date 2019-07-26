@@ -6,7 +6,7 @@ import {
 import { Content, stores, Permission } from '@choerodon/boot';
 import { fromJS, is } from 'immutable';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 import VersionItem from './VersionItem';
 import './Version.scss';
 import AddRelease from '../../../Release/ReleaseComponent/AddRelease';

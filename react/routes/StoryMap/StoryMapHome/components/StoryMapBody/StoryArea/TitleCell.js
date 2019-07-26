@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { Icon, Button, Tooltip } from 'choerodon-ui';
 import Cell from '../Cell';
-import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import './TitleCell.scss';
 
 @observer

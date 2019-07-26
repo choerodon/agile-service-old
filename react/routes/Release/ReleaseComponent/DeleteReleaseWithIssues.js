@@ -7,7 +7,7 @@ import {
   Button, Table, Menu, Dropdown, Icon, Modal, Radio, Select,
 } from 'choerodon-ui';
 import _ from 'lodash';
-import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
+import ReleaseStore from '../../../stores/project/release/ReleaseStore';
 
 const { AppState } = stores;
 const RadioGroup = Radio.Group;

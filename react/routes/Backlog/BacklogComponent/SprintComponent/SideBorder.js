@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
 import { observer, inject } from 'mobx-react';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 
 @observer
 class SideBorder extends Component {

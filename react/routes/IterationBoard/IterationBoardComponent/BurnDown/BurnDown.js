@@ -7,7 +7,7 @@ import {
   Dropdown, Icon, Menu, Spin, Checkbox,
 } from 'choerodon-ui';
 import { stores, axios } from '@choerodon/boot';
-import EmptyBlockDashboard from '../../../../../components/EmptyBlockDashboard';
+import EmptyBlockDashboard from '../../../../components/EmptyBlockDashboard';
 import pic from '../EmptyPics/no_sprint.svg';
 import lineLegend from './Line.svg';
 import './BurnDown.scss';

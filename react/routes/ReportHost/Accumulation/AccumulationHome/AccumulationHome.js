@@ -9,13 +9,13 @@ import {
 import _ from 'lodash';
 import moment from 'moment';
 import ReactEcharts from 'echarts-for-react';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
-import AccumulationStore from '../../../../../stores/project/accumulation/AccumulationStore';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
+import AccumulationStore from '../../../../stores/project/accumulation/AccumulationStore';
 import AccumulationFilter from '../AccumulationComponent/AccumulationFilter';
 import './AccumulationHome.scss';
 import '../../BurndownChart/BurndownChartHome/BurndownChartHome.scss';
 import NoDataComponent from '../../Component/noData';
-import pic from '../../../../../assets/image/emptyChart.svg';
+import pic from '../../../../assets/image/emptyChart.svg';
 import SwithChart from '../../Component/switchChart';
 
 const { AppState } = stores;

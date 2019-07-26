@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Tooltip, Tag } from 'choerodon-ui';
 import TimeAgo from 'timeago-react';
-import TypeTag from '../../../../components/TypeTag/TypeTag';
-import StatusTag from '../../../../components/StatusTag/StatusTag';
-import UserHead from '../../../../components/UserHead/UserHead';
-import PriorityTag from '../../../../components/PriorityTag/PriorityTag';
+import TypeTag from '../../../components/TypeTag/TypeTag';
+import StatusTag from '../../../components/StatusTag/StatusTag';
+import UserHead from '../../../components/UserHead/UserHead';
+import PriorityTag from '../../../components/PriorityTag/PriorityTag';
 
 /**
  * 任务编号呈现

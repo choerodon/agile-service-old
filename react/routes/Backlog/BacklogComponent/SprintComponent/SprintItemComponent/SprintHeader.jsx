@@ -11,7 +11,7 @@ import StoryPointContainer from './SprintHeaderComponent/StoryPointContainer';
 import SprintDateRange from './SprintHeaderComponent/SprintDateRange';
 import SprintGoal from './SprintHeaderComponent/SprintGoal';
 import '../Sprint.scss';
-import BacklogStore from '../../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 
 const shouldContainTypeCode = ['issue_epic', 'sub_task'];
 const { confirm } = Modal;

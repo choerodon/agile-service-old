@@ -9,14 +9,14 @@ import {
   Button, Tabs, Table, Select, Icon, Tooltip, Spin, Checkbox,
 } from 'choerodon-ui';
 // import pic from './no_epic.svg';
-import pic from '../../../../assets/image/emptyChart.svg';
+import pic from '../../../assets/image/emptyChart.svg';
 // import finish from './legend/finish.svg';
 import SwithChart from '../Component/switchChart';
-import StatusTag from '../../../../components/StatusTag';
-import PriorityTag from '../../../../components/PriorityTag';
-import TypeTag from '../../../../components/TypeTag';
-import ES from '../../../../stores/project/epicBurndown';
-import EmptyBlock from '../../../../components/EmptyBlock';
+import StatusTag from '../../../components/StatusTag';
+import PriorityTag from '../../../components/PriorityTag';
+import TypeTag from '../../../components/TypeTag';
+import ES from '../../../stores/project/epicBurndown';
+import EmptyBlock from '../../../components/EmptyBlock';
 import seeChangeRange from './seeChangeRange.svg';
 import seeProgress from './seeProgress.svg';
 import speedIcon from './speedIcon.svg';
@@ -24,7 +24,7 @@ import sprintIcon from './sprintIcon.svg';
 import storyPointIcon from './storyPointIcon.svg';
 import completed from './completed.svg';
 import './EpicReport.scss';
-import { STATUS } from '../../../../common/Constant';
+import { STATUS } from '../../../common/Constant';
 
 const { AppState } = stores;
 const { Option } = Select;

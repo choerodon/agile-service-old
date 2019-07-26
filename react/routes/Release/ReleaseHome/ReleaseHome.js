@@ -11,11 +11,11 @@ import { withRouter } from 'react-router-dom';
 import _ from 'lodash';
 import DragSortingTable from '../ReleaseComponent/DragSortingTable';
 import AddRelease from '../ReleaseComponent/AddRelease';
-import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
+import ReleaseStore from '../../../stores/project/release/ReleaseStore';
 import './ReleaseHome.scss';
 import EditRelease from '../ReleaseComponent/EditRelease';
 import PublicRelease from '../ReleaseComponent/PublicRelease';
-import emptyVersion from '../../../../assets/image/emptyVersion.svg';
+import emptyVersion from '../../../assets/image/emptyVersion.svg';
 import DeleteReleaseWithIssues from '../ReleaseComponent/DeleteReleaseWithIssues';
 import CombineRelease from '../ReleaseComponent/CombineRelease';
 

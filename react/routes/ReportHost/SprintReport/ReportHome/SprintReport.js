@@ -9,20 +9,20 @@ import {
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
 import moment from 'moment';
-import BurndownChartStore from '../../../../../stores/project/burndownChart/BurndownChartStore';
-import ReportStore from '../../../../../stores/project/Report';
-import restSvg from '../../../../../assets/image/rest.svg';
-import hopeSvg from '../../../../../assets/image/hope.svg';
-import { commonformatDate } from '../../../../../common/utils';
+import BurndownChartStore from '../../../../stores/project/burndownChart/BurndownChartStore';
+import ReportStore from '../../../../stores/project/Report';
+import restSvg from '../../../../assets/image/rest.svg';
+import hopeSvg from '../../../../assets/image/hope.svg';
+import { commonformatDate } from '../../../../common/utils';
 import NoDataComponent from '../../Component/noData';
 // import epicSvg from '../../Home/style/pics/no_sprint.svg';
-import epicSvg from '../../../../../assets/image/emptyChart.svg';
+import epicSvg from '../../../../assets/image/emptyChart.svg';
 import SwithChart from '../../Component/switchChart';
-import StatusTag from '../../../../../components/StatusTag';
-import PriorityTag from '../../../../../components/PriorityTag';
-import TypeTag from '../../../../../components/TypeTag';
+import StatusTag from '../../../../components/StatusTag';
+import PriorityTag from '../../../../components/PriorityTag';
+import TypeTag from '../../../../components/TypeTag';
 import './ReleaseDetail.scss';
-import { STATUS } from '../../../../../common/Constant';
+import { STATUS } from '../../../../common/Constant';
 /* eslint-disable */
 
 const { AppState } = stores;

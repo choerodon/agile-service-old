@@ -11,8 +11,8 @@ import {
 } from '@choerodon/boot';
 import _ from 'lodash';
 import moment from 'moment';
-import UserHead from '../../../../components/UserHead';
-import { randomString } from '../../../../common/utils';
+import UserHead from '../../../components/UserHead';
+import { randomString } from '../../../common/utils';
 import './ObjectSchemeField.scss';
 import DragList from '../Components/DragList';
 

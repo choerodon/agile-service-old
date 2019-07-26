@@ -3,10 +3,10 @@ import { observer, inject } from 'mobx-react';
 import {
   Tooltip, Button, Select, Icon, Modal, Avatar, Dropdown, Menu,
 } from 'choerodon-ui';
-import EasyEdit from '../../../../../../../components/EasyEdit/EasyEdit';
-import UserHead from '../../../../../../../components/UserHead';
+import EasyEdit from '../../../../../../components/EasyEdit/EasyEdit';
+import UserHead from '../../../../../../components/UserHead';
 import AssigneeModal from './AssigneeModal';
-// import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+// import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 
 @inject('AppState', 'HeaderStore')
 @observer class AssigneeStoryPoint extends Component {

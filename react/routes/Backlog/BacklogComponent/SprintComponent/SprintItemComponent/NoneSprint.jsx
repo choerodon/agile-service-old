@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import emptyPng from '../../../../../../assets/image/emptySprint.svg';
-import BacklogStore from '../../../../../../stores/project/backlog/BacklogStore';
-import EmptyBacklog from '../../../../../../assets/image/emptyBacklog.svg';
+import emptyPng from '../../../../../assets/image/emptySprint.svg';
+import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import EmptyBacklog from '../../../../../assets/image/emptyBacklog.svg';
 
 @inject('AppState')
 @observer class NoneIssue extends Component {

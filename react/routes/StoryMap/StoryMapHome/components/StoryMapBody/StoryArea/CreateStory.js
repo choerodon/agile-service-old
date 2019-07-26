@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { Input } from 'choerodon-ui';
 import Card from '../Card';
 import './CreateStory.scss';
-import { createIssue, createIssueField } from '../../../../../../../api/NewIssueApi';
-import { getProjectId } from '../../../../../../../common/utils';
-import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
-import clickOutSide from '../../../../../../../components/CommonComponent/ClickOutSide';
+import { createIssue, createIssueField } from '../../../../../../api/NewIssueApi';
+import { getProjectId } from '../../../../../../common/utils';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import clickOutSide from '../../../../../../components/CommonComponent/ClickOutSide';
 
 class CreateStory extends Component {
   state = {

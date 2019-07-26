@@ -3,7 +3,7 @@ import { stores, axios } from '@choerodon/boot';
 import ReactEcharts from 'echarts-for-react';
 import { Icon, Spin } from 'choerodon-ui';
 import pic from './no_issue.png';
-import EmptyBlockDashboard from '../../../../../components/EmptyBlockDashboard';
+import EmptyBlockDashboard from '../../../../components/EmptyBlockDashboard';
 import './IssueType.scss';
 
 const { AppState } = stores;

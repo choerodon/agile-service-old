@@ -7,8 +7,8 @@ import {
 } from 'choerodon-ui';
 import StatusCard from '../StatusCard/StatusCard';
 import './SettingColumn.scss';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
-import EasyEdit from '../../../../../components/EasyEdit/EasyEdit';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
+import EasyEdit from '../../../../components/EasyEdit/EasyEdit';
 
 const { AppState } = stores;
 

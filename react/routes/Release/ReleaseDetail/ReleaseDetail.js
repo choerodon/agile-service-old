@@ -8,13 +8,13 @@ import _ from 'lodash';
 import {
   Button, Tabs, Table, Popover, Form, Icon, Spin, Avatar, Tooltip,
 } from 'choerodon-ui';
-import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
+import ReleaseStore from '../../../stores/project/release/ReleaseStore';
 import './ReleaseDetail.scss';
 import PublicRelease from '../ReleaseComponent/PublicRelease';
-import TypeTag from '../../../../components/TypeTag';
-import StatusTag from '../../../../components/StatusTag';
-import PriorityTag from '../../../../components/PriorityTag';
-import UserHead from '../../../../components/UserHead';
+import TypeTag from '../../../components/TypeTag';
+import StatusTag from '../../../components/StatusTag';
+import PriorityTag from '../../../components/PriorityTag';
+import UserHead from '../../../components/UserHead';
 
 const { TabPane } = Tabs;
 const { AppState } = stores;

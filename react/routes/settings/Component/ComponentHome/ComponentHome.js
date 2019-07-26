@@ -9,13 +9,13 @@ import {
   Page, Header, Content, stores, Permission,
 } from '@choerodon/boot';
 import './ComponentHome.scss';
-import pic from '../../../../../assets/image/模块管理－空.png';
-import { loadComponents } from '../../../../../api/ComponentApi';
+import pic from '../../../../assets/image/模块管理－空.png';
+import { loadComponents } from '../../../../api/ComponentApi';
 import CreateComponent from '../ComponentComponent/AddComponent';
 import EditComponent from '../ComponentComponent/EditComponent';
 import DeleteComponent from '../ComponentComponent/DeleteComponent';
-import EmptyBlock from '../../../../../components/EmptyBlock';
-import UserHead from '../../../../../components/UserHead';
+import EmptyBlock from '../../../../components/EmptyBlock';
+import UserHead from '../../../../components/UserHead';
 
 const { AppState } = stores;
 

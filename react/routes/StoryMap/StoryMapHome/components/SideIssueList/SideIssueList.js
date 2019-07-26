@@ -4,10 +4,10 @@ import {
   Input, Icon, Checkbox, Popover, Spin, Select,
 } from 'choerodon-ui';
 import { observer } from 'mobx-react';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
-import FiltersProvider from '../../../../../../components/FiltersProvider';
-import Loading from '../../../../../../components/Loading';
-import { configTheme } from '../../../../../../common/utils';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
+import FiltersProvider from '../../../../../components/FiltersProvider';
+import Loading from '../../../../../components/Loading';
+import { configTheme } from '../../../../../common/utils';
 import IssueItem from './IssueItem';
 import './SideIssueList.scss';
 

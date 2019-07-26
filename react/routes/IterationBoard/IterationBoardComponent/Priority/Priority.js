@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { stores, axios } from '@choerodon/boot';
 import { Spin } from 'choerodon-ui';
-import PriorityTag from '../../../../../components/PriorityTag';
-import EmptyBlockDashboard from '../../../../../components/EmptyBlockDashboard';
+import PriorityTag from '../../../../components/PriorityTag';
+import EmptyBlockDashboard from '../../../../components/EmptyBlockDashboard';
 import pic from '../EmptyPics/no_sprint.svg';
 import pic2 from '../EmptyPics/no_version.svg';
 import './Priority.scss';

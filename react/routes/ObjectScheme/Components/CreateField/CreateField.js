@@ -9,7 +9,7 @@ import {
   stores,
 } from '@choerodon/boot';
 import './CreateField.scss';
-import * as images from '../../../../../assets/image';
+import * as images from '../../../../assets/image';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;

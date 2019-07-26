@@ -4,7 +4,7 @@ import {
   Button, Select, Checkbox, Menu, Dropdown, Icon,
 } from 'choerodon-ui';
 import { observer } from 'mobx-react';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
 
 @observer
 class SwitchSwimLine extends Component {

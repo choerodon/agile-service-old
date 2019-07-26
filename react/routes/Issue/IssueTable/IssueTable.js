@@ -3,13 +3,13 @@ import { Table, Tooltip } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import { trace } from 'mobx';
 import { findIndex, map } from 'lodash';
-import IssueStore from '../../../../stores/project/sprint/IssueStore';
+import IssueStore from '../../../stores/project/sprint/IssueStore';
 import IssueFilterControler from '../IssueFilterControler';
 import {
   IssueNum, TypeCode, Summary, StatusName, Priority, Assignee, LastUpdateTime, Sprint, Epic,
 } from './IssueTableComponent';
-import EmptyBlock from '../../../../components/EmptyBlock';
-import pic from '../../../../assets/image/emptyIssue.svg';
+import EmptyBlock from '../../../components/EmptyBlock';
+import pic from '../../../assets/image/emptyIssue.svg';
 import QuickCreateIssue from '../QuickCreateIssue/QuickCreateIssue';
 
 let previousClick = false;

@@ -4,12 +4,12 @@ import { Tooltip } from 'choerodon-ui';
 import classnames from 'classnames';
 import { findDOMNode } from 'react-dom';
 import _ from 'lodash';
-import TypeTag from '../../../../../components/TypeTag';
-import UserHead from '../../../../../components/UserHead';
-import StatusTag from '../../../../../components/StatusTag';
-import PriorityTag from '../../../../../components/PriorityTag';
+import TypeTag from '../../../../components/TypeTag';
+import UserHead from '../../../../components/UserHead';
+import StatusTag from '../../../../components/StatusTag';
+import PriorityTag from '../../../../components/PriorityTag';
 import './SprintIssue.scss';
-import IsInProgramStore from '../../../../../stores/common/program/IsInProgramStore';
+import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
 
 @observer
 class SprintIssue extends Component {

@@ -8,8 +8,8 @@ import { Droppable, Draggable } from 'react-beautiful-dnd';
 import {
   message, DatePicker, Icon, Dropdown, Menu, Input,
 } from 'choerodon-ui';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
-import EasyEdit from '../../../../../components/EasyEdit/EasyEdit';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
+import EasyEdit from '../../../../components/EasyEdit/EasyEdit';
 import DraggableEpic from '../EpicComponent/EpicItem';
 
 const { AppState } = stores;

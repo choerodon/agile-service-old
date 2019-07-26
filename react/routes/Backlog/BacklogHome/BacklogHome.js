@@ -11,15 +11,15 @@ import Version from '../BacklogComponent/VersionComponent/Version';
 import Epic from '../BacklogComponent/EpicComponent/Epic';
 import Feature from '../BacklogComponent/FeatureComponent/Feature';
 import IssueDetail from '../BacklogComponent/IssueDetailComponent/IssueDetail';
-import CreateIssue from '../../../../components/CreateIssue';
+import CreateIssue from '../../../components/CreateIssue';
 import './BacklogHome.scss';
 import SprintItem from '../BacklogComponent/SprintComponent/SprintItem';
-import QuickSearch, { QuickSearchEvent } from '../../../../components/QuickSearch';
-import Injecter from '../../../../components/Injecter';
+import QuickSearch, { QuickSearchEvent } from '../../../components/QuickSearch';
+import Injecter from '../../../components/Injecter';
 import ClearFilter from '../BacklogComponent/SprintComponent/SprintItemComponent/SprintHeaderComponent/ClearAllFilter';
-import IsInProgramStore from '../../../../stores/common/program/IsInProgramStore';
-import { getFeaturesInProject } from '../../../../api/FeatureApi';
-import { getProjectsInProgram } from '../../../../api/CommonApi';
+import IsInProgramStore from '../../../stores/common/program/IsInProgramStore';
+import { getFeaturesInProject } from '../../../api/FeatureApi';
+import { getProjectsInProgram } from '../../../api/CommonApi';
 
 const { AppState } = stores;
 

@@ -9,18 +9,18 @@ import {
   Button, Tabs, Table, Select, Icon, Tooltip, Spin,
 } from 'choerodon-ui';
 // import pic from './no_version.svg';
-import pic from '../../../../../assets/image/emptyChart.svg';
+import pic from '../../../../assets/image/emptyChart.svg';
 import finish from './legend/finish.svg';
 import total from './legend/total.svg';
 import noEstimated from './legend/noEstimated.svg';
 import SwithChart from '../../Component/switchChart';
-import StatusTag from '../../../../../components/StatusTag';
-import PriorityTag from '../../../../../components/PriorityTag';
-import TypeTag from '../../../../../components/TypeTag';
-import VS from '../../../../../stores/project/versionReportNew';
-import EmptyBlock from '../../../../../components/EmptyBlock';
+import StatusTag from '../../../../components/StatusTag';
+import PriorityTag from '../../../../components/PriorityTag';
+import TypeTag from '../../../../components/TypeTag';
+import VS from '../../../../stores/project/versionReportNew';
+import EmptyBlock from '../../../../components/EmptyBlock';
 import './VersionReport.scss';
-import { STATUS } from '../../../../../common/Constant';
+import { STATUS } from '../../../../common/Constant';
 
 const { TabPane } = Tabs;
 const { AppState } = stores;

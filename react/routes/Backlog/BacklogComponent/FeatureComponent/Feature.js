@@ -4,10 +4,10 @@ import {
   Icon,
 } from 'choerodon-ui';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
-import { QuickSearchEvent } from '../../../../../components/QuickSearch';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
+import { QuickSearchEvent } from '../../../../components/QuickSearch';
 import FeatureItem from './FeatureItem';
-import { getFeaturesInProject } from '../../../../../api/FeatureApi';
+import { getFeaturesInProject } from '../../../../api/FeatureApi';
 import CreateFeature from './CreateFeature';
 import './Feature.scss';
 

@@ -9,7 +9,7 @@ import {
   importIssue,
   cancelImport,
   queryImportHistory,
-} from '../../../../api/NewIssueApi';
+} from '../../../api/NewIssueApi';
 import './ImportIssue.scss';
 
 const { AppState } = stores;

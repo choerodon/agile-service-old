@@ -5,10 +5,10 @@ import {
 } from 'choerodon-ui';
 import _ from 'lodash';
 import { withRouter } from 'react-router-dom';
-import TypeTag from '../../../../../components/TypeTag';
-import PriorityTag from '../../../../../components/PriorityTag';
-import StatusTag from '../../../../../components/StatusTag';
-import { loadSprintIssues } from '../../../../../api/NewIssueApi';
+import TypeTag from '../../../../components/TypeTag';
+import PriorityTag from '../../../../components/PriorityTag';
+import StatusTag from '../../../../components/StatusTag';
+import { loadSprintIssues } from '../../../../api/NewIssueApi';
 import './SprintDetails.scss';
 
 const { TabPane } = Tabs;

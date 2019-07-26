@@ -7,7 +7,7 @@ import {
 import { observer } from 'mobx-react';
 import { Modal, Radio } from 'choerodon-ui';
 import FileSaver from 'file-saver';
-import IssueStore from '../../../../stores/project/sprint/IssueStore/IssueStore';
+import IssueStore from '../../../stores/project/sprint/IssueStore/IssueStore';
 
 const RadioGroup = Radio.Group;
 const { AppState } = stores;

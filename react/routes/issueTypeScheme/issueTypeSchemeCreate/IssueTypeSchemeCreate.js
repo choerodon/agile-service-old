@@ -8,9 +8,9 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import {
   Content, Header, Page, Permission, stores,
 } from '@choerodon/boot';
-import TransferDrag from '../../../../components/TransferDrag';
+import TransferDrag from '../../../components/TransferDrag';
 import './IssueTypeSchemeCreate.scss';
-import TypeTag from '../../../../components/TypeTag/TypeTag';
+import TypeTag from '../../../components/TypeTag/TypeTag';
 
 
 const { AppState } = stores;

@@ -4,8 +4,8 @@ import { Content, stores, axios } from '@choerodon/boot';
 import {
   Form, Modal, Input, Select, message,
 } from 'choerodon-ui';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
-import { STATUS } from '../../../../../common/Constant';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
+import { STATUS } from '../../../../common/Constant';
 
 const FormItem = Form.Item;
 const { Sidebar, confirm } = Modal;

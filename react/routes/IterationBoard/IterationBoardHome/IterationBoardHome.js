@@ -4,7 +4,7 @@ import {
   Page, Header, Content, stores,
 } from '@choerodon/boot';
 import { Row, Col, Button } from 'choerodon-ui';
-import { loadSprint } from '../../../../api/NewIssueApi';
+import { loadSprint } from '../../../api/NewIssueApi';
 import Assignee from '../IterationBoardComponent/Assignee';
 import BurnDown from '../IterationBoardComponent/BurnDown';
 import Sprint from '../IterationBoardComponent/Sprint';

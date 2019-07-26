@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import { Tooltip } from 'choerodon-ui';
-import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import Card from '../Card';
 import './FeatureCard.scss';
 

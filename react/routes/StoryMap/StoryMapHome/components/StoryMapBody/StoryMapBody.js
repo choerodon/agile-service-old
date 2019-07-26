@@ -4,8 +4,8 @@ import { observer } from 'mobx-react';
 import EpicRow from './EpicRow';
 import FeatureRow from './FeatureRow';
 import StoryArea from './StoryArea';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
-import IsInProgramStore from '../../../../../../stores/common/program/IsInProgramStore';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
+import IsInProgramStore from '../../../../../stores/common/program/IsInProgramStore';
 import './StoryMapBody.scss';
 
 @observer

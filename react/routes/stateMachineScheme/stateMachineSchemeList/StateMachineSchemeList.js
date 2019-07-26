@@ -22,7 +22,7 @@ import {
 } from '@choerodon/boot';
 
 import './StateMachineSchemeList.scss';
-import TypeTag from '../../../../components/TypeTag/TypeTag';
+import TypeTag from '../../../components/TypeTag/TypeTag';
 
 const { AppState } = stores;
 const prefixCls = 'issue-stateMachineScheme';

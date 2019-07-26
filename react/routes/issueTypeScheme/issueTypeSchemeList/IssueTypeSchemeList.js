@@ -10,7 +10,7 @@ import {
 } from '@choerodon/boot';
 import './IssueTypeSchemeList.scss';
 import IssueTypeSchemeCreate from '../issueTypeSchemeCreate';
-import TypeTag from '../../../../components/TypeTag/TypeTag';
+import TypeTag from '../../../components/TypeTag/TypeTag';
 
 const { AppState } = stores;
 

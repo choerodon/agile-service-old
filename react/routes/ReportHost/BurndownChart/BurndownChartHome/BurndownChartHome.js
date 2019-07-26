@@ -10,13 +10,13 @@ import {
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
 import moment from 'moment';
-import BurndownChartStore from '../../../../../stores/project/burndownChart/BurndownChartStore';
+import BurndownChartStore from '../../../../stores/project/burndownChart/BurndownChartStore';
 import './BurndownChartHome.scss';
-import restSvg from '../../../../../assets/image/rest.svg';
-import hopeSvg from '../../../../../assets/image/hope.svg';
+import restSvg from '../../../../assets/image/rest.svg';
+import hopeSvg from '../../../../assets/image/hope.svg';
 import NoDataComponent from '../../Component/noData';
 // import epicSvg from '../../Home/style/pics/no_sprint.svg';
-import epicSvg from '../../../../../assets/image/emptyChart.svg';
+import epicSvg from '../../../../assets/image/emptyChart.svg';
 import SwithChart from '../../Component/switchChart';
 
 const { AppState } = stores;

@@ -1,20 +1,18 @@
-import React, { Component, useState, useEffect } from 'react';
-import { observer } from 'mobx-react';
+import React, { useState, useEffect } from 'react';
 import {
-  Spin, Popover, Tooltip, Modal,
+  Spin, Popover, Tooltip, 
 } from 'choerodon-ui';
-import { DataSet, Table, Button, Icon } from 'choerodon-ui/pro';
+import { DataSet, Icon } from 'choerodon-ui/pro';
 import {
-  Page, Header, Content, stores, axios,
+  Page, Content, stores, axios, 
 } from '@choerodon/boot';
 import Filter from './Component/Filter';
 import EditFilter from './Component/EditFilter';
 import DeleteFilter from './Component/DeleteFilter';
 import SortTable from './Component/SortTable';
-import './FastSearchHome.scss';
+import './FastSearchHome.less';
 
 const { AppState } = stores;
-const { Column } = Table;
 
 function Search(props) {
   const [filters, setFilters] = useState([]);
@@ -62,7 +60,7 @@ function Search(props) {
           whiteSpace: 'nowrap',
         }}
         >
-          <Tooltip placement="topLeft" mouseEnterDelay={0.5} title={this.transformOperation(expressQuery)}>
+          <Tooltip placement="topLeft" mouseEnterDelay={0.5} title={transformOperation(expressQuery)}>
             <span
               style={{
                 overflow: 'hidden',
@@ -72,7 +70,7 @@ function Search(props) {
               }}
             >
               {/* {expressQuery} */}
-              {this.transformOperation(expressQuery)}
+              {transformOperation(expressQuery)}
             </span>
           </Tooltip>
         </div>
@@ -151,10 +149,16 @@ function Search(props) {
     queryFields: [
       { name: 'name', type: 'string', label: '姓名' },
       { name: 'age', type: 'number', label: '年龄' },
-      { name: 'code', type: 'object', label: '代码描述', lovCode: 'LOV_CODE' },
-      { name: 'sex', type: 'string', label: '性别', lookupCode: 'HR.EMPLOYEE_GENDER' },
+      {
+        name: 'code', type: 'object', label: '代码描述', lovCode: 'LOV_CODE', 
+      },
+      {
+        name: 'sex', type: 'string', label: '性别', lookupCode: 'HR.EMPLOYEE_GENDER', 
+      },
       { name: 'date.startDate', type: 'date', label: '开始日期' },
-      { name: 'sexMultiple', type: 'string', label: '性别（多值）', lookupCode: 'HR.EMPLOYEE_GENDER', multiple: true },
+      {
+        name: 'sexMultiple', type: 'string', label: '性别（多值）', lookupCode: 'HR.EMPLOYEE_GENDER', multiple: true, 
+      },
     ],
     fields: [
       {
@@ -382,11 +386,7 @@ function Search(props) {
           <span>刷新</span>
         </Button>
       </Header> */}
-      <Content
-      // title="快速搜索"
-      // description="通过定义快速搜索，可以在待办事项和活跃冲刺的快速搜索工具栏生效，帮助您更好的筛选过滤问题面板。"
-      // link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/setup/quick-search/"
-      >
+      <Content>
         <div>
           <Spin spinning={loading}>
             <SortTable

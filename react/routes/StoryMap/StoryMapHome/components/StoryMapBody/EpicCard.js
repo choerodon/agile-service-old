@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Tooltip } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import EpicDrag from './EpicDrag';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
 import Card from './Card';
 import './EpicCard.scss';
 

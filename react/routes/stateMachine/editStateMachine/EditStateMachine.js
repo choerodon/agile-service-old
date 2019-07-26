@@ -10,10 +10,10 @@ import {
   Content, Header, Page, Permission, stores,
 } from '@choerodon/boot';
 import _ from 'lodash';
-import Graph from '../../../../components/Graph';
-import StateStore from '../../../../stores/organization/state';
-import ReadAndEdit from '../../../../components/ReadAndEdit';
-import { getByteLen, getStageMap, getStageList } from '../../../../common/utils';
+import Graph from '../../../components/Graph';
+import StateStore from '../../../stores/organization/state';
+import ReadAndEdit from '../../../components/ReadAndEdit';
+import { getByteLen, getStageMap, getStageList } from '../../../common/utils';
 
 import './EditStateMachine.scss';
 

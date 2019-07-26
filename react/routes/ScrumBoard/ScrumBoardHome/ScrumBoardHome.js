@@ -8,17 +8,17 @@ import {
   Button, Select, Spin, message, Icon, Modal, Input, Form, Tooltip,
 } from 'choerodon-ui';
 import ScrumBoardDataController from './ScrumBoardDataController';
-import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../stores/project/scrumBoard/ScrumBoardStore';
 import StatusColumn from '../ScrumBoardComponent/StatusColumn/StatusColumn';
 import './ScrumBoardHome.scss';
 import IssueDetail from '../ScrumBoardComponent/IssueDetail/IssueDetail';
-import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../stores/project/backlog/BacklogStore';
 import CloseSprint from '../../Backlog/BacklogComponent/SprintComponent/CloseSprint';
-import QuickSearch from '../../../../components/QuickSearch';
+import QuickSearch from '../../../components/QuickSearch';
 import NoneSprint from '../ScrumBoardComponent/NoneSprint/NoneSprint';
 import '../ScrumBoardComponent/RenderSwimLaneContext/RenderSwimLaneContext.scss';
 import SwimLane from '../ScrumBoardComponent/RenderSwimLaneContext/SwimLane';
-import CSSBlackMagic from '../../../../components/CSSBlackMagic/CSSBlackMagic';
+import CSSBlackMagic from '../../../components/CSSBlackMagic/CSSBlackMagic';
 
 const { Option } = Select;
 const { Sidebar } = Modal;

@@ -11,7 +11,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 
 import './IssueTypeScreenSchemesList.scss';
 
-import Tips from '../../../../components/Tips';
+import Tips from '../../../components/Tips';
 
 const { AppState } = stores;
 

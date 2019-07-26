@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import { Droppable } from 'react-beautiful-dnd';
-import BacklogStore from '../../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 import QuickCreateIssue from './QuickCreateIssue';
 import IssueList from './IssueList';
 import { deBounce } from '../Utils';
-import { getFeaturesInProject } from '../../../../../../api/FeatureApi';
-import { createIssueField } from '../../../../../../api/NewIssueApi';
+import { getFeaturesInProject } from '../../../../../api/FeatureApi';
+import { createIssueField } from '../../../../../api/NewIssueApi';
 
 const debounceCallback = deBounce(500);
 /**

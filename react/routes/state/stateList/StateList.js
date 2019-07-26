@@ -8,8 +8,8 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import {
   Content, Header, Page, Permission, stores,
 } from '@choerodon/boot';
-import { getStageMap, getStageList } from '../../../../common/utils';
-import Tips from '../../../../components/Tips';
+import { getStageMap, getStageList } from '../../../common/utils';
+import Tips from '../../../components/Tips';
 
 import './StateList.scss';
 

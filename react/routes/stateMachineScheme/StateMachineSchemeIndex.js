@@ -4,11 +4,11 @@ import { asyncRouter, nomatch } from '@choerodon/boot';
 
 const StateMachineSchemeList = asyncRouter(
   () => import('./stateMachineSchemeList'),
-  () => import('../../../stores/organization/stateMachineScheme')
+  () => import('../../stores/organization/stateMachineScheme')
 );
 const EditStateMachineScheme = asyncRouter(
   () => import('./editStateMachineScheme'),
-  () => import('../../../stores/organization/stateMachineScheme')
+  () => import('../../stores/organization/stateMachineScheme')
 );
 const StateMachineSchemeIndex = ({ match }) => (
   <Switch>

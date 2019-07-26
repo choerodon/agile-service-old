@@ -5,10 +5,10 @@ import {
 } from 'react-router-dom';
 import { asyncRouter, nomatch } from '@choerodon/boot';
 
-const StateMachineList = asyncRouter(() => import('./stateMachineList'), () => import('../../../stores/organization/stateMachine'));
-const EditStateMachine = asyncRouter(() => import('./editStateMachine'), () => import('../../../stores/organization/stateMachine'));
-const EditConfig = asyncRouter(() => import('./editConfig'), () => import('../../../stores/organization/stateMachine'));
-const EditConfigSelect = asyncRouter(() => import('./editConfigSelect'), () => import('../../../stores/organization/stateMachine'));
+const StateMachineList = asyncRouter(() => import('./stateMachineList'), () => import('../../stores/organization/stateMachine'));
+const EditStateMachine = asyncRouter(() => import('./editStateMachine'), () => import('../../stores/organization/stateMachine'));
+const EditConfig = asyncRouter(() => import('./editConfig'), () => import('../../stores/organization/stateMachine'));
+const EditConfigSelect = asyncRouter(() => import('./editConfigSelect'), () => import('../../stores/organization/stateMachine'));
 
 const StateMachineIndex = ({ match }) => (
   <Switch>

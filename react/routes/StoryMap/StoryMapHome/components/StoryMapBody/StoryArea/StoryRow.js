@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { observer } from 'mobx-react';
 import StoryCell from './StoryCell';
 import TitleCell from './TitleCell';
-import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 
 @observer
 class StoryRow extends Component {

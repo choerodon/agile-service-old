@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import IssueStore from '../../../../stores/project/sprint/IssueStore';
-import EditIssue from '../../../../components/EditIssue';
-import { loadIssue } from '../../../../api/NewIssueApi';
+import IssueStore from '../../../stores/project/sprint/IssueStore';
+import EditIssue from '../../../components/EditIssue';
+import { loadIssue } from '../../../api/NewIssueApi';
 import IssueFilterControler from '../IssueFilterControler';
 
 @inject('AppState', 'HeaderStore')

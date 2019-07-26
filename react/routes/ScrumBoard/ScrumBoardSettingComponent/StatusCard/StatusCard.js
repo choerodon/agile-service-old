@@ -5,7 +5,7 @@ import {
   Radio, Icon, Tooltip, Modal,
 } from 'choerodon-ui';
 import { stores, Permission } from '@choerodon/boot';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
 import EditStatus from '../EditStatus/EditStatus';
 import './StatusCard.scss';
 

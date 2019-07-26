@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Draggable } from 'react-beautiful-dnd';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 import DraggableVersion from './DraggableVersion';
 
 @observer

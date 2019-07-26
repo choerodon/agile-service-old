@@ -4,12 +4,12 @@ import {
   Input, Dropdown, Icon, Menu,
 } from 'choerodon-ui';
 import { find } from 'lodash';
-import TypeTag from '../../../../../../../components/TypeTag';
+import TypeTag from '../../../../../../components/TypeTag';
 import Card from '../Card';
-import { createIssue, createIssueField } from '../../../../../../../api/NewIssueApi';
-import { getProjectId } from '../../../../../../../common/utils';
-import clickOutSide from '../../../../../../../components/CommonComponent/ClickOutSide';
-import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
+import { createIssue, createIssueField } from '../../../../../../api/NewIssueApi';
+import { getProjectId } from '../../../../../../common/utils';
+import clickOutSide from '../../../../../../components/CommonComponent/ClickOutSide';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 
 
 class CreateFeature extends Component {

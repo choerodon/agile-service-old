@@ -4,8 +4,8 @@ import { observer } from 'mobx-react';
 import Column from '../Column';
 import FeatureCard from './FeatureCard';
 import { ColumnWidth } from '../../../Constants';
-import AutoScroll from '../../../../../../../common/AutoScroll';
-import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
+import AutoScroll from '../../../../../../common/AutoScroll';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import './FeatureColumn.scss';
 
 @observer

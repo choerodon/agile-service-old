@@ -1,10 +1,7 @@
 import React from 'react';
-import { asyncRouter } from '@choerodon/boot';
-import { Tabs, Divider } from 'choerodon-ui';
-import IsInProgramStore from '../IsInProgramStore';
-import RunWhenProjectChange from '../../../common/RunWhenProjectChange';
+import { Tabs } from 'choerodon-ui';
 import ComponentIndex from './Component/ComponentHome/ComponentHome';
-import FastSearchIndex from './FastSearch/FastSearchHome/FastSearchHome copy';
+import FastSearchIndex from './FastSearch/FastSearchHome/FastSearchHome';
 import IssueLinkIndex from './IssueLink/IssueLinkHome/IssueLinkHome';
 import MessageNotificationIndex from './MessageNotification/MessageNotificationHome/MessageNotificationHome';
 import Breadcrumb from './components/breadcrumb';
@@ -42,19 +39,10 @@ class SettingsIndex extends React.Component {
     };
   }
 
-  componentDidCatch(error, info) {
-    // Choerodon.prompt(error.message);
-  }
-
-  componentDidMount() {
-    // 切换项目查是否在项目群中
-    RunWhenProjectChange(IsInProgramStore.refresh);
-    IsInProgramStore.refresh();
-  }
 
   callback = (key) => {
     // console.log(key);
-    const list = this.state.breadcrumbData.list;
+    const { list } = this.state.breadcrumbData;
     list[list.length - 1].name = key;
     this.setState({
       breadcrumbData: this.state.breadcrumbData,

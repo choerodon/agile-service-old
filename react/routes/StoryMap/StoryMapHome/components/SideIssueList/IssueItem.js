@@ -5,10 +5,10 @@ import { observer } from 'mobx-react';
 import { Tooltip } from 'choerodon-ui';
 import { find } from 'lodash';
 import { DragSource, DropTarget } from 'react-dnd';
-import TypeTag from '../../../../../../components/TypeTag';
-import { issueLink } from '../../../../../../common/utils';
-import { storyMove } from '../../../../../../api/StoryMapApi';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import TypeTag from '../../../../../components/TypeTag';
+import { issueLink } from '../../../../../common/utils';
+import { storyMove } from '../../../../../api/StoryMapApi';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
 
 import './IssueItem.scss';
 

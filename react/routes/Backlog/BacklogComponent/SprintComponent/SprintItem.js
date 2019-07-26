@@ -5,7 +5,7 @@ import {
   Input, Button, Select, Icon, Tooltip, Modal, Avatar, Dropdown, Menu,
 } from 'choerodon-ui';
 import './Sprint.scss';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 import SprintContainer from './SprintItemComponent/SprintContainer';
 import NoneSprint from './SprintItemComponent/NoneSprint';
 

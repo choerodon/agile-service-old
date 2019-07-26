@@ -4,8 +4,8 @@ import {
   Modal, Form, Input, Select,
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
-import { createIssueField } from '../../../../../../api/NewIssueApi';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import { createIssueField } from '../../../../../api/NewIssueApi';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;

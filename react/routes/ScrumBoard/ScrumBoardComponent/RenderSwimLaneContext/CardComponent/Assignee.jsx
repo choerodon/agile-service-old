@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import UserHead from '../../../../../../components/UserHead/UserHead';
+import UserHead from '../../../../../components/UserHead/UserHead';
 
 /**
  * 任务经办人呈现

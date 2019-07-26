@@ -7,10 +7,10 @@ import _ from 'lodash';
 import {
   Form, Input, Button, Icon, Select, Radio,
 } from 'choerodon-ui';
-import { COLOR } from '../../../../common/Constant';
-import { loadPriorities } from '../../../../api/NewIssueApi';
-import { getUsers, getUser } from '../../../../api/CommonApi';
-import UserHead from '../../../../components/UserHead';
+import { COLOR } from '../../../common/Constant';
+import { loadPriorities } from '../../../api/NewIssueApi';
+import { getUsers, getUser } from '../../../api/CommonApi';
+import UserHead from '../../../components/UserHead';
 
 const { AppState } = stores;
 const { Option } = Select;

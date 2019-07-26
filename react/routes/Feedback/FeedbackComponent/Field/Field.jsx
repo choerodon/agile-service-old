@@ -7,9 +7,9 @@ import {
   Checkbox, Select, Input, TimePicker, Row, Col, Radio, DatePicker, InputNumber,
 } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
-import TextEditToggle from '../../../../../components/TextEditToggle';
+import TextEditToggle from '../../../../components/TextEditToggle';
 import UserHead from '../UserHead';
-import { getUsers } from '../../../../../api/CommonApi';
+import { getUsers } from '../../../../api/CommonApi';
 import './Field.less';
 
 const { TextArea } = Input;

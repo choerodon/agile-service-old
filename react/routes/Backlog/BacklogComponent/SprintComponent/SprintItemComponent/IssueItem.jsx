@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import classnames from 'classnames';
 import SprintCount from '../SprintCount';
 import SprintIssue from '../SprintIssue';
-import BacklogStore from '../../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
 
 @observer
 class IssueItem extends Component {

@@ -10,7 +10,7 @@ import Filter from './Component/Filter';
 import EditFilter from './Component/EditFilter';
 import DeleteFilter from './Component/DeleteFilter';
 import SortTable from './Component/SortTable';
-import './FastSearchHome.scss';
+import './FastSearchHome.less';
 
 const { AppState } = stores;
 
@@ -265,11 +265,7 @@ class Search extends Component {
             <span>刷新</span>
           </Button>
         </Header> */}
-        <Content
-          // title="快速搜索"
-          // description="通过定义快速搜索，可以在待办事项和活跃冲刺的快速搜索工具栏生效，帮助您更好的筛选过滤问题面板。"
-          // link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/setup/quick-search/"
-        >
+        <Content >
           <div>
             <Spin spinning={loading}>
               <SortTable

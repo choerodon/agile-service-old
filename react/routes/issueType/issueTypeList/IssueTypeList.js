@@ -11,7 +11,7 @@ import {
 
 import './IssueTypeList.scss';
 import IssueTypeCreate from '../issueTypeCreate';
-import TypeTag from '../../../../components/TypeTag/TypeTag';
+import TypeTag from '../../../components/TypeTag/TypeTag';
 
 const { AppState } = stores;
 const { info } = Modal;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import EditIssue from '../../../../../../components/EditIssue';
-import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
+import EditIssue from '../../../../../components/EditIssue';
+import StoryMapStore from '../../../../../stores/project/StoryMap/StoryMapStore';
 
 @inject('AppState')
 @observer

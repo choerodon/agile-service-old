@@ -5,7 +5,7 @@ import {
 } from 'choerodon-ui';
 import { stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
-import IssueStore from '../../../../stores/project/sprint/IssueStore';
+import IssueStore from '../../../stores/project/sprint/IssueStore';
 import IssueFilterControler from '../IssueFilterControler';
 import './FilterManage.scss';
 

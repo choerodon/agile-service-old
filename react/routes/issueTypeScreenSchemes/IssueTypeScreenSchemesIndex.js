@@ -3,8 +3,8 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import IssueTypeScreenSchemesEditHOC from './IssueTypeScreenSchemesEditHOC';
 
-const IssueTypeScreenSchemesList = asyncRouter(() => import('./issueTypeScreenSchemesList'), () => import('../../../stores/organization/issueTypeScreenSchemes'));
-const IssueTypeScreenSchemesEditTemplate = asyncRouter(() => import('./issueTypeScreenSchemesEditTemplate'), () => import('../../../stores/organization/issueTypeScreenSchemes'));
+const IssueTypeScreenSchemesList = asyncRouter(() => import('./issueTypeScreenSchemesList'), () => import('../../stores/organization/issueTypeScreenSchemes'));
+const IssueTypeScreenSchemesEditTemplate = asyncRouter(() => import('./issueTypeScreenSchemesEditTemplate'), () => import('../../stores/organization/issueTypeScreenSchemes'));
 
 const IssueTypeScreenSchemesEdit = IssueTypeScreenSchemesEditHOC(IssueTypeScreenSchemesEditTemplate, 'edit');
 const IssueTypeScreenSchemesCreate = IssueTypeScreenSchemesEditHOC(IssueTypeScreenSchemesEditTemplate, 'create');

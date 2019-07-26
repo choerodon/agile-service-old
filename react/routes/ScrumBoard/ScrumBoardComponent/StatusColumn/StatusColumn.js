@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import './StatusColumn.scss';
 import classnames from 'classnames';
 import { observer } from 'mobx-react';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
 
 @observer
 class StatusColumn extends Component {

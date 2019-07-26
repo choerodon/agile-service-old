@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Icon } from 'choerodon-ui';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 import EpicItem from './EpicItem';
 import './Epic.scss';
 import CreateEpic from './CreateEpic';

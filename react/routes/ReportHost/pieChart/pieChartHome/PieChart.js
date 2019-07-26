@@ -18,11 +18,11 @@ import { reduce } from 'zrender/lib/core/util';
 import util from 'util';
 import moment from 'moment';
 import SwitchChart from '../../Component/switchChart';
-import VersionReportStore from '../../../../../stores/project/versionReport/VersionReport';
+import VersionReportStore from '../../../../stores/project/versionReport/VersionReport';
 import NoDataComponent from '../../Component/noData';
-import pic from '../../../../../assets/image/emptyChart.svg';
-import ReleaseStore from '../../../../../stores/project/release/ReleaseStore';
-import { loadSprints, loadVersions } from '../../../../../api/NewIssueApi';
+import pic from '../../../../assets/image/emptyChart.svg';
+import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
+import { loadSprints, loadVersions } from '../../../../api/NewIssueApi';
 
 const Option = Select.Option;
 const { AppState } = stores;

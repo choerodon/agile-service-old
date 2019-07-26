@@ -7,7 +7,7 @@ import {
 import _ from 'lodash';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import SettingColumn from '../SettingColumn/SettingColumn';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
 import SideBarContent from '../SideBarContent/SideBarContent';
 
 const { AppState } = stores;

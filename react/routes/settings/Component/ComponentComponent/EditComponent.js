@@ -1,13 +1,12 @@
-/* eslint-disable */
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import {
-  Modal, Form, Input, Select, message, Button
+  Modal, Form, Input, Select, message, 
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
-import UserHead from '../../../../../components/UserHead';
-import { getUsers } from '../../../../../api/CommonApi';
-import { createComponent } from '../../../../../api/CommonApi';
+import UserHead from '../../../../components/UserHead';
+import { getUsers, getUser } from '../../../../api/CommonApi';
+import { loadComponent, updateComponent } from '../../../../api/ComponentApi';
 import './component.scss';
 
 const { Sidebar } = Modal;
@@ -17,52 +16,51 @@ const { AppState } = stores;
 const FormItem = Form.Item;
 let sign = false;
 
-class AddComponent extends Component {
+class EditComponent extends Component {
   constructor(props) {
     super(props);
     this.state = {
       originUsers: [],
       selectLoading: false,
       createLoading: false,
-      page: 1,
-      canLoadMore: true,
-      input: ''
+
+      component: {},
+      defaultAssigneeRole: undefined,
+      description: undefined,
+      managerId: undefined,
+      name: undefined,
     };
   }
 
+  componentDidMount() {
+    this.loadComponent(this.props.componentId);
+  }
 
   onFilterChange(input) {
     if (!sign) {
       this.setState({
         selectLoading: true,
       });
-      getUsers(input, undefined, this.state.page).then((res) => {
+      getUsers(input).then((res) => {
         this.setState({
-          input,
           originUsers: res.list.filter(u => u.enabled),
           selectLoading: false,
-          // page: 1,
-          canLoadMore: res.hasNextPage
         });
       });
       sign = true;
     } else {
-      this.debounceFilterIssues(input, undefined, this.state.page);
+      this.debounceFilterIssues(input);
     }
   }
 
   debounceFilterIssues = _.debounce((input) => {
     this.setState({
       selectLoading: true,
-      page: 1
     });
-    getUsers(input, undefined, this.state.page).then((res) => {
+    getUsers(input).then((res) => {
       this.setState({
-        input,
-        page: 1,
         originUsers: res.list.filter(u => u.enabled),
         selectLoading: false,
-        canLoadMore: res.hasNextPage
       });
     });
   }, 500);
@@ -80,21 +78,51 @@ class AddComponent extends Component {
     return str[0];
   }
 
-  handleOk = (e) => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
+  loadComponent(componentId) {
+    loadComponent(componentId)
+      .then((res) => {
         const {
-          defaultAssigneeRole, description, managerId, name,
+          defaultAssigneeRole, description, managerId, name, 
+        } = res;
+        this.setState({
+          defaultAssigneeRole,
+          description,
+          managerId: managerId || undefined,
+          name,
+          component: res,
+        });
+        if (managerId) {
+          this.loadUser(managerId);
+        }
+      });
+  }
+
+  loadUser(managerId) {
+    getUser(managerId).then((res) => {
+      this.setState({
+        managerId: JSON.stringify(res.list[0]),
+        originUsers: res.list.length ? [res.list[0]] : [],
+      });
+    });
+  }
+
+  handleOk(e) {
+    e.preventDefault();
+    this.props.form.validateFields((err, values, modify) => {
+      if (!err && modify) {
+        const {
+          defaultAssigneeRole, description, managerId, name, 
         } = values;
         const component = {
+          objectVersionNumber: this.state.component.objectVersionNumber,
+          componentId: this.state.component.componentId,
           defaultAssigneeRole,
           description,
           managerId: managerId ? JSON.parse(managerId).id || 0 : 0,
           name: name.trim(),
         };
         this.setState({ createLoading: true });
-        createComponent(component)
+        updateComponent(component.componentId, component)
           .then((res) => {
             this.setState({
               createLoading: false,
@@ -105,15 +133,17 @@ class AddComponent extends Component {
             this.setState({
               createLoading: false,
             });
-            Choerodon.prompt('创建模块失败');
+            Choerodon.prompt('修改模块失败');
           });
       }
     });
   }
 
+  
   checkComponentNameRepeat = (rule, value, callback) => {
-    if (value && value.trim()) {
-      axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/component/check_name?componentName=${value.trim()}`)
+    const { name } = this.state;
+    if (value && value.trim() && value.trim() !== name) {
+      axios.get(`/agile/v1/projects/${AppState.currentMenuType.id}/component/check_name?componentName=${value}`)
         .then((res) => {
           if (res) {
             callback('模块名称重复');
@@ -126,43 +156,25 @@ class AddComponent extends Component {
     }
   };
 
-  loadMoreUsers = (e) => {
-    e.preventDefault();
-    const { page, input, originUsers } = this.state;
-    this.setState({
-      selectLoading: true,
-    });
-    getUsers(input, undefined, page + 1).then((res) => {
-      this.setState({
-        originUsers: [...originUsers, ...res.list.filter(u => u.enabled)],
-        selectLoading: false,
-        canLoadMore: res.hasNextPage,
-        page: this.state.page + 1
-      });
-    });
-  }
-
   render() {
     const { getFieldDecorator, getFieldsValue } = this.props.form;
-    const { canLoadMore } = this.state;
     return (
       <Sidebar
-        className="c7n-component-component"
-        title="创建模块"
-        okText="创建"
+        title="修改模块"
+        onText="修改"
         cancelText="取消"
         visible={this.props.visible || false}
         confirmLoading={this.state.createLoading}
-        onOk={this.handleOk}
-        onCancel={this.props.onCancel}
+        onOk={this.handleOk.bind(this)}
+        onCancel={this.props.onCancel.bind(this)}
       >
         <Content
+          title={`在项目“${AppState.currentMenuType.name}”中修改模块`}
+          description="请在下面输入模块名称、模块概要、负责人和默认经办人策略，修改模版。"
+          link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/component/"
           style={{
             padding: 0,
           }}
-          title={`在项目“${AppState.currentMenuType.name}”中创建模块`}
-          description="请在下面输入模块名称、模块概要、负责人和默认经办人策略，创建新模版。"
-          link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/component/"
         >
           <Form style={{
             width: 512,
@@ -170,6 +182,7 @@ class AddComponent extends Component {
           >
             <FormItem style={{ marginBottom: 20 }}>
               {getFieldDecorator('name', {
+                initialValue: this.state.name,
                 rules: [{
                   required: true,
                   message: '模块名称必填',
@@ -182,12 +195,15 @@ class AddComponent extends Component {
               )}
             </FormItem>
             <FormItem style={{ marginBottom: 20 }}>
-              {getFieldDecorator('description', {})(
-                <Input label="模块描述" maxLength={30} />,
+              {getFieldDecorator('description', {
+                initialValue: this.state.description,
+              })(
+                <Input label="模块描述" autosize maxLength={30} />,
               )}
             </FormItem>
             <FormItem style={{ marginBottom: 20 }}>
               {getFieldDecorator('defaultAssigneeRole', {
+                initialValue: this.state.defaultAssigneeRole,
                 rules: [{
                   required: true,
                   message: '默认经办人必填',
@@ -202,19 +218,21 @@ class AddComponent extends Component {
                 </Select>,
               )}
             </FormItem>
-            {getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole && getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole === '模块负责人' && (
-              <FormItem style={{ marginBottom: 20 }}>
-                {getFieldDecorator('managerId', {})(
-                  <Select
-                    label="负责人"
-                    loading={this.state.selectLoading}
-                    allowClear
-                    filter
-                    onFilterChange={this.onFilterChange.bind(this)}
-                    getPopupContainer={(trigger) => (trigger.parentNode)}
-                  >
-                    {
-                      this.state.originUsers.map(user => (
+            
+            {
+              getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole && getFieldsValue(['defaultAssigneeRole']).defaultAssigneeRole === '模块负责人' && (
+                <FormItem style={{ marginBottom: 20 }}>
+                  {getFieldDecorator('managerId', {
+                    initialValue: this.state.managerId,
+                  })(
+                    <Select
+                      label="负责人"
+                      loading={this.state.selectLoading}
+                      allowClear
+                      filter
+                      onFilterChange={this.onFilterChange.bind(this)}
+                    >
+                      {this.state.originUsers.map(user => (
                         <Option key={JSON.stringify(user)} value={JSON.stringify(user)}>
                           <div style={{ display: 'inline-flex', alignItems: 'center', padding: '2px' }}>
                             <UserHead
@@ -227,22 +245,16 @@ class AddComponent extends Component {
                             />
                           </div>
                         </Option>
-                      ))
-                    }
-                    {
-                      canLoadMore && <Option key='loadMore' disabled className='loadMore-option'>
-                        <Button type="primary" onClick={this.loadMoreUsers}>加载更多</Button>
-                      </Option>
-                    }
-                  </Select> ,
-                )}
-              </FormItem>
-            )}
+                      ))}
+                    </Select>,
+                  )}
+                </FormItem>
+              )
+            }
           </Form>
         </Content>
-      </Sidebar >
+      </Sidebar>
     );
   }
 }
-
-export default Form.create()(AddComponent);
+export default Form.create()(EditComponent);

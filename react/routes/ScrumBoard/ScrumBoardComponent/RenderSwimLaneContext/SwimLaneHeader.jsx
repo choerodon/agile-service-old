@@ -4,10 +4,10 @@ import {
 } from 'choerodon-ui';
 import { observer } from 'mobx-react';
 import './SwimLaneHeader.scss';
-import TypeTag from '../../../../../components/TypeTag';
-import StatusTag from '../../../../../components/StatusTag';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
-import UserHead from '../../../../../components/UserHead';
+import TypeTag from '../../../../components/TypeTag';
+import StatusTag from '../../../../components/StatusTag';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
+import UserHead from '../../../../components/UserHead';
 
 @observer
 export default class SwimLaneHeader extends Component {

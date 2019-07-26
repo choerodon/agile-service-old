@@ -7,12 +7,12 @@ import {
 import {
  Button, Tabs, Table, Select, Icon, Tooltip, Dropdown, Menu 
 } from 'choerodon-ui';
-import ReportStore from '../../../../../stores/project/Report';
+import ReportStore from '../../../../stores/project/Report';
 import './ReleaseDetail.scss';
-import StatusTag from '../../../../../components/StatusTag';
-import PriorityTag from '../../../../../components/PriorityTag';
-import TypeTag from '../../../../../components/TypeTag';
-import { formatDate } from '../../../../../common/utils';
+import StatusTag from '../../../../components/StatusTag';
+import PriorityTag from '../../../../components/PriorityTag';
+import TypeTag from '../../../../components/TypeTag';
+import { formatDate } from '../../../../common/utils';
 import NoDataComponent from '../../Component/noData';
 import epicSvg from '../../Home/style/pics/no_sprint.svg';
 import SwithChart from '../../Component/switchChart';

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
-import EasyEdit from '../../../../../../../components/EasyEdit/EasyEdit';
-// import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import EasyEdit from '../../../../../../components/EasyEdit/EasyEdit';
+// import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 
 @inject('AppState', 'HeaderStore')
 @observer class SprintGoal extends Component {

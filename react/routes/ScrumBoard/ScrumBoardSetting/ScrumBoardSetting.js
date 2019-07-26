@@ -9,7 +9,7 @@ import {
 } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
 import './ScrumBoardSetting.scss';
-import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../stores/project/scrumBoard/ScrumBoardStore';
 import ColumnPage from '../ScrumBoardSettingComponent/ColumnPage/ColumnPage';
 import SwimLanePage from '../ScrumBoardSettingComponent/SwimLanePage/SwimLanePage';
 import WorkcalendarPage from '../ScrumBoardSettingComponent/WorkCalendarPage/WorkCalendarPage';

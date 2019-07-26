@@ -5,7 +5,7 @@ import { DropTarget } from 'react-dnd';
 import Column from '../Column';
 import StoryCard from './StoryCard';
 import CreateStory from './CreateStory';
-import StoryMapStore from '../../../../../../../stores/project/StoryMap/StoryMapStore';
+import StoryMapStore from '../../../../../../stores/project/StoryMap/StoryMapStore';
 import './StoryColumn.scss';
 
 @observer

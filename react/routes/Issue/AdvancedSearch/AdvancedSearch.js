@@ -8,9 +8,9 @@ import moment from 'moment';
 import {
   find, map, filter, unionBy, 
 } from 'lodash';
-import IssueStore from '../../../../stores/project/sprint/IssueStore';
+import IssueStore from '../../../stores/project/sprint/IssueStore';
 import IssueFilterControler from '../IssueFilterControler';
-import SelectFocusLoad from '../../../../components/SelectFocusLoad';
+import SelectFocusLoad from '../../../components/SelectFocusLoad';
 
 const { Option } = Select;
 const { AppState } = stores;

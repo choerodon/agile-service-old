@@ -4,7 +4,7 @@ import {
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
-import { NumericInput } from '../../../../../../components/CommonComponent';
+import { NumericInput } from '../../../../../components/CommonComponent';
 
 const { Sidebar } = Modal;
 const { TextArea } = Input;

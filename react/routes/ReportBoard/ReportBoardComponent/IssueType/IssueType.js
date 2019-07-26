@@ -4,10 +4,10 @@ import { stores, axios } from '@choerodon/boot';
 import { withRouter } from 'react-router-dom';
 import { Spin, Table } from 'choerodon-ui';
 import _ from 'lodash';
-import EmptyBlockDashboard from '../../../../../components/EmptyBlockDashboard';
+import EmptyBlockDashboard from '../../../../components/EmptyBlockDashboard';
 // import pic from './no_issue.png';
-import pic from '../../../../../assets/image/emptyChart.svg';
-import TypeTag from '../../../../../components/TypeTag';
+import pic from '../../../../assets/image/emptyChart.svg';
+import TypeTag from '../../../../components/TypeTag';
 import './IssueType.scss';
 
 const { AppState } = stores;

@@ -8,7 +8,7 @@ import {
 } from 'choerodon-ui';
 import moment from 'moment';
 import { withRouter } from 'react-router-dom';
-import ReleaseStore from '../../../../stores/project/release/ReleaseStore';
+import ReleaseStore from '../../../stores/project/release/ReleaseStore';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;

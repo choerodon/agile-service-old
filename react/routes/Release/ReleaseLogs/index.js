@@ -8,7 +8,7 @@ import {
   Button, DatePicker, Tabs, Table, Popover, Modal, Radio, Form, Select, Icon, Spin,
 } from 'choerodon-ui';
 import moment from 'moment';
-import TypeTag from '../../../../components/TypeTag';
+import TypeTag from '../../../components/TypeTag';
 
 const FileSaver = require('file-saver');
 

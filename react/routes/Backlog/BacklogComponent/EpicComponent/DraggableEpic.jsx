@@ -7,7 +7,7 @@ import {
   Dropdown, Menu, Input, Icon, message,
 } from 'choerodon-ui';
 import _ from 'lodash';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 
 const { AppState } = stores;
 // @inject('AppState')

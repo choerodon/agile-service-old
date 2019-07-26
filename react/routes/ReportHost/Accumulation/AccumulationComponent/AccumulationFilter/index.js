@@ -4,7 +4,7 @@ import { Modal, Form, Select, DatePicker } from 'choerodon-ui';
 import { Page, Header, Content, stores } from '@choerodon/boot';
 import moment from 'moment';
 import _ from 'lodash';
-import AccumulationStore from '../../../../../../stores/project/accumulation/AccumulationStore';
+import AccumulationStore from '../../../../../stores/project/accumulation/AccumulationStore';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;

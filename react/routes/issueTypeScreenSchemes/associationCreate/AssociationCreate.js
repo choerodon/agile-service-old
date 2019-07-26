@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import './AssociationCreate.scss';
-import { randomString } from '../../../../common/utils';
+import { randomString } from '../../../common/utils';
 
 const FormItem = Form.Item;
 const { Sidebar } = Modal;

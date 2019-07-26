@@ -5,8 +5,8 @@ import {
   Select,
 } from 'choerodon-ui';
 import moment from 'moment';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
-import WorkCalendar from '../../../../../components/WorkCalendar';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
+import WorkCalendar from '../../../../components/WorkCalendar';
 
 const { AppState } = stores;
 const { Option } = Select;

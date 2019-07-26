@@ -5,7 +5,7 @@ import {
   Button, Select, Icon, message,
 } from 'choerodon-ui';
 import _ from 'lodash';
-import ScrumBoardStore from '../../../../../stores/project/scrumBoard/ScrumBoardStore';
+import ScrumBoardStore from '../../../../stores/project/scrumBoard/ScrumBoardStore';
 
 const { AppState } = stores;
 const { Option } = Select;

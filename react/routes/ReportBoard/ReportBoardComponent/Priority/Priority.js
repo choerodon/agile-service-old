@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
 import { Spin } from 'choerodon-ui';
-import PriorityTag from '../../../../../components/PriorityTag';
-import EmptyBlockDashboard from '../../../../../components/EmptyBlockDashboard';
+import PriorityTag from '../../../../components/PriorityTag';
+import EmptyBlockDashboard from '../../../../components/EmptyBlockDashboard';
 // import pic2 from '../EmptyPics/no_version.svg';
-import pic2 from '../../../../../assets/image/emptyChart.svg';
+import pic2 from '../../../../assets/image/emptyChart.svg';
 import './Priority.scss';
 import _default from 'choerodon-ui/lib/card/Grid';
 

@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom';
 import { asyncRouter, nomatch } from '@choerodon/boot';
 
-const IssueTypeList = asyncRouter(() => import('./issueTypeList'), () => import('../../../stores/organization/issueType'));
+const IssueTypeList = asyncRouter(() => import('./issueTypeList'), () => import('../../stores/organization/issueType'));
 
 const IssueTypeIndex = ({ match }) => (
   <Switch>

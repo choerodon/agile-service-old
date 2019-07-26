@@ -10,7 +10,7 @@ import UserHead from './UserHead';
 import statusList from './status';
 import Field from './Field';
 import './FeedbackSidebarComponent.scss';
-import { text2Delta } from '../../../../common/utils';
+import { text2Delta } from '../../../common/utils';
 
 const { AppState } = stores;
 const { Option } = Select;

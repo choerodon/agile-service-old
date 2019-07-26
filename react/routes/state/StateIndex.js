@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom';
 import { asyncRouter, nomatch } from '@choerodon/boot';
 
-const StateList = asyncRouter(() => import('./stateList'), () => import('../../../stores/organization/state'));
+const StateList = asyncRouter(() => import('./stateList'), () => import('../../stores/organization/state'));
 
 const StateIndex = ({ match }) => (
   <Switch>

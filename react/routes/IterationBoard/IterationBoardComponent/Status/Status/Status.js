@@ -3,7 +3,7 @@ import { stores, axios } from '@choerodon/boot';
 import ReactEcharts from 'echarts-for-react';
 import { Spin } from 'choerodon-ui';
 import _ from 'lodash';
-import EmptyBlockDashboard from '../../../../../../components/EmptyBlockDashboard';
+import EmptyBlockDashboard from '../../../../../components/EmptyBlockDashboard';
 import pic from '../../EmptyPics/no_sprint.svg';
 import pic2 from '../../EmptyPics/no_version.svg';
 import './Status.scss';

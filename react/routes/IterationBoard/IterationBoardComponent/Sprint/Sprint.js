@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { axios, stores } from '@choerodon/boot';
 import { Spin, Tooltip } from 'choerodon-ui';
 import { withRouter } from 'react-router-dom';
-import EmptyBlockDashboard from '../../../../../components/EmptyBlockDashboard';
+import EmptyBlockDashboard from '../../../../components/EmptyBlockDashboard';
 import pic from '../EmptyPics/no_sprint.svg';
-import UserHead from '../../../../../components/UserHead';
+import UserHead from '../../../../components/UserHead';
 import './Sprint.scss';
 
 const { AppState } = stores;

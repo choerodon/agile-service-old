@@ -5,7 +5,7 @@ import { Spin } from 'choerodon-ui';
 import {
   ToggleQuestion, Summary, Attachment, Discuss,
 } from './FeedbackComponent/FeedbackContentComponent';
-import { beforeTextUpload } from '../../../common/utils';
+import { beforeTextUpload } from '../../common/utils';
 
 function FeedbackContent({
   className, feedbackData, feedbackComment, AppState, id, fetchUser, hasPermission,

@@ -16,15 +16,15 @@ import {
   Page, Header, Content, stores,
 } from '@choerodon/boot';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import Graph from '../../../../components/Graph';
+import Graph from '../../../components/Graph';
 import './EditStateMachineScheme.scss';
 
-import StateMachineStore from '../../../../stores/organization/stateMachine';
-import TypeTag from '../../../../components/TypeTag/TypeTag';
-import Tips from '../../../../components/Tips';
+import StateMachineStore from '../../../stores/organization/stateMachine';
+import TypeTag from '../../../components/TypeTag/TypeTag';
+import Tips from '../../../components/Tips';
 import PublishSidebar from './PublishSidebar';
-import ReadAndEdit from '../../../../components/ReadAndEdit';
-import { getRequest } from '../../../../common/utils';
+import ReadAndEdit from '../../../components/ReadAndEdit';
+import { getRequest } from '../../../common/utils';
 
 const { Sidebar } = Modal;
 const FormItem = Form.Item;

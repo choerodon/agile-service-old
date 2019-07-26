@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 import classnames from 'classnames';
-import BacklogStore from '../../../../../../../stores/project/backlog/BacklogStore';
-import { QuickSearchEvent } from '../../../../../../../components/QuickSearch';
+import BacklogStore from '../../../../../../stores/project/backlog/BacklogStore';
+import { QuickSearchEvent } from '../../../../../../components/QuickSearch';
 
 @inject('AppState', 'HeaderStore')
 @observer class ClearAllFilter extends Component {

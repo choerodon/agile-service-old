@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 import { observer } from 'mobx-react';
-import EditIssue from '../../../../../components/EditIssue';
-import BacklogStore from '../../../../../stores/project/backlog/BacklogStore';
+import EditIssue from '../../../../components/EditIssue';
+import BacklogStore from '../../../../stores/project/backlog/BacklogStore';
 
 @observer
 class IssueDetail extends Component {

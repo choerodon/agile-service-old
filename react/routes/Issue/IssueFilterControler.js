@@ -5,7 +5,7 @@
  * cache：用于缓存用户请求内容的 Map，由
  * */
 import { axios, stores } from '@choerodon/boot';
-import IssueStore from '../../../stores/project/sprint/IssueStore';
+import IssueStore from '../../stores/project/sprint/IssueStore';
 import {
   loadIssueTypes,
   loadStatusList,
@@ -16,8 +16,8 @@ import {
   loadEpics,
   loadSprints,
   getFoundationHeader,
-} from '../../../api/NewIssueApi';
-import { getUsers } from '../../../api/CommonApi';
+} from '../../api/NewIssueApi';
+import { getUsers } from '../../api/CommonApi';
 
 const { AppState } = stores;
 
