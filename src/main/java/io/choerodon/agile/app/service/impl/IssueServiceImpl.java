@@ -1548,7 +1548,7 @@ public class IssueServiceImpl implements IssueService {
         ObjectMapper m = new ObjectMapper();
 
         Object content = Optional.ofNullable(objectSchemeFieldService
-                .listQuery(projectId, organizationId, ObjectSchemeCode.AGILE_ISSUE))
+                .listQuery(organizationId, projectId, ObjectSchemeCode.AGILE_ISSUE))
                 .orElseThrow(() -> new CommonException("error.foundation.listQuery"))
                 .get("content");
 
