@@ -1,4 +1,4 @@
-package io.choerodon.agile.infra.common.utils;
+package io.choerodon.agile.infra.utils;
 
 import io.choerodon.agile.infra.feign.NotifyFeignClient;
 import io.choerodon.core.notify.NoticeSendDTO;
