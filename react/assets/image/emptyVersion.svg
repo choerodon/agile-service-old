@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="169px" height="150px" viewBox="0 0 169 150" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51 (57462) - http://www.bohemiancoding.com/sketch -->
+    <title>release</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="空界面" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-2" transform="translate(-15.000000, -25.000000)">
+            <g id="release" transform="translate(15.000000, 25.000000)">
+                <rect id="Rectangle-19" fill="#E8EAF4" x="0" y="0" width="128" height="30" rx="15"></rect>
+                <rect id="Rectangle-19-Copy" fill="#E8EAF4" x="0" y="35" width="128" height="30" rx="15"></rect>
+                <rect id="Rectangle-19-Copy-2" fill="#E8EAF4" x="0" y="70" width="128" height="30" rx="15"></rect>
+                <circle id="Oval-7" fill="#DEE0ED" cx="64" cy="128" r="10"></circle>
+                <rect id="Rectangle-20" fill="#E0E5FF" x="61" y="104" width="6" height="10"></rect>
+                <rect id="Rectangle-20-Copy" fill="#E0E5FF" x="0" y="125" width="50" height="6"></rect>
+                <rect id="Rectangle-20-Copy-2" fill="#E0E5FF" x="78" y="125" width="50" height="6"></rect>
+                <rect id="Rectangle-21" fill="#DEE0ED" x="10" y="11" width="56" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-3" fill="#DEE0ED" x="10" y="46" width="56" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-6" fill="#DEE0ED" x="10" y="81" width="56" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy" fill="#F9FAFF" x="74" y="11" width="8" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-4" fill="#F9FAFF" x="74" y="46" width="8" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-7" fill="#F9FAFF" x="74" y="81" width="8" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-2" fill="#F9FAFF" x="88" y="11" width="8" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-5" fill="#F9FAFF" x="88" y="46" width="8" height="8" rx="4"></rect>
+                <rect id="Rectangle-21-Copy-8" fill="#F9FAFF" x="88" y="81" width="8" height="8" rx="4"></rect>
+                <circle id="Oval-8" fill="#CFD5F1" cx="111" cy="15" r="7"></circle>
+                <circle id="Oval-8-Copy" fill="#CFD5F1" cx="111" cy="50" r="7"></circle>
+                <circle id="Oval-8-Copy-2" fill="#CFD5F1" cx="111" cy="85" r="7"></circle>
+                <path d="M92.1815834,73.8093987 C106.05996,70.9084246 118.332767,65.3052917 129.000004,57 C140.357431,65.2820316 152.643962,70.8770187 165.859597,73.7849614 L165.859596,73.7849697 C167.693632,74.1885276 169,75.8135974 169,77.6915081 L169,121.873578 C169,123.207645 168.334913,124.453905 167.226653,125.196531 L131.226657,149.319498 C129.879466,150.222227 128.120543,150.222227 126.773352,149.319498 L90.773356,125.196531 C89.6650954,124.453905 89.0000088,123.207645 89.0000088,121.873578 L89.0000062,77.7247787 C89.0000062,75.8310746 90.3279418,74.1968624 92.1815834,73.8093987 Z" id="Rectangle-22" fill="#6776C4"></path>
+                <path d="M98.165725,78.8357592 C109.583377,76.4008434 119.694802,71.7889236 128.5,65 C137.870128,71.7664569 147.995367,76.3702949 158.875717,78.8115139 L158.875715,78.8115241 C160.702035,79.2212948 162,80.842753 162,82.7144792 L162,118.427776 C162,119.768231 161.328571,121.019578 160.211652,121.760733 L130.711652,141.336065 C129.371339,142.225457 127.628661,142.225457 126.288348,141.336065 L96.7883483,121.760733 C95.6714288,121.019578 95,119.768231 95,118.427776 L95.0000017,82.7477883 C95.0000017,80.8601648 96.3196147,79.2294586 98.165725,78.8357592 Z" id="Rectangle-22" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                <circle id="Oval-9" fill="#2A2E76" cx="129" cy="100" r="22"></circle>
+                <path d="M132.5,102.5 L132.5,86.5 L137.5,86.5 L137.5,107.5 L122.5,107.5 L122.5,102.5 L132.5,102.5 Z" id="Combined-Shape-Copy-3" stroke="#FFBA1C" fill="#FFBA1C" stroke-linecap="round" stroke-linejoin="round" transform="translate(130.000000, 97.000000) rotate(45.000000) translate(-130.000000, -97.000000) "></path>
+            </g>
+        </g>
+    </g>
+</svg>

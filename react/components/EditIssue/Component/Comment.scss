@@ -1,0 +1,67 @@
+.c7n-comment {
+  padding: 14px 10px 14px 27px;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  margin-left: 10px;
+  position: relative;
+
+  .line-justify {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .c7n-title-commit {
+      display: flex;
+      align-items: center;
+    }
+
+    .c7n-action {
+      display: flex;
+      align-items: center;
+      opacity: 0;
+      font-size: 16px;
+    }
+    .mlr-3 {
+      margin-left: 3px;
+      margin-right: 3px;
+    }
+
+    .pointer {
+      cursor: pointer;
+    }
+  }
+
+  .line-start {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  .c7n-conent-commit {
+    background: white;
+    p {
+      margin-bottom: 0;
+    }
+  }
+
+  ul,
+  ol {
+    padding-left: 27px;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.03);
+    border-left-color: #303f9f;
+    transition: all 1s;
+
+    .c7n-action {
+      opacity: 1;
+      transition: opacity 2s;
+    }
+  }
+}
+
+.c7n-comment-focus {
+  background: rgba(0, 0, 0, 0.03);
+  border-left-color: #303f9f;
+}

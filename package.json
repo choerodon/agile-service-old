@@ -3,7 +3,8 @@
   "routeName": "agile",
   "version": "0.19.0",
   "description": "",
-  "main": "./react/src/app/agile/containers/AGILEIndex.js",
+
+  "main": "./react/index.js",
   "files": [
     "lib"
   ],

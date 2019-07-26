@@ -1,0 +1,6 @@
+.c7n-settings .operation-bar-box {
+  height: .4rem;
+  font-size: .13rem;
+  display: flex;
+  align-items: center;
+}

@@ -1,0 +1,68 @@
+.c7n-quill-editor {
+  .react-quill-editor {
+    display: flex;
+    flex-direction: column;
+
+    .quill {
+      height: auto !important;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    img {
+      max-width: 400px !important;
+    }
+
+    .ql-snow .ql-picker.ql-expanded .ql-picker-options {
+      right: 0;
+    }
+
+    /* link start */
+    .ql-snow .ql-tooltip {
+      &[data-mode=link]::before {
+        content: "输入链接:";
+      }
+
+      &::before {
+        content: "访问链接:";
+      }
+
+      &.ql-editing a.ql-action::after {
+        content: '保存';
+      }
+
+      & a {
+        &.ql-action::after {
+          content: '编辑';
+        }
+
+        &.ql-remove::before {
+          content: '移除链接';
+        }
+      }
+    }
+
+    .ql-toolbar.ql-snow {
+      border-bottom: none;
+
+      .ql-formats {
+        margin-right: 0;
+      }
+    }
+
+    /* link end */
+    &-read {
+      .ql-editor > * {
+        cursor: auto;
+      }
+
+      .ql-toolbar {
+        display: none;
+      }
+
+      .ql-container {
+        border: none;
+      }
+    }
+  }
+}
