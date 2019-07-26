@@ -21,8 +21,8 @@
           fb.object_version_number
         from feedback fb, lookup_value lv, lookup_value lv2, agile_project_info pi
         where fb.project_id = #{projectId}
-            and fb.type = lv.value_code
-            and fb.status = lv2.value_code
+            and lv.type_code = 'feedback_type_category' and fb.type = lv.value_code
+            and lv2.type_code = 'feedback_status_category' and fb.status = lv2.value_code
             and pi.project_id = #{projectId}
         <if test="searchVO.searchArgs != null">
             <if test='searchVO.searchArgs.typeList != null and searchVO.searchArgs.typeList.size > 0 '>
@@ -60,8 +60,8 @@
         from feedback fb, lookup_value lv, lookup_value lv2, agile_project_info pi
         where fb.project_id = #{projectId}
           and fb.id = #{id}
-          and fb.type = lv.value_code
-          and fb.status = lv2.value_code
+          and lv.type_code = 'feedback_type_category' and fb.type = lv.value_code
+          and lv2.type_code = 'feedback_status_category' and fb.status = lv2.value_code
           and pi.project_id = #{projectId}
     </select>
 </mapper>

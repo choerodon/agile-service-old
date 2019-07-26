@@ -36,8 +36,9 @@ import java.util.stream.Collectors;
 public class FeedbackServiceImpl implements FeedbackService {
 
     private static final String FIELD_STATUS = "status";
-    private static final String FEEDBACK_DOING_STATUS = "doing";
-    private static final String FEEDBACK_DONE_STATUS = "done";
+    private static final String FEEDBACK_TODO_STATUS = "feedback_todo";
+    private static final String FEEDBACK_DOING_STATUS = "feedback_doing";
+    private static final String FEEDBACK_DONE_STATUS = "feedback_done";
 
     @Value("${services.attachment.url}")
     private String attachmentUrl;
@@ -96,7 +97,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedbackValidator.checkFeedbackCreate(feedbackDTO);
         initByToken(feedbackDTO);
         initFeedbackNum(feedbackDTO);
-        feedbackDTO.setStatus("todo");
+        feedbackDTO.setStatus(FEEDBACK_TODO_STATUS);
         return createBase(feedbackDTO);
     }
 
