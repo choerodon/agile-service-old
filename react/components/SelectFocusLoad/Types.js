@@ -65,7 +65,7 @@ const issue_type_program = {
 };
 export default {
   user: {
-    request: (...args) => new Promise(resolve => getUsers(...args).then((UserData) => { resolve(UserData.list.filter(user => user.enabled)); })),
+    request: ({ filter, page }) => new Promise(resolve => getUsers(filter, undefined, page).then((UserData) => { resolve({ ...UserData, list: UserData.list.filter(user => user.enabled) }); })),
     render: user => (
       <Option key={user.id} value={user.id}>
         <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
@@ -204,7 +204,7 @@ export default {
       optionLabelProp: 'showName',
       getPopupContainer: triggerNode => triggerNode.parentNode,
     },
-    request: input => new Promise(resolve => loadIssuesInLink(1, 20, undefined, input).then((res) => { resolve(res.list); })),
+    request: ({ filter, page }) => loadIssuesInLink(page, 20, undefined, filter),
     render: issue => (
       <Option
         key={issue.issueId}
@@ -264,7 +264,7 @@ export default {
       filterOption: false,
       loadWhenMount: true,
     },
-    request: input => new Promise(resolve => loadComponents(input).then((res) => { resolve(res.list); })),
+    request: ({ filter }) => loadComponents(filter),
     render: component => (
       <Option
         key={component.name}
@@ -295,7 +295,7 @@ export default {
       filterOption: false,
       loadWhenMount: true,
     },
-    request: () => new Promise(resolve => loadVersions(['version_planning']).then((res) => { resolve(res); })),
+    request: () => loadVersions(['version_planning']),
     render: version => (
       <Option
         key={version.versionId}
@@ -311,7 +311,7 @@ export default {
       filterOption,
       loadWhenMount: true,
     },
-    request: () => new Promise(resolve => loadSprints(['sprint_planning', 'started']).then((res) => { resolve(res); })),
+    request: () => loadSprints(['sprint_planning', 'started']),
     render: sprint => (
       <Option key={sprint.sprintId} value={sprint.sprintId}>
         {sprint.sprintName}

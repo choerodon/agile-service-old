@@ -8,10 +8,12 @@ import {
 } from 'choerodon-ui';
 import { injectIntl } from 'react-intl';
 import TextEditToggle from '../../../../TextEditToggle';
+import SelectFocusLoad from '../../../../SelectFocusLoad';
 import { updateFieldValue } from '../../../../../api/NewIssueApi';
 import UserHead from '../../../../UserHead';
 import { getUsers } from '../../../../../api/CommonApi';
 import './Field.scss';
+
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -273,29 +275,16 @@ let sign = false;
       );
     } else if (field.fieldType === 'member') {
       return (
-        <Select
+        <SelectFocusLoad
+          type="user"
           loading={selectLoading}
           filter
           filterOption={false}
-          allowClear
-          onFilterChange={this.onFilterChange.bind(this)}
+          defaultOption={field.valueStr || undefined}
+          defaultOpen
+          allowClear          
           onChange={e => this.handleChange(e)}
-        >
-          {originUsers.filter(user => (field.valueStr ? user.id !== field.valueStr.id : true) && user.enabled).concat(field.valueStr || []).map(user => (
-            <Option key={user.id} value={user.id}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', padding: 2 }}>
-                <UserHead
-                  user={{
-                    id: user.id,
-                    loginName: user.loginName,
-                    realName: user.realName,
-                    avatar: user.imageUrl,
-                  }}
-                />
-              </div>
-            </Option>
-          ))}
-        </Select>
+        />
       );
     } else {
       return (

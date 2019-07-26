@@ -5,19 +5,8 @@ import { deleteLink } from '../../../api/NewIssueApi';
 import PriorityTag from '../../PriorityTag';
 import StatusTag from '../../StatusTag';
 import TypeTag from '../../TypeTag';
-import './IssueList.scss';
 
-
-class IssueList extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-    };
-  }
-
-  componentWillMount() {
-  }
-
+class LinkList extends Component {
   confirm(issueId) {
     this.handleDeleteIssue(issueId);
   }
@@ -106,10 +95,10 @@ class IssueList extends Component {
           width: '48px', marginRight: '15px', display: 'flex', justifyContent: 'flex-end', 
         }}
         >
-          <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${issue.statusMapVO.name}`}>
+          <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${issue.statusVO.name}`}>
             <div>
               <StatusTag
-                data={issue.statusMapVO}
+                data={issue.statusVO}
               />
             </div>
           </Tooltip>
@@ -142,4 +131,4 @@ class IssueList extends Component {
   }
 }
 
-export default IssueList;
+export default LinkList;

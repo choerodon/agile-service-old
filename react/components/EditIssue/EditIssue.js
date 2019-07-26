@@ -1,6 +1,6 @@
 /* eslint-disable react/sort-comp */
 import React, {
-  useContext, useState, useEffect, 
+  useContext, useState, useEffect, useImperativeHandle, 
 } from 'react';
 import { observer } from 'mobx-react-lite';
 import { stores, axios } from '@choerodon/boot';
@@ -20,7 +20,6 @@ import Assignee from '../Assignee';
 import ChangeParent from '../ChangeParent';
 import IssueHeader from './IssueComponent/IssueHeader';
 import IssueBody from './IssueComponent/IssueBody/IssueBody';
-import VisibleStore from '../../stores/common/visible/VisibleStore';
 import EditIssueContext from './stores';
 import IsInProgramStore from '../../stores/common/program/IsInProgramStore';
 // 项目加入群之后，不关联自己的史诗和特性，只能关联项目群的，不能改关联的史诗
@@ -32,10 +31,11 @@ const defaultProps = {
   applyType: 'agile',
 };
 
-const EditIssue = observer(() => {  
+const EditIssue = observer(() => {
   const [issueLoading, setIssueLoading] = useState(false);
   const {
     store, 
+    forwardedRef,
     issueId: currentIssueId,
     applyType,
     programId,
@@ -47,7 +47,7 @@ const EditIssue = observer(() => {
     onDeleteSubIssue,
     disabled, 
     prefixCls,
-    intlPrefix,
+    intlPrefix,   
   } = useContext(EditIssueContext);
   const container = React.createRef();
   const loadIssueDetail = (paramIssueId) => {
@@ -75,6 +75,9 @@ const EditIssue = observer(() => {
         store.initIssueAttribute(doc, workLogs, dataLogs, linkIssues, branches);
       }));
   };
+  useImperativeHandle(forwardedRef, () => ({
+    loadIssueDetail,
+  }));
   const setQuery = (width = container.current.clientWidth) => {
     if (width <= 600) {
       container.current.setAttribute('max-width', '600px');
@@ -108,7 +111,7 @@ const EditIssue = observer(() => {
   }, [currentIssueId]);
 
   const handleCopyIssue = () => {
-    VisibleStore.setCopyIssueShow(false);
+    store.setCopyIssueShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -116,7 +119,7 @@ const EditIssue = observer(() => {
   };
 
   const handleRelateStory = () => {
-    VisibleStore.setRelateStoryShow(false);
+    store.setRelateStoryShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -124,7 +127,7 @@ const EditIssue = observer(() => {
   };
 
   const handleTransformSubIssue = () => {
-    VisibleStore.setTransformSubIssueShow(false);
+    store.setTransformSubIssueShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -132,7 +135,7 @@ const EditIssue = observer(() => {
   };
 
   const handleTransformFromSubIssue = () => {
-    VisibleStore.setTransformFromSubIssueShow(false);
+    store.setTransformFromSubIssueShow(false);
     if (onUpdate) {
       onUpdate();
     }
@@ -163,14 +166,16 @@ const EditIssue = observer(() => {
     getTransformSubIssueShow: transformSubIssueShow,
     getTransformFromSubIssueShow: transformFromSubIssueShow,
     getRelateStoryShow: relateStoryShow,
-  } = VisibleStore;
-  const rightDisabled = disabled || (IsInProgramStore.isInProgram && typeCode === 'issue_epic' && !hasPermission && createdBy !== AppState.userInfo.id);
+  } = store;
+  const rightDisabled = disabled || (IsInProgramStore.isInProgram && typeCode === 'issue_epic');
+  const HasPermission = (hasPermission || createdBy === AppState.userInfo.id);
   return (
     <div style={{
-      position: 'absolute',
+      position: 'fixed',
       right: 0,
-      top: 0,
-      height: '100%',
+      top: 50,
+      bottom: 0,
+      // height: 'calc(100vh - 50px)',
       zIndex: 101,
       overflow: 'hidden',
     }}
@@ -178,7 +183,7 @@ const EditIssue = observer(() => {
       <ResizeAble
         modes={['left']}
         size={{
-          maxWidth: 800,
+          maxWidth: window.innerWidth * 0.6,
           minWidth: 440,
         }}
         defaultSize={{
@@ -218,7 +223,7 @@ const EditIssue = observer(() => {
               backUrl={backUrl}
               onCancel={onCancel}
               loginUserId={loginUserId}
-              hasPermission={hasPermission}
+              hasPermission={HasPermission}
               onDeleteIssue={onDeleteIssue}
               onUpdate={onUpdate}
             />
@@ -230,7 +235,7 @@ const EditIssue = observer(() => {
               onUpdate={onUpdate}
               onDeleteSubIssue={onDeleteSubIssue}
               loginUserId={loginUserId}
-              hasPermission={hasPermission}
+              hasPermission={HasPermission}
               applyType={applyType}
             // programId={programId}
             />
@@ -244,7 +249,7 @@ const EditIssue = observer(() => {
                 issueLink={linkIssues}
                 issueSummary={summary}
                 visible={copyIssueShow}
-                onCancel={() => VisibleStore.setCopyIssueShow(false)}
+                onCancel={() => store.setCopyIssueShow(false)}
                 onOk={handleCopyIssue.bind(this)}
                 applyType={applyType}
               />
@@ -255,7 +260,7 @@ const EditIssue = observer(() => {
               <RelateStory
                 issue={issue}
                 visible={relateStoryShow}
-                onCancel={() => VisibleStore.setRelateStoryShow(false)}
+                onCancel={() => store.setRelateStoryShow(false)}
                 onOk={handleRelateStory.bind(this)}
               />
             ) : null
@@ -267,7 +272,7 @@ const EditIssue = observer(() => {
                 issueId={issueId}
                 issueNum={issueNum}
                 ovn={objectVersionNumber}
-                onCancel={() => VisibleStore.setTransformSubIssueShow(false)}
+                onCancel={() => store.setTransformSubIssueShow(false)}
                 onOk={handleTransformSubIssue.bind(this)}
                 store={store}
               />
@@ -280,7 +285,7 @@ const EditIssue = observer(() => {
                 issueId={issueId}
                 issueNum={issueNum}
                 ovn={objectVersionNumber}
-                onCancel={() => VisibleStore.setTransformFromSubIssueShow(false)}
+                onCancel={() => store.setTransformFromSubIssueShow(false)}
                 onOk={handleTransformFromSubIssue.bind(this)}
                 store={store}
               />
@@ -296,14 +301,14 @@ const EditIssue = observer(() => {
                 assigneeId={assigneeId}
                 objectVersionNumber={objectVersionNumber}
                 onOk={() => {
-                  VisibleStore.setAssigneeShow(false);
+                  store.setAssigneeShow(false);
                   if (onUpdate) {
                     onUpdate();
                   }
                   loadIssueDetail(issueId);
                 }}
                 onCancel={() => {
-                  VisibleStore.setAssigneeShow(false);
+                  store.setAssigneeShow(false);
                 }}
               />
             ) : null
@@ -316,11 +321,11 @@ const EditIssue = observer(() => {
                 visible={changeParentShow}
                 objectVersionNumber={objectVersionNumber}
                 onOk={() => {
-                  VisibleStore.setChangeParentShow(false);
+                  store.setChangeParentShow(false);
                   loadIssueDetail(issueId);
                 }}
                 onCancel={() => {
-                  VisibleStore.setChangeParentShow(false);
+                  store.setChangeParentShow(false);
                 }}
               />
             ) : null

@@ -1,0 +1,78 @@
+.issue-dragList {
+  &-content {
+    background: white !important;
+    padding: 20px;
+    width: 520px;
+    display: flex;
+    justify-content: space-between;
+    border: 1px solid #E8E8E8;
+    border-radius: 2px;
+  }
+  &-card {
+    background: #FFF;
+    border-radius: 4px;
+    width: 480px;
+    & .c7n-card-body {
+      height: calc(100% - 55px);
+      padding: 10px 0;
+    }
+    & .c7n-card-head {
+      border-top: 1px solid #e8e8e8;
+      background: #F5F5F5;
+      border-radius: 0;
+      min-height: 0;
+    }
+    & .c7n-card-head-title {
+      font-size: 14px;
+      line-height: 40px;
+      padding: 0;
+    }
+  }
+  &-des {
+    margin-bottom: 10px;
+  }
+  &-operate {
+    float: right;
+  }
+  &-text {
+    width: 35%;
+    display: inline-block;
+    line-height: 24px;
+  }
+  &-addBtn {
+    color: #3F51B5;
+  }
+  &-addItem {
+    padding: 5px 20px;
+    margin: 0 0 5px 0;
+    background: #F7F7F7;
+    height: 34px;
+  }
+  &-input {
+    width: 35%;
+    display: inline-block;
+  }
+  &-add {
+    margin-right: 10px;
+  }
+
+  .c7n-input-length-info {
+    display: none;
+  }
+}
+
+.issue-issueTypeDrag-drop {
+  min-height: 170px;
+  height: 100%;
+}
+
+.issue-issueTypeDrag-drag {
+  height: 20px;
+  margin-right: 10px;
+  vertical-align: top;
+}
+
+.issue-issueTypeDrag-icon {
+  margin-right: 10px;
+  vertical-align: top;
+}

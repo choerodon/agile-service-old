@@ -41,12 +41,6 @@ const PROP_SIMPLE = {
 };
 
 class DataLog extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-    };
-  }
-
   getMode1(datalog) {
     const {
       field, oldString, oldValue, newString, newValue, categoryCode, isCusLog,

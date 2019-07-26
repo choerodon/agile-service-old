@@ -1,26 +1,16 @@
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import { withRouter } from 'react-router-dom';
-import { Icon, Button } from 'choerodon-ui';
-import _ from 'lodash';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import React, { useContext } from 'react';
+import { Icon } from 'choerodon-ui';
+import { filter } from 'lodash';
+import { FormattedMessage } from 'react-intl';
 import DataLogs from '../../Component/DataLogs';
+import EditIssueContext from '../../stores';
 
-@inject('AppState')
-@observer class IssueCommit extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
-  componentDidMount() {
-  }
-
-  renderDataLogs() {
-    const { store } = this.props;
+const IssueLog = () => {
+  const { store } = useContext(EditIssueContext);
+  const renderDataLogs = () => {
     const stateDatalogs = store.getDataLogs;
     // 过滤掉影响的版本(bug)
-    const datalogs = _.filter(stateDatalogs, v => v.field !== 'Version');
+    const datalogs = filter(stateDatalogs, v => v.field !== 'Version');
     const issue = store.getIssue;
     const {
       typeCode, creationDate, createdBy,
@@ -47,29 +37,27 @@ import DataLogs from '../../Component/DataLogs';
         creationDate={creationDate}
       />
     );
-  }
+  };
 
-  render() {
-    return (
-      <div id="data_log">
-        <div className="c7n-title-wrapper">
-          <div className="c7n-title-left">
-            <Icon type="insert_invitation c7n-icon-title" />
-            <FormattedMessage id="issue.data_log" />
-          </div>
-          <div
-            style={{
-              flex: 1,
-              height: 1,
-              borderTop: '1px solid rgba(0, 0, 0, 0.08)',
-              marginLeft: '14px',
-            }}
-          />
+  return (
+    <div id="data_log">
+      <div className="c7n-title-wrapper">
+        <div className="c7n-title-left">
+          <Icon type="insert_invitation c7n-icon-title" />
+          <FormattedMessage id="issue.data_log" />
         </div>
-        {this.renderDataLogs()}
+        <div
+          style={{
+            flex: 1,
+            height: 1,
+            borderTop: '1px solid rgba(0, 0, 0, 0.08)',
+            marginLeft: '14px',
+          }}
+        />
       </div>
-    );
-  }
-}
+      {renderDataLogs()}
+    </div>
+  );
+};
 
-export default withRouter(injectIntl(IssueCommit));
+export default IssueLog;

@@ -1,10 +1,12 @@
 /* eslint-disable react/no-find-dom-node, react/destructuring-assignment */
 import React, { Component } from 'react';
-import { Form, Icon } from 'choerodon-ui';
+import { Form, Icon, Select } from 'choerodon-ui';
 import { findDOMNode } from 'react-dom';
 import PropTypes from 'prop-types';
 import DefaultOpenSelect from '../DefaultOpenSelect';
+import SelectFocusLoad from '../SelectFocusLoad';
 import './TextEditToggle.scss';
+
 // 防止提交前变回原值
 const Text = ({ children, newData, originData }) => (typeof (children) === 'function' ? children(newData || originData) : children);
 
@@ -164,7 +166,7 @@ class TextEditToggle extends Component {
     const childrenArray = React.Children.toArray(EditChildren);
     const targetElement = React.Children.toArray(childrenArray[0].props.children)[0];
     // 替换成自动打开的Select
-    if (targetElement && targetElement.type.displayName === 'Select') {
+    if (targetElement && targetElement.type === Select) {
       return 'Select';
     }
     return 'Input';
@@ -178,13 +180,17 @@ class TextEditToggle extends Component {
       throw new Error('使用Form功能时，Edit的children必须是Component');
     } 
     // 替换成自动打开的Select 
-    if (targetElement.type.displayName === 'Select') {
+    if (targetElement.type === Select) {
       if (targetElement.props.mode) {
         return <DefaultOpenSelect {...targetElement.props} />;
       } else {
         // 单选选择后自动提交
         return <DefaultOpenSelect {...targetElement.props} onSelect={() => setTimeout(this.handleSubmit)} />;
-      }      
+      }
+    } else if (targetElement.type === SelectFocusLoad && !targetElement.props.mode) {
+      return React.cloneElement(targetElement, {
+        onSelect: () => setTimeout(this.handleSubmit),
+      });
     }
     return targetElement;
   }
