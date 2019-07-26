@@ -350,7 +350,7 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
             IssueUpdateVO issueUpdateVO = issueAssembler.toTarget(issue, IssueUpdateVO.class);
             issueUpdateVO.setStatusId(targetStatusId);
             issueService.handleUpdateIssue(issueUpdateVO, Collections.singletonList(STATUS_ID), issue.getProjectId());
-            logger.info("状态更新成功");
+            logger.info("stateMachine updateStatus successful");
         }
     }
 
@@ -372,7 +372,7 @@ public class StateMachineClientServiceImpl implements StateMachineClientService 
             issueUpdateVO.setStatusId(targetStatusId);
             issueUpdateVO.setStayDate(new Date());
             issueService.handleUpdateIssue(issueUpdateVO, Arrays.asList(STATUS_ID, RANK, STAY_DATE), issue.getProjectId());
-            logger.info("状态更新成功");
+            logger.info("stateMachine updateStatusMove successful");
         } else {
             issueService.handleUpdateIssue(issueUpdateVO, Collections.singletonList(RANK), issue.getProjectId());
         }

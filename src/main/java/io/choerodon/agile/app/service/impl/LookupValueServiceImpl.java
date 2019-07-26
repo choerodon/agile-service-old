@@ -36,19 +36,23 @@ public class LookupValueServiceImpl implements LookupValueService {
     public void init() {
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
     }
+
     @Override
-    public LookupTypeWithValuesVO queryLookupValueByCode(Long projectId, String typeCode) {
+    public LookupTypeWithValuesVO queryLookupValueByCode(Long organizationId, String typeCode) {
         LookupTypeWithValuesDTO typeWithValues = lookupValueMapper.queryLookupValueByCode(typeCode);
-        LookupTypeWithValuesVO result = modelMapper.map(typeWithValues, new TypeToken<LookupTypeWithValuesVO>(){}.getType());
-        result.setLookupValues(modelMapper.map(typeWithValues.getLookupValues(), new TypeToken<List<LookupValueVO>>(){}.getType()));
+        LookupTypeWithValuesVO result = modelMapper.map(typeWithValues, new TypeToken<LookupTypeWithValuesVO>() {
+        }.getType());
+        result.setLookupValues(modelMapper.map(typeWithValues.getLookupValues(), new TypeToken<List<LookupValueVO>>() {
+        }.getType()));
         return result;
     }
 
     @Override
-    public LookupTypeWithValuesVO queryConstraintLookupValue(Long projectId) {
+    public LookupTypeWithValuesVO queryConstraintLookupValue(Long organizationId) {
         LookupTypeWithValuesDTO typeWithValues = lookupValueMapper.queryLookupValueByCode("constraint");
         LookupTypeWithValuesVO result = modelMapper.map(typeWithValues, LookupTypeWithValuesVO.class);
-        result.setLookupValues(modelMapper.map(typeWithValues.getLookupValues(), new TypeToken<List<LookupValueVO>>(){}.getType()));
+        result.setLookupValues(modelMapper.map(typeWithValues.getLookupValues(), new TypeToken<List<LookupValueVO>>() {
+        }.getType()));
         return result;
     }
 
