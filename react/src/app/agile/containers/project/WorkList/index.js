@@ -1,11 +1,10 @@
-import React, { Fragment } from 'react';
-import { Route, Link, Switch } from 'react-router-dom';
-import { asyncRouter, nomatch } from '@choerodon/boot';
+import React from 'react';
+import { Switch } from 'react-router-dom';
+import { asyncRouter } from '@choerodon/boot';
 import TabRoute from '../../../components/TabRoute';
 
-const Backlog = asyncRouter(() => import('../Backlog'), undefined, undefined);
-const Issue = asyncRouter(() => (import('../Issue')));
-
+const Backlog = asyncRouter(() => import('../Backlog/BacklogHome'), () => import('../../../stores/project/backlog/BacklogStore'), undefined, undefined);
+const Issue = asyncRouter(() => (import('../Issue/Issue')));
 
 const WorkList = ({ match }) => (
   <Switch>
@@ -18,9 +17,7 @@ const WorkList = ({ match }) => (
       path: `${match.url}/issue`,
       component: Issue,
     }]}
-    />
-    {/* <Route exact path={match.url} component={issueHome} /> */}
-    <Route path="*" component={nomatch} />
+    /> 
   </Switch>
 );
 export default WorkList;

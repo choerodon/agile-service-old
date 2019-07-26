@@ -246,7 +246,7 @@ class BacklogHome extends Component {
   };
 
   render() {
-    const { BacklogStore, HeaderStore } = this.props;
+    const { BacklogStore, HeaderStore, TabComponent } = this.props;
     const arr = BacklogStore.getSprintData;
     const { display } = this.state;
     const { isInProgram } = IsInProgramStore;
@@ -299,6 +299,7 @@ class BacklogHome extends Component {
           </Header>, document.getElementsByClassName('c7n-Header-Area')[0],
         )
       }
+        {TabComponent}
         <div style={{ padding: 0, display: 'flex', flexDirection: 'column' }}>
           <div
             className="backlogTools"

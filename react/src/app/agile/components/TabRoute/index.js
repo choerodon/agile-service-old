@@ -14,18 +14,26 @@ const TabRoute = withRouter(({
     history.push(`${key}?${parsed}`);
   };
   const currentPath = location.pathname;
-
-  const renderRoutes = () => routes.map(route => <Route {...route} />);
   const renderPanes = () => routes.map(({ title, path }) => <TabPane tab={title} key={path} />);
+  const TabComponent = (
+    <Tabs activeKey={currentPath} onChange={callback}>
+      {renderPanes()}
+    </Tabs>
+  );
+  const renderRoutes = () => routes.map((route) => {
+    const { component: Component, path } = route;   
+    return <Route path={path} render={props => <Component {...props} TabComponent={TabComponent} />} />;
+  });
+  
   const isMatch = find(routes, { path: currentPath });
   return (
     <Fragment>
       {isMatch ? (
         <Fragment>
           <div className="c7n-Header-Area" style={{ height: 58 }} />
-          <Tabs activeKey={currentPath} onChange={callback}>
+          {/* <Tabs activeKey={currentPath} onChange={callback}>
             {renderPanes()}
-          </Tabs>
+          </Tabs> */}
           {renderRoutes()}
         </Fragment>
       ) : <Route path="*" component={nomatch} /> }      
