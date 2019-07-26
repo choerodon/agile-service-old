@@ -38,20 +38,20 @@ const typeArr = [
 
 const statusArr = [
   {
-    id: 'todo',
+    id: 'feedback_todo',
     value: '待处理',
   },
   {
-    id: 'doing',
+    id: 'feedback_doing',
     value: '处理中',
   },
   {
-    id: 'done',
+    id: 'feedback_done',
     value: '已完成',
     enabled: true,
   },
   {
-    id: 'cancel',
+    id: 'feedback_cancel',
     value: '取消',
   },
 ];

@@ -18,10 +18,10 @@ const { Text, Edit } = TextEditToggle;
 let sign = false;
 
 const STATUS = {
-  todo: '#ffb100',
-  doing: '#4d90fe',
-  done: '#00bfa5',
-  cancel: '#393E46',
+  feedback_todo: '#ffb100',
+  feedback_doing: '#4d90fe',
+  feedback_done: '#00bfa5',
+  feedback_cancel: '#393E46',
 };
   
 

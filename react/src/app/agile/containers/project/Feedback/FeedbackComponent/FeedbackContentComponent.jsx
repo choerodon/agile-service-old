@@ -4,6 +4,7 @@ import React, {
 import {
   Icon, Select, Button, Upload, Input, Menu, Dropdown, Collapse, Tooltip,
 } from 'choerodon-ui';
+import { Modal } from 'choerodon-ui/pro';
 import { stores } from '@choerodon/boot';
 import classnames from 'classnames';
 import TimeAgo from 'timeago-react';
@@ -12,15 +13,21 @@ import WYSIWYGViewer from '../../../../components/WYSIWYGViewer';
 import './FeedbackContentComponent.scss';
 import UserHead from './UserHead';
 import CommentDescription from '../../../../components/CommonComponent/IssueDescription';
-import { delta2Html, text2Delta, randomWord } from '../../../../common/utils';
+import {
+  delta2Html, text2Delta, randomWord, getFileSuffix, 
+} from '../../../../common/utils';
 
+const fileService = 'http://minio.staging.saas.hand-china.com/feedback-service/';
+const previewSuffix = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'pdf', 'jpg', 'jpeg', 'gif', 'png'];
+const officeSuffix = ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx'];
+const previewModalKey = Modal.key();
 const { AppState } = stores;
 // eslint-disable-next-line quote-props
 const statusList = new Map([
-  ['todo', '待处理'],
-  ['doing', '处理中'],
-  ['done', '完成'],
-  ['cancel', '取消'],
+  ['feedback_todo', '待处理'],
+  ['feedback_doing', '处理中'],
+  ['feedback_done', '完成'],
+  ['feedback_cancel', '取消'],
 ]);
 
 export function ToggleQuestion({
@@ -38,9 +45,9 @@ export function ToggleQuestion({
   return (
     <section className="feedback-main-toggleQuestion">
       <h1>{summary}</h1>
-      {status !== 'cancel' && (
+      {status !== 'feedback_cancel' && (
         <aside className="feedback-main-toggleQuestion-btn-group">
-          {nextStatus !== 'cancel' && (
+          {nextStatus !== 'feedback_cancel' && (
             <Button
               type="primary"
               funcType="raised"
@@ -79,7 +86,7 @@ export function Attachment({ data }) {
       name: fileName,
       uid: id,
       feedbackId,
-      url: `http://minio.staging.saas.hand-china.com/feedback-service/${url}`,
+      url: `${fileService}${url}`,
       status: 'done',
     })));
   }, []);
@@ -233,6 +240,22 @@ function DiscussBoardContainer({
   );
 }
 
+const PreviewModalContent = ({ url }) => {
+  if (officeSuffix.includes(getFileSuffix(url))) {
+    return (<iframe title="附件预览" width="100%" height="620px" src={`https://view.officeapps.live.com/op/view.aspx?src=${fileService}${encodeURIComponent(url)}`} />);
+  } else if (getFileSuffix(url) === 'pdf') {
+    // return (<embed src={`${fileService}${url}`} type="application/pdf" width="100%" height="620px" />);
+    return (
+      <object data={`${fileService}${url}`} type="application/pdf" width="100%" height="620px">
+        This browser does not support PDFs. Please download the PDF to view it: 
+        <a href={`${fileService}${url}`}>Download PDF</a>
+      </object>
+    );
+  } else {
+    return <img src={`${fileService}${url}`} alt="图片附件" />;
+  }
+};
+
 const SingleDiscuss = ({
   user, within, replyData, lastUpdateDate, content, id, replyDiscuss, openAllDiscuss, handleAddDiscuss,
   handleEditDiscuss, handleRemoveDiscuss, userId, parentId, objectVersionNumber, beRepliedId,
@@ -243,9 +266,25 @@ const SingleDiscuss = ({
   const [edit, toggleEdit] = useState(false);
   const [inputText, setInputText] = useState(content);
   const [fileList, setFileList] = useState();
-  useEffect(() => {
+  const filesuffix = useEffect(() => {
     toggleDiscussContent(openAllDiscuss);
   }, [openAllDiscuss]);
+
+  const openPreviewModal = (url) => {
+    Modal.open({
+      key: previewModalKey,
+      title: '附件预览',
+      style: {
+        width: '12rem',
+        height: '6.2rem',
+        top: 0,
+        left: '0.8rem',
+        overflow: 'hidden',
+      },
+      children: <PreviewModalContent url={url} />,
+    });
+  };
+
   return (
     <ReplyContainer
       isReply={reply}
@@ -335,12 +374,23 @@ const SingleDiscuss = ({
               ) : (
                 <div>
                   <CommentDescription data={delta2Html(content)} />
-                  <div style={{ marginBottom: 9 }}>
+                  <div style={{ marginBottom: 9, display: 'flex', flexWrap: 'wrap' }}>
                     {feedbackAttachmentDTOList && feedbackAttachmentDTOList.map(item => (
-                      <a style={{ marginRight: 6 }} href={`http://minio.staging.saas.hand-china.com/feedback-service/${item.url}`}>{item.fileName}</a>
+                      <div>
+                        {previewSuffix.includes(getFileSuffix(item.url)) && (
+                        <Icon 
+                          style={{ cursor: 'pointer' }} 
+                          type="find_in_page"
+                          onClick={openPreviewModal.bind(this, item.url)}
+                        />
+                        )}
+                        <a style={{ marginRight: 6 }} href={`${fileService}${item.url}`}>
+                          <Icon type="get_app" style={{ color: '#000' }} />
+                          {item.fileName}
+                        </a>
+                      </div>
                     ))}
                   </div>
-                 
                 </div>
               )) : null}
               <DiscussBoardContainer
@@ -366,7 +416,7 @@ const SingleDiscuss = ({
                 <CommentDescription data={delta2Html(content)} />
                 <div style={{ marginBottom: 9 }}>
                   {feedbackAttachmentDTOList && feedbackAttachmentDTOList.map(item => (
-                    <a style={{ marginRight: 6 }} href={`http://minio.staging.saas.hand-china.com/feedback-service/${item.url}`}>{item.fileName}</a>
+                    <a style={{ marginRight: 6 }} href={`${fileService}${item.url}`}>{item.fileName}</a>
                   ))}
                 </div>
               </div>
