@@ -1,26 +1,17 @@
 import React, { Component } from 'react';
+import { createPortal } from 'react-dom';
 import { observer } from 'mobx-react';
-// 用于追踪 Mobx 引起的渲染，非性能调优时可注释
-// import { trace } from 'mobx';
 import {
   Page, Header, Content, stores, axios,
 } from '@choerodon/boot';
-import {
-  Button, Icon, Select, DatePicker, Modal, Input, Form, Tooltip,
-} from 'choerodon-ui';
-import _ from 'lodash';
+import { Button, Icon, Form } from 'choerodon-ui';
 import './Issue.scss';
-import moment from 'moment';
-import { _allowStateChangesInsideComputed } from 'mobx';
 import IssueStore from '../../../../stores/project/sprint/IssueStore/IssueStore';
 import IssueFilterControler from '../IssueFilterControler';
 import ImportIssue from '../ImportIssue';
 import AdvancedSearch from '../AdvancedSearch';
 import FilterManage from '../FilterManage';
 import SaveFilterModal from '../SaveFilterModal';
-
-// CSS 利用相邻兄弟选择器注入
-import ExpandCssControler from '../ExpandCssControler';
 // Table
 import IssueTable from '../IssueTable/IssueTable';
 // 任务详情
@@ -32,12 +23,8 @@ import ExportIssue from '../ExportIssue';
 
 import QuickSearch from '../../../../components/QuickSearch';
 
-const FileSaver = require('file-saver');
-
 const { AppState } = stores;
-const { Option } = Select;
-const { RangePicker } = DatePicker;
-const FormItem = Form.Item;
+
 @observer
 class Issue extends Component {
   /**
@@ -159,44 +146,49 @@ class Issue extends Component {
     if (document && document.getElementsByClassName('page-body').length) {
       // document.getElementsByClassName('page-body')[0].style.overflow = 'hidden';
     }
-
+    const { TabComponent } = this.props;
     return (
       <Page
         className="c7n-Issue"
         service={['agile-service.issue.deleteIssue', 'agile-service.issue.listIssueWithSub']}
       >
-        <Header
-          title="问题管理"
-          backPath={IssueStore.getBackUrl}
-        >
-          <Button
-            className="leftBtn"
-            funcType="flat"
-            onClick={() => {
-              IssueStore.createQuestion(true);
-            }}
+        {createPortal(
+          <Header
+            title="问题管理"
+            backPath={IssueStore.getBackUrl}
           >
-            <Icon type="playlist_add icon" />
-            <span>创建问题</span>
-          </Button>
-          <Button className="leftBtn" funcType="flat" onClick={() => this.importIssue.open()}>
-            <Icon type="archive icon" />
-            <span>导入问题</span>
-          </Button>
-          <Button className="leftBtn" funcType="flat" onClick={this.openExport}>
-            <Icon type="get_app icon" />
-            <span>导出</span>
-          </Button>
-          <Button
-            funcType="flat"
-            onClick={() => {
-              this.Refresh();
-            }}
-          >
-            <Icon type="refresh icon" />
-            <span>刷新</span>
-          </Button>
-        </Header>
+            <Button
+              className="leftBtn"
+              funcType="flat"
+              onClick={() => {
+                IssueStore.createQuestion(true);
+              }}
+            >
+              <Icon type="playlist_add icon" />
+              <span>创建问题</span>
+            </Button>
+            <Button className="leftBtn" funcType="flat" onClick={() => this.importIssue.open()}>
+              <Icon type="archive icon" />
+              <span>导入问题</span>
+            </Button>
+            <Button className="leftBtn" funcType="flat" onClick={this.openExport}>
+              <Icon type="get_app icon" />
+              <span>导出</span>
+            </Button>
+            <Button
+              funcType="flat"
+              onClick={() => {
+                this.Refresh();
+              }}
+            >
+              <Icon type="refresh icon" />
+              <span>刷新</span>
+            </Button>
+          </Header>,
+          document.getElementsByClassName('c7n-Header-Area')[0],
+        )
+        }
+        {TabComponent}
         <Content className="c7n-Issue" style={{ overflowX: 'hidden' }}>
           <ExportIssue />
           <div style={{ height: 48 }}>

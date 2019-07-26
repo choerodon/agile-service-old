@@ -14,7 +14,7 @@ export function getUsers(param, userId, page = 1) {
   if (param) {
     return axios.get(`/iam/v1/projects/${projectId}/users?param=${param}${userId ? `&id=${userId}` : ''}`);
   }
-  return axios.get(`/iam/v1/projects/${projectId}/users?size=20&page=${page}${userId ? `&id=${userId}` : ''}`);
+  return axios.get(`/iam/v1/projects/${projectId}/users?size=5&page=${page}${userId ? `&id=${userId}` : ''}`);
 }
 export function getUser(userId) {
   const projectId = AppState.currentMenuType.id;

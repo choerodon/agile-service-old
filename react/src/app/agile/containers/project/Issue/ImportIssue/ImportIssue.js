@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Content, stores, WSHandler } from '@choerodon/boot';
+import { stores, WSHandler } from '@choerodon/boot';
 import {
-  Modal, Button, Icon, Tag, Progress, Input, Tooltip,
+  Modal, Button, Icon, Progress, 
 } from 'choerodon-ui';
 import FileSaver from 'file-saver';
 import {
@@ -12,8 +12,6 @@ import {
 } from '../../../../api/NewIssueApi';
 import './ImportIssue.scss';
 
-
-const { Sidebar } = Modal;
 const { AppState } = stores;
 
 class ImportIssue extends Component {
@@ -133,22 +131,22 @@ class ImportIssue extends Component {
     });
   };
 
-  footer = () => {
+  renderFooter = () => {
     const { step, wsData } = this.state;
     if (step === 1) {
       return [
-        <Button type="primary" funcType="raised" onClick={() => this.changeStep(1)}>下一步</Button>,
-        <Button funcType="raised" onClick={this.onCancel}>取消</Button>,
+        <Button onClick={this.onCancel}>取消</Button>,
+        <Button type="primary" onClick={() => this.changeStep(1)}>下一步</Button>,        
       ];
     } else if (step === 2) {
       return [
-        <Button type="primary" funcType="raised" onClick={() => this.changeStep(-1)}>上一步</Button>,
-        <Button funcType="raised" onClick={this.onCancel}>取消</Button>,
+        <Button onClick={this.onCancel}>取消</Button>,
+        <Button type="primary" onClick={() => this.changeStep(-1)}>上一步</Button>,        
       ];
     } else {
       return [
-        <Button type="primary" funcType="raised" onClick={this.finish}>完成</Button>,
-        <Button funcType="raised" disabled={wsData.status && wsData.status !== 'doing'} onClick={this.onCancel}>取消上传</Button>,
+        <Button type="primary" onClick={this.finish}>完成</Button>,
+        <Button disabled={wsData.status && wsData.status !== 'doing'} onClick={this.onCancel}>取消上传</Button>,
       ];
     }
   };
@@ -259,7 +257,7 @@ class ImportIssue extends Component {
         <React.Fragment>
           <Button
             type="primary"
-            funcType="flat"
+            // funcType="flat"
             onClick={() => this.exportExcel()}
           >
             <Icon type="get_app icon" />
@@ -330,22 +328,19 @@ class ImportIssue extends Component {
       visible,
     } = this.state;
     return (
-      <Sidebar
+      <Modal
         className="c7n-importIssue"
         title="导入问题"
         visible={visible}
         onCancel={this.onCancel}
-        footer={this.footer()}
+        footer={this.renderFooter()}
         destroyOnClose
-      >
-        <Content
-          title={`在项目“${AppState.currentMenuType.name}”中导入问题`}
-          description="您可以在此将文件中的问题导入问题管理中。导入前，请先下载我们提供的模板，在模板中填写对应的信息后，再将模板上传。注：若导入失败，我们会及时将失败信息进行反馈。"
-          link="http://v0-13.choerodon.io/zh/docs/user-guide/agile/issue/create-issue/"
-        >
-          {this.renderForm()}
-        </Content>
-      </Sidebar>
+      >  
+        <div style={{ height: 70 }}>
+          <div style={{ margin: '20px 0' }}>导入问题前请先下载 导入问题模板 ，按照格式要求进行问题数据准备。</div>
+          {this.renderForm()}  
+        </div>
+      </Modal>
     );
   }
 }

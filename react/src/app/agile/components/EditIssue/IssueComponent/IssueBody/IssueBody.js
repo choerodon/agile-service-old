@@ -12,19 +12,49 @@ import SubBug from './SubBug';
 import IssueLink from './IssueLink';
 import IssueBranch from './IssueBranch';
 import TestLink from './TestLink';
+import IssueDropDown from '../IssueDropDown';
+import { FieldStoryPoint, FieldSummary } from './Field';
 import EditIssueContext from '../../stores';
 import './IssueBody.less';
 
 const { TabPane } = Tabs;
 
 const IssueBody = (props) => {
-  const { store } = props;
-  const { prefixCls } = useContext(EditIssueContext);
+  const { prefixCls, disabled, store } = useContext(EditIssueContext);
   const issue = store.getIssue;
-  const { issueTypeVO = {} } = issue;
+  const { issueId, typeCode, issueTypeVO = {} } = issue;
 
   return (
     <section className={`${prefixCls}-body`} id="scroll-area" style={{ position: 'relative' }}>
+      <div className="line-justify" style={{ margin: '10px 0', alignItems: 'flex-start' }}>
+        <FieldSummary
+          {...props}
+          showTitle={false}
+          field={{ fieldCode: 'summary', fieldName: '概要' }}
+        />
+        <div style={{ flexShrink: 0, color: 'rgba(0, 0, 0, 0.65)' }}>
+          {!disabled && (
+            <IssueDropDown {...props} />
+          )}
+        </div>
+      </div>
+      {/* 故事点 */}
+      <div className="line-start">
+        {
+          issueId && ['story', 'feature'].indexOf(typeCode) !== -1 ? (
+            <div style={{ display: 'flex', marginRight: 25 }}>
+              <FieldStoryPoint {...props} field={{ fieldCode: 'storyPoints', fieldName: '故事点' }} />
+            </div>
+          ) : null
+        }
+        {
+          issueId && ['issue_epic', 'feature'].indexOf(typeCode) === -1 ? (
+            <div style={{ display: 'flex' }}>
+              <FieldStoryPoint {...props} field={{ fieldCode: 'remainingTime', fieldName: '预估时间' }} />
+            </div>
+          ) : null
+        }
+      </div>
       <Tabs defaultActiveKey="1">
         <TabPane tab="详情" key="1">
           <IssueDetail {...props} />

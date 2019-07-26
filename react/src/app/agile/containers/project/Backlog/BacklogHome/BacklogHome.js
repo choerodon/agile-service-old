@@ -1,10 +1,11 @@
 /* eslint-disable react/no-unused-state */
 import React, { Component } from 'react';
+import { createPortal } from 'react-dom';
 import { observer, inject } from 'mobx-react';
 import { Page, Header, stores } from '@choerodon/boot';
 import { DragDropContext } from 'react-beautiful-dnd';
 import {
-  Button, Spin, Checkbox, Icon,
+  Button, Spin, Checkbox, Icon, Modal,
 } from 'choerodon-ui';
 import Version from '../BacklogComponent/VersionComponent/Version';
 import Epic from '../BacklogComponent/EpicComponent/Epic';
@@ -36,7 +37,7 @@ class BacklogHome extends Component {
   }
 
   componentDidMount() {
-    this.refresh();    
+    this.refresh();
   }
 
   componentWillUnmount() {
@@ -117,7 +118,7 @@ class BacklogHome extends Component {
     const { BacklogStore } = this.props;
     if (this.IssueDetail) {
       this.IssueDetail.refreshIssueDetail();
-    }    
+    }
     if (spinIf) {
       BacklogStore.setSpinIf(true);
     }
@@ -219,7 +220,7 @@ class BacklogHome extends Component {
 
   toggleCurrentVisible = (type) => {
     const { BacklogStore } = this.props;
-    const currentVisible = BacklogStore.getCurrentVisible;    
+    const currentVisible = BacklogStore.getCurrentVisible;
     if (currentVisible === type) {
       BacklogStore.toggleVisible(null);
       if (type === 'feature') {
@@ -230,7 +231,7 @@ class BacklogHome extends Component {
       if (currentVisible === 'feature' && type !== 'feature') {
         QuickSearchEvent.emit('unSelectStory');
       }
-      
+
       if (type === 'feature') {
         QuickSearchEvent.emit('setSelectQuickSearch', [{ key: -2, label: '仅故事' }]);
         BacklogStore.clearMultiSelected();
@@ -245,7 +246,7 @@ class BacklogHome extends Component {
   };
 
   render() {
-    const { BacklogStore, HeaderStore } = this.props;
+    const { BacklogStore, HeaderStore, TabComponent } = this.props;
     const arr = BacklogStore.getSprintData;
     const { display } = this.state;
     const { isInProgram } = IsInProgramStore;
@@ -257,44 +258,48 @@ class BacklogHome extends Component {
           'agile-service.sprint.queryByProjectId',
         ]}
       >
-        <Header title="待办事项">
-          <Button
-            className="leftBtn"
-            funcType="flat"
-            onClick={this.handleClickCBtn}
-          >
-            <Icon type="playlist_add icon" />
-            <span>创建问题</span>
-          </Button>
-          {!isInProgram && (
+        {createPortal(
+          <Header title="待办事项">
+            <Button
+              className="leftBtn"
+              funcType="flat"
+              onClick={this.handleClickCBtn}
+            >
+              <Icon type="playlist_add icon" />
+              <span>创建问题</span>
+            </Button>
+            {!isInProgram && (
             <Button className="leftBtn" functyp="flat" onClick={this.handleCreateSprint}>
               <Icon type="queue" />
               {'创建冲刺'}
             </Button>
-          )}
-          <Button
-            className="leftBtn2"
-            functyp="flat"
-            onClick={() => {
-              this.refresh();
-              this.loadQuickFilter();
-            }}
-          >
-            <Icon type="refresh" />
-            {'刷新'}
-          </Button>
-          {isInProgram
-            ? (
-              <Checkbox
-                disabled={!arr.length}
-                style={{ marginLeft: 20, color: '#3f51b5' }}
-                onChange={this.onCheckChange}
-              >
+            )}
+            <Button
+              className="leftBtn2"
+              functyp="flat"
+              onClick={() => {
+                this.refresh();
+                this.loadQuickFilter();
+              }}
+            >
+              <Icon type="refresh" />
+              {'刷新'}
+            </Button>
+            {isInProgram
+              ? (
+                <Checkbox
+                  disabled={!arr.length}
+                  style={{ marginLeft: 20, color: '#3f51b5' }}
+                  onChange={this.onCheckChange}
+                >
                 显示未开始冲刺
-              </Checkbox>
-            ) : ''
+                </Checkbox>
+              ) : ''
           }
-        </Header>
+          </Header>, document.getElementsByClassName('c7n-Header-Area')[0],
+        )
+      }
+        {TabComponent}
         <div style={{ padding: 0, display: 'flex', flexDirection: 'column' }}>
           <div
             className="backlogTools"
@@ -326,31 +331,31 @@ class BacklogHome extends Component {
                 {'版本'}
               </p>
               {!isInProgram && (
-              <p
-                style={{
-                  marginTop: 12,
-                }}
-                role="none"
-                onClick={() => {
-                  this.toggleCurrentVisible('epic');
-                }}
-              >
-                {'史诗'}
-              </p>
-              )}   
+                <p
+                  style={{
+                    marginTop: 12,
+                  }}
+                  role="none"
+                  onClick={() => {
+                    this.toggleCurrentVisible('epic');
+                  }}
+                >
+                  {'史诗'}
+                </p>
+              )}
               {isInProgram && (
-              <p
-                style={{
-                  marginTop: 12,
-                }}
-                role="none"
-                onClick={() => {
-                  this.toggleCurrentVisible('feature');
-                }}
-              >
-                {'特性'}
-              </p>
-              )}         
+                <p
+                  style={{
+                    marginTop: 12,
+                  }}
+                  role="none"
+                  onClick={() => {
+                    this.toggleCurrentVisible('feature');
+                  }}
+                >
+                  {'特性'}
+                </p>
+              )}
             </div>
             <Version
               store={BacklogStore}
@@ -361,14 +366,14 @@ class BacklogHome extends Component {
               }}
             />
             {!isInProgram && (
-            <Epic
-              refresh={this.refresh}
-              visible={BacklogStore.getCurrentVisible}
-              issueRefresh={() => {
-                this.IssueDetail.refreshIssueDetail();
-              }}
-            />
-            )}     
+              <Epic
+                refresh={this.refresh}
+                visible={BacklogStore.getCurrentVisible}
+                issueRefresh={() => {
+                  this.IssueDetail.refreshIssueDetail();
+                }}
+              />
+            )}
             <Feature
               refresh={this.refresh}
               isInProgram={isInProgram}
@@ -376,11 +381,11 @@ class BacklogHome extends Component {
               issueRefresh={() => {
                 this.IssueDetail.refreshIssueDetail();
               }}
-            />   
+            />
             <Spin spinning={BacklogStore.getSpinIf}>
               <div className="c7n-backlog-content">
                 <DragDropContext
-                  onDragEnd={(result) => {         
+                  onDragEnd={(result) => {
                     BacklogStore.setIsDragging(null);
                     const { destination, source, draggableId } = result;
                     if (destination) {

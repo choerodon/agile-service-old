@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { Icon, Popconfirm } from 'choerodon-ui';
-import { AppState } from '@choerodon/boot';
-import TimeAgo from 'timeago-react';
 import UserHead from '../../UserHead';
 import WYSIWYGEditor from '../../WYSIWYGEditor';
 import { IssueDescription, DatetimeAgo } from '../../CommonComponent';
 import {
-  delta2Html, text2Delta, beforeTextUpload, formatDate,
+  delta2Html, text2Delta, beforeTextUpload, 
 } from '../../../common/utils';
 import { deleteWorklog, updateWorklog } from '../../../api/NewIssueApi';
 import './Log.scss';
@@ -20,9 +18,6 @@ class Log extends Component {
       editLog: undefined,
       expand: false,
     };
-  }
-
-  componentDidMount() {
   }
 
   updateLog = (log) => {

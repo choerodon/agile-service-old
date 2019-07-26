@@ -3,7 +3,7 @@
   height: 100%;
   display: flex;
   background: white;
-  // flex-direction: column;
+  overflow: hidden;
   flex: 1;
   position: relative;
 
@@ -239,22 +239,6 @@
     }
   }
 
-  .c7n-header-editIssue {
-    box-sizing: border-box;
-    // float: left;
-    // margin-bottom: 10px;
-    padding: 0;
-    width: 100%;
-    // height: 100px;
-    display: flex;
-    flex-direction: row;
-
-    .c7n-bar-header {
-      // height: 100px;
-      // top: 0;
-    }
-  }
-
   .c7n-title-wrapper {
     display: flex;
     flex-direction: row;
@@ -316,51 +300,6 @@
     }
   }
 
-  .c7n-bar-editIssue {
-    width: 40px;
-    // position: absolute;
-    // left: 0;
-    background: rgba(0, 0, 0, 0.04);
-
-    ul {
-      list-style: none;
-    }
-  }
-
-  .c7n-content-editIssue {
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 5px;
-    flex: 1;
-    overflow-y: hidden;
-    box-sizing: border-box;
-    width: 100%;
-  }
-
-  .select-noBorder {
-    .c7n-select-underline {
-      display: none;
-    }
-
-    .c7n-select-selection__rendered {
-      margin-left: 0 !important;
-    }
-  }
-
-  .c7n-issueTpe-wapper {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    background: #3f51b5;
-    text-align: center;
-    color: #fff;
-    font-size: 14px;
-    line-height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .ml-38 {
     margin-left: 38px;
   }
@@ -380,47 +319,6 @@
 
   .pointer {
     cursor: pointer;
-  }
-
-  //.info {
-  //  // margin: 24px;
-  //  display: flex;
-  //  flex-direction: column;
-  //
-  //  .line-info {
-  //    display: flex;
-  //    margin-bottom: 32px;
-  //    align-items: flex-end;
-  //
-  //    .name {
-  //      // width: 438px;
-  //      margin-left: 20px;
-  //    }
-  //  }
-  //}
-
-  .tab-basic {
-    display: flex;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-
-    .column-basic {
-      display: flex;
-      flex-direction: column;
-      width: 150px;
-      margin-right: 60px;
-
-      .title-column {
-        font-weight: bold;
-      }
-    }
-  }
-
-  .c7n-sidebar-rollup {
-    font-size: 13px;
-    color: #3f51b5;
-    line-height: 15px;
-    cursor: pointer;
-    margin-top: 12px;
   }
 
   .line-justify {

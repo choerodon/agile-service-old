@@ -5,19 +5,8 @@ import { deleteLink } from '../../../api/NewIssueApi';
 import PriorityTag from '../../PriorityTag';
 import StatusTag from '../../StatusTag';
 import TypeTag from '../../TypeTag';
-import './IssueList.scss';
 
-
-class IssueList extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-    };
-  }
-
-  componentWillMount() {
-  }
-
+class LinkList extends Component {
   confirm(issueId) {
     this.handleDeleteIssue(issueId);
   }
@@ -142,4 +131,4 @@ class IssueList extends Component {
   }
 }
 
-export default IssueList;
+export default LinkList;

@@ -1,20 +1,26 @@
+/* eslint-disable no-shadow */
 import React, { useState, useEffect } from 'react';
-import { Select } from 'choerodon-ui';
-import { debounce } from 'lodash';
+import { Select, Button } from 'choerodon-ui';
+import { debounce, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import Types from './Types';
 
+const { Option } = Select;
+function dataConverter(data) {
+  if (data instanceof Array) {
+    return {
+      list: data,
+      hasNextPage: false,
+    };
+  }
+  return data;
+}
 const propTypes = {
   type: PropTypes.string.isRequired,
 };
 const SelectFocusLoad = (props) => {
-  const {
-    type, afterLoad, loadWhenMount, value, saveList, children,
-  } = props;
-  const [loading, setLoading] = useState(false);
-  const [List, setList] = useState(false);
-  const [extraList, setExtraList] = useState(false);
-
+  const SelectRef = React.createRef();
+  const { type } = props;
   const getType = () => {
     const Type = { ...Types[type], ...props };
     return Type;
@@ -23,6 +29,17 @@ const SelectFocusLoad = (props) => {
   const {
     request, props: TypeProps, getDefaultValue, render,
   } = Type;
+  const totalProps = { ...props, ...TypeProps };
+  const {
+    loadWhenMount, afterLoad, value, saveList, children, defaultOpen, defaultOption,
+  } = totalProps;
+  const [loading, setLoading] = useState(false);
+  const [List, setList] = useState(defaultOption ? [defaultOption] : []);
+  const [extraList, setExtraList] = useState(false);
+  const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState(1);
+  const [canLoadMore, setCanLoadMore] = useState(false);
+  
   // 防止取值不在option列表中，比如user
   const avoidShowError = (ListDate = List) => {
     if (Type.avoidShowError) {
@@ -33,55 +50,77 @@ const SelectFocusLoad = (props) => {
       });
     }
   };
-  const loadData = () => {
+  const loadData = ({ filter = '', page = 1, isLoadMore = false } = {}) => new Promise((resolve) => {
+    setLoading(true);
+    request({ filter, page }).then((data) => {
+      const { list, hasNextPage } = dataConverter(data);
+      const TotalList = isLoadMore ? [...List, ...list] : list;
+      setPage(page);
+      setFilter(filter);
+      setCanLoadMore(hasNextPage);
+      avoidShowError(TotalList);
+      setList(TotalList);
+      setLoading(false);
+      resolve(TotalList);
+    });
+  });
+  const LoadWhenMount = () => {
     if (props.loadWhenMount || loadWhenMount) {
-      setLoading(true);
-      request().then((Data) => {
-        avoidShowError(Data);
-        setList(Data);
-        setLoading(false);
+      loadData().then((list) => {
         let defaultValue;
         if (getDefaultValue) {
-          defaultValue = getDefaultValue(Data);
+          defaultValue = getDefaultValue(list);
         }
         if (afterLoad) {
-          afterLoad(Data, defaultValue);
+          afterLoad(list, defaultValue);
         }
       });
     }
   };
+
   useEffect(() => {
-    loadData();
+    LoadWhenMount();
   }, []);
   useEffect(() => {
     avoidShowError();
   }, [value]);
+  useEffect(() => {
+    if (defaultOpen) {
+      SelectRef.current.rcSelect.onDropdownVisibleChange(true);
+    }
+  }, []);
 
-
-  const handleFilterChange = debounce((filter) => {
+  const handleFilterChange = debounce((Filter) => {
     setLoading(true);
-    request(filter).then((Data) => {
-      avoidShowError(Data);
-      setList(Data);
-      setLoading(false);
-    });
+    loadData({ filter: Filter });
   }, 300);
+  const loadMore = () => {
+    setLoading(true);
+    loadData({ filter, page: page + 1, isLoadMore: true });
+  };
   const totalList = [...List, ...extraList];
   if (saveList) {
     saveList(totalList);
   }
-  const Options = totalList.map(render).concat(React.Children.toArray(children));
+  // 渲染去掉重复项
+  const Options = uniqBy(totalList.map(render).concat(React.Children.toArray(children)), option => option.props.value);  
   return (
     <Select
       filter
       filterOption={false}
       loading={loading}
-        // style={{ width: 200 }}      
+      ref={SelectRef}
+      // style={{ width: 200 }}      
       onFilterChange={handleFilterChange}
       {...TypeProps}
       {...props}
     >
       {Options}
+      {canLoadMore && (
+        <Option key="SelectFocusLoad-loadMore" disabled style={{ cursor: 'auto' }}>
+          <Button type="primary" style={{ textAlign: 'left', width: '100%', background: 'transparent' }} onClick={loadMore}>更多</Button>
+        </Option>
+      )}
     </Select>
   );
 };

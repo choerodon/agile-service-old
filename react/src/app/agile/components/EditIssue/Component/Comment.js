@@ -77,7 +77,7 @@ class Comment extends Component {
               className={`c7n-comment ${comment.commentId === editCommentId ? 'c7n-comment-focus' : ''}`}
             >
               <div className="line-justify">
-                {
+                {/* {
                 expand ? (
                   <Icon
                     role="none"
@@ -112,7 +112,7 @@ class Comment extends Component {
                     }}
                   />
                 ) : null
-              }
+              } */}
                 <div className="c7n-title-commit" style={{ flex: 1 }}>
                   <UserHead
                     user={{

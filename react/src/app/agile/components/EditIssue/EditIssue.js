@@ -171,10 +171,11 @@ const EditIssue = observer(() => {
   const HasPermission = (hasPermission || createdBy === AppState.userInfo.id);
   return (
     <div style={{
-      position: 'absolute',
+      position: 'fixed',
       right: 0,
-      top: 0,
-      height: '100%',
+      top: 50,
+      bottom: 0,
+      // height: 'calc(100vh - 50px)',
       zIndex: 101,
       overflow: 'hidden',
     }}
@@ -182,7 +183,7 @@ const EditIssue = observer(() => {
       <ResizeAble
         modes={['left']}
         size={{
-          maxWidth: 800,
+          maxWidth: window.innerWidth * 0.6,
           minWidth: 440,
         }}
         defaultSize={{

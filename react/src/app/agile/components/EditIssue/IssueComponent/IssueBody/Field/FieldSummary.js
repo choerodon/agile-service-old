@@ -77,43 +77,41 @@ const { TextArea } = Input;
     const value = feature ? featureVO[fieldCode] : issue[fieldCode];
 
     return (
-      <div className="line-start mt-10" style={{ width: '100%', fontSize: 20, fontWeight: 500 }}>
-        <div className="c7n-value-wrapper">
-          <TextEditToggle
-            disabled={disabled}
-            saveRef={(e) => {
-              this.TextEditToggle = e;
-            }}
-            formKey={fieldCode}
-            onSubmit={this.updateIssueField}
-            originData={value}
-          >
-            <Text>
-              <div style={{ wordBreak: 'break-all' }}>
-                {value || '无'}
-              </div>
-            </Text>
-            <Edit>
-              <TextArea
-                autosize
-                autoFocus
-                maxLength="44"
-                style={{ fontSize: '20px', fontWeight: 500 }}
-                onChange={(e) => {
-                  this.setState({
-                    newValue: e.target.value,
-                  });
-                }}
-                onPressEnter={() => {
-                  if (this.TextEditToggle && this.TextEditToggle.leaveEditing) {
-                    this.updateIssueField();
-                    this.TextEditToggle.leaveEditing();
-                  }
-                }}
-              />
-            </Edit>
-          </TextEditToggle>
-        </div>
+      <div className="line-start mt-10" style={{ width: '100%', fontSize: 20, fontWeight: 500 }}>       
+        <TextEditToggle
+          disabled={disabled}
+          saveRef={(e) => {
+            this.TextEditToggle = e;
+          }}
+          formKey={fieldCode}
+          onSubmit={this.updateIssueField}
+          originData={value}
+        >
+          <Text>
+            <div style={{ wordBreak: 'break-all' }}>
+              {value || '无'}
+            </div>
+          </Text>
+          <Edit>
+            <TextArea
+              autosize
+              autoFocus
+              maxLength="44"
+              style={{ fontSize: '20px', fontWeight: 500 }}
+              onChange={(e) => {
+                this.setState({
+                  newValue: e.target.value,
+                });
+              }}
+              onPressEnter={() => {
+                if (this.TextEditToggle && this.TextEditToggle.leaveEditing) {
+                  this.updateIssueField();
+                  this.TextEditToggle.leaveEditing();
+                }
+              }}
+            />
+          </Edit>
+        </TextEditToggle>
       </div>
     );
   }
