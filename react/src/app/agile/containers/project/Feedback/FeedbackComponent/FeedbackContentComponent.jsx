@@ -471,8 +471,11 @@ const UploadAndText = ({
     </Menu>
   );
   const uploadFunc = async (e) => {
-    const inputTextWithNoSpace = inputText && inputText.filter(item => item.insert.trim() !== '');
-    if ((inputText && inputTextWithNoSpace && inputTextWithNoSpace.length) || (fileList && fileList.length)) {
+    const inputTextWithImage = inputText && inputText.filter(item => item.insert.image);
+    const inputTextWithNoImage = inputText && inputText.filter(item => !item.insert.image);
+    const inputTextWithNoSpace = inputTextWithNoImage && inputTextWithNoImage.filter(item => item.insert.trim() !== '');
+
+    if ((inputTextWithImage && inputTextWithImage.length) || (inputTextWithNoSpace && inputTextWithNoSpace.length) || (fileList && fileList.length)) {
       if (inputType === 'reply') {
         await handleAddDiscuss(inputText, within, fileList, userId, id);
         handleCloseAddDiscuss(e);

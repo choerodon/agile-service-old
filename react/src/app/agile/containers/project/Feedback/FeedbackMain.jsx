@@ -89,8 +89,10 @@ function FeedbackContent({
     };
     const deltaOps = value;
     if (deltaOps) {
-      const inputTextWithNoSpace = deltaOps && deltaOps.filter(item => item.insert.trim() !== '');
-      if (!inputTextWithNoSpace || inputTextWithNoSpace.length) {
+      const inputTextWithImage = deltaOps && deltaOps.filter(item => item.insert.image);
+      const inputTextWithNoImage = deltaOps && deltaOps.filter(item => !item.insert.image);
+      const inputTextWithNoSpace = inputTextWithNoImage && inputTextWithNoImage.filter(item => item.insert.trim() !== '');
+      if ((inputTextWithImage && inputTextWithImage.length) || (inputTextWithNoSpace && inputTextWithNoSpace.length)) {
         beforeTextUpload(deltaOps, extra, (text) => {
           handleEditSave(text, callback);
         }, 'content');
