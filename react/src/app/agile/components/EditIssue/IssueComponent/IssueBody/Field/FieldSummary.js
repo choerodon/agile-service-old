@@ -79,6 +79,7 @@ const { TextArea } = Input;
     return (
       <div className="line-start mt-10" style={{ width: '100%', fontSize: 20, fontWeight: 500 }}>       
         <TextEditToggle
+          style={{ width: '100%' }}
           disabled={disabled}
           saveRef={(e) => {
             this.TextEditToggle = e;
