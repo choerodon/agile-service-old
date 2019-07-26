@@ -2,7 +2,7 @@ package io.choerodon.agile.app.service.impl;
 
 import io.choerodon.agile.api.vo.FeedbackUpdateVO;
 import io.choerodon.agile.app.service.IFeedbackService;
-import io.choerodon.agile.infra.common.annotation.FeedbackDataLog;
+import io.choerodon.agile.infra.annotation.FeedbackDataLog;
 import io.choerodon.agile.infra.dataobject.FeedbackDTO;
 import io.choerodon.agile.infra.mapper.FeedbackMapper;
 import io.choerodon.core.exception.CommonException;

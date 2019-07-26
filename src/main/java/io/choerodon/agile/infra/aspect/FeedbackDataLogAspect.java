@@ -1,9 +1,9 @@
-package io.choerodon.agile.infra.common.aspect;
+package io.choerodon.agile.infra.aspect;
 
 import io.choerodon.agile.api.vo.FeedbackUpdateVO;
 import io.choerodon.agile.app.service.LookupValueService;
 import io.choerodon.agile.app.service.UserService;
-import io.choerodon.agile.infra.common.annotation.FeedbackDataLog;
+import io.choerodon.agile.infra.annotation.FeedbackDataLog;
 import io.choerodon.agile.infra.dataobject.FeedbackAttachmentDTO;
 import io.choerodon.agile.infra.dataobject.FeedbackCommentDTO;
 import io.choerodon.agile.infra.dataobject.FeedbackDTO;
@@ -77,7 +77,7 @@ public class FeedbackDataLogAspect {
     @Autowired
     private FeedbackAttachmentMapper feedbackAttachmentMapper;
 
-    @Pointcut("bean(*ServiceImpl) && @annotation(io.choerodon.agile.infra.common.annotation.FeedbackDataLog)")
+    @Pointcut("bean(*ServiceImpl) && @annotation(io.choerodon.agile.infra.annotation.FeedbackDataLog)")
     public void feedbackPointcut() {
         throw new UnsupportedOperationException();
     }
