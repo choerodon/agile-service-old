@@ -1,20 +1,21 @@
 @import '~choerodon-ui/lib/style/themes/default';
 
 .c7n-agile-EditIssue-body {
-  overflow: hidden;
+  overflow-y: auto;  
+  overflow-x: hidden;  
   flex: 1;
-  padding-left: 20px;
-  .@{c7n-prefix}-tabs {
-    height: 100%;
+  padding: 0 20px 20px 20px;
+  // .@{c7n-prefix}-tabs {
+  //   height: 100%;
 
-    &-content {
-      height: calc(~"100% - 0.62rem");
-    }
+  //   &-content {
+  //     height: calc(~"100% - 0.62rem");
+  //   }
 
-    &-tabpane {
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding-right: 20px;
-    }
-  }
+  //   &-tabpane {
+  //     overflow-y: auto;
+  //     overflow-x: hidden;
+  //     padding-right: 20px;
+  //   }
+  // }
 }

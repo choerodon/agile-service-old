@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Dropdown, Menu } from 'choerodon-ui';
+import { Dropdown, Menu, Icon } from 'choerodon-ui';
 import TypeTag from '../../TypeTag';
 import { updateIssueType, updateIssue } from '../../../api/NewIssueApi';
 import EditIssueContext from '../stores';
@@ -138,10 +138,10 @@ const IssueType = observer(({
               data={currentIssueType}
               featureType={featureVO && featureVO.featureType}
             />
-            {/* <Icon
+            <Icon
               type="arrow_drop_down"
               style={{ fontSize: 16 }}
-            /> */}
+            />
           </div>
         </Dropdown>
       )}
