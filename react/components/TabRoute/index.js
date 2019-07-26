@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { withRouter, Route } from 'react-router-dom';
+import { withRouter, Route, Redirect } from 'react-router-dom';
 import queryString from 'query-string';
 import { Tabs } from 'choerodon-ui';
 import { find } from 'lodash';
@@ -9,10 +9,11 @@ const { TabPane } = Tabs;
 const TabRoute = withRouter(({
   routes, history, location,
 }) => {
-  const callback = (key) => {
-    const parsed = queryString.extract(location.search);
-    history.push(`${key}?${parsed}`);
+  const parsed = `?${queryString.extract(location.search)}`;
+  const callback = (key) => {    
+    history.push(`${key}${parsed}`);
   };
+  
   const currentPath = location.pathname;
   const renderPanes = () => routes.map(({ title, path }) => <TabPane tab={title} key={path} />);
   const TabComponent = (
@@ -36,7 +37,7 @@ const TabRoute = withRouter(({
           </Tabs> */}
           {renderRoutes()}
         </Fragment>
-      ) : <Route path="*" component={nomatch} /> }      
+      ) : <Redirect from="*" to={`${routes[0].path}${parsed}`} /> }      
     </Fragment>
   );
 });
