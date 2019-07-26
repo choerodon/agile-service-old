@@ -6,6 +6,7 @@ import {
   message,
 } from 'choerodon-ui';
 import './Doc.scss';
+import { getOrganizationId } from '../../common/utils';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
@@ -32,7 +33,7 @@ class Doc extends Component {
     this.setState({
       loading: true,
     });
-    const newData = await axios.get(`/knowledge/v1/projects/${proId}/work_space`);
+    const newData = await axios.get(`/knowledge/v1/projects/${proId}/work_space?organizationId=${getOrganizationId()}`);
     if (newData && !newData.failed) {
       this.setState({
         data: newData,

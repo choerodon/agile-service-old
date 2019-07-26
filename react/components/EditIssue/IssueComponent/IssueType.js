@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Dropdown, Icon, Menu } from 'choerodon-ui';
-import IssueNav from './IssueNav';
+import { Dropdown, Menu, Icon } from 'choerodon-ui';
 import TypeTag from '../../TypeTag';
 import { updateIssueType, updateIssue } from '../../../api/NewIssueApi';
+import EditIssueContext from '../stores';
 import './IssueComponent.scss';
 
 const IssueType = observer(({
-  store, reloadIssue, onUpdate, disabled, applyType,
+  reloadIssue, onUpdate, 
 }) => {
+  const { store, disabled } = useContext(EditIssueContext);
   const handleChangeType = (type) => {
     const issue = store.getIssue;
     const {
@@ -61,7 +62,7 @@ const IssueType = observer(({
 
   let issueTypeData = store.getIssueTypes ? store.getIssueTypes : [];
   const issue = store.getIssue;
-  const { issueTypeVO = {}, featureVO = {} } = issue;
+  const { issueTypeVO = {}, featureVO = {}, subIssueVOList = [] } = issue;
   const { typeCode } = issueTypeVO;
   const { featureType } = featureVO || {};
   let currentIssueType = issueTypeVO;
@@ -83,7 +84,10 @@ const IssueType = observer(({
     ];
     currentIssueType = featureType === 'business' ? issueTypeData[0] : issueTypeData[1];
   } else {
-    issueTypeData = issueTypeData.filter(item => item.typeCode !== 'feature');
+    issueTypeData = issueTypeData.filter(item => ![typeCode, 'feature', 'sub_task'].includes(item.typeCode));
+  }
+  if (subIssueVOList.length > 0) {
+    issueTypeData = issueTypeData.filter(item => ['task', 'story'].includes(item.typeCode));
   }
   const typeList = (
     <Menu
@@ -134,10 +138,10 @@ const IssueType = observer(({
               data={currentIssueType}
               featureType={featureVO && featureVO.featureType}
             />
-            {/* <Icon
+            <Icon
               type="arrow_drop_down"
               style={{ fontSize: 16 }}
-            /> */}
+            />
           </div>
         </Dropdown>
       )}

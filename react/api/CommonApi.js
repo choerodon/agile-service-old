@@ -1,5 +1,4 @@
 import { stores, axios } from '@choerodon/boot';
-import { func } from 'prop-types';
 import { getProjectId, getOrganizationId } from '../common/utils';
 
 

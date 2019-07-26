@@ -1,20 +1,10 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { Icon, Popconfirm } from 'choerodon-ui';
-import { AppState } from '@choerodon/boot';
 import './DocItem.scss';
 
 
 class DocItem extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-    };
-  }
-
-  componentDidMount() {
-  }
-
   paramConverter = (url) => {
     const reg = /[^?&]([^=&#]+)=([^&#]*)/g;
     const retObj = {};

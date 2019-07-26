@@ -7,26 +7,10 @@ import PriorityTag from '../../PriorityTag';
 import StatusTag from '../../StatusTag';
 import TypeTag from '../../TypeTag';
 import UserHead from '../../UserHead';
-import './IssueList.scss';
 
 const { AppState } = stores;
 
 class IssueList extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-    };
-  }
-
-  // componentDidMount() {
-  //   const { location: { search }, onOpen } = this.props;
-  //   const theRequest = this.GetRequest(search);
-  //   const { paramIssueId, paramOpenIssueId } = theRequest;
-  //   if (paramOpenIssueId && paramIssueId && paramOpenIssueId !== paramIssueId) {
-  //     onOpen(paramOpenIssueId);
-  //   }
-  // }
-
   confirm = (issueId) => {
     this.handleDeleteIssue(issueId);
   };
@@ -39,18 +23,6 @@ class IssueList extends Component {
           onRefresh();
         }
       });
-  }
-
-  GetRequest(url) {
-    const theRequest = {};
-    if (url.indexOf('?') !== -1) {
-      const str = url.split('?')[1];
-      const strs = str.split('&');
-      for (let i = 0; i < strs.length; i += 1) {
-        theRequest[strs[i].split('=')[0]] = decodeURI(strs[i].split('=')[1]);
-      }
-    }
-    return theRequest;
   }
 
   render() {
@@ -123,10 +95,10 @@ class IssueList extends Component {
           width: '48px', marginRight: '15px', display: 'flex', justifyContent: 'flex-end', 
         }}
         >
-          <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${issue.statusMapVO && issue.statusMapVO.name}`}>
+          <Tooltip mouseEnterDelay={0.5} title={`任务状态： ${issue.statusVO && issue.statusVO.name}`}>
             <div>
               <StatusTag
-                data={issue.statusMapVO}
+                data={issue.statusVO}
               />
             </div>
           </Tooltip>
