@@ -234,7 +234,7 @@ export function FeedbackReleated({ screenSize, browser }) {
       <InfoComponent
         type="浏览器"
         infoType="text"
-        info={browser.match(/(Chrome|Firefox|MSIE|Opera|Safari)[/ ][\d.]+/).shift()}
+        info={browser && browser.match(/(Chrome|Firefox|MSIE|Opera|Safari)[/ ][\d.]+/).shift()}
       />
     </article>
   );
