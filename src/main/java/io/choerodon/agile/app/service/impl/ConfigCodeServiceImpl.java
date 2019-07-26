@@ -9,7 +9,7 @@ import io.choerodon.agile.infra.mapper.ConfigCodeMapper;
 import io.choerodon.agile.infra.mapper.StateMachineConfigDraftMapper;
 import io.choerodon.agile.infra.utils.EnumUtil;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.statemachine.dto.PropertyData;
+import io.choerodon.agile.infra.statemachineclient.dto.PropertyData;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;

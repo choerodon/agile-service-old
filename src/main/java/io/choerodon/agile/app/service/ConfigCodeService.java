@@ -1,7 +1,7 @@
 package io.choerodon.agile.app.service;
 
 import io.choerodon.agile.api.vo.ConfigCodeVO;
-import io.choerodon.statemachine.dto.PropertyData;
+import io.choerodon.agile.infra.statemachineclient.dto.PropertyData;
 
 import java.util.List;
 

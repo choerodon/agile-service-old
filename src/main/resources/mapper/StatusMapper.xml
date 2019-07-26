@@ -75,7 +75,7 @@
         order by st.id desc
     </select>
 
-    <!--<select id="fulltextSearch" resultType="io.choerodon.statemachine.domain.Status">-->
+    <!--<select id="fulltextSearch" resultType="io.choerodon.agile.infra.statemachineclient.domain.Status">-->
     <!--SELECT * FROM status-->
     <!--WHERE 1=1-->
     <!--<if test="status.organizationId != null">-->

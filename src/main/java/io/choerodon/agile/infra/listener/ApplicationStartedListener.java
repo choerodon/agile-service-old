@@ -1,7 +1,7 @@
 package io.choerodon.agile.infra.listener;
 
 import io.choerodon.agile.app.service.ConfigCodeService;
-import io.choerodon.statemachine.client.StateMachineClient;
+import io.choerodon.agile.infra.statemachineclient.client.StateMachineClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
