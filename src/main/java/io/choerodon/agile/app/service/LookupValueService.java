@@ -12,9 +12,9 @@ import java.util.Map;
  */
 public interface LookupValueService {
 
-    LookupTypeWithValuesVO queryLookupValueByCode(Long projectId, String typeCode);
+    LookupTypeWithValuesVO queryLookupValueByCode(Long organizationId, String typeCode);
 
-    LookupTypeWithValuesVO queryConstraintLookupValue(Long projectId);
+    LookupTypeWithValuesVO queryConstraintLookupValue(Long organizationId);
 
     Map<String, String> queryMapByTypeCode(String typeCode);
 

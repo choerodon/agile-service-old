@@ -94,7 +94,7 @@
           it.organization_id,
           it.type_code,
           it.is_initialize
-          from fd_issue_type_scheme_config itsc, issue_type it
+          from fd_issue_type_scheme_config itsc, fd_issue_type it
           where itsc.issue_type_id = it.id
         ) itr on its.id = itr.scheme_id
         left join
