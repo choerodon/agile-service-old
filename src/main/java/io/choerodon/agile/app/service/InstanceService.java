@@ -1,10 +1,10 @@
 package io.choerodon.agile.app.service;
 
-import io.choerodon.statemachine.dto.ExecuteResult;
+import io.choerodon.agile.infra.statemachineclient.dto.ExecuteResult;
 import io.choerodon.agile.api.vo.StateMachineConfigVO;
 import io.choerodon.agile.api.vo.StateMachineTransformVO;
 import io.choerodon.agile.api.vo.event.TransformInfo;
-import io.choerodon.statemachine.dto.InputDTO;
+import io.choerodon.agile.infra.statemachineclient.dto.InputDTO;
 import org.springframework.statemachine.StateContext;
 
 import java.util.List;

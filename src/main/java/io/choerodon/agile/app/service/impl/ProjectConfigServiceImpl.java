@@ -57,10 +57,6 @@ public class ProjectConfigServiceImpl implements ProjectConfigService {
     @Autowired
     private IssueTypeMapper issueTypeMapper;
     @Autowired
-    private IssueTypeSchemeMapper issueTypeSchemeMapper;
-    @Autowired
-    private IssueTypeSchemeConfigMapper issueTypeSchemeConfigMapper;
-    @Autowired
     private StateMachineSchemeConfigService stateMachineSchemeConfigService;
     @Autowired
     private IssueTypeSchemeService issueTypeSchemeService;
@@ -320,7 +316,7 @@ public class ProjectConfigServiceImpl implements ProjectConfigService {
             Long stateMachineId = (Long) result.get(STATEMACHINEID);
             statusVO = statusService.createStatusForAgile(organizationId, stateMachineId, statusVO);
         } else {
-            throw new CommonException((String) result.get(MESSAGE));
+            return null;
         }
         return statusVO;
     }

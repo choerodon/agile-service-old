@@ -1,6 +1,6 @@
 package io.choerodon.agile.app.service.impl;
 
-import io.choerodon.statemachine.dto.ExecuteResult;
+import io.choerodon.agile.infra.statemachineclient.dto.ExecuteResult;
 import io.choerodon.agile.api.vo.StateMachineConfigVO;
 import io.choerodon.agile.api.vo.StateMachineTransformVO;
 import io.choerodon.agile.api.vo.event.TransformInfo;
@@ -17,8 +17,8 @@ import io.choerodon.agile.infra.mapper.StateMachineMapper;
 import io.choerodon.agile.infra.mapper.StateMachineNodeMapper;
 import io.choerodon.agile.infra.mapper.StateMachineTransformMapper;
 import io.choerodon.core.exception.CommonException;
-import io.choerodon.statemachine.dto.InputDTO;
-import io.choerodon.statemachine.service.ClientService;
+import io.choerodon.agile.infra.statemachineclient.dto.InputDTO;
+import io.choerodon.agile.infra.statemachineclient.service.ClientService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
@@ -121,7 +121,7 @@ public class InstanceServiceImpl implements InstanceService {
         //调用对应服务，根据条件校验转换，过滤掉不可用的转换
         if (isNeedFilter) {
             try {
-                transformInfos = modelMapper.map(stateMachineClientService.conditionFilter(instanceId, modelMapper.map(transformInfos, new TypeToken<List<io.choerodon.statemachine.dto.TransformInfo>>() {
+                transformInfos = modelMapper.map(stateMachineClientService.conditionFilter(instanceId, modelMapper.map(transformInfos, new TypeToken<List<io.choerodon.agile.infra.statemachineclient.dto.TransformInfo>>() {
                 }.getType())), new TypeToken<List<TransformInfo>>() {
                 }.getType());
             } catch (Exception e) {

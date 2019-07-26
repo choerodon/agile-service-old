@@ -17,7 +17,7 @@ import io.choerodon.agile.infra.utils.SendMsgUtil;
 import io.choerodon.core.exception.CommonException;
 import io.choerodon.core.oauth.CustomUserDetails;
 import io.choerodon.core.oauth.DetailsHelper;
-import io.choerodon.statemachine.dto.InputDTO;
+import io.choerodon.agile.infra.statemachineclient.dto.InputDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.modelmapper.convention.MatchingStrategies;
