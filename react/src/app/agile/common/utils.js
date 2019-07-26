@@ -524,4 +524,7 @@ export function getStageMap() {
     },
   };
 }
-
+// 获取文件名后缀
+export function getFileSuffix(fileName) {
+  return fileName.replace(/.+\./, '').toLowerCase();
+}

@@ -24,7 +24,7 @@ function FeedbackContent({
 
   const handleClose = () => {
     axios.put(`agile/v1/projects/${AppState.currentMenuType.id}/feedback`, {
-      status: 'cancel',
+      status: 'feedback_cancel',
       id,
       objectVersionNumber,
     }).then(res => fetchUser());

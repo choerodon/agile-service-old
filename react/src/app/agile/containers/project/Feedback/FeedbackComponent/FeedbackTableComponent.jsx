@@ -38,25 +38,25 @@ export function FeedbackSummary({ text }) {
 export function FeedbackStatus({ status }) {
   const statusObj = new Map([
     [
-      'cancel', {
+      'feedback_cancel', {
         color: '#393E46',
         name: '取消',
       },
     ],
     [
-      'done', {
+      'feedback_done', {
         color: '#4CAF50',
         name: '完成',
       },
     ],
     [
-      'todo', {
+      'feedback_todo', {
         color: '#FFB100',
         name: '待处理',
       },
     ],
     [
-      'doing', {
+      'feedback_doing', {
         color: '#4D90FE',
         name: '处理中',
       },
