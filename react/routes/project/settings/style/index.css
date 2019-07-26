@@ -1,0 +1,12 @@
+.c7n-settings {
+  padding-left: .25rem;
+}
+.c7n-settings .tabPane-box {
+  height: 4rem;
+  margin-left: -0.25rem;
+}
+.c7n-settings .hr {
+  color: rgba(0, 0, 0, 0.12);
+  height: .005rem;
+  margin-left: -0.25rem;
+}

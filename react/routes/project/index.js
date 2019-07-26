@@ -7,15 +7,14 @@ import { inject } from 'mobx-react';
 import {
   asyncRouter, asyncLocaleProvider, stores, nomatch,
 } from '@choerodon/boot';
-import IsInProgramStore from '../IsInProgramStore';
-import RunWhenProjectChange from '../../../common/RunWhenProjectChange';
+import IsInProgramStore from './IsInProgramStore';
+import RunWhenProjectChange from '../../common/RunWhenProjectChange';
 
+const SettingsIndex = asyncRouter(() => import('./settings'));
 
-const SETTINGSINDEX = asyncRouter(() => import('./settings'));
-
-class PROJECTIndex extends React.Component {
+class ProjectIndex extends React.Component {
   componentDidCatch(error, info) {
-    // Choerodon.prompt(error.message);
+    // Choerodon.prompt(error.message); 
   }
 
   componentDidMount() {
@@ -26,23 +25,17 @@ class PROJECTIndex extends React.Component {
 
   render() {
     const { match } = this.props;
-    const { AppState } = stores;
-    const language = AppState.currentLanguage;
-    const IntlProviderAsync = asyncLocaleProvider(language, () => import(`../../locale/${language}`));
-    return (
-      <div className="agile">
-        <IntlProviderAsync>
-          <Switch>
-            {/* 通知设置 */}
-            {/* <Route path={`${match.url}/messageNotification`} component={MESSAGENOTIFICATION} /> */}
-            <Route path={`${match.url}`} component={SETTINGSINDEX} />
 
-            <Route path="*" component={nomatch} />
-          </Switch>
-        </IntlProviderAsync>
+    return (
+      <div>
+        <Switch>
+          <Route path={`${match.url}`} component={SettingsIndex} />
+
+          <Route path="*" component={nomatch} />
+        </Switch>
       </div>
     );
   }
 }
 
-export default PROJECTIndex;
+export default ProjectIndex;
