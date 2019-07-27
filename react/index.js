@@ -34,7 +34,7 @@ const IssueTypeScreenSchemes = asyncRouter(() => import('./routes/issueTypeScree
 const StateIndex = asyncRouter(() => import('./routes/state'));
 const StateMachineIndex = asyncRouter(() => import('./routes/stateMachine'));
 const OBJECTSCHEMEINDEX = asyncRouter(() => import('./routes/object-scheme'));
-const PAGEINDEX = asyncRouter(() => import('./routes/page'));
+const PAGEINDEX = asyncRouter(() => import('./routes/Page'));
 
 // 敏捷设置子路由
 const settings = asyncRouter(() => import('./routes/settings'));
