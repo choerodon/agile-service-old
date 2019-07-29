@@ -23,10 +23,7 @@ const TabRoute = withRouter(({
       {renderPanes()}
     </Tabs>
   );
-  const renderRoutes = () => routes.map((route) => {
-    const { component: Component, path } = route;
-    return <Route path={path} render={props => <Component {...props} TabComponent={TabComponent} />} />;
-  });
+  const renderRoutes = () => routes.map(route => <Route {...route} />);
   return (
     <RouteContext.Provider value={{ TabComponent }}>
       <div className="c7n-Header-Area" style={{ height: 58 }} />
