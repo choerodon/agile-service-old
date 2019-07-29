@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'choerodon-ui';
-import ComponentIndex from './Component/ComponentHome/ComponentHome';
+import ComponentIndex from './Component/ComponentHome';
 import FastSearchIndex from './FastSearch/FastSearchHome/FastSearchHome';
 import IssueLinkIndex from './IssueLink/IssueLinkHome/IssueLinkHome';
 import MessageNotificationIndex from './MessageNotification/MessageNotificationHome/MessageNotificationHome';

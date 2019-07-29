@@ -224,7 +224,7 @@ class Link extends Component {
     ];
     return (
       <div>
-       
+
         <Page
           service={[
             'agile-service.issue-link-type.updateIssueLinkType',
@@ -233,7 +233,7 @@ class Link extends Component {
           ]}
           className="c7n-issue-link"
         >
-          {/* <Header title="问题链接">
+          <Header title="问题链接">
             <Permission
               type={type}
               projectId={projectId}
@@ -249,7 +249,7 @@ class Link extends Component {
               <Icon type="refresh icon" />
               <span>刷新</span>
             </Button>
-          </Header> */}
+          </Header>
           <Content
           // title="问题链接"
           // description="通过自定义问题链接，可以帮助您更好的对多个问题进行关联，不再局限于父子任务。"

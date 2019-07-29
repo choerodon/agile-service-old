@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Spin, Popover, Tooltip, 
+  Spin, Popover, Tooltip, Header, Button,
 } from 'choerodon-ui';
 import { DataSet, Icon } from 'choerodon-ui/pro';
 import {
-  Page, Content, stores, axios, 
+  Page, Content, stores, axios,
 } from '@choerodon/boot';
 import Filter from './Component/Filter';
 import EditFilter from './Component/EditFilter';
@@ -150,14 +150,14 @@ function Search(props) {
       { name: 'name', type: 'string', label: '姓名' },
       { name: 'age', type: 'number', label: '年龄' },
       {
-        name: 'code', type: 'object', label: '代码描述', lovCode: 'LOV_CODE', 
+        name: 'code', type: 'object', label: '代码描述', lovCode: 'LOV_CODE',
       },
       {
-        name: 'sex', type: 'string', label: '性别', lookupCode: 'HR.EMPLOYEE_GENDER', 
+        name: 'sex', type: 'string', label: '性别', lookupCode: 'HR.EMPLOYEE_GENDER',
       },
       { name: 'date.startDate', type: 'date', label: '开始日期' },
       {
-        name: 'sexMultiple', type: 'string', label: '性别（多值）', lookupCode: 'HR.EMPLOYEE_GENDER', multiple: true, 
+        name: 'sexMultiple', type: 'string', label: '性别（多值）', lookupCode: 'HR.EMPLOYEE_GENDER', multiple: true,
       },
     ],
     fields: [
@@ -351,7 +351,7 @@ function Search(props) {
         setFilters(res);
         setLoading(false);
       })
-      .catch((error) => {});
+      .catch((error) => { });
   };
 
   const handleTableChange = (pagination, filters, sorter, barFilters) => {
@@ -376,16 +376,16 @@ function Search(props) {
 
   return (
     <Page className="c7n-fast-search">
-      {/* <Header title="快速搜索">
-        <Button funcType="flat" onClick={() => this.setState({ createFileterShow: true })}>
+      <Header title="快速搜索">
+        <Button funcType="flat" onClick={() => setCreateFileterShow(true)}>
           <Icon type="playlist_add icon" />
           <span>创建快速搜索</span>
         </Button>
-        <Button funcType="flat" onClick={() => this.loadFilters()}>
+        <Button funcType="flat" onClick={() => loadFilters()}>
           <Icon type="refresh icon" />
           <span>刷新</span>
         </Button>
-      </Header> */}
+      </Header>
       <Content>
         <div>
           <Spin spinning={loading}>

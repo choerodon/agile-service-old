@@ -5,13 +5,13 @@ import {
   Page, Header, Content, stores, Permission, axios,
 } from '@choerodon/boot';
 import {
-  Table, Icon, 
+  Table, Icon,
 } from 'choerodon-ui';
 import './EditFieldConfiguration.scss';
 
 const { AppState } = stores;
-const { 
-  type, id, name, organizationId, 
+const {
+  type, id, name, organizationId,
 } = AppState.currentMenuType;
 @observer
 class EditFieldConfiguration extends Component {
@@ -81,23 +81,23 @@ class EditFieldConfiguration extends Component {
           (text && text.length > 0 ? (
             <ul className="notificationTypeList">
               {
-                  text.slice(0, 20).map((item) => {
-                    if (item !== '用户') {
-                      if (item === '当前处理人') {
-                        return <li>经办人</li>;
-                      }
-                      return (
-                        <li>{item}</li>
-                      );
-                    } else if (item === '用户') {
-                      return (
-                        <li>
-                          {`用户: ${users && users.length && users[index].length > 0 ? users[index].map(o => o.name).join(', ') : '-'}`}
-                        </li>
-                      );
+                text.slice(0, 20).map((item) => {
+                  if (item !== '用户') {
+                    if (item === '当前处理人') {
+                      return <li>经办人</li>;
                     }
-                  })
-               }
+                    return (
+                      <li>{item}</li>
+                    );
+                  } else if (item === '用户') {
+                    return (
+                      <li>
+                        {`用户: ${users && users.length && users[index].length > 0 ? users[index].map(o => o.name).join(', ') : '-'}`}
+                      </li>
+                    );
+                  }
+                })
+              }
             </ul>
           ) : '-')
         )
@@ -130,10 +130,10 @@ class EditFieldConfiguration extends Component {
             title="通知设置"
           /> */}
           <Content
-            // title="通知设置"
-            // className="c7n-editFieldConfiguration"
-            // description="通过设置事件发生时所通知的对象，被通知者可以在右上角铃铛处及时查看消息通知，提高个人以及团队的工作效率。"
-            // link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/setup/message-notification_set/"
+          // title="通知设置"
+          // className="c7n-editFieldConfiguration"
+          // description="通过设置事件发生时所通知的对象，被通知者可以在右上角铃铛处及时查看消息通知，提高个人以及团队的工作效率。"
+          // link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/setup/message-notification_set/"
           >
             <Table
               dataSource={dataSource}
