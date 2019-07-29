@@ -8,7 +8,7 @@ import {
 import {
   Page, Header, Content, stores, Permission,
 } from '@choerodon/boot';
-import './ComponentHome.scss';
+import './ComponentHome.less';
 import pic from '../../../../assets/image/模块管理－空.png';
 import { loadComponents } from '../../../../api/ComponentApi';
 import CreateComponent from '../ComponentComponent/AddComponent';
@@ -174,9 +174,9 @@ class ComponentHome extends Component {
               onClick={() => {
                 this.props.history.push(
                   `/agile/issue?type=${urlParams.type}&id=${urlParams.id}&name=${
-                    encodeURIComponent(urlParams.name)
+                  encodeURIComponent(urlParams.name)
                   }&organizationId=${urlParams.organizationId}&paramType=component&paramId=${
-                    record.componentId
+                  record.componentId
                   }&paramName=${encodeURIComponent(`模块"${record.name}"下的问题`)}&paramUrl=component`,
                 );
               }}
@@ -315,7 +315,7 @@ class ComponentHome extends Component {
           'agile-service.issue-component.listByProjectId',
         ]}
       >
-        {/* <Header title="模块管理">
+        <Header title="模块管理">
           <Permission
             type={type}
             projectId={projectId}
@@ -331,11 +331,11 @@ class ComponentHome extends Component {
             <Icon type="refresh icon" />
             <span>刷新</span>
           </Button>
-        </Header> */}
+        </Header>
         <Content
-          // title={`项目“${AppState.currentMenuType.name}”的模块管理`}
-          // description="根据项目需求，可以分拆为多个模块，每个模块可以进行负责人划分，配置后可以将项目中的问题归类到对应的模块中。例如“后端任务”，“基础架构”等等。"
-          // link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/component/"
+        // title={`项目“${AppState.currentMenuType.name}”的模块管理`}
+        // description="根据项目需求，可以分拆为多个模块，每个模块可以进行负责人划分，配置后可以将项目中的问题归类到对应的模块中。例如“后端任务”，“基础架构”等等。"
+        // link="http://v0-16.choerodon.io/zh/docs/user-guide/agile/component/"
         >
           {/* <Spin spinning={this.state.loading}>
             {this.state.components.length === 0 && !this.state.loading ? (

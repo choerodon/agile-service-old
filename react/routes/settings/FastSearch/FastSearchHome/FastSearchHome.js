@@ -122,7 +122,7 @@ class Search extends Component {
           loading: false,
         });
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }
 
 
@@ -136,7 +136,7 @@ class Search extends Component {
   render() {
     const {
       loading, filters, createFileterShow, editFilterShow,
-      deleteFilterShow, filter, currentFilterId, 
+      deleteFilterShow, filter, currentFilterId,
     } = this.state;
     const column = [
       {
@@ -255,7 +255,7 @@ class Search extends Component {
     ];
     return (
       <Page className="c7n-fast-search">
-        {/* <Header title="快速搜索">
+        <Header title="快速搜索">
           <Button funcType="flat" onClick={() => this.setState({ createFileterShow: true })}>
             <Icon type="playlist_add icon" />
             <span>创建快速搜索</span>
@@ -264,12 +264,12 @@ class Search extends Component {
             <Icon type="refresh icon" />
             <span>刷新</span>
           </Button>
-        </Header> */}
-        <Content >
+        </Header>
+        <Content>
           <div>
             <Spin spinning={loading}>
               <SortTable
-                onChange={this.handleTableChange}             
+                onChange={this.handleTableChange}
                 handleDrag={this.handleDrag}
                 rowKey={record => record.filterId}
                 columns={column}
