@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Modal, Select, Input, Form, Upload, Tooltip, Icon,
+  Select, Input, Form, Upload, Tooltip, Icon,
 } from 'choerodon-ui';
+import { Button, Modal } from 'choerodon-ui/pro';
 import { inject } from 'mobx-react';
 import axios from 'axios';
-import { beforeTextUpload } from '../../../../common/utils';
+import { beforeTextUpload } from '../../../utils/common/utils';
 import WYSIWYGEditor from '../../../../components/WYSIWYGEditor';
 import FeedbackUpload from '../FeedbackUpload';
 import './FeedbackContent.scss';
 
-const { Sidebar } = Modal;
 const { Item: FormItem } = Form;
 const { Option } = Select;
 
@@ -50,87 +50,92 @@ function FeedbackContent({
   };
 
   const { getFieldDecorator } = form;
-  return (
-    <Sidebar
-      className="c7n-feedback-content"
-      title="反馈问题"
-      visible={visible}
-      onOk={handleSubmitValue}
-      onCancel={onClose}
-      cancelText="取消"
-      okText="提交"
-      confirmLoading={loading}
-    >
-      <Form style={{ width: 512 }}>
-        <FormItem>
-          {getFieldDecorator('type', {
-            rules: [{
-              required: true, message: '类型是必填的',
-            }],
-          })(
-            <Select label="问题类型" allowClear onChange={onFeedbackTypeChange}>
-              <Option value="question_consultation">问题咨询</Option>
-              <Option value="bug_report">报告缺陷</Option>
-              <Option value="recommendation_and_opinion">建议与意见</Option>
-            </Select>,
-          )}
-        </FormItem>
-        <FormItem>
-          {getFieldDecorator('summary', {
-            rules: [{
-              required: true, message: '概要是必填的',
-            }],
-          })(
-            <Input placeholder="问题概要" maxLength={50} required label="问题概要" />,
-          )}
-        </FormItem>
-        <div>
-          <span style={{ marginBottom: '13px', display: 'block' }}>描述</span>
-          <WYSIWYGEditor
-            hideFullScreen
-            value={delta}
-            style={{ width: '512px' }}
-            onChange={(value) => {
-              onWYSIWYGEditorChange(value);
-            }}
-          />
-        </div>
-        <div>
-          <span style={{ marginTop: '20px', display: 'block' }}>附件</span>
-          <FeedbackUpload fileList={fileList} onChange={e => onFileListChange(e)} />
-        </div>
-        <FormItem>
-          {getFieldDecorator('reporter', {
-            rules: [{
-              required: true, message: '报告人是必填的',
-            }],
-            initialValue: AppState.userInfo.realName,
-          })(
-            <Input maxLength={50} required label="报告人" />,
-          )}
-        </FormItem>
-        <FormItem 
-          className="c7n-feedback-content-emailItem"
-        >
-          {getFieldDecorator('email', {
-            rules: [{
-              type: 'email', message: '请输入有效的邮箱地址!',
-            }],
-          })(
-            <Input
-              maxLength={50}
-              label="邮箱"
-              suffix={(
-                <Tooltip title="此邮箱由于问题反馈的消息接收">
-                  <Icon type="help" />
-                </Tooltip>
-            )}
-            />,
-          )}
-        </FormItem>
-      </Form>
-    </Sidebar>
+
+  const createFeedbackModalChildren = (
+    <Form style={{ width: 512 }}>
+      <FormItem>
+        {getFieldDecorator('type', {
+          rules: [{
+            required: true, message: '类型是必填的',
+          }],
+        })(
+          <Select label="问题类型" allowClear onChange={onFeedbackTypeChange}>
+            <Option value="question_consultation">问题咨询</Option>
+            <Option value="bug_report">报告缺陷</Option>
+            <Option value="recommendation_and_opinion">建议与意见</Option>
+          </Select>,
+        )}
+      </FormItem>
+      <FormItem>
+        {getFieldDecorator('summary', {
+          rules: [{
+            required: true, message: '概要是必填的',
+          }],
+        })(
+          <Input placeholder="问题概要" maxLength={50} required label="问题概要" />,
+        )}
+      </FormItem>
+      <div>
+        <span style={{ marginBottom: '13px', display: 'block' }}>描述</span>
+        <WYSIWYGEditor
+          hideFullScreen
+          value={delta}
+          style={{ width: '512px' }}
+          onChange={(value) => {
+            onWYSIWYGEditorChange(value);
+          }}
+        />
+      </div>
+      <div>
+        <span style={{ marginTop: '20px', display: 'block' }}>附件</span>
+        <FeedbackUpload fileList={fileList} onChange={e => onFileListChange(e)} />
+      </div>
+      <FormItem>
+        {getFieldDecorator('reporter', {
+          rules: [{
+            required: true, message: '报告人是必填的',
+          }],
+          initialValue: AppState.userInfo.realName,
+        })(
+          <Input maxLength={50} required label="报告人" />,
+        )}
+      </FormItem>
+      <FormItem 
+        className="c7n-feedback-content-emailItem"
+      >
+        {getFieldDecorator('email', {
+          rules: [{
+            type: 'email', message: '请输入有效的邮箱地址!',
+          }],
+        })(
+          <Input
+            maxLength={50}
+            label="邮箱"
+            suffix={(
+              <Tooltip title="此邮箱由于问题反馈的消息接收">
+                <Icon type="help" />
+              </Tooltip>
+        )}
+          />,
+        )}
+      </FormItem>
+    </Form>
+
   );
+
+  const openModal = () => {
+    Modal.open({
+      key: 'createFeedback',
+      title: '反馈问题',
+      drawer: true,
+      style: {
+        width: 600,
+      },
+      children: <createFeedbackModalChildren />,
+      onOk: handleSubmitValue,
+      onCancel: onClose,
+    });
+  };
 }
 
-export default inject('AppState')(Form.create({})(FeedbackContent));
+export default (Form.create({})(FeedbackContent));
