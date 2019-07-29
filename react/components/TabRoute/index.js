@@ -1,11 +1,12 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, createContext, useContext } from 'react';
 import { withRouter, Route, Redirect } from 'react-router-dom';
 import queryString from 'query-string';
 import { Tabs } from 'choerodon-ui';
 import { find } from 'lodash';
-import { nomatch } from '@choerodon/boot';
+import { Content } from '@choerodon/boot';
 
 const { TabPane } = Tabs;
+const RouteContext = createContext();
 const TabRoute = withRouter(({
   routes, history, location,
 }) => {
@@ -28,7 +29,7 @@ const TabRoute = withRouter(({
   
   const isMatch = find(routes, { path: currentPath });
   return (
-    <Fragment>
+    <RouteContext.Provider value={{ TabComponent }}>
       {isMatch ? (
         <Fragment>
           <div className="c7n-Header-Area" style={{ height: 58 }} />
@@ -38,9 +39,19 @@ const TabRoute = withRouter(({
           {renderRoutes()}
         </Fragment>
       ) : <Redirect from="*" to={`${routes[0].path}${parsed}`} /> }      
-    </Fragment>
+    </RouteContext.Provider>
   );
 });
+
+export const ContentWithTab = (props) => {
+  const { TabComponent } = useContext(RouteContext);
+  return (
+    <Fragment>
+      {TabComponent}
+      <Content {...props} />
+    </Fragment>
+  );
+};
 
 TabRoute.propTypes = {
 

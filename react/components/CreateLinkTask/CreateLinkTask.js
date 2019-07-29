@@ -2,39 +2,22 @@ import React, { Component } from 'react';
 import { stores, axios, Content } from '@choerodon/boot';
 import _ from 'lodash';
 import { Select, Form, Modal } from 'choerodon-ui';
-import { createLink, loadIssuesInLink } from '../../api/NewIssueApi';
-import TypeTag from '../TypeTag';
+import { createLink } from '../../api/NewIssueApi';
+import SelectFocusLoad from '../SelectFocusLoad';
 import './CreateLinkTask.scss';
 
 const { AppState } = stores;
 const { Sidebar } = Modal;
 const { Option } = Select;
 const FormItem = Form.Item;
-let sign = false;
-
 class CreateLinkTask extends Component {
-  debounceFilterIssues = _.debounce((input) => {
-    const { issueId } = this.props;
-    this.setState({
-      selectLoading: true,
-    });
-    loadIssuesInLink(1, 20, issueId, input).then((res) => {
-      this.setState({
-        originIssues: res.list,
-        selectLoading: false,
-      });
-    });
-  }, 500);
-
   constructor(props) {
     super(props);
     this.state = {
       createLoading: false,
       selectLoading: true,
-      originIssues: [],
       originLinks: [],
       show: [],
-      selected: [],
     };
   }
 
@@ -45,23 +28,6 @@ class CreateLinkTask extends Component {
     });
   }
 
-  onFilterChange(input) {
-    const { issueId } = this.props;
-    if (!sign) {
-      this.setState({
-        selectLoading: true,
-      });
-      loadIssuesInLink(1, 20, issueId, input).then((res) => {
-        this.setState({
-          originIssues: res.list,
-          selectLoading: false,
-        });
-      });
-      sign = true;
-    } else {
-      this.debounceFilterIssues(input);
-    }
-  }
 
   getLinks() {
     this.setState({
@@ -100,18 +66,13 @@ class CreateLinkTask extends Component {
     });
   };
 
-  handleSelect = (value, option) => {
-    const selected = _.map(option.slice(), v => v.key);
-    this.setState({ selected });
-  };
-
   handleCreateIssue = () => {
     const { form, issueId, onOk } = this.props;
-    const { selected, originLinks } = this.state;
+    const { originLinks } = this.state;
     form.validateFields((err, values) => {
       if (!err) {
         const { linkTypeId, issues } = values;
-        const labelIssueRelVOList = _.map(selected, (issue) => {
+        const labelIssueRelVOList = _.map(issues, (issue) => {
           const currentLinkType = _.find(originLinks, { linkTypeId: linkTypeId.split('+')[0] * 1 });
           if (currentLinkType.outWard === linkTypeId.split('+')[1]) {
             return ({
@@ -143,7 +104,7 @@ class CreateLinkTask extends Component {
     } = this.props;
     const { getFieldDecorator } = form;
     const {
-      createLoading, selectLoading, show, originIssues,
+      createLoading, selectLoading, show,
     } = this.state;
 
     return (
@@ -190,53 +151,11 @@ class CreateLinkTask extends Component {
                   { required: true, message: '请选择所要关联的问题' },
                 ],
               })(
-                <Select
+                <SelectFocusLoad
                   label="问题"
-                  mode="multiple"
-                  dropdownClassName="issueSelectDropDown"
-                  loading={selectLoading}
-                  optionLabelProp="value"
-                  filter
-                  filterOption={false}
-                  onFilterChange={this.onFilterChange.bind(this)}
-                  onChange={this.handleSelect.bind(this)}
-                >
-                  {originIssues.map(issue => (
-                    <Option
-                      key={issue.issueId}
-                      value={issue.issueNum}
-                    >
-                      <div style={{ display: 'inline-block', width: '100%' }}>
-                        <div style={{
-                          display: 'flex',
-                          width: '100%',
-                          flex: 1,
-                        }}
-                        >
-                          <div>
-                            <TypeTag
-                              data={issue.issueTypeVO}
-                            />
-                          </div>
-                          <div style={{
-                            paddingLeft: 12, paddingRight: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          }}
-                          >
-                            {issue.issueNum}
-                          </div>
-                          <div style={{ overflow: 'hidden', flex: 1 }}>
-                            <p style={{
-                              paddingRight: '25px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: 0, maxWidth: 'unset',
-                            }}
-                            >
-                              {issue.summary}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </Option>
-                  ))}
-                </Select>,
+                  type="issues_in_link"
+                  getPopupContainer={triggerNode => document.body}
+                />,
               )}
             </FormItem>
           </Form>

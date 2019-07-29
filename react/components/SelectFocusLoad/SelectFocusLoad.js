@@ -4,6 +4,7 @@ import { Select, Button } from 'choerodon-ui';
 import { debounce, uniqBy } from 'lodash';
 import PropTypes from 'prop-types';
 import Types from './Types';
+import './SelectFocusLoad.less';
 
 const { Option } = Select;
 function dataConverter(data) {
@@ -39,7 +40,7 @@ const SelectFocusLoad = (props) => {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState(1);
   const [canLoadMore, setCanLoadMore] = useState(false);
-  
+
   // 防止取值不在option列表中，比如user
   const avoidShowError = (ListDate = List) => {
     if (Type.avoidShowError) {
@@ -103,7 +104,7 @@ const SelectFocusLoad = (props) => {
     saveList(totalList);
   }
   // 渲染去掉重复项
-  const Options = uniqBy(totalList.map(render).concat(React.Children.toArray(children)), option => option.props.value);  
+  const Options = uniqBy(totalList.map(render).concat(React.Children.toArray(children)), option => option.props.value);
   return (
     <Select
       filter
@@ -117,7 +118,7 @@ const SelectFocusLoad = (props) => {
     >
       {Options}
       {canLoadMore && (
-        <Option key="SelectFocusLoad-loadMore" disabled style={{ cursor: 'auto' }}>
+        <Option key="SelectFocusLoad-loadMore" className="SelectFocusLoad-loadMore" disabled>
           <Button type="primary" style={{ textAlign: 'left', width: '100%', background: 'transparent' }} onClick={loadMore}>更多</Button>
         </Option>
       )}

@@ -22,6 +22,7 @@ import CreateIssueModal from '../CreateIssueModal';
 import ExportIssue from '../ExportIssue';
 
 import QuickSearch from '../../../components/QuickSearch';
+import { ContentWithTab } from '../../../components/TabRoute';
 
 const { AppState } = stores;
 
@@ -146,7 +147,6 @@ class Issue extends Component {
     if (document && document.getElementsByClassName('page-body').length) {
       // document.getElementsByClassName('page-body')[0].style.overflow = 'hidden';
     }
-    const { TabComponent } = this.props;
     return (
       <Page
         className="c7n-Issue"
@@ -188,8 +188,7 @@ class Issue extends Component {
           document.getElementsByClassName('c7n-Header-Area')[0],
         )
         }
-        {TabComponent}
-        <Content className="c7n-Issue" style={{ overflowX: 'hidden' }}>
+        <ContentWithTab className="c7n-Issue" style={{ overflowX: 'hidden' }}>
           <ExportIssue />
           <div style={{ height: 48 }}>
             <div className="c7n-Issue-search">
@@ -228,7 +227,7 @@ class Issue extends Component {
           </div>
           <CreateIssueModal />
           <ImportIssue ref={this.saveRef('importIssue')} onFinish={this.Refresh} />
-        </Content>
+        </ContentWithTab>
       </Page>
     );
   }
