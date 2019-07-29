@@ -10,6 +10,7 @@ const BacklogHome = asyncRouter(() => (import('./BacklogHome')), () => import('.
 const BacklogIndex = ({ match }) => (
   <Switch>
     <Route exact path={`${match.url}`} component={BacklogHome} />
+    <Route exact path={`${match.url}/test`} component={() => <div>test</div>} />
     <Route path="*" component={nomatch} />
   </Switch>
 );
