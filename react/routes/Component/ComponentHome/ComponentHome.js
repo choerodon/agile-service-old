@@ -173,7 +173,7 @@ class ComponentHome extends Component {
               role="none"
               onClick={() => {
                 this.props.history.push(
-                  `/agile/issue?type=${urlParams.type}&id=${urlParams.id}&name=${
+                  `/agile/work-list/issue?type=${urlParams.type}&id=${urlParams.id}&name=${
                     encodeURIComponent(urlParams.name)
                   }&organizationId=${urlParams.organizationId}&paramType=component&paramId=${
                     record.componentId

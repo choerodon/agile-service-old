@@ -304,7 +304,7 @@ class VelocityChart extends Component {
               const { history } = this.props;
               const urlParams = AppState.currentMenuType;
               history.push(
-                `/agile/issue?type=${urlParams.type}&id=${urlParams.id}&name=${
+                `/agile/work-list/issue?type=${urlParams.type}&id=${urlParams.id}&name=${
                   encodeURIComponent(urlParams.name)
                 }&organizationId=${urlParams.organizationId}&paramType=sprint&paramId=${
                   record.sprintId

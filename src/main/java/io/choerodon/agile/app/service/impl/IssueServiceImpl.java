@@ -212,7 +212,7 @@ public class IssueServiceImpl implements IssueService {
     private static final String STORYMAP_TYPE_NONE = "none";
     private static final String USERMAP = "usermap";
     private static final String STORYMAP = "storymap";
-    private static final String URL_TEMPLATE1 = "#/agile/issue?type=project&id=";
+    private static final String URL_TEMPLATE1 = "#/agile/work-list/issue?type=project&id=";
     private static final String URL_TEMPLATE2 = "&name=";
     private static final String URL_TEMPLATE3 = "&paramName=";
     private static final String URL_TEMPLATE4 = "&paramIssueId=";

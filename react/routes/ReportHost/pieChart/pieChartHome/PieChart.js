@@ -378,7 +378,7 @@ class ReleaseDetail extends Component {
 
     if (!queryString) return;
     history.push(
-      encodeURI(`/agile/issue?type=${type}&id=${id}&name=${urlParams.name}&organizationId=${organizationId}&${queryString}${`${chooseQueryString || ''}`}&paramName=${paramName}&paramUrl=reporthost/pieReport`),
+      encodeURI(`/agile/work-list/issue?type=${type}&id=${id}&name=${urlParams.name}&organizationId=${organizationId}&${queryString}${`${chooseQueryString || ''}`}&paramName=${paramName}&paramUrl=reporthost/pieReport`),
     );
   }
 

@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Component
 public class SendMsgUtil {
 
-    private static final String URL_TEMPLATE1 = "#/agile/issue?type=project&id=";
+    private static final String URL_TEMPLATE1 = "#/agile/work-list/issue?type=project&id=";
     private static final String URL_TEMPLATE2 = "&name=";
     private static final String URL_TEMPLATE3 = "&paramName=";
     private static final String URL_TEMPLATE4 = "&paramIssueId=";
