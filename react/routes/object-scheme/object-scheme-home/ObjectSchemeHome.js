@@ -35,7 +35,7 @@ function ObjectSchemeHome(props) {
   const showDetail = (item) => {
     const { history } = context;
     const urlParams = AppState.currentMenuType;
-    history.push(`/issue/objectScheme/detail/${item.schemeCode}?type=${urlParams.type}&id=${urlParams.id}&name=${encodeURIComponent(urlParams.name)}&organizationId=${urlParams.organizationId}`);
+    history.push(`/agile/objectScheme/detail/${item.schemeCode}?type=${urlParams.type}&id=${urlParams.id}&name=${encodeURIComponent(urlParams.name)}&organizationId=${urlParams.organizationId}`);
   };
 
   const getColume = () => [

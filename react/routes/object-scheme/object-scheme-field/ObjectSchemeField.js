@@ -127,7 +127,7 @@ function ObjectSchemeField(props) {
     const {
       name, organizationId, type,
     } = AppState.currentMenuType;
-    history.push(`/issue/objectScheme/detail/${field.schemeCode}?type=${type}&id=${match.params.id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
+    history.push(`/agile/objectScheme/detail/${field.schemeCode}?type=${type}&id=${match.params.id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`);
   };
 
   const onTreeChange = (newFieldOptions) => {
@@ -274,7 +274,7 @@ function ObjectSchemeField(props) {
       <Page>
         <Header
           title={<FormattedMessage id="field.edit" />}
-          backPath={`/issue/objectScheme/detail/${field.schemeCode}?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`}
+          backPath={`/agile/objectScheme/detail/${field.schemeCode}?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}`}
         />
         <Spin spinning={spinning}>
           <Content>
