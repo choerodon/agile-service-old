@@ -90,7 +90,7 @@ function ObjectSchemeDetail(props) {
   const editField = (item) => {
     const { history } = context;
     const urlParams = AppState.currentMenuType;
-    history.push(`/issue/objectScheme/field/${item.id}?type=${urlParams.type}&id=${urlParams.id}&name=${encodeURIComponent(urlParams.name)}&organizationId=${urlParams.organizationId}`);
+    history.push(`/agile/objectScheme/field/${item.id}?type=${urlParams.type}&id=${urlParams.id}&name=${encodeURIComponent(urlParams.name)}&organizationId=${urlParams.organizationId}`);
   };
   const deleteField = (item) => {
     objectSchemeStore.deleteField(item.id).then(() => {
@@ -236,7 +236,7 @@ function ObjectSchemeDetail(props) {
       >
         <Header
           title="编辑方案"
-          backPath={`/issue/objectScheme?type=${type}&id=${id}&name=${encodeURIComponent(orgName)}&organizationId=${organizationId}`}
+          backPath={`/agile/objectScheme?type=${type}&id=${id}&name=${encodeURIComponent(orgName)}&organizationId=${organizationId}`}
         >
           <Button
             className="leftBtn"

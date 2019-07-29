@@ -1,5 +1,5 @@
 import React, {
-  Component, useState, useEffect, useContext
+  Component, useState, useEffect, useContext,
 } from 'react';
 // import { observer } from 'mobx-react';
 import { observer } from 'mobx-react-lite';
@@ -9,7 +9,7 @@ import {
 import {
   Page, Header, Content,
 } from '@choerodon/boot';
-import SortTable from '../components/SortTable';
+import SortTable from '../Components/SortTable';
 import Store from '../stores';
 /**
  * 函数组件
@@ -119,7 +119,7 @@ function PageDetail(props) {
     >
       <Header
         title="编辑页面"
-        backPath={`/issue/page?type=${type}&id=${id}&name=${encodeURIComponent(orgName)}&organizationId=${organizationId}`}
+        backPath={`/agile/page?type=${type}&id=${id}&name=${encodeURIComponent(orgName)}&organizationId=${organizationId}`}
       >
         <Button funcType="flat" onClick={loadPageDetail}>
           <Icon type="refresh icon" />

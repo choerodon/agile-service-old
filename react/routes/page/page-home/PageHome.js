@@ -36,7 +36,7 @@ function PageHome(props) {
   const showDetail = (item) => {
     const { history } = context;
     const urlParams = AppState.currentMenuType;
-    history.push(`/issue/page/detail/${item.pageCode}?type=${urlParams.type}&id=${urlParams.id}&name=${encodeURIComponent(urlParams.name)}&organizationId=${urlParams.organizationId}`);
+    history.push(`/agile/page/detail/${item.pageCode}?type=${urlParams.type}&id=${urlParams.id}&name=${encodeURIComponent(urlParams.name)}&organizationId=${urlParams.organizationId}`);
   };
 
   const getColume = () => [
