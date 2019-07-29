@@ -4,6 +4,7 @@ import { deleteDoc, loadDocs } from '../../../../api/NewIssueApi';
 import Doc from '../../../Doc';
 import DocItem from '../../Component/DocItem';
 import EditIssueContext from '../../stores';
+import Divider from './Divider';
 
 const IssueDoc = () => {
   const [addDocShow, setAddDocShow] = useState(false);
@@ -40,15 +41,11 @@ const IssueDoc = () => {
 
   return (
     <div id="doc">
+      <Divider />
       <div className="c7n-title-wrapper">
-        <div className="c7n-title-left">
-          <Icon type="library_books c7n-icon-title" />
+        <div className="c7n-title-left">       
           <span>文档</span>
-        </div>
-        <div style={{
-          flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-        }}
-        />
+        </div>        
         {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="添加文档" getPopupContainer={triggerNode => triggerNode.parentNode}>

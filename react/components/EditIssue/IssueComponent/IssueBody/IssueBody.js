@@ -26,7 +26,7 @@ const IssueBody = (props) => {
 
   return (
     <section className={`${prefixCls}-body`} id="scroll-area" style={{ position: 'relative' }}>
-      <div className="line-justify" style={{ margin: '10px 0', alignItems: 'flex-start' }}>
+      <div className="line-justify" style={{ marginBottom: 10, alignItems: 'flex-start' }}>
         <FieldSummary
           {...props}
           showTitle={false}

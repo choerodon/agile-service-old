@@ -51,14 +51,9 @@ const TestLink = observer(({
     return (
       <div id="link_test">
         <div className="c7n-title-wrapper">
-          <div className="c7n-title-left">
-            <Icon type="classname c7n-icon-title" />
+          <div className="c7n-title-left">           
             <span>测试用例</span>
-          </div>
-          <div style={{
-            flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-          }}
-          />
+          </div>         
         </div>
         {renderLinkIssues()}
       </div>

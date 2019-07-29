@@ -3,6 +3,7 @@ import { Button, Icon, Tooltip } from 'choerodon-ui';
 import CreateSubBug from '../../../CreateIssue/CreateSubBug';
 import IssueList from '../../Component/IssueList';
 import EditIssueContext from '../../stores';
+import Divider from './Divider';
 
 const SubBug = ({
   reloadIssue, onDeleteSubIssue, onUpdate,
@@ -56,15 +57,11 @@ const SubBug = ({
  
   return (
     <div id="bug">
+      <Divider />
       <div className="c7n-title-wrapper">
-        <div className="c7n-title-left">
-          <Icon type="bug_report c7n-icon-title" />
+        <div className="c7n-title-left">        
           <span>缺陷</span>
-        </div>
-        <div style={{
-          flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-        }}
-        />
+        </div>       
         {!disabled && (
         <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
           <Tooltip title="创建缺陷" getPopupContainer={triggerNode => triggerNode.parentNode}>

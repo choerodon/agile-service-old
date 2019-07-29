@@ -8,8 +8,8 @@
     "lib"
   ],
   "peerDependencies": {
-    "@choerodon/boot": "0.19.0",
-    "@choerodon/master": "0.19.2"
+    "@choerodon/boot": "0.19.x",
+    "@choerodon/master": "0.19.x"
   },
   "dependencies": {
     "@toast-ui/react-calendar": "1.0.1",

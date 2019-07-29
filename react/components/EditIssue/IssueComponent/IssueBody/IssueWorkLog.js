@@ -38,14 +38,9 @@ const IssueCommit = observer(({
   return (
     <div id="log">
       <div className="c7n-title-wrapper">
-        <div className="c7n-title-left">
-          <Icon type="work_log c7n-icon-title" />
+        <div className="c7n-title-left">        
           <FormattedMessage id="issue.log" />
-        </div>
-        <div style={{
-          flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-        }}
-        />
+        </div>        
         {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="登记工作" getPopupContainer={triggerNode => triggerNode.parentNode}>

@@ -1,9 +1,9 @@
 import React, { useContext } from 'react';
-import { Icon } from 'choerodon-ui';
 import { filter } from 'lodash';
 import { FormattedMessage } from 'react-intl';
 import DataLogs from '../../Component/DataLogs';
 import EditIssueContext from '../../stores';
+import Divider from './Divider';
 
 const IssueLog = () => {
   const { store } = useContext(EditIssueContext);
@@ -41,19 +41,11 @@ const IssueLog = () => {
 
   return (
     <div id="data_log">
+      <Divider />
       <div className="c7n-title-wrapper">
-        <div className="c7n-title-left">
-          <Icon type="insert_invitation c7n-icon-title" />
+        <div className="c7n-title-left">         
           <FormattedMessage id="issue.data_log" />
-        </div>
-        <div
-          style={{
-            flex: 1,
-            height: 1,
-            borderTop: '1px solid rgba(0, 0, 0, 0.08)',
-            marginLeft: '14px',
-          }}
-        />
+        </div>        
       </div>
       {renderDataLogs()}
     </div>

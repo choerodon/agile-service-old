@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Icon } from 'choerodon-ui';
 import { UploadButtonNow } from '../../../CommonComponent';
 import { handleFileUpload, getProjectId } from '../../../../common/utils';
 import EditIssueContext from '../../stores';
+import Divider from './Divider';
 
 const IssueAttachment = observer(({ reloadIssue }) => {
   const { store, disabled } = useContext(EditIssueContext);
@@ -38,15 +38,11 @@ const IssueAttachment = observer(({ reloadIssue }) => {
 
   return (
     <div id="attachment">
+      <Divider />
       <div className="c7n-title-wrapper">
-        <div className="c7n-title-left">
-          <Icon type="attach_file c7n-icon-title" />
+        <div className="c7n-title-left"> 
           <span>附件</span>
-        </div>
-        <div style={{
-          flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px', marginRight: '38px',
-        }}
-        />
+        </div>        
       </div>
       {!disabled && (
         <div className="c7n-content-wrapper" style={{ marginTop: '-47px', justifyContent: 'flex-end' }}>
