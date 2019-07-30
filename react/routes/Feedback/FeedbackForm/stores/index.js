@@ -9,9 +9,7 @@ const Store = createContext();
 export default Store;
 
 export const StoreProvider = (props) => {
-  // const { AppState: { currentMenuType: { id } }, children } = props;
-  // 使用缓存钩子，以便将来做路由缓存
-  const feedbackFormDataSet = useMemo(() => new DataSet(FeedbackFormDataSet()));
+  const feedbackFormDataSet = useMemo(() => new DataSet(FeedbackFormDataSet(props)));
   const value = {
     ...props,
     prefixCls: 'c7n-agile-feedback-feedbackForm',

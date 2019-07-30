@@ -1,5 +1,5 @@
 import React, {
-  Component, useEffect, useState, useContext, 
+  Component, useEffect, useState, useContext, useImperativeHandle, useRef, 
 } from 'react';
 import {
   Button, Modal, Select, Input, Form, Upload, Icon, Tabs, 
@@ -10,7 +10,7 @@ import { withRouter } from 'react-router-dom';
 import { Content, Header, Page } from '@choerodon/boot';
 import { axios } from '@choerodon/boot';
 import { observer } from 'mobx-react-lite';
-import FeedbackButton from '../FeedbackComponent/FeedbackButton';
+import FeedbackButton from '../FeedbackButton';
 import './FeedbackTable.less';
 import FeedbackTableContext from './stores';
 import {
@@ -21,37 +21,108 @@ import {
   LastUpdateTime,
   Reporter,
   Assignee,
-} from '../FeedbackComponent/FeedbackTableComponent';
-import FiltersProviderHOC from '../../../components/FiltersProvider/FiltersProvider';
+} from './components/FeedbackTableComponent';
 
 const { TabPane } = Tabs;
 const { Column } = Table;
 
-const FeedbackTable = observer(() => {
+const FeedbackTable = observer(({ feedbackTableRef, history }) => {
+  const tableRef = useRef();
+
   const {
-    feedbackTableDataSet, prefixCls, 
+    feedbackTableDataSet, recommendationDs, questionDs, bugReportDs, prefixCls, AppState,
   } = useContext(FeedbackTableContext);
 
-  function refresh() {
-    feedbackTableDataSet.query();
-  }
+  const Ds = {
+    all: feedbackTableDataSet,
+    recommendation_and_opinion: recommendationDs,
+    question_consultation: questionDs,
+    bug_report: bugReportDs,
+  };
 
-  const [type, setType] = useState(null);
+  const [type, setType] = useState('all');
+
+  function refresh(feedbackType) {
+    if (feedbackType) {
+      Ds[feedbackType].query();
+      Ds.all.query();
+    } else {
+      Ds[type].query();
+    }
+  }
 
   const handleTabChange = (key) => {
     if (key === 'all') {
-      setType(null);
-      feedbackTableDataSet.setQueryParameter('searchArgs', { typeList: ['recommendation_and_opinion', 'question_consultation', 'bug_report'] });
-      refresh();
+      setType('all');
     } else {
       setType(key);
-      feedbackTableDataSet.setQueryParameter('searchArgs', { typeList: [key] });
-      refresh();
     }
   };
+  
+
+  const renderTable = (feedbackType, dataSet) => {
+    const handleRowClick = (record) => {
+      const urlParams = AppState.currentMenuType;
+      history.push(`feedback/content?type=${urlParams.type}&id=${urlParams.id}&name=${encodeURIComponent(urlParams.name)}&organizationId=${urlParams.organizationId}&feedbackId=${record.get('id')}`);
+    };
+    const handleRow = ({ record }) => {
+      const rowProps = {
+        onClick: handleRowClick.bind(this, record),
+      };
+      return rowProps;
+    };
+
+    if (feedbackType !== 'all') {
+      dataSet.setQueryParameter('typeList', [feedbackType]);
+    }
+    return (
+      <Table 
+        dataSet={dataSet}
+        onRow={handleRow}
+      >
+        <Column
+          name="feedbackNum"
+          renderer={({ record }) => (<FeedbackNum feedbackNum={record.get('feedbackNum')} />)}
+        />
+        <Column 
+          name="type"
+          renderer={({ record }) => (<FeedbackType type={record.get('type')} />)}
+        />
+        <Column 
+          name="summary"
+          renderer={({ record }) => (<FeedbackSummary text={record.get('summary')} />)}
+        />
+        <Column
+          name="status"
+          className={`${prefixCls}-statusColumn`}
+          renderer={({
+            record,
+          }) => (<FeedbackStatus status={record.get('status')} />)}
+        />
+        <Column 
+          name="assignee"
+          renderer={({ record }) => (<Assignee user={record.get('assignee')} />)}
+        />
+        <Column 
+          name="lastUpdateDate"
+          renderer={({ record }) => (<LastUpdateTime date={record.get('lastUpdateDate')} />)}
+        />
+        <Column 
+          name="reporter"
+          renderer={({ record }) => (<Reporter reporter={record.get('reporter')} />)}
+        />
+      </Table>
+    );
+  };
+  
+  useImperativeHandle(feedbackTableRef, () => ({
+    refresh,
+  }));
+
 
   return (
     <Page
+      ref={tableRef}
       className={`${prefixCls}`}
       service={['agile-service.issue.deleteIssue', 'agile-service.issue.listIssueWithSub']}
     >
@@ -60,7 +131,7 @@ const FeedbackTable = observer(() => {
       >
         <Button
           funcType="flat"
-          onClick={refresh}
+          onClick={() => { refresh(); }}
         >
           <Icon type="refresh icon" />
           <span>刷新</span>
@@ -68,48 +139,24 @@ const FeedbackTable = observer(() => {
       </Header>
       <Content>
         <Tabs onChange={handleTabChange}>
-          <TabPane tab="全部" key="all" />
-          <TabPane tab="建议与意见" key="recommendation_and_opinion" />
-          <TabPane tab="问题咨询" key="question_consultation" />
-          <TabPane tab="报告缺陷" key="bug_report" />
+          <TabPane tab="全部" key="all">
+            {renderTable('all', feedbackTableDataSet)} 
+          </TabPane>
+          <TabPane tab="建议与意见" key="recommendation_and_opinion">
+            {renderTable('recommendation_and_opinion', recommendationDs)}
+          </TabPane>
+          <TabPane tab="问题咨询" key="question_consultation">
+            {renderTable('question_consultation', questionDs)}
+          </TabPane>
+          <TabPane tab="报告缺陷" key="bug_report">
+            {renderTable('bug_report', bugReportDs)}
+          </TabPane>
         </Tabs>
-        <Table dataSet={feedbackTableDataSet}>
-          <Column
-            name="feedbackNum"
-            renderer={({ record }) => (<FeedbackNum feedbackNum={record.get('feedbackNum')} />)}
-          />
-          <Column 
-            name="type"
-            renderer={({ record }) => (<FeedbackType type={record.get('type')} />)}
-          />
-          <Column 
-            name="summary"
-            renderer={({ record }) => (<FeedbackSummary text={record.get('summary')} />)}
-          />
-          <Column
-            name="status"
-            className={`${prefixCls}-statusColumn`}
-            renderer={({
-              record,
-            }) => (<FeedbackStatus status={record.get('status')} />)}
-          />
-          <Column 
-            name="assignee"
-            renderer={({ record }) => (<Assignee user={record.get('assignee')} />)}
-          />
-          <Column 
-            name="lastUpdateDate"
-            renderer={({ record }) => (<LastUpdateTime date={record.get('lastUpdateDate')} />)}
-          />
-          <Column 
-            name="reporter"
-            renderer={({ record }) => (<Reporter reporter={record.get('reporter')} />)}
-          />
-        </Table>
+       
       </Content>
     </Page>
   );
 });
 
-// export default inject('AppState')(withRouter(FeedbackButton(FeedbackTable)));
-export default FeedbackTable;
+export default withRouter(FeedbackButton(FeedbackTable));
+// export default FeedbackButton(FeedbackTable);

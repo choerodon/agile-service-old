@@ -10,14 +10,20 @@ export default Store;
 
 export const StoreProvider = injectIntl(inject('AppState')(
   (props) => {
-    console.log(props);
     const { AppState: { currentMenuType: { id } }, children } = props;
-    // 使用缓存钩子，以便将来做路由缓存
-    const feedbackTableDataSet = useMemo(() => new DataSet(FeedbackTableDataSet({ projectId: id, AppState: props.AppState })), []);
+    const feedbackTableDataSet = useMemo(() => new DataSet(FeedbackTableDataSet({ projectId: id })), []);
+    const recommendationDs = useMemo(() => new DataSet(FeedbackTableDataSet({ projectId: id })), []);
+    const questionDs = useMemo(() => new DataSet(FeedbackTableDataSet({ projectId: id })), []);
+    const bugReportDs = useMemo(() => new DataSet(FeedbackTableDataSet({ projectId: id })), []);
+
     const value = {
       ...props,
       prefixCls: 'c7n-agile-feedback-table',
       feedbackTableDataSet,
+      recommendationDs,
+      questionDs,
+      bugReportDs,
+      AppState: props.AppState,
     };
     return (
       <Store.Provider value={value}>

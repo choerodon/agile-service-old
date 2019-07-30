@@ -1,11 +1,10 @@
 // 反馈按钮
 import React, { useEffect } from 'react';
 import { Upload, Button } from 'choerodon-ui';
-import { randomWord } from '../../../../common/utils';
+import { randomWord } from '../../../../../common/utils';
 import './FeedbackUpload.scss';
 
 const FeedbackUpload = ({ fileList, onChange }) => {
-  console.log(fileList);
   const randomClassName = randomWord(false, 5);
   useEffect(() => {
     const selectEle = document.querySelector(`.${randomClassName} .c7n-upload-select`);

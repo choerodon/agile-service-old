@@ -1,21 +1,22 @@
 // 反馈按钮
 import React, {
-  useState, useEffect, createRef, 
+  useState, useEffect, createRef, useContext,
 } from 'react';
 import { axios, stores, Content } from '@choerodon/boot';
 import { Button, Modal } from 'choerodon-ui/pro';
-import './FeedbackButton.scss';
-import FeedbackForm from '../../FeedbackForm';
+import './FeedbackButton.less';
+import FeedbackForm from '../FeedbackForm';
 
 const { AppState } = stores;
 const FeedbackButton = WrappedComponent => ((props) => {
   const feedbackForm = createRef();
+  const feedbackTable = createRef();
   
   const handleCreateFeedback = async () => {
     const { onCreateFeedback } = feedbackForm.current;
-    onCreateFeedback();
+    const { refresh } = feedbackTable.current;
+    onCreateFeedback(refresh);
   };
-
 
   const openFeedbackModal = () => {
     Modal.open({
@@ -24,7 +25,7 @@ const FeedbackButton = WrappedComponent => ((props) => {
       title: '反馈问题',
       children: (
         <FeedbackForm
-          forwardedRef={feedbackForm}
+          feedbackFormRef={feedbackForm}
           AppState={AppState}
         />
       ),
@@ -37,7 +38,8 @@ const FeedbackButton = WrappedComponent => ((props) => {
   return (
     <React.Fragment>
       <WrappedComponent 
-        {...props} 
+        {...props}
+        feedbackTableRef={feedbackTable}
       />
       <Button
         className="feedback-btn"

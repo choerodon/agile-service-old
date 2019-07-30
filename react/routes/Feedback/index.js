@@ -8,7 +8,7 @@ import {
 } from '@choerodon/boot';
 
 const FeedbackTable = asyncRouter(() => (import('./FeedbackTable')));
-const FeedbackContent = asyncRouter(() => (import('./FeedbackContent')));
+const FeedbackContent = asyncRouter(() => (import('./FeedbackContent/FeedbackContent')));
 
 const Feedback = ({ match }) => {
   const { AppState } = stores;

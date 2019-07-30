@@ -1,5 +1,5 @@
 import React, {
-  useEffect, useState, useContext, useImperativeHandle, useRef, forwardRef, 
+  useEffect, useState, useContext, useImperativeHandle, useRef, 
 } from 'react';
 import {
   Button, Select, Form, EmailField, TextField, Tooltip,
@@ -10,17 +10,15 @@ import axios from 'axios';
 import FeedbackFormContext from './stores';
 import { beforeTextUpload } from '../../../common/utils';
 import WYSIWYGEditor from '../../../components/WYSIWYGEditor';
-import FeedbackUpload from '../FeedbackComponent/FeedbackUpload';
+import FeedbackUpload from '../FeedbackContent/components/FeedbackUpload';
 import './FeedbackForm.less';
 
 const { Option } = Select;
 
 function FeedbackForm(props) {
-  const feedbackFormRef = useRef();
-  console.log('context:');
-  console.log(useContext(FeedbackFormContext));
+  const formRef = useRef();
   const {
-    feedbackFormDataSet, prefixCls, forwardedRef, AppState,
+    feedbackFormDataSet, prefixCls, feedbackFormRef, AppState,
   } = useContext(FeedbackFormContext);
  
 
@@ -40,7 +38,7 @@ function FeedbackForm(props) {
     setDelta(value);
   };
 
-  const createFeedback = (obj) => {
+  const createFeedback = (obj, refresh) => {
     try {
       axios.post('/agile/v1/feedback', obj).then((res) => {
         if (fileList.length) {
@@ -50,10 +48,12 @@ function FeedbackForm(props) {
             headers: { 'content-type': 'multipart/form-datal' },
           }).then(() => {
             resetFeedbackForm();
+            refresh(res.type);
             Choerodon.prompt('创建成功');
           });
         } else {
           resetFeedbackForm();
+          refresh(res.type);
           Choerodon.prompt('创建成功');
         }
       });
@@ -62,10 +62,8 @@ function FeedbackForm(props) {
     }
   };
 
-  const onCreateFeedback = async () => {
+  const onCreateFeedback = async (refresh) => {
     const values = feedbackFormDataSet.toData();
-    // console.log('values');
-    // console.log(values);
     if (await feedbackFormDataSet.validate(true, true)) {
       const send = {
         summary: values[0].summary,
@@ -80,24 +78,24 @@ function FeedbackForm(props) {
         token: '47f9f36a-d327-498d-9d3f-b7afc289614f',
       };
       if (delta) {
-        beforeTextUpload(delta, send, createFeedback);
+        beforeTextUpload(delta, send, () => createFeedback(send, refresh));
       } else {
         send.description = '';
-        createFeedback(send);
+        createFeedback(send, refresh);
       }
     } else {
       Choerodon.prompt('请确保字段输入正确。');
     }
   };
 
-  useImperativeHandle(forwardedRef, () => ({
+  useImperativeHandle(feedbackFormRef, () => ({
     onCreateFeedback,
   }));
 
 
   return (
-    <Form ref={feedbackFormRef} dataSet={feedbackFormDataSet} className={prefixCls}>
-      <Select name="type" required>
+    <Form ref={formRef} dataSet={feedbackFormDataSet} className={prefixCls}>
+      <Select name="type">
         <Option value="question_consultation">问题咨询</Option>
         <Option value="bug_report">报告缺陷</Option>
         <Option value="recommendation_and_opinion">建议与意见</Option>
@@ -116,7 +114,7 @@ function FeedbackForm(props) {
         <span style={{ marginTop: '20px', display: 'block' }}>附件</span>
         <FeedbackUpload fileList={fileList} onChange={handleFileListChange} />
       </div>
-      <TextField name="reporter" required placeholder="报告人" />
+      <TextField name="reporter" placeholder="报告人" />
       <EmailField
         name="email"
         placeholder="邮箱"
@@ -130,4 +128,4 @@ function FeedbackForm(props) {
   );
 }
 
-export default forwardRef(FeedbackForm);
+export default FeedbackForm;

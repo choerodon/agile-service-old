@@ -8,7 +8,7 @@ import {
 } from '@choerodon/boot';
 import {
   ActivityLog, Detail, FeedbackReleated, TimeRecord,
-} from './FeedbackComponent/FeedbackSidebarComponent';
+} from './components/FeedbackSidebarComponent/FeedbackSidebarComponent';
 
 function FeedbackSideBar({
   className, feedbackData, activeLog, assigneeArr, AppState, fetchUser, id,

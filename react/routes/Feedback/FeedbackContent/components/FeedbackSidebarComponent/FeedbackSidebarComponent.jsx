@@ -6,11 +6,11 @@ import {
   Icon, Select, Button, Upload, Input, Menu, Dropdown, Collapse, Tooltip,
 } from 'choerodon-ui';
 import TimeAgo from 'timeago-react';
-import UserHead from './UserHead';
-import statusList from './status';
-import Field from './Field';
-import './FeedbackSidebarComponent.scss';
-import { text2Delta } from '../../../common/utils';
+import UserHead from '../../../../../components/UserHead';
+import statusList from '../status';
+import Field from '../Field';
+import './FeedbackSidebarComponent.less';
+import { text2Delta } from '../../../../../common/utils';
 
 const { AppState } = stores;
 const { Option } = Select;

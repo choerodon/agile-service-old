@@ -2,9 +2,9 @@ import React, { Component, useCallback, useState } from 'react';
 import {
   Icon, Select, Button, Upload, Input, Menu, Dropdown, Collapse, Tooltip,
 } from 'choerodon-ui';
-import './FeedbackTableComponent.scss';
+import './FeedbackTableComponent.less';
 import TimeAgo from 'timeago-react';
-import UserHead from './UserHead';
+import UserHead from '../../../../components/UserHead';
 
 export function FeedbackNum({ feedbackNum }) {
   return (

@@ -1,4 +1,4 @@
-export default () => ({
+export default props => ({
   autoQuery: false,
   selection: false,
   paging: false,
@@ -17,7 +17,7 @@ export default () => ({
       name: 'file', type: 'object', label: '附件', 
     },
     {
-      name: 'reporter', type: 'string', label: '报告人', required: true, 
+      name: 'reporter', type: 'string', label: '报告人', required: true, defaultValue: props.AppState.userInfo.realName,
     },
     {
       name: 'email', type: 'email', label: '邮箱', 
