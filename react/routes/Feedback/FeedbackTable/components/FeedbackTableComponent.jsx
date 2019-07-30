@@ -2,9 +2,9 @@ import React, { Component, useCallback, useState } from 'react';
 import {
   Icon, Select, Button, Upload, Input, Menu, Dropdown, Collapse, Tooltip,
 } from 'choerodon-ui';
-import './FeedbackTableComponent.scss';
+import './FeedbackTableComponent.less';
 import TimeAgo from 'timeago-react';
-import UserHead from './UserHead';
+import UserHead from '../../../../components/UserHead';
 
 export function FeedbackNum({ feedbackNum }) {
   return (
@@ -19,7 +19,7 @@ export function FeedbackType({ type }) {
     recommendation_and_opinion: '建议与意见',
   };
   return (
-    <div style={{ lineHeight: 0 }}>
+    <div>
       <span>{typeName[type]}</span>
     </div>
   );
@@ -97,7 +97,7 @@ export function Reporter({ reporter }) {
 }
 
 export function Assignee({ user }) {
-  return user && (
+  return user ? (
     <UserHead
       user={{
         id: user && user.id,
@@ -106,7 +106,7 @@ export function Assignee({ user }) {
         imageUrl: user && user.imageUrl,
       }}
     />
-  );
+  ) : '';
 }
 
 // export default {
