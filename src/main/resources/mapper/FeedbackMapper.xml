@@ -5,26 +5,26 @@
     <select id="selectByPage" resultType="io.choerodon.agile.infra.dataobject.FeedbackDTO">
         select * from (
             select
-              fb.id,
-              CONCAT(pi.project_code,'-', fb.feedback_num) as feedback_num,
-              fb.organization_id,
-              fb.project_id,
-              fb.type,
-              lv.name as type_name,
-              fb.summary,
-              fb.description,
-              fb.reporter,
-              fb.assignee_id,
-              fb.status,
-              lv2.name as status_name,
-              fb.email,
-              fb.last_update_date,
-              fb.object_version_number
+            fb.id,
+            CONCAT(pi.project_code,'-', fb.feedback_num) as feedback_num,
+            fb.organization_id,
+            fb.project_id,
+            fb.type,
+            lv.name as type_name,
+            fb.summary,
+            fb.description,
+            fb.reporter,
+            fb.assignee_id,
+            fb.status,
+            lv2.name as status_name,
+            fb.email,
+            fb.last_update_date,
+            fb.object_version_number
             from feedback fb, lookup_value lv, lookup_value lv2, agile_project_info pi
             where fb.project_id = #{projectId}
-                and lv.type_code = 'feedback_type_category' and fb.type = lv.value_code
-                and lv2.type_code = 'feedback_status_category' and fb.status = lv2.value_code
-                and pi.project_id = #{projectId}
+            and lv.type_code = 'feedback_type_category' and fb.type = lv.value_code
+            and lv2.type_code = 'feedback_status_category' and fb.status = lv2.value_code
+            and pi.project_id = #{projectId}
             <if test="searchVO.searchArgs != null">
                 <if test='searchVO.searchArgs.typeList != null and searchVO.searchArgs.typeList.size > 0 '>
                     and fb.type in
@@ -37,7 +37,7 @@
                     and fb.summary LIKE CONCAT(CONCAT('%' ,#{searchVO.searchArgs.summary}) ,'%')
                 </if>
             </if>
-        } search where 1=1
+        ) search where 1=1
         <if test='searchVO.searchArgs != null'>
             <if test='searchVO.searchArgs.feedbackNum != null and searchVO.searchArgs.feedbackNum != ""'>
                 AND search.feedback_num LIKE CONCAT(CONCAT('%' ,#{searchVO.searchArgs.feedbackNum}) ,'%')
