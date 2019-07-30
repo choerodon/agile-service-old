@@ -20,7 +20,6 @@ export default (props) => {
         if (data.params) {
           postData.contents = data.params;
         }
-        // console.log(postData);
         return { 
           url: `/agile/v1/projects/${projectId}/feedback/list`,
           method: 'post',

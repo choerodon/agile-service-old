@@ -159,4 +159,3 @@ const FeedbackTable = observer(({ feedbackTableRef, history }) => {
 });
 
 export default withRouter(FeedbackButton(FeedbackTable));
-// export default FeedbackButton(FeedbackTable);
