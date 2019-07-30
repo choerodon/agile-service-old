@@ -5,6 +5,7 @@ import {
 import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
 import { NumericInput } from '../../../../../components/CommonComponent';
+import SelectFocusLoad from '../../../../../components/SelectFocusLoad';
 
 const { Sidebar } = Modal;
 const { TextArea } = Input;
@@ -575,9 +576,18 @@ class AddComponent extends Component {
       return (
         <Select label="值" />
       );
+    } else if (['assignee', 'reporter', 'created_user', 'last_updated_user'].indexOf(filter) > -1) {
+      return (
+        <SelectFocusLoad
+          label="值"
+          // labelInValue
+          filter
+          type="user"
+          mode="multiple"
+        />
+      );
     } else if (
-      ['assignee', 'priority', 'status', 'reporter', 'created_user',
-        'last_updated_user', 'epic', 'sprint', 'label', 'component',
+      ['priority', 'status', 'epic', 'sprint', 'label', 'component',
         'influence_version', 'fix_version', 'issue_type'].indexOf(filter) > -1) {
       if (['=', '!='].indexOf(operation) > -1) {
         // return normal value
