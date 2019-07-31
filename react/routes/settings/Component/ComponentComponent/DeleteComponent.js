@@ -7,7 +7,7 @@ import { Content, stores } from '@choerodon/boot';
 import { getUsers } from '../../../../api/CommonApi';
 import { createComponent } from '../../../../api/ComponentApi';
 import { loadComponents, deleteComponent } from '../../../../api/ComponentApi';
-import './component.scss';
+import './component.less';
 
 const { confirm } = Modal;
 const RadioGroup = Radio.Group;
@@ -84,7 +84,7 @@ class DeleteComponent extends Component {
   };
 
   renderDelete() {
-    const { radio, relatedComponentId, originComponents } = this.state;   
+    const { radio, relatedComponentId, originComponents } = this.state;
     return (
       <Fragment>
         <RadioGroup label="" onChange={this.onRadioChange} value={this.state.radio}>
@@ -98,12 +98,12 @@ class DeleteComponent extends Component {
         {radio === 2 && (
           <Select
             label="模块"
-            placeholder="请选择一个新的模块"      
+            placeholder="请选择一个新的模块"
             style={{ width: '100%' }}
             value={relatedComponentId}
             onChange={this.handleRelatedComponentChange.bind(this)}
             onFocus={() => {
-              loadComponents({current: 1, pageSize: 999 },this.state.filters, this.state.component.componentId).then((res) => {
+              loadComponents({ current: 1, pageSize: 999 }, this.state.filters, this.state.component.componentId).then((res) => {
                 this.setState({
                   originComponents: res.list,
                 });

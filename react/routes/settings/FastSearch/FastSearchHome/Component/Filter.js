@@ -4,6 +4,7 @@ import {
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
+import SelectFocusLoad from '../../../../../components/SelectFocusLoad';
 import { NumericInput } from '../../../../../components/CommonComponent';
 import SelectFocusLoad from '../../../../../components/SelectFocusLoad';
 
@@ -128,6 +129,9 @@ class AddComponent extends Component {
       quickFilterFiled: [],
       deleteItem: [],
       temp: [],
+      page: 1,
+      input: '',
+      canLoadMore: true,
     };
   }
 
@@ -220,12 +224,13 @@ class AddComponent extends Component {
    * @param filter 属性
    * @param addEmpty
    */
-  getOption(filter, addEmpty) {
+  getOption(filter, addEmpty, page = 1) {
     const projectId = AppState.currentMenuType.id;
     const orgId = AppState.currentMenuType.organizationId;
+    const { temp } = this.state;
     const OPTION_FILTER = {
       assignee: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
@@ -243,19 +248,19 @@ class AddComponent extends Component {
         name: 'name',
       },
       reporter: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
       },
       created_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
       },
       last_updated_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
@@ -312,6 +317,104 @@ class AddComponent extends Component {
       .then((res) => {
         this.setState({
           temp: OPTION_FILTER[filter].prop === '' ? res : res[OPTION_FILTER[filter].prop],
+        });
+      });
+  }
+
+  getMoreOption(filter, addEmpty, page = 1) {
+    const projectId = AppState.currentMenuType.id;
+    const orgId = AppState.currentMenuType.organizationId;
+    const { temp } = this.state;
+    const OPTION_FILTER = {
+      assignee: {
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
+        prop: 'list',
+        id: 'id',
+        name: 'realName',
+      },
+      priority: {
+        url: `/issue/v1/projects/${projectId}/priority/list_by_org`,
+        prop: '',
+        id: 'id',
+        name: 'name',
+      },
+      status: {
+        url: `/issue/v1/projects/${projectId}/schemes/query_status_by_project_id?apply_type=agile`,
+        prop: '',
+        id: 'id',
+        name: 'name',
+      },
+      reporter: {
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
+        prop: 'list',
+        id: 'id',
+        name: 'realName',
+      },
+      created_user: {
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
+        prop: 'list',
+        id: 'id',
+        name: 'realName',
+      },
+      last_updated_user: {
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
+        prop: 'list',
+        id: 'id',
+        name: 'realName',
+      },
+      epic: {
+        url: `/agile/v1/projects/${projectId}/issues/epics/select_data`,
+        prop: '',
+        id: 'issueId',
+        name: 'epicName',
+      },
+      sprint: {
+        // post
+        url: `/agile/v1/projects/${projectId}/sprint/names`,
+        prop: '',
+        id: 'sprintId',
+        name: 'sprintName',
+      },
+      label: {
+        url: `/agile/v1/projects/${projectId}/issue_labels`,
+        prop: '',
+        id: 'labelId',
+        name: 'labelName',
+      },
+      component: {
+        url: `/agile/v1/projects/${projectId}/component`,
+        prop: '',
+        id: 'componentId',
+        name: 'name',
+      },
+      influence_version: {
+        // post
+        url: `/agile/v1/projects/${projectId}/product_version/names`,
+        prop: '',
+        id: 'versionId',
+        name: 'name',
+      },
+      fix_version: {
+        // post
+        url: `/agile/v1/projects/${projectId}/product_version/names`,
+        prop: '',
+        id: 'versionId',
+        name: 'name',
+      },
+      issue_type: {
+        url: `/issue/v1/projects/${projectId}/schemes/query_issue_types?apply_type=agile`,
+        prop: '',
+        id: 'typeCode',
+        name: 'name',
+      },
+    };
+    axios[filter === 'sprint'
+      || filter === 'influence_version'
+      || filter === 'fix_version' ? 'post' : 'get'](OPTION_FILTER[filter].url)
+      .then((res) => {
+        this.setState({
+          temp: [...temp, ...(OPTION_FILTER[filter].prop === '' ? res : res[OPTION_FILTER[filter].prop])],
+          canLoadMore: res.hasNextPage,
         });
       });
   }
@@ -437,12 +540,12 @@ class AddComponent extends Component {
    * @returns {Array}
    */
   tempOption = (filter, addEmpty) => {
-    const { temp } = this.state;
+    const { temp, page } = this.state;
     const projectId = AppState.currentMenuType.id;
     const orgId = AppState.currentMenuType.organizationId;
     const OPTION_FILTER = {
       assignee: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
@@ -460,19 +563,19 @@ class AddComponent extends Component {
         name: 'name',
       },
       reporter: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
       },
       created_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
       },
       last_updated_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
@@ -565,6 +668,16 @@ class AddComponent extends Component {
     }
   }
 
+  loadMoreUsers = async (filter) => {
+    const { page } = this.state;
+    console.log('load more ....');
+    await this.getMoreOption(filter, false, page + 1);
+    await this.setState({
+      page: page + 1,
+      input: '',
+    });
+  };
+
   /**
    * 根据'属性'和'关系'获取'值'列表
    * @param filter
@@ -576,18 +689,38 @@ class AddComponent extends Component {
       return (
         <Select label="值" />
       );
-    } else if (['assignee', 'reporter', 'created_user', 'last_updated_user'].indexOf(filter) > -1) {
-      return (
-        <SelectFocusLoad
-          label="值"
-          // labelInValue
-          filter
-          type="user"
-          mode="multiple"
-        />
-      );
+    } else if (['assignee', 'reporter', 'created_user',
+      'last_updated_user',].indexOf(filter) > -1) {
+      if (['=', '!='].indexOf(operation) > -1) {
+        // return normal value
+        return (
+          <SelectFocusLoad label="值" type="user" labelInValue />
+        );
+      } else if (['is', 'isNot'].indexOf(operation) > -1) {
+        // return value add empty
+        return (
+          <Select
+            label="值"
+            labelInValue
+            filter
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children.toLowerCase()
+              .indexOf(input.toLowerCase()) >= 0}
+          >
+            <Option key="'null'" value="'null'">
+              {'空'}
+            </Option>
+          </Select>
+        );
+      } else {
+        // return multiple value
+        return (
+          <SelectFocusLoad label="值" type="user" mode="multiple" labelInValue />
+        );
+      }
     } else if (
-      ['priority', 'status', 'epic', 'sprint', 'label', 'component',
+      ['priority', 'status',
+        'epic', 'sprint', 'label', 'component',
         'influence_version', 'fix_version', 'issue_type'].indexOf(filter) > -1) {
       if (['=', '!='].indexOf(operation) > -1) {
         // return normal value
@@ -600,10 +733,18 @@ class AddComponent extends Component {
             filterOption={(input, option) => option.props.children.toLowerCase()
               .indexOf(input.toLowerCase()) >= 0}
             onFocus={() => {
-              this.getOption(filter, false);
+              this.getOption(filter, false, this.state.page);
             }}
+            onBlur={() => { this.setState({ page: 1 }); }}
           >
             {this.tempOption(filter, false)}
+            {/* {
+              this.state.canLoadMore && (
+                <Option key="loadMore" disabled style={{ backgroundColor: 'transparent', cursor: 'pointer', textAlign: 'left', width: '100%', }} onClick={() => this.loadMoreUsers(filter)}>
+                  <Button type="primary" style={{ backgroundColor: 'transparent', textAlign: 'left', width: '100%', }} onClick={() => this.loadMoreUsers(filter)}>更多</Button>
+                </Option>
+              )
+            } */}
           </Select>
         );
       } else if (['is', 'isNot'].indexOf(operation) > -1) {
@@ -678,6 +819,15 @@ class AddComponent extends Component {
       );
     }
   }
+
+  handleLoadMoreReset = () => {
+    this.setState({
+      page: 1,
+      canLoadMore: true,
+      input: '',
+      temp: [],
+    });
+  };
 
   render() {
     const { form, onCancel } = this.props;
@@ -791,7 +941,7 @@ class AddComponent extends Component {
                             this.renderOperation(form.getFieldValue(`filter-${index}-prop`), index),
                           )}
                         </FormItem>
-                        <FormItem style={{ width: 190, display: 'inline-block' }}>
+                        <FormItem style={{ width: 190, display: 'inline-block' }} onBlur={this.handleLoadMoreReset}>
                           {getFieldDecorator(`filter-${index}-value`, {
                             rules: [{
                               required: true,
