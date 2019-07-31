@@ -123,7 +123,7 @@ const SelectFocusLoad = (props) => {
           <Button type="primary" style={{ textAlign: 'left', width: '100%', background: 'transparent' }} onClick={loadMore}>更多</Button>
         </Option>
       )} */}
-      <Option style={{ display: canLoadMore ? 'block' : 'none' }} key="SelectFocusLoad-loadMore" className="SelectFocusLoad-loadMore" disabled>
+      <Option style={{ display: canLoadMore ? 'block' : 'none', cursor: 'pointer' }} key="SelectFocusLoad-loadMore" className="SelectFocusLoad-loadMore" disabled>
         <Button type="primary" style={{ textAlign: 'left', width: '100%', background: 'transparent' }} onClick={loadMore}>更多</Button>
       </Option>
     </Select>
