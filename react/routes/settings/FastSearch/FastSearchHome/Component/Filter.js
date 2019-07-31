@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import {
-  Modal, Form, Input, Select, message, Icon, Button, DatePicker,
+  Modal, Form, Input, Select, Button, DatePicker,
 } from 'choerodon-ui';
 import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
+import SelectFocusLoad from '../../../../../components/SelectFocusLoad';
 import { NumericInput } from '../../../../../components/CommonComponent';
 import SelectFocusLoad from '../../../../../components/SelectFocusLoad';
 
 const { Sidebar } = Modal;
-const { TextArea } = Input;
 const { Option } = Select;
 const { AppState } = stores;
 const FormItem = Form.Item;
@@ -128,6 +128,7 @@ class AddComponent extends Component {
       quickFilterFiled: [],
       deleteItem: [],
       temp: [],
+      page: 1,
     };
   }
 
@@ -220,12 +221,11 @@ class AddComponent extends Component {
    * @param filter 属性
    * @param addEmpty
    */
-  getOption(filter, addEmpty) {
+  getOption(filter, addEmpty, page = 1) {
     const projectId = AppState.currentMenuType.id;
-    const orgId = AppState.currentMenuType.organizationId;
     const OPTION_FILTER = {
       assignee: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
@@ -243,19 +243,19 @@ class AddComponent extends Component {
         name: 'name',
       },
       reporter: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
       },
       created_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
       },
       last_updated_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
@@ -437,12 +437,12 @@ class AddComponent extends Component {
    * @returns {Array}
    */
   tempOption = (filter, addEmpty) => {
-    const { temp } = this.state;
+    const { temp, page } = this.state;
     const projectId = AppState.currentMenuType.id;
     const orgId = AppState.currentMenuType.organizationId;
     const OPTION_FILTER = {
       assignee: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
@@ -460,19 +460,19 @@ class AddComponent extends Component {
         name: 'name',
       },
       reporter: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
       },
       created_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
       },
       last_updated_user: {
-        url: `/iam/v1/projects/${projectId}/users?page=1&size=0`,
+        url: `/iam/v1/projects/${projectId}/users?page=${page}&size=20`,
         prop: 'list',
         id: 'id',
         name: 'realName',
@@ -576,18 +576,38 @@ class AddComponent extends Component {
       return (
         <Select label="值" />
       );
-    } else if (['assignee', 'reporter', 'created_user', 'last_updated_user'].indexOf(filter) > -1) {
-      return (
-        <SelectFocusLoad
-          label="值"
-          // labelInValue
-          filter
-          type="user"
-          mode="multiple"
-        />
-      );
+    } else if (['assignee', 'reporter', 'created_user',
+      'last_updated_user',].indexOf(filter) > -1) {
+      if (['=', '!='].indexOf(operation) > -1) {
+        // return normal value
+        return (
+          <SelectFocusLoad label="值" type="user" labelInValue />
+        );
+      } else if (['is', 'isNot'].indexOf(operation) > -1) {
+        // return value add empty
+        return (
+          <Select
+            label="值"
+            labelInValue
+            filter
+            optionFilterProp="children"
+            filterOption={(input, option) => option.props.children.toLowerCase()
+              .indexOf(input.toLowerCase()) >= 0}
+          >
+            <Option key="'null'" value="'null'">
+              {'空'}
+            </Option>
+          </Select>
+        );
+      } else {
+        // return multiple value
+        return (
+          <SelectFocusLoad label="值" type="user" mode="multiple" labelInValue />
+        );
+      }
     } else if (
-      ['priority', 'status', 'epic', 'sprint', 'label', 'component',
+      ['priority', 'status',
+        'epic', 'sprint', 'label', 'component',
         'influence_version', 'fix_version', 'issue_type'].indexOf(filter) > -1) {
       if (['=', '!='].indexOf(operation) > -1) {
         // return normal value
@@ -600,7 +620,7 @@ class AddComponent extends Component {
             filterOption={(input, option) => option.props.children.toLowerCase()
               .indexOf(input.toLowerCase()) >= 0}
             onFocus={() => {
-              this.getOption(filter, false);
+              this.getOption(filter, false, this.state.page);
             }}
           >
             {this.tempOption(filter, false)}
@@ -791,7 +811,7 @@ class AddComponent extends Component {
                             this.renderOperation(form.getFieldValue(`filter-${index}-prop`), index),
                           )}
                         </FormItem>
-                        <FormItem style={{ width: 190, display: 'inline-block' }}>
+                        <FormItem style={{ width: 190, display: 'inline-block' }} onBlur={this.handleLoadMoreReset}>
                           {getFieldDecorator(`filter-${index}-value`, {
                             rules: [{
                               required: true,

@@ -7,8 +7,8 @@ import { Content, stores, axios } from '@choerodon/boot';
 import _ from 'lodash';
 import UserHead from '../../../../components/UserHead';
 import { getUsers } from '../../../../api/CommonApi';
-import { createComponent } from '../../../../api/CommonApi';
-import './component.scss';
+import { createComponent } from '../../../../api/ComponentApi';
+import './component.less';
 
 const { Sidebar } = Modal;
 const { TextArea } = Input;
@@ -231,7 +231,7 @@ class AddComponent extends Component {
                     }
                     {
                       canLoadMore && <Option key='loadMore' disabled className='loadMore-option'>
-                        <Button type="primary" onClick={this.loadMoreUsers}>加载更多</Button>
+                        <Button type="primary" onClick={this.loadMoreUsers} className="option-btn">更多</Button>
                       </Option>
                     }
                   </Select> ,
