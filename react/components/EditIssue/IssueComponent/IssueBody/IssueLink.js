@@ -4,7 +4,7 @@ import { Icon, Button, Tooltip } from 'choerodon-ui';
 import _ from 'lodash';
 import CreateLinkTask from '../../../CreateLinkTask';
 import LinkList from '../../Component/LinkList';
-
+import Divider from './Divider';
 
 @observer class IssueLink extends Component {
   constructor(props) {
@@ -75,15 +75,11 @@ import LinkList from '../../Component/LinkList';
 
     return (
       <div id="link_task">
+        <Divider />
         <div className="c7n-title-wrapper">
-          <div className="c7n-title-left">
-            <Icon type="link c7n-icon-title" />
+          <div className="c7n-title-left">            
             <span>问题链接</span>
-          </div>
-          <div style={{
-            flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-          }}
-          />
+          </div>         
           {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建链接" getPopupContainer={triggerNode => triggerNode.parentNode}>

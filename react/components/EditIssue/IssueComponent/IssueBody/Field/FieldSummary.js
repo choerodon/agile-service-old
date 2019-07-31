@@ -19,9 +19,6 @@ const { TextArea } = Input;
     };
   }
 
-  componentDidMount() {
-  }
-
   updateIssueField = () => {
     const { newValue } = this.state;
     const {
@@ -77,7 +74,7 @@ const { TextArea } = Input;
     const value = feature ? featureVO[fieldCode] : issue[fieldCode];
 
     return (
-      <div className="line-start mt-10" style={{ width: '100%', fontSize: 20, fontWeight: 500 }}>       
+      <div className="line-start" style={{ width: '100%', fontSize: 20, fontWeight: 500 }}>       
         <TextEditToggle
           style={{ width: '100%' }}
           disabled={disabled}
@@ -98,7 +95,7 @@ const { TextArea } = Input;
               autosize
               autoFocus
               maxLength="44"
-              style={{ fontSize: '20px', fontWeight: 500 }}
+              style={{ fontSize: '20px', fontWeight: 500, padding: '0.04rem' }}
               onChange={(e) => {
                 this.setState({
                   newValue: e.target.value,

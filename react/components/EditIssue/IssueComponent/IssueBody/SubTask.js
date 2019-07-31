@@ -9,6 +9,7 @@ import CreateSubTask from '../../../CreateIssue/CreateSubTask';
 import IssueList from '../../Component/IssueList';
 import EditIssueContext from '../../stores';
 import './SubTask.scss';
+import Divider from './Divider';
 
 const { AppState } = stores;
 
@@ -117,15 +118,11 @@ const SubTask = observer(({
   };
   return (
     <div id="sub_task">
+      <Divider />
       <div className="c7n-title-wrapper">
-        <div className="c7n-title-left">
-          <Icon type="filter_none c7n-icon-title" />
+        <div className="c7n-title-left">         
           <span>子任务</span>
-        </div>
-        <div style={{
-          flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-        }}
-        />
+        </div>        
         {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建子任务" getPopupContainer={triggerNode => triggerNode.parentNode}>

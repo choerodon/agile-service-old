@@ -141,22 +141,22 @@ const FormItem = Form.Item;
             </div>
           ) : (
             <div className="c7n-backlog-sprintIssueSide">
-                <Button
-                  className="leftBtn"
-                  functyp="flat"
-                  style={{
-                    color: '#3f51b5',
-                  }}
-                  onClick={() => {
-                    this.setState({
-                      expand: true,
-                    });
-                  }}
-                >
-                  <Icon type="playlist_add" />
-                  {'创建问题'}
-                </Button>
-              </div>
+              <Button
+                className="leftBtn"
+                functyp="flat"
+                style={{
+                  color: '#3f51b5',
+                }}
+                onClick={() => {
+                  this.setState({
+                    expand: true,
+                  });
+                }}
+              >
+                <Icon type="playlist_add" />
+                {'创建问题'}
+              </Button>
+            </div>
           )}
         </div>
       </div>

@@ -133,14 +133,9 @@ const IssueBranch = observer(({ store, reloadIssue, disabled }) => {
   return (
     <div id="branch">
       <div className="c7n-title-wrapper">
-        <div className="c7n-title-left">
-          <Icon type="branch c7n-icon-title" />
+        <div className="c7n-title-left">   
           <FormattedMessage id="issue.branch" />
-        </div>
-        <div style={{
-          flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
-        }}
-        />
+        </div>        
         {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px' }}>
             <Tooltip title="创建分支" getPopupContainer={triggerNode => triggerNode.parentNode}>

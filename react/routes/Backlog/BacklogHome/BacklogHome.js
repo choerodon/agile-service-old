@@ -19,7 +19,7 @@ import Injecter from '../../../components/Injecter';
 import ClearFilter from '../BacklogComponent/SprintComponent/SprintItemComponent/SprintHeaderComponent/ClearAllFilter';
 import IsInProgramStore from '../../../stores/common/program/IsInProgramStore';
 import { getFeaturesInProject } from '../../../api/FeatureApi';
-import { getProjectsInProgram } from '../../../api/CommonApi';
+import { ContentWithTab } from '../../../components/TabRoute';
 
 const { AppState } = stores;
 
@@ -246,7 +246,7 @@ class BacklogHome extends Component {
   };
 
   render() {
-    const { BacklogStore, HeaderStore, TabComponent } = this.props;
+    const { BacklogStore, HeaderStore } = this.props;
     const arr = BacklogStore.getSprintData;
     const { display } = this.state;
     const { isInProgram } = IsInProgramStore;
@@ -298,9 +298,9 @@ class BacklogHome extends Component {
           }
           </Header>, document.getElementsByClassName('c7n-Header-Area')[0],
         )
-      }
-        {TabComponent}
-        <div style={{ padding: 0, display: 'flex', flexDirection: 'column' }}>
+      }   
+        <ContentWithTab style={{ padding: 0, display: 'flex', flexDirection: 'column' }}>
+         
           <div
             className="backlogTools"
             style={{
@@ -463,8 +463,8 @@ class BacklogHome extends Component {
               }}
               cancelCallback={this.resetSprintChose}
             />
-          </div>
-        </div>
+          </div>       
+        </ContentWithTab> 
       </Page>
     );
   }

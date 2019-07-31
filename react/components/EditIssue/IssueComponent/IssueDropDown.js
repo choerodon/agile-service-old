@@ -146,7 +146,7 @@ const IssueDropDown = ({ onDeleteIssue, loginUserId, hasPermission }) => {
       overlay={getMenu()}
       trigger={['click']}
       getPopupContainer={trigger => trigger.parentNode}
-      placement="bottomLeft"
+      placement="bottomRight"   
     >
       <Button icon="more_vert" />
     </Dropdown>

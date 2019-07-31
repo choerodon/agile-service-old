@@ -88,7 +88,7 @@ class QuickCreateIssue extends Component {
             checkCreateIssue: false,
             createLoading: false,
           });
-          // history.push(`/agile/issue?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}&paramName=${response.issueNum}&paramIssueId=${response.issueId}&paramOpenIssueId=${response.issueId}`);
+          // history.push(`/agile/work-list/issue?type=${type}&id=${id}&name=${encodeURIComponent(name)}&organizationId=${organizationId}&paramName=${response.issueNum}&paramIssueId=${response.issueId}&paramOpenIssueId=${response.issueId}`);
         })
         .catch((error) => {
         });

@@ -43,7 +43,7 @@ public class BoardServiceImpl implements BoardService {
     private static final String STORY_POINTS = "story_point";
     private static final String PARENT_CHILD = "parent_child";
     private static final String BOARD = "board";
-    private static final String URL_TEMPLATE1 = "#/agile/issue?type=project&id=";
+    private static final String URL_TEMPLATE1 = "#/agile/work-list/issue?type=project&id=";
     private static final String URL_TEMPLATE2 = "&name=";
     private static final String URL_TEMPLATE3 = "&paramName=";
     private static final String URL_TEMPLATE4 = "&paramIssueId=";

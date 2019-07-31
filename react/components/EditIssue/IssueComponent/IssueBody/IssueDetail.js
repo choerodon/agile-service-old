@@ -12,13 +12,13 @@ const IssueDetail = observer((props) => {
       <div id="detail">
         <div className="c7n-title-wrapper" style={{ marginTop: 0 }}>
           <div className="c7n-title-left">
-            <Icon type="error_outline c7n-icon-title" />
+            {/* <Icon type="error_outline c7n-icon-title" /> */}
             <span>详情</span>
           </div>
-          <div style={{
+          {/* <div style={{
             flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
           }}
-          />
+          /> */}
         </div>
         <IssueField {...props} />
         <Button className="leftBtn" onClick={() => store.setDetailShow(!detailShow)}>

@@ -1,7 +1,9 @@
 import React, {
   useState, useEffect, useContext,
 } from 'react';
-import { Icon, Button, Tooltip } from 'choerodon-ui';
+import {
+  Icon, Button, Tooltip,  
+} from 'choerodon-ui';
 
 import WYSIWYGEditor from '../../../WYSIWYGEditor';
 import { text2Delta, delta2Html, returnBeforeTextUpload } from '../../../../common/utils';
@@ -9,6 +11,7 @@ import { IssueDescription } from '../../../CommonComponent';
 import FullEditor from '../../../FullEditor';
 import { updateIssue } from '../../../../api/NewIssueApi';
 import EditIssueContext from '../../stores';
+import Divider from './Divider';
 
 const IssueDes = ({ reloadIssue }) => {
   const [editDesShow, setEditDesShow] = useState(false);
@@ -103,15 +106,16 @@ const IssueDes = ({ reloadIssue }) => {
 
   return (
     <div id="des">
+      <Divider />
       <div className="c7n-title-wrapper">
         <div className="c7n-title-left">
-          <Icon type="subject c7n-icon-title" />
+          {/* <Icon type="subject c7n-icon-title" /> */}
           <span>描述</span>
         </div>
-        <div style={{
+        {/* <div style={{
           flex: 1, height: 1, borderTop: '1px solid rgba(0, 0, 0, 0.08)', marginLeft: '14px',
         }}
-        />
+        /> */}
         {!disabled && (
           <div className="c7n-title-right" style={{ marginLeft: '14px', position: 'relative' }}>
             <Tooltip title="全屏编辑" getPopupContainer={triggerNode => triggerNode.parentNode}>
